@@ -1,0 +1,1 @@
+"use strict";function showInterstitial(){}function tryInitRewardedInterstitial(){}function tryShowRewardedInterstitial(){}

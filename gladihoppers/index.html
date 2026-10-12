@@ -1,0 +1,15 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Gladihoppers</title>
+<style>html,body{margin:0;height:100%;overflow:hidden;background:#231F20}#gameContainer{width:100%;height:100%}</style>
+<script>document.xURL='https:'+'/'+'/poki.com/';</script>
+<script src="pokistub.js"></script>
+<script src="UnityLoader.js"></script>
+</head><body><div id="gameContainer"></div>
+<script>
+var gameInstance=null;
+window.initPokiBridge=function(obj){setTimeout(function(){gameInstance&&gameInstance.SendMessage(obj,"ready")},0);
+ window.commercialBreak=function(){setTimeout(function(){gameInstance&&gameInstance.SendMessage(obj,'commercialBreakCompleted')},0)};
+ window.rewardedBreak=function(){setTimeout(function(){gameInstance&&gameInstance.SendMessage(obj,'rewardedBreakCompleted','true')},0)};};
+window.commercialBreak=function(){};window.rewardedBreak=function(){};
+gameInstance=UnityLoader.instantiate("gameContainer","Build/Gladihoppers.json");
+</script>
+</body></html>

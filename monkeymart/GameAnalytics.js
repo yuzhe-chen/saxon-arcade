@@ -1,0 +1,1 @@
+(function(){var noop=function(){};var GA=new Proxy({},{get:function(){return noop}});window.gameanalytics={GameAnalytics:GA,EGAResourceFlowType:{},EGAProgressionStatus:{},EGAErrorSeverity:{}};window.GameAnalytics=noop;})();

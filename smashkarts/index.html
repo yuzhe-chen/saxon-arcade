@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+<meta charset="utf-8">
+<title>Smash Karts</title>
+<link rel="icon" href="images/favicon.png" sizes="16x16">
+<link rel="stylesheet" href="css/main.css">
+<meta name="viewport" content="minimal-ui, user-scalable=no, initial-scale=1, maximum-scale=1, width=device-width, viewport-fit=cover">
+<script src="scripts/constants.js"></script>
+<script>
+/* self-hosted copy: no ad networks, no analytics */
+displayAdProvider=AdProviderDummy;videoAdProvider=AdProviderDummy;enableFirebaseAnalytics=false;
+var cgEnvDisabled=true;window.gtag=function(){};window.dataLayer=[];
+</script>
+</head>
+<body>
+<div id="mainContainer">
+	<div id="gameContainer">
+		<div id="gameCanvasWrapper"><canvas id="gameCanvas"></canvas></div>
+		<div id="fullscreenPrompt">Tap to continue</div>
+		<div id="adContainerLoadingLeft"></div>
+		<div id="adContainerMainMenu"></div>
+		<div id="adContainerWin"></div>
+		<div id="adContainerSpectate"></div>
+		<div id="adContainerDeath"></div>
+	</div>
+	<div id="preroll"></div>
+	<iframe id="xsolla-iframe"></iframe>
+</div>
+<div id="loader">
+	<img class="logo" src="images/smashkarts.png">
+	<div class="spinner"></div>
+	<div class="progress"><div class="full"></div></div>
+</div>
+<div id="rotate-landscape"><img src="images/r.png" class="center"></div>
+<script src="js/firebase-app-compat.js"></script>
+<script src="js/firebase-auth-compat.js"></script>
+<script src="js/firebase-database-compat.js"></script>
+<script src="js/firebase-functions-compat.js"></script>
+<script src="scripts/main.js"></script>
+<script src="scripts/auth.js"></script>
+<script src="scripts/shop.js"></script>
+<script src="scripts/ads-common-logic.js"></script>
+<script src="scripts/ads-positioning-logic.js"></script>
+<script src="scripts/ads-injector.js"></script>
+<script>
+	const firebaseConfig = {
+		apiKey: "AIzaSyAdY2qq9083amKDS0R8tn2tjIKQB8mocco",
+		authDomain: "webgltest-17af1.firebaseapp.com",
+		databaseURL: "https://webgltest-17af1.firebaseio.com",
+		projectId: "webgltest-17af1",
+		messagingSenderId: "480659433590",
+		appId: "1:480659433590:web:a01ad1599e963843a0d757",
+		measurementId: "G-1W23DRFHK9"
+	};
+	firebase.initializeApp(firebaseConfig);
+	try{updateAdBlockDetected();}catch(e){}
+	try{updateLoadingAdBanner();}catch(e){}
+	var timerStart = Date.now();
+	var addressableCatalogFilename = "catalog_2026.10.05.10.43.02.json";
+	const buildUrl = "Build";
+	const loaderUrl = buildUrl + "/c4ce55f6fd990c1236bc84106eb955bf.loader.js";
+	const config = {
+		dataUrl: buildUrl + "/2e08f04997659c12d4a76f7a3c93c397.data",
+		frameworkUrl: buildUrl + "/a876597165d7028cf2c24444bd9ce6d1.framework.js",
+		codeUrl: buildUrl + "/38b60fd1add28cff51a89bd015c1bdad.wasm",
+		streamingAssetsUrl: "StreamingAssets",
+		companyName: "TallTeam",
+		productName: "Smash Karts",
+		productVersion: "2.16.0",
+	};
+	var mainContainer = document.querySelector("#mainContainer");
+	var canvas = document.querySelector("#gameCanvas");
+	var loadingBar = document.querySelector("#loader");
+	var progressBarFull = document.querySelector("#loader .progress .full");
+	var rotateLandscape = document.querySelector("#rotate-landscape");
+	if (isMobile()) { mainContainer.className = "unity-mobile"; }
+	else { rotateLandscape.id = "rotateLandscapeOff"; rotateLandscape.style.display = "none"; }
+	document.querySelector("#loader .progress").style.display = "block";
+	progressBarFull.style.width = "0%";
+	var gameInstance;
+	var script = document.createElement("script");
+	script.src = loaderUrl;
+	script.onload = () => {
+		createUnityInstance(canvas, config, (p) => { progressBarFull.style.width = (100 * p) + "%"; })
+		.then((unityInstance) => {
+			loadingBar.style.display = "none";
+			window.unityGame = unityInstance;
+			gameInstance = unityInstance;
+			try{setV(Date.now() - timerStart);}catch(e){}
+			window.unityGame.SendMessage(unityFirebaseGameOjbectName, "SetDisplayAdProvider", displayAdProvider);
+			window.unityGame.SendMessage(unityFirebaseGameOjbectName, "SetVideoAdProvider", videoAdProvider);
+			try{trySendAdBlockDetectedMessage();}catch(e){}
+		}).catch((message) => { console.error(message); });
+	};
+	document.body.appendChild(script);
+	function setAdinPlaySubIdForABTest(v){}
+	function getAddressableCatalogFilename(){return addressableCatalogFilename;}
+</script>
+</body>
+</html>
