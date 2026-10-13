@@ -7,6 +7,9 @@
   var DIR=(location.pathname.split('/').filter(Boolean).slice(-2,-1)[0])||'game';
   var CAP=150000, LOAD_TIMEOUT=9000, EVERY=10000;
   var inFrame=window.parent&&window.parent!==window;
+  /* testing mode: the wrapper answers with a maxed preset and test:true. Nothing is sent up then, and every key the
+     test session touched is listed under MARK so the next normal session wipes it before restoring the real save. */
+  var TEST=false,MARK='sx-test:'+DIR;
   var lsOwned={}, idbOwned={}, idbSchema={}, baseline={};
   var origSet=Storage.prototype.setItem, origRemove=Storage.prototype.removeItem;
 
@@ -17,7 +20,8 @@
   function own(db,store,key){var p=prefixOf(key);if(p===null)p=JSON.stringify(enc(key));((idbOwned[db]=idbOwned[db]||{})[store]=idbOwned[db][store]||{})[p]=1;}
   function ownedKey(db,store,key){var o=idbOwned[db]&&idbOwned[db][store];if(!o)return false;if(typeof key==='string'){var p=prefixOf(key);if(o[p])return true;for(var q in o)if(key===q||key.indexOf(q+'/')===0)return true;return false;}return !!o[JSON.stringify(enc(key))];}
   function wrapWrite(name){var f=IDBObjectStore.prototype[name];if(!f)return;IDBObjectStore.prototype[name]=function(value,key){
-    try{var db=this.transaction.db.name,st=this.name,k=key;if(k===undefined&&this.keyPath!=null)k=pathGet(value,this.keyPath);
+    try{var db=this.transaction.db.name,st=this.name,k=key;if(db==='UnityCache')return f.apply(this,arguments);/* build file cache, not progress */
+      if(k===undefined&&this.keyPath!=null)k=pathGet(value,this.keyPath);
       if(k!==undefined){own(db,st,k);rememberSchema(this.transaction.db);}}catch(e){}
     return f.apply(this,arguments);};}
   if(window.IDBObjectStore){wrapWrite('put');wrapWrite('add');}
@@ -75,7 +79,7 @@
   /* ---- snapshot ---- */
   function snapshot(){var out={v:1,ls:{},idb:{}};
     try{for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(k==null)continue;var v=localStorage.getItem(k);
-      if(lsOwned[k]||(baseline[k]!==v))out.ls[k]=v;}}catch(e){}
+      if(k.indexOf('sx-test:')===0)continue;if(lsOwned[k]||(baseline[k]!==v))out.ls[k]=v;}}catch(e){}
     var jobs=Object.keys(idbOwned).map(function(name){var sch=idbSchema[name];if(!sch)return null;
       return new Promise(function(res){var r=indexedDB.open(name);r.onerror=function(){res()};r.onupgradeneeded=function(){try{r.transaction.abort()}catch(e){}};
         r.onsuccess=function(){var db=r.result;var stores=Object.keys(idbOwned[name]).filter(function(s){return db.objectStoreNames.contains(s)});
@@ -88,12 +92,29 @@
 
   /* ---- talk to the wrapper ---- */
   var seq=0,waiting={};
-  window.addEventListener('message',function(e){if(e.source!==window.parent||!e.data||e.data.type!=='arcade-load-res')return;var w=waiting[e.data.reqId];if(w){delete waiting[e.data.reqId];w(e.data.data);}});
-  function ask(){return new Promise(function(res){if(!inFrame)return res('');var id='b'+(++seq);waiting[id]=res;
-    try{window.parent.postMessage({type:'arcade-load',reqId:id,dir:DIR},'*');}catch(e){res('');}
-    setTimeout(function(){if(waiting[id]){delete waiting[id];res('');}},LOAD_TIMEOUT);});}
+  window.addEventListener('message',function(e){if(e.source!==window.parent||!e.data||e.data.type!=='arcade-load-res')return;var w=waiting[e.data.reqId];if(w){delete waiting[e.data.reqId];w(e.data);}});
+  function ask(){return new Promise(function(res){if(!inFrame)return res({});var id='b'+(++seq);waiting[id]=res;
+    try{window.parent.postMessage({type:'arcade-load',reqId:id,dir:DIR},'*');}catch(e){res({});}
+    setTimeout(function(){if(waiting[id]){delete waiting[id];res({});}},LOAD_TIMEOUT);});}
+  /* ---- testing mode bookkeeping ---- */
+  function readMark(){try{return JSON.parse(localStorage.getItem(MARK)||'null');}catch(e){return null;}}
+  function mark(save){var m=readMark()||{ls:[],idb:{}};m.ls=m.ls||[];m.idb=m.idb||{};
+    Object.keys(save.ls||{}).forEach(function(k){if(m.ls.indexOf(k)<0)m.ls.push(k);});
+    Object.keys(save.idb||{}).forEach(function(n){var d=save.idb[n].data||{};var o=m.idb[n]=m.idb[n]||{};
+      Object.keys(d).forEach(function(st){var l=o[st]=o[st]||[];d[st].forEach(function(rec){var k=JSON.stringify(rec[0]);if(l.indexOf(k)<0)l.push(k);});});});
+    try{origSet.call(localStorage,MARK,JSON.stringify(m));}catch(e){}}
+  function wipe(){var m=readMark();if(!m)return Promise.resolve();
+    (m.ls||[]).forEach(function(k){try{origRemove.call(localStorage,k);}catch(e){}});
+    var jobs=Object.keys(m.idb||{}).map(function(name){return new Promise(function(res){var r=indexedDB.open(name);r.onerror=function(){res()};
+      r.onupgradeneeded=function(){try{r.transaction.abort()}catch(e){}};
+      r.onsuccess=function(){var db=r.result;var sts=Object.keys(m.idb[name]).filter(function(s){return db.objectStoreNames.contains(s)});
+        if(!sts.length){db.close();return res();}var t=db.transaction(sts,'readwrite');
+        sts.forEach(function(st){var os=t.objectStore(st);m.idb[name][st].forEach(function(k){try{os.delete(dec(JSON.parse(k)));}catch(e){}});});
+        t.oncomplete=t.onerror=t.onabort=function(){db.close();res();};};});});
+    return Promise.all(jobs).then(function(){if(!TEST)try{origRemove.call(localStorage,MARK);}catch(e){}});}
   var lastJson=null,lastSent=null,busy=false;
   function push(force){if(!inFrame||busy)return Promise.resolve();busy=true;
+    if(TEST)return snapshot().then(function(json){mark(JSON.parse(json));}).catch(function(e){}).then(function(){busy=false;});
     return snapshot().then(function(json){if(json===lastJson&&!force)return;lastJson=json;return gz(json).then(function(data){
       if(data.length>CAP){console.warn('bridge: save too large ('+data.length+' chars), not sent');return;}
       if(data===lastSent)return;lastSent=data;window.parent.postMessage({type:'arcade-save',dir:DIR,data:data},'*');});})
@@ -107,11 +128,14 @@
       if(old.src){s.onload=s.onerror=function(){res()};old.parentNode.replaceChild(s,old);if(t==='module')setTimeout(res,0);}
       else{s.text=old.text;old.parentNode.replaceChild(s,old);res();}});});});
     return p.then(function(){if(!list.length)return;var st=document.readyState;
-      if(st!=="loading")document.dispatchEvent(new Event("DOMContentLoaded"));if(st==="complete")window.dispatchEvent(new Event("load"));});}
+      if(st!=="loading")document.dispatchEvent(new Event("DOMContentLoaded",{bubbles:true}));if(st==="complete")window.dispatchEvent(new Event("load"));});}
 
   var ready=new Promise(function(res){
     var go=function(){try{for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);baseline[k]=localStorage.getItem(k);}}catch(e){}
-      ask().then(function(data){if(!data)return;return gunz(data).then(function(j){return restore(JSON.parse(j));});})
+      ask().then(function(r){TEST=!!(r&&r.test===true);var data=r&&typeof r.data==='string'?r.data:'';
+        return wipe().then(function(){
+          baseline={};try{for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);baseline[k]=localStorage.getItem(k);}}catch(e){}
+          if(TEST)mark({});if(!data)return;return gunz(data).then(function(j){var s=JSON.parse(j);if(TEST)mark(s);return restore(s);});});})
         .catch(function(e){console.warn('bridge restore',e)}).then(function(){
           Object.keys(lsOwned).forEach(function(k){delete baseline[k]});res();});};
     if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',go,{once:true});else go();});

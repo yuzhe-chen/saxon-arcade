@@ -85,7 +85,12 @@ var cgEnvDisabled=true;window.gtag=function(){};window.dataLayer=[];
 	script.onload = () => {
 		createUnityInstance(canvas, config, (p) => { progressBarFull.style.width = (100 * p) + "%"; })
 		.then((unityInstance) => {
-			loadingBar.style.display = "none";
+			/* keep our loader over the in-game loading scene (it carries store badges) until the main menu is up */
+			progressBarFull.style.width = "100%";
+			var _menuDone = window.onLoadingToMainMenuComplete;
+			var hideLoader = function(){ loadingBar.style.display = "none"; };
+			window.onLoadingToMainMenuComplete = function(){ hideLoader(); return _menuDone && _menuDone.apply(this, arguments); };
+			setTimeout(hideLoader, 120000);
 			window.unityGame = unityInstance;
 			gameInstance = unityInstance;
 			try{setV(Date.now() - timerStart);}catch(e){}
