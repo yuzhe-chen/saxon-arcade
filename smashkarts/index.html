@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="en-us">
 <head>
+<script src="../bridge.js"></script>
 <meta charset="utf-8">
 <title>Smash Karts</title>
 <link rel="icon" href="images/favicon.png" sizes="16x16">
 <link rel="stylesheet" href="css/main.css">
 <meta name="viewport" content="minimal-ui, user-scalable=no, initial-scale=1, maximum-scale=1, width=device-width, viewport-fit=cover">
-<script src="scripts/constants.js"></script>
-<script>
+<script type="bridge/defer" src="scripts/constants.js"></script>
+<script type="bridge/defer">
 /* self-hosted copy: no ad networks, no analytics */
 displayAdProvider=AdProviderDummy;videoAdProvider=AdProviderDummy;enableFirebaseAnalytics=false;
 var cgEnvDisabled=true;window.gtag=function(){};window.dataLayer=[];
@@ -33,17 +34,17 @@ var cgEnvDisabled=true;window.gtag=function(){};window.dataLayer=[];
 	<div class="progress"><div class="full"></div></div>
 </div>
 <div id="rotate-landscape"><img src="images/r.png" class="center"></div>
-<script src="js/firebase-app-compat.js"></script>
-<script src="js/firebase-auth-compat.js"></script>
-<script src="js/firebase-database-compat.js"></script>
-<script src="js/firebase-functions-compat.js"></script>
-<script src="scripts/main.js"></script>
-<script src="scripts/auth.js"></script>
-<script src="scripts/shop.js"></script>
-<script src="scripts/ads-common-logic.js"></script>
-<script src="scripts/ads-positioning-logic.js"></script>
-<script src="scripts/ads-injector.js"></script>
-<script>
+<script type="bridge/defer" src="js/firebase-app-compat.js"></script>
+<script type="bridge/defer" src="js/firebase-auth-compat.js"></script>
+<script type="bridge/defer" src="js/firebase-database-compat.js"></script>
+<script type="bridge/defer" src="js/firebase-functions-compat.js"></script>
+<script type="bridge/defer" src="scripts/main.js"></script>
+<script type="bridge/defer" src="scripts/auth.js"></script>
+<script type="bridge/defer" src="scripts/shop.js"></script>
+<script type="bridge/defer" src="scripts/ads-common-logic.js"></script>
+<script type="bridge/defer" src="scripts/ads-positioning-logic.js"></script>
+<script type="bridge/defer" src="scripts/ads-injector.js"></script>
+<script type="bridge/defer">
 	const firebaseConfig = {
 		apiKey: "AIzaSyAdY2qq9083amKDS0R8tn2tjIKQB8mocco",
 		authDomain: "webgltest-17af1.firebaseapp.com",

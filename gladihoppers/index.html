@@ -1,11 +1,12 @@
-<!doctype html><html><head><meta charset="utf-8"><title>Gladihoppers</title>
+<!doctype html><html><head>
+<script src="../bridge.js"></script><meta charset="utf-8"><title>Gladihoppers</title>
 <style>html,body{margin:0;height:100%;overflow:hidden;background:#231F20}#gameContainer{width:100%;height:100%}</style>
-<script>document.xURL='https:'+'/'+'/poki.com/';</script>
+<script type="bridge/defer">document.xURL='https:'+'/'+'/poki.com/';</script>
 <script>/* the Poki-patched UnityLoader reads this when a build file comes from the cache */window.config=window.config||{cachedDecompressedFileSizes:{}};</script>
-<script src="pokistub.js"></script>
-<script src="UnityLoader.js"></script>
+<script type="bridge/defer" src="pokistub.js"></script>
+<script type="bridge/defer" src="UnityLoader.js"></script>
 </head><body><div id="gameContainer"></div>
-<script>
+<script type="bridge/defer">
 var gameInstance=null;
 window.initPokiBridge=function(obj){setTimeout(function(){gameInstance&&gameInstance.SendMessage(obj,"ready")},0);
  window.commercialBreak=function(){setTimeout(function(){gameInstance&&gameInstance.SendMessage(obj,'commercialBreakCompleted')},0)};

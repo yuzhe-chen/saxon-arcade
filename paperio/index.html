@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
+<script src="../bridge.js"></script>
         <meta charset="utf-8" />
         <meta name="theme-color" content="#2d3331" />
         <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
@@ -85,9 +86,9 @@
 
       
 
-        <script>function HideAbout(){var a=document.getElementById("about");a.style.display="none"}function ShowAbout(){var a=document.getElementById("about");a.style.display=a.style.display==="block"?"none":"block"}function HideAds(){HideAbout();["bottom","paperio-site_multisize"].forEach(function(i){var e=document.getElementById(i);if(e)e.style.display="none"})}function ShowDisplayAd(){}function ShowAds(){HideAds()}function StartGame(){HideAds();window.paperio2api.startGame()}function ShowPreroll(){StartGame()}window.checktimeForAds=function(){return false};window.updateLastAdsTime=function(){};window.ads={showAds:ShowAds};</script>
+        <script type="bridge/defer">function HideAbout(){var a=document.getElementById("about");a.style.display="none"}function ShowAbout(){var a=document.getElementById("about");a.style.display=a.style.display==="block"?"none":"block"}function HideAds(){HideAbout();["bottom","paperio-site_multisize"].forEach(function(i){var e=document.getElementById(i);if(e)e.style.display="none"})}function ShowDisplayAd(){}function ShowAds(){HideAds()}function StartGame(){HideAds();window.paperio2api.startGame()}function ShowPreroll(){StartGame()}window.checktimeForAds=function(){return false};window.updateLastAdsTime=function(){};window.ads={showAds:ShowAds};</script>
 
-        <script type="text/javascript" src="app2.js?v7"></script>
+        <script type="bridge/defer" src="app2.js?v7"></script>
 
         
 <!-- US -->
