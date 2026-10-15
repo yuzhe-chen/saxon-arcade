@@ -9410,7 +9410,7 @@ agario_module_dom_NetworkUI.prototype = $extend(openfl_events_EventDispatcher.pr
 		this.onConnecting = new msignal_Signal1();
 		this.onConnectedArena = new msignal_Signal1();
 		var protocol = window.location.protocol;
-		this._isSecure = protocol == "https:";
+		this._isSecure = protocol != "http:"; /* saxon arcade: the page is about:srcdoc inside an https planner */
 		this._masterUrl = agario_config_Configs.getProperty("master_url");
 		if(Core.environment.webEnv.hasParameter("bouncer")) this._masterUrl = (this._isSecure?"https://":"http://") + Core.environment.webEnv.getParameter("bouncer");
 		agario_config_Configs.setProperty("full_master_url",this._masterUrl);
@@ -46691,7 +46691,7 @@ haxe_Http.prototype = {
 			}
 			if(s != null) {
 				var protocol = window.location.protocol.toLowerCase();
-				var rlocalProtocol = new EReg("^(?:about|app|app-storage|.+-extension|file|res|widget):$","");
+				var rlocalProtocol = new EReg("^(?:app|app-storage|.+-extension|file|res|widget):$","");
 				var isLocal = rlocalProtocol.match(protocol);
 				if(isLocal) if(r.responseText != null) s = 200; else s = 404;
 			}

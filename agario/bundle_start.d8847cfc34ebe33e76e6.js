@@ -18082,7 +18082,7 @@ var Main = exports.Main = /*#__PURE__*/function () {
     key: "secureRedirect",
     value: function secureRedirect() {
       var protocol = window.location.protocol;
-      if (protocol == 'http:' && 'local,dev'.indexOf(window.EnvConfig.currentEnv) == -1) {
+      if (false && protocol == 'http:' && 'local,dev'.indexOf(window.EnvConfig.currentEnv) == -1) { /* saxon arcade: no redirect */
         window.location.href = 'https:' + window.location.href.substring(protocol.length);
       }
     }

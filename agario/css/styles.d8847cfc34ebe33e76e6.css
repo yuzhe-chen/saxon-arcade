@@ -5613,7 +5613,7 @@ button, html input[type=button], input[type=reset], input[type=submit] {
   bottom: 0;
   width: 100%;
   height: 100%;
-  background-image: url("/img/background.png");
+  background-image: url("../img/background.png");
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center center;

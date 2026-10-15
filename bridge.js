@@ -4,6 +4,8 @@
    we snapshot the storage this game owns and send it up whenever it changes.
    Only records this game touches are saved, because every game here shares one origin. */
 (function(){
+  /* the CDN loader (boot.js) already provides the bridge in memory */
+  if(window.__SX&&window.__SX.boot)return;
   var DIR=(location.pathname.split('/').filter(Boolean).slice(-2,-1)[0])||'game';
   var CAP=150000, LOAD_TIMEOUT=9000, EVERY=10000;
   var inFrame=window.parent&&window.parent!==window;

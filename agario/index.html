@@ -1,9 +1,11 @@
 <!doctype html>
 <html>
 <head>
+<script src="../bridge.js"></script>
 
-    <script>
-        const BOTTOM_BANNER_HEIGHT = '90px';
+    <script type="bridge/defer">
+        const BOTTOM_BANNER_HEIGHT = '0px'; /* saxon arcade: no ad banner */
+        window.aiptag={cmd:{display:[],player:[]}};window.aipDisplayTag={display:function(){},destroy:function(){}};window.aipPlayer=function(){};
         document.documentElement.style.setProperty('--bottom-banner-height', BOTTOM_BANNER_HEIGHT);
     </script>
 
@@ -44,7 +46,7 @@ Play online in free-for-all action and use splitting, shrinking and dodging tact
 <title>Agar.io</title>
 <link rel="canonical" href="https://agar.io/"/>
 <link id="favicon" rel="icon" type="image/png" href="favicon-32x32.png"/>
-<script>
+<script type="bridge/defer">
 const EnvConfig = {
 	env_local: "false",
 	env_production: "true",
@@ -93,19 +95,19 @@ const EnvConfig = {
 }
 window.EnvConfig = EnvConfig;
 </script>
-<script type="text/javascript">window.presetGameMode=":ffa"</script>
-<script type="text/javascript">var googletag=googletag||{};googletag.cmd=googletag.cmd||[],window.googletag=googletag</script>
+<script type="bridge/defer">window.presetGameMode=":ffa"</script>
+<script type="bridge/defer">var googletag=googletag||{};googletag.cmd=googletag.cmd||[],window.googletag=googletag</script>
 
 
-<script>window.fbq=function(){};</script>
+<script type="bridge/defer">window.fbq=function(){};</script>
 
 
-<script type="text/javascript">function getUrlVars(){for(var r,e=[],i=window.location.href.slice(window.location.href.indexOf("?")+1).split("&"),n=0;n<i.length;n++)r=i[n].split("="),e.push(r[0]),e[r[0]]=r[1];return e}window.isChrome=/chrome/.test(navigator.userAgent.toLowerCase()),window.ASSETS_ROOT="";var queryVars=getUrlVars();null!=queryVars.v&&(window.location="/v"+queryVars.v);var rpx_params={kw:"",visitor:{},inventory:{}};window.___gcfg={lang:"en-US",parsetags:"explicit"}</script>
+<script type="bridge/defer">function getUrlVars(){for(var r,e=[],i=window.location.href.slice(window.location.href.indexOf("?")+1).split("&"),n=0;n<i.length;n++)r=i[n].split("="),e.push(r[0]),e[r[0]]=r[1];return e}window.isChrome=/chrome/.test(navigator.userAgent.toLowerCase()),window.ASSETS_ROOT="";var queryVars=getUrlVars();null!=queryVars.v&&(window.location="/v"+queryVars.v);var rpx_params={kw:"",visitor:{},inventory:{}};window.___gcfg={lang:"en-US",parsetags:"explicit"}</script>
 <link href="https://fonts.googleapis.com/css?family=Ubuntu:700" rel="stylesheet">
 <link href="css/styles.d8847cfc34ebe33e76e6.css" rel="stylesheet">
-<script type="text/javascript" src="bundle_commons.b468163ba6df4fd18aa2.js"></script>
-<script type="text/javascript" src="bundle_start.d8847cfc34ebe33e76e6.js"></script>
-<script type="text/javascript" src="mc/agario.js?v=9a115de632c0972a2658ada088c7b2d1"></script>
+<script type="bridge/defer" src="bundle_commons.b468163ba6df4fd18aa2.js"></script>
+<script type="bridge/defer" src="bundle_start.d8847cfc34ebe33e76e6.js"></script>
+<script type="bridge/defer" src="mc/agario.js?v=9a115de632c0972a2658ada088c7b2d1"></script>
 
     
 
@@ -140,8 +142,8 @@ window.EnvConfig = EnvConfig;
 
 
 
-<script src="agario.core.js?v=edb969edec28cab94db1150517acbe69"></script>
-<script type="text/javascript" src="bundle_end.b1b02ab7da05e612b2ea.js"></script>
+<script type="bridge/defer" src="agario.core.js?v=edb969edec28cab94db1150517acbe69"></script>
+<script type="bridge/defer" src="bundle_end.b1b02ab7da05e612b2ea.js"></script>
 
 
 
