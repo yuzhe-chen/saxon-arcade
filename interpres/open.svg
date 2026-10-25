@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:h="http://www.w3.org/1999/xhtml" width="100%" height="100%">
+<title>Interpres</title>
+<foreignObject x="0" y="0" width="100%" height="100%">
+<h:iframe id="f" style="border:0;width:100%;height:100%;display:block;background:#fff" allow="clipboard-write; fullscreen; autoplay"></h:iframe>
+</foreignObject>
+<script><![CDATA[
+(function(){
+  var dir='interpres', f=document.getElementById('f'), base='https://cdn.jsdelivr.net/gh/yuzhe-chen/saxon-arcade@';
+  // the page is written into the frame (not srcdoc) so it has a real https address and its own routes work
+  function show(h){var d=f.contentDocument;d.open();d.write(h);d.close();}
+  // ?page=conjugacion&v=amo opens that route, as on the Apps Script address
+  var q=new URLSearchParams(location.search), page=(q.get('page')||'').replace(/^\/+|\/+$/g,'');
+  q.delete('page'); var s=q.toString();
+  var boot=JSON.stringify({path:'/'+page,search:s?'?'+s:'',url:location.href.split(/[?#]/)[0]}).replace(/</g,'\\u003c');
+  // the newest page version is listed in latest.txt
+  fetch(base+'main/'+dir+'/latest.txt?'+Date.now()).then(function(r){return r.ok?r.text():'';}).catch(function(){return '';})
+  .then(function(v){v=(v||'').trim();if(!/^[0-9a-f]{40}$/.test(v))v='main';return fetch(base+v+'/'+dir+'/index.html');})
+  .then(function(r){if(!r.ok)throw new Error(r.status);return r.text();})
+  .then(function(h){show(h.replace('"__STANDALONE_BOOT__"',function(){return boot;}));})
+  .catch(function(){show('<p style="font:18px system-ui;text-align:center;margin-top:40vh">Could not load. Reload the page.</p>');});
+})();
+]]></script>
+</svg>
