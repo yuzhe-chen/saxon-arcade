@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:h="http://www.w3.org/1999/xhtml" width="100%" height="100%">
+<title>Saxon Planner</title>
+<foreignObject x="0" y="0" width="100%" height="100%">
+<h:iframe id="f" style="border:0;width:100%;height:100%;display:block;background:#fff" allow="clipboard-write; fullscreen; autoplay"></h:iframe>
+</foreignObject>
+<script><![CDATA[
+(function(){
+  var f=document.getElementById('f'), base='https://cdn.jsdelivr.net/gh/yuzhe-chen/saxon-arcade@';
+  // the newest page version is listed in planner/latest.txt; fall back to a known one
+  fetch(base+'main/planner/latest.txt?'+Date.now()).then(function(r){return r.ok?r.text():'';}).catch(function(){return '';})
+  .then(function(v){v=(v||'').trim()||'7ad53c85a877a0f2dfa389aa1fd4be9efc562b86';return fetch(base+v+'/planner/index.html');})
+  .then(function(r){if(!r.ok)throw new Error(r.status);return r.text();})
+  .then(function(h){f.srcdoc=h;})
+  .catch(function(){f.srcdoc='<p style="font:18px system-ui;text-align:center;margin-top:40vh">Could not load. Reload the page.</p>';});
+})();
+]]></script>
+</svg>
