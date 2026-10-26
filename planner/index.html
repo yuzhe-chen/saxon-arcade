@@ -2613,7 +2613,7 @@ button.ch-row.on{background:var(--blue-wash);box-shadow:inset 0 0 0 2px var(--bl
   <div class="sp-mid">
     <div class="sp-kicker sp-mv"></div>
     <h2 class="sp-title"><span class="l1 sp-mv">Saxon</span><br><span class="l2 sp-mv">Planner</span></h2>
-    <div class="sp-url sp-mv"><a href="https://tinyurl.com/saxonplannerapp" target="_blank" rel="noopener">tinyurl.com/saxonplannerapp</a><button type="button" data-hm-copy aria-label="Copy link" title="Copy link"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12"/><path d="M5 15H3V3h12v2"/></svg></button><span class="hm-ok" aria-live="polite"></span></div>
+    <div class="sp-url sp-mv"><a href="https://tinyurl.com/saxonplanner" target="_blank" rel="noopener">tinyurl.com/saxonplanner</a><button type="button" data-hm-copy aria-label="Copy link" title="Copy link"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12"/><path d="M5 15H3V3h12v2"/></svg></button><span class="hm-ok" aria-live="polite"></span></div>
     <div class="sp-rule sp-mv"></div>
     <form class="sp-gate" id="spgate" autocomplete="off" onsubmit="return false">
       <input type="text" id="spuser" placeholder="Username" aria-label="Username" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="24">
@@ -4013,9 +4013,9 @@ function heroArt(){const g=(k,x,y,s)=>`<g transform="translate(${x} ${y}) scale(
     g('globe',12,210,2.1)+g('calendar',360,30,1.55)+g('clock',40,54,1.35)+g('backpack',160,96,3.2)+g('books',356,244,1.95)+
     g('flask',176,6,0.95)+g('pencil',446,138,1.05)+'</svg>';}
 /* the sister sites, in the menus and on Home */
-const SITES={profegpt:'https:'+SLASH2+'tinyurl.com/profegptapp',
-  interpres:'https:'+SLASH2+'tinyurl.com/interpresapp',
-  planner:'https:'+SLASH2+'tinyurl.com/saxonplannerapp'};
+const SITES={profegpt:'https:'+SLASH2+'script.google.com/macros/s/AKfycbzQJSe8rHdR9ZDTmpEfFtOtUaHbirB9jQd0rP8GuOYqA-5MNLCDGZYBfOPirBDVybsObQ/exec',
+  interpres:'https:'+SLASH2+'tinyurl.com/interpres-latin',
+  planner:'https:'+SLASH2+'tinyurl.com/saxonplanner'};
 function siteLinks(r){(r||document).querySelectorAll('a[data-site]').forEach(a=>{if(SITES[a.dataset.site])a.href=SITES[a.dataset.site];});}
 artFill(document);siteLinks(document);{const sa=document.querySelector('#splash .sp-art');if(sa)sa.innerHTML=heroArt();}
 const LOCAL_ORIGIN='http:'+SLASH2+'localhost:8741';
@@ -6517,7 +6517,7 @@ const HM_PAGES=[['courses','Courses','Every class with its period and what is co
   ['advisory','To-Do','Sticky notes and school events'],['assignments','Assignments','Everything not done yet, oldest first'],
   ['resources','Resources','Documents and links for each class'],['tasks','Tasks','Contests, grants and programs'],['chat','Chat','Messages with friends and groups'],
   ['games','Games','Singleplayer, social and multiplayer games'],['guide','Guide','Every feature explained, step by step']];
-const HM_URL='tinyurl.com/saxonplannerapp';
+const HM_URL='tinyurl.com/saxonplanner';
 /* each Home card's drawing */
 const HM_ART={courses:'backpack',calendar:'calendar',advisory:'sticky',assignments:'clipboard',resources:'books',tasks:'trophy',chat:'chat',games:'controller',guide:'guide'};
 /* while the login page is turning into Home, Home's cards wait above the screen */
