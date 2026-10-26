@@ -2125,11 +2125,13 @@ button.ch-row.on{background:var(--blue-wash);box-shadow:inset 0 0 0 2px var(--bl
 .ch-comp .kbtn{background:var(--pri);border-color:var(--pri-dark);color:#fff;width:48px;padding:0}
 .ch-comp .kbtn:hover{background:var(--pri-hi);color:#fff}
 .ch-comp .kbtn svg{stroke:#fff}
-/* the meme of the day: drops onto Home and knocks the wordmark aside */
+/* the meme of the day: drops onto Home, the wordmark dangles and falls below the buttons */
 .meme-ov{position:fixed;inset:0;z-index:150;overscroll-behavior:none;touch-action:none;cursor:pointer}
 .meme-card{position:absolute;background:var(--panel);border:2px solid var(--line);border-bottom-width:4px;border-radius:var(--r);padding:8px;box-shadow:0 10px 30px rgba(0,0,0,.18);will-change:transform}
-.meme-card img{display:block;width:100%;height:auto;border-radius:calc(var(--r) - 8px)}
-.hm-title.kicked{will-change:transform}
+.meme-card img{display:block;max-width:none;border-radius:calc(var(--r) - 8px);background:var(--panel2)}
+.meme-cap{margin:8px 4px 2px;font:700 13px/1.35 var(--font-ui);color:var(--fg2);text-align:center;overflow-wrap:anywhere}
+.meme-wm{position:fixed;display:flex;flex-direction:column;align-items:flex-start;transform-origin:0 0;will-change:transform;pointer-events:none;filter:drop-shadow(0 6px 10px rgba(0,0,0,.2))}
+.meme-wm .hm-title,.meme-wm .hm-url{flex:none;white-space:nowrap}
 /* the site's own dropdown, in place of a native select (class pickers, lunch) */
 .xdd{position:relative;min-width:0}
 .xdd .cdd-menu{overscroll-behavior:contain}
@@ -4559,6 +4561,39 @@ function normalizeCourse(input){
     if (l.indexOf(name) >= 0) return false;
     l.push(name); if (l.length > 20) l.shift();
     return true;
+  };
+
+  /* ---------- the daily meme: picked on the server from meme-api.com (r/wholesomememes) once a day ----------
+     Only safe posts: not nsfw, not a spoiler, a still image or gif (no video), and no title words that do not belong at
+     school. Best voted first; the image is downloaded on the server and handed to the page as a data URL. */
+  SX.MEME_API = 'https:' + '/' + '/meme-api.com/gimme/wholesomememes/10';
+  SX.MEME_MAX = 1500000;
+  SX.MEME_BAD = /\b(sex\w*|porn\w*|nude\w*|naked|nsfw|kill\w*|suicid\w*|die[ds]?|dying|death|dead|funeral|grave|cancer|drunk|beer|vodka|wine|alcohol|weed|drugs?|stoned|gun\w*|shoot\w*|blood\w*|depress\w*|abuse\w*|damn|hell|wtf|f\W?ck\w*|shit\w*|bitch\w*|ass|crap|boob\w*|horny|thicc|onlyfans|politic\w*|trump|biden|religio\w*|war|gf|bf|girlfriend|boyfriend|wife|husband|shower\w*|bed|kiss\w*|crush|dating|date|marri\w*|divorc\w*|pregnan\w*|baby mama|love\w*|lover|romanc\w*|romantic|valentine\w*|hot|sexy|babe)\b/i;
+  SX.memeTitle = function (t) { return String(t || '').replace(/\[[^\]]{0,12}\]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 140); };
+  SX.memePick = function (j) {
+    var posts = j && (Array.isArray(j.memes) ? j.memes : Array.isArray(j.posts) ? j.posts : j.url ? [j] : []);
+    var ok = posts.filter(function (p) {
+      return p && p.nsfw === false && p.spoiler === false && typeof p.url === 'string' && /^https:[^\s]+\.(jpe?g|png|gif|webp)(\?[^\s]*)?$/i.test(p.url) &&
+        !SX.MEME_BAD.test(String(p.title || '')) && SX.memeTitle(p.title).length > 0;
+    });
+    ok.sort(function (a, b) { return (Number(b.ups) || 0) - (Number(a.ups) || 0); });
+    return ok.map(function (p) {
+      /* a preview up to 960 wide is plenty for the card and much smaller, so it is tried before the full image */
+      var prev = (Array.isArray(p.preview) ? p.preview : []).filter(function (u) { return typeof u === 'string' && /^https:/.test(u); });
+      var small = prev.filter(function (u) { var m = /[?&]width=(\d+)/.exec(u); return m && Number(m[1]) <= 960; });
+      var urls = [small.length ? small[small.length - 1] : '', p.url].filter(Boolean);
+      return { urls: urls, title: SX.memeTitle(p.title), link: String(p.postLink || '') };
+    });
+  };
+  /* the image type from its first bytes (works with signed bytes from Apps Script too); '' when it is not an image */
+  SX.memeMime = function (b) {
+    var u = function (i) { return (Number(b[i]) + 256) % 256; };
+    if (!b || b.length < 12) return '';
+    if (u(0) === 0xff && u(1) === 0xd8) return 'image/jpeg';
+    if (u(0) === 0x89 && u(1) === 0x50 && u(2) === 0x4e && u(3) === 0x47) return 'image/png';
+    if (u(0) === 0x47 && u(1) === 0x49 && u(2) === 0x46) return 'image/gif';
+    if (u(0) === 0x52 && u(1) === 0x49 && u(2) === 0x46 && u(3) === 0x46 && u(8) === 0x57 && u(9) === 0x45 && u(10) === 0x42 && u(11) === 0x50) return 'image/webp';
+    return '';
   };
 
   if (typeof module !== 'undefined' && module.exports) module.exports = SX;
@@ -7261,12 +7296,14 @@ function renderHome(fly){
   if(fly){homeFly();el.classList.remove('in');void el.offsetWidth;el.classList.add('in');}
   memeMaybe();
 }
-/* ---------- the meme of the day: once a day per account on this device it falls onto Home and knocks the wordmark out
-   of the way; a click anywhere sends it off and the wordmark comes back. The same meme for everyone on a given day.
-   Meme on the Courses page plays it again ---------- */
+/* ---------- the meme of the day: once a day per account on this device a real meme falls onto Home. The server picks a
+   safe one from r/wholesomememes and downloads it, so everyone gets the same meme that day and the browser never loads
+   reddit. It lands on the wordmark, which gets knocked down, dangles by one corner by Edit classes, then drops below the
+   buttons. A click anywhere closes it and the wordmark springs back. Meme on the Courses page plays it again. When the
+   server has no meme, one of the bundled pictures is used ---------- */
 const MEME_ALTS=["Two panel nope and yes meme: an orange cat turns away from \"doing homework\" and happily points at \"snack break number 4\".", "Distracted meme with original art: a pencil labeled \"me\" walks with a notebook labeled \"my homework\" but turns to stare at a phone labeled \"one new notification\".", "Everything is fine meme: a calm grey cat sips cocoa at a desk while the homework papers around it are on fire, with a speech bubble saying \"this is fine\" under the caption \"five tests this week\".", "Expanding brain meme in four panels: a brain grows from \"reading my notes\" to \"highlighting everything\" to \"making flashcards\" to a beaming brain for \"teaching it to my cat\".", "A backpack with legs zooms out of the classroom door in a cloud of dust as the wall bell rings, captioned \"when the bell rings on a Friday\".", "Two buttons meme: a nervous blue blob sweats over choosing between a red button \"start early\" and a blue button \"start at 11 PM\".", "A puzzled brown bear labeled \"me\" points at a floating video screen labeled \"a three hour video\" with the caption \"is this a study break?\".", "Change my mind meme: a smug green frog sits at an outdoor table with a mug and a sign reading \"homework should be optional on birthdays, change my mind\".", "Surprised reaction meme: \"me: studies zero minutes\", \"the quiz: is hard\", \"me:\" above a shocked hamster with wide eyes and an open mouth.", "Success meme: a determined green turtle pumps its fist on the grass, captioned \"found my missing homework in the other pocket\".", "Nobody versus me meme: \"nobody:\" then \"me at 11:59 PM:\" above a cat typing at a laptop at top speed, captioned \"submitted with one minute left\".", "How it started versus how it is going: a tall shiny new pencil smiling in September next to a tiny worn out stub of a pencil with a bandage in May.", "Four panel plan meme: a penguin presents a flip chart with steps \"make a planner\", \"write it all down\", \"never open it again\", then stares in shock at \"never open it again\".", "Trade offer meme: a confident phone character in a bow tie offers \"I receive: your whole afternoon\" and \"you receive: one funny video\".", "Waiting meme: a dusty dog sits on a bench covered in cobwebs next to a printer showing an error, captioned \"me waiting for the printer to work\".", "Panic, calm, panic meme with a white bunny: \"the test is tomorrow\" (panic), \"it is open note\" (calm), \"my notes are at school\" (panic)."];
 const MEME_BASE='https:'+SLASH2+'cdn.jsdelivr.net/gh/yuzhe-chen/saxon-arcade@main/memes/';
-let memeT=0;
+let memeT=0,memeGot=null;
 function memeIndex(){const d=new Date();return Math.floor(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())/864e5)%MEME_ALTS.length;}
 const memeKey=()=>'sx-meme-'+(state.user?state.user.name:'');
 function memeMaybe(){
@@ -7276,53 +7313,102 @@ function memeMaybe(){
   memeT=setTimeout(()=>{memeT=0;if(state.view!=='home'||!state.user||document.documentElement.classList.contains('splash-on'))return;
     try{localStorage.setItem(memeKey(),todayStr());}catch(_){}memeDrop();},1300);
 }
-function memeDrop(){
-  if(document.getElementById('meme'))return;
-  const i=memeIndex(),img=new Image();img.alt=MEME_ALTS[i];img.draggable=false;
-  img.onload=()=>{if(state.view==='home'&&!document.getElementById('meme'))memeLand(img);};
-  img.src=MEME_BASE+'meme-'+String(i+1).padStart(2,'0')+'.svg';
+/* the server's meme: {date,title,dataUrl}, or null (kept for an hour, so Meme on Courses replays it without a new fetch) */
+function memeGet(){
+  if(memeGot&&Date.now()-memeGot.at<36e5)return Promise.resolve(memeGot.m);
+  const call=GS?gsCall('rpcDailyMeme'):fetch('/api/meme',{cache:'no-store'}).then(r=>r.json()).then(o=>o&&o.meme);
+  return Promise.race([call,new Promise(r=>setTimeout(()=>r(null),20000))])
+    .then(m=>{m=m&&typeof m.dataUrl==='string'&&/^data:image\/(png|jpeg|gif|webp);base64,/.test(m.dataUrl)?m:null;if(m)memeGot={m,at:Date.now()};return m;})
+    .catch(()=>null);
 }
-function memeLand(img){
-  const t=document.querySelector('#v-home .hm-title');if(!t||!t.offsetParent)return;
+let memeBusy=false;
+function memeDrop(){
+  if(document.getElementById('meme')||memeBusy)return;memeBusy=true;
+  memeGet().then(m=>{
+    const img=new Image();img.draggable=false;
+    const old=()=>{const i=memeIndex();img.alt=MEME_ALTS[i];img.src=MEME_BASE+'meme-'+String(i+1).padStart(2,'0')+'.svg';};
+    img.onload=()=>{memeBusy=false;if(state.view==='home'&&!document.getElementById('meme'))memeLand(img,m?m.title:'');};
+    img.onerror=()=>{if(m){m=null;old();}else memeBusy=false;};
+    if(m){img.alt=m.title?'Meme: '+m.title:'Meme of the day';img.src=m.dataUrl;}else old();
+  });
+}
+const memeEase=x=>1-Math.pow(1-x,3);
+function memeLand(img,title){
+  const t=document.querySelector('#v-home .hm-title'),u=document.querySelector('#v-home .hm-url');if(!t||!t.offsetParent)return;
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
   const ov=document.createElement('div');ov.id='meme';ov.className='meme-ov';ov.setAttribute('role','dialog');ov.setAttribute('aria-label','Meme of the day');ov.tabIndex=-1;
-  const card=document.createElement('div');card.className='meme-card';card.appendChild(img);ov.appendChild(card);document.body.appendChild(ov);
-  const r=t.getBoundingClientRect(),w=Math.min(440,innerWidth-32),h=w*.75+16,top0=(document.querySelector('header')||{getBoundingClientRect:()=>({bottom:0})}).getBoundingClientRect().bottom;
-  const cx=Math.min(Math.max(r.left+Math.min(r.width,w)/2,16+w/2),innerWidth-16-w/2),cy=Math.min(Math.max(r.top+r.height/2,top0+12+h/2),innerHeight-12-h/2);
-  card.style.width=w+'px';card.style.left=(cx-w/2)+'px';card.style.top=(cy-h/2)+'px';
-  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches,fall=-(cy+h/2+60),dir=r.left+r.width/2<innerWidth/2?-1:1;
-  /* the wordmark goes off the nearer edge, spinning, as the meme lands on it */
-  const kx=dir<0?-(r.right+60):innerWidth-r.left+60;
-  ov._kick=[{transform:'none'},{transform:`translate(${kx*.35}px,-40px) rotate(${dir*16}deg)`,offset:.3},{transform:`translate(${kx}px,60px) rotate(${dir*38}deg)`}];
-  ov._t=t;
+  /* the picture fits within min(420px, 80vw) by 55vh, with its title under it */
+  const nw=img.naturalWidth||400,nh=img.naturalHeight||300,s=Math.min(Math.min(420,innerWidth*.8)/nw,innerHeight*.55/nh,2);
+  img.style.width=Math.round(nw*s)+'px';img.style.height=Math.round(nh*s)+'px';
+  const card=document.createElement('div');card.className='meme-card';card.style.width=(Math.round(nw*s)+20)+'px';card.appendChild(img);
+  if(title){const c=document.createElement('div');c.className='meme-cap';c.textContent=title;card.appendChild(c);}
+  ov.appendChild(card);document.body.appendChild(ov);
+  /* the wordmark block: "saxon planner" and its short link */
+  const tr=t.getBoundingClientRect(),ur=u&&u.offsetParent?u.getBoundingClientRect():tr;
+  const L=Math.min(tr.left,ur.left),T0=tr.top,bw=Math.max(tr.right,ur.right)-L,bh=Math.max(tr.bottom,ur.bottom)-T0;
+  const hd=document.querySelector('header'),top0=hd?hd.getBoundingClientRect().bottom:0;
+  const low=document.querySelector('#v-home .hm-sites')||document.querySelector('#v-home .hm-side'),btn=document.getElementById('hm-classes');
+  const floor=Math.min(innerHeight-14,low.getBoundingClientRect().bottom+40+bh);
+  const cw=card.offsetWidth,ch=card.offsetHeight;
+  const cx=Math.max(8,Math.min(L,innerWidth-8-cw)),cy=Math.max(top0+10,Math.min(T0,floor-bh-12-ch,innerHeight-12-ch));
+  card.style.left=cx+'px';card.style.top=cy+'px';
+  ov._parts=[t,u].filter(Boolean);
   ov.focus({preventScroll:true});
-  if(reduce){card.animate([{opacity:0},{opacity:1}],{duration:200,fill:'both'});t.style.visibility='hidden';ov._hid=true;}
+  if(reduce)card.animate([{opacity:0},{opacity:1}],{duration:200,fill:'both'});
   else{
-    card.animate([{transform:`translateY(${fall}px) rotate(-12deg)`,easing:'cubic-bezier(.5,0,1,.6)'},{transform:'translateY(0) rotate(4deg)',offset:.72,easing:'cubic-bezier(.2,.7,.4,1)'},
-      {transform:'translateY(-22px) rotate(-2deg)',offset:.86,easing:'cubic-bezier(.6,0,1,.6)'},{transform:'translateY(0) rotate(0deg)'}],{duration:1000,fill:'both'});
-    ov._kt=setTimeout(()=>{t.classList.add('kicked');ov._ka=t.animate(ov._kick,{duration:650,easing:'cubic-bezier(.2,.6,.3,1)',fill:'forwards'});},700);}
+    const fall=-(cy+ch+60);
+    card.animate([{transform:`translateY(${fall}px) rotate(-10deg)`,easing:'cubic-bezier(.5,0,1,.6)'},{transform:'translateY(0) rotate(3deg)',offset:.72,easing:'cubic-bezier(.2,.7,.4,1)'},
+      {transform:'translateY(-18px) rotate(-1.5deg)',offset:.86,easing:'cubic-bezier(.6,0,1,.6)'},{transform:'translateY(0) rotate(0deg)'}],{duration:1000,fill:'both'});
+    /* a copy of the wordmark does the falling (above the card), the real one waits hidden in its place */
+    const wm=document.createElement('div');wm.className='meme-wm';wm.setAttribute('aria-hidden','true');
+    wm.style.left=L+'px';wm.style.top=T0+'px';wm.style.width=bw+'px';wm.style.height=bh+'px';
+    const tc=t.cloneNode(true);tc.style.margin='0';tc.style.marginLeft=(tr.left-L)+'px';wm.appendChild(tc);
+    if(u&&u.offsetParent){const uc=u.cloneNode(true);uc.style.margin='0';uc.style.marginTop=(ur.top-tr.bottom)+'px';uc.style.marginLeft=(ur.left-L)+'px';wm.appendChild(uc);}
+    ov.appendChild(wm);ov._wm=wm;
+    /* pose: the local point (px,py) of the block sits at screen (sx,sy), turned by a degrees */
+    const pose=(px,py,sx,sy,a)=>{const r=a*Math.PI/180,c=Math.cos(r),n=Math.sin(r);
+      wm.style.transform=`translate(${(sx-(px*c-py*n)-L).toFixed(1)}px,${(sy-(px*n+py*c)-T0).toFixed(1)}px) rotate(${a.toFixed(2)}deg)`;};
+    const HX=Math.max(8,Math.min(L,innerWidth-8-bw-bh));
+    const hy=Math.max(T0,Math.min((btn?btn.getBoundingClientRect().top:T0+bh)-30,floor-bw-20));
+    const SW=2100,G=.004,dy=Math.max(0,floor-bw-hy),TF=Math.sqrt(2*dy/G),VU=.22*G*TF,TB=VU>0?2*VU/G:0,TT=420;
+    const swing=x=>-90*(1-Math.exp(-x/380)*Math.cos(2*Math.PI*x/700));
+    let t0=0;
+    const step=now=>{
+      if(!ov.isConnected||ov._closing)return;
+      if(!t0)t0=now;let x=now-t0;
+      if(x<SW){const k=memeEase(Math.min(1,x/320));pose(bw,0,L+bw+(HX-L-bw)*k,T0+(hy-T0)*k,swing(x));}
+      else if((x-=SW)<TF)pose(bw,0,HX,hy+.5*G*x*x,swing(SW+x));
+      else if((x-=TF)<TB)pose(bw,0,HX,floor-bw-(VU*x-.5*G*x*x),-90);
+      else if((x-=TB)<TT)pose(0,bh,HX+bh,floor,-90+90*Math.pow(x/TT,2));
+      else{x-=TT;pose(0,bh,HX+bh,floor,x<200?-6*Math.sin(Math.PI*x/200):x<340?-2*Math.sin(Math.PI*(x-200)/140):0);if(x>=340)return;}
+      ov._raf=requestAnimationFrame(step);};
+    ov._kt=setTimeout(()=>{if(!ov.isConnected||ov._closing)return;ov._parts.forEach(e=>e.style.visibility='hidden');ov._raf=requestAnimationFrame(step);},720);
+  }
   const close=e=>{if(e){e.preventDefault();e.stopPropagation();}memeClose();};
   ov.addEventListener('pointerdown',close);
   ov.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();});
   ov.addEventListener('keydown',e=>{if(e.key==='Escape'||e.key==='Enter'||e.key===' ')close(e);});
   ov.addEventListener('wheel',e=>e.preventDefault(),{passive:false});
 }
+/* gone at once (Meme on Courses replays it): the wordmark is back in its place */
+function memeKill(){const ov=document.getElementById('meme');if(!ov)return;clearTimeout(ov._kt);cancelAnimationFrame(ov._raf);(ov._parts||[]).forEach(e=>e.style.visibility='');ov.remove();}
 function memeClose(){
-  const ov=document.getElementById('meme');if(!ov||ov._closing)return;ov._closing=true;clearTimeout(ov._kt);
-  const card=ov.querySelector('.meme-card'),t=ov._t,reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const ov=document.getElementById('meme');if(!ov||ov._closing)return;ov._closing=true;clearTimeout(ov._kt);cancelAnimationFrame(ov._raf);
+  const card=ov.querySelector('.meme-card'),wm=ov._wm,reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
   card.getAnimations().forEach(a=>a.commitStyles&&a.commitStyles());card.getAnimations().forEach(a=>a.cancel());
-  const out=card.animate(reduce?[{opacity:1},{opacity:0}]:[{transform:'translateY(0) rotate(0deg)',opacity:1},{transform:`translateY(${innerHeight}px) rotate(18deg)`,opacity:.6}],
+  card.animate(reduce?[{opacity:1},{opacity:0}]:[{transform:'translateY(0) rotate(0deg)',opacity:1},{transform:`translateY(${innerHeight}px) rotate(18deg)`,opacity:.6}],
     {duration:reduce?150:520,easing:'cubic-bezier(.5,0,1,.6)',fill:'forwards'});
-  /* the wordmark springs back into place */
-  if(t){t.style.visibility='';
-    if(ov._ka){const back=ov._kick.slice().reverse().map((k,i,a)=>({transform:k.transform}));
-      ov._ka.cancel();const k=back[0].transform;
-      t.animate([{transform:k},{transform:'translate(0,-10px) rotate(-3deg)',offset:.7},{transform:'translate(0,3px) rotate(1deg)',offset:.86},{transform:'none'}],
-        {duration:reduce?1:700,easing:'cubic-bezier(.2,.7,.3,1)'}).onfinish=()=>t.classList.remove('kicked');}}
-  out.onfinish=()=>{ov.remove();};
-  setTimeout(()=>{if(ov.isConnected)ov.remove();},900);
+  const done=()=>{if(!ov.isConnected)return;(ov._parts||[]).forEach(e=>e.style.visibility='');ov.remove();};
+  /* the wordmark springs back up into its place, overshooting a little */
+  if(wm&&wm.style.transform&&!reduce){
+    const cur=wm.style.transform;
+    wm.animate([{transform:cur},{transform:'translate(0px,-14px) rotate(-3deg)',offset:.68},{transform:'translate(0px,4px) rotate(1deg)',offset:.86},{transform:'translate(0px,0px) rotate(0deg)'}],
+      {duration:700,easing:'cubic-bezier(.3,.7,.3,1)',fill:'forwards'}).onfinish=done;
+    setTimeout(done,1100);
+  }else setTimeout(done,reduce?160:540);
 }
 document.addEventListener('click',e=>{if(!e.target.closest('[data-act-meme]'))return;e.stopPropagation();
-  const m=document.getElementById('meme');if(m)m.remove();
+  memeKill();
   goHome();setTimeout(memeDrop,state.view==='home'?450:0);});
 function homeFly(){
   /* the bottom row drops first, so no card falls through one that has already landed */
