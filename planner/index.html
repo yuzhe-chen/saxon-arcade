@@ -2363,6 +2363,10 @@ button.ch-row.on{background:var(--blue-wash);box-shadow:inset 0 0 0 2px var(--bl
 .note .nd{flex:none;font-size:13px;font-weight:700;color:var(--fg2)}
 /* the login page writes the games in lowercase */
 #splash .sp-gm h2,#splash .sp-menu [data-spm="games"] span,#splash .sp-menu [data-spm="soundboard"] span{text-transform:uppercase!important}
+.site-pick{position:fixed;z-index:9999;background:var(--panel);border:2px solid var(--line);border-radius:var(--r);box-shadow:0 4px 0 var(--line);padding:12px 14px 14px;min-width:220px}
+.site-pick .sp-t{font:800 15px/1.3 var(--font-ui);color:var(--fg);text-align:center;margin-bottom:10px}
+.site-pick .sp-b{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.site-pick .sp-b .kbtn{text-decoration:none;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -4018,9 +4022,15 @@ function heroArt(){const g=(k,x,y,s)=>`<g transform="translate(${x} ${y}) scale(
     g('globe',12,210,2.1)+g('calendar',360,30,1.55)+g('clock',40,54,1.35)+g('backpack',160,96,3.2)+g('books',356,244,1.95)+
     g('flask',176,6,0.95)+g('pencil',446,138,1.05)+'</svg>';}
 /* the sister sites, in the menus and on Home */
-const SITES={profegpt:'https:'+SLASH2+'profegpt.web.app/',
-  interpres:'https:'+SLASH2+'interpres.web.app/',
-  planner:'https:'+SLASH2+'saxonplanner.web.app/'};
+/* the three sister sites. On Google's Apps Script copy a link offers all three addresses (Firebase, Tinyurl,
+   Google Script); everywhere else it goes straight to the Firebase site */
+const SITE_URLS={
+  planner:{Firebase:'saxonplanner.web.app/',Tinyurl:'tinyurl.com/saxonplanner','Google Script':'script.google.com/macros/s/AKfycbxDk0GrC7XrtoekZdrW4qPsffwxxuG0ujTopOYe5m3rzRPX1GOtbv9-aUtvaXAZlFLW/exec'},
+  profegpt:{Firebase:'profegpt.web.app/',Tinyurl:'tinyurl.com/profe-gpt','Google Script':'script.google.com/macros/s/AKfycbzQJSe8rHdR9ZDTmpEfFtOtUaHbirB9jQd0rP8GuOYqA-5MNLCDGZYBfOPirBDVybsObQ/exec'},
+  interpres:{Firebase:'interpres.web.app/',Tinyurl:'tinyurl.com/interpres-latin','Google Script':'script.google.com/macros/s/AKfycbyfS0EeA5rlHcOyaDjO88BjaxAes0Zwvsh92wXzPKYgDciVoRuDa2eQXZ_eiJNECofn/exec'}};
+const SITE_NAMES={planner:'Saxon Planner',profegpt:'ProfeGPT',interpres:'Interpres'};
+const ON_GAS=/googleusercontent\.com$/.test(location.hostname);
+const SITES={};Object.keys(SITE_URLS).forEach(k=>SITES[k]='https:'+SLASH2+SITE_URLS[k].Firebase);
 function siteLinks(r){(r||document).querySelectorAll('a[data-site]').forEach(a=>{if(SITES[a.dataset.site])a.href=SITES[a.dataset.site];});}
 artFill(document);siteLinks(document);{const sa=document.querySelector('#splash .sp-art');if(sa)sa.innerHTML=heroArt();}
 const LOCAL_ORIGIN='http:'+SLASH2+'localhost:8741';
@@ -8223,7 +8233,16 @@ document.addEventListener('pointerdown',e=>{const n=e.target.closest&&e.target.c
   const ed=n.querySelector('.nt');if(!ed)return;e.preventDefault();
   if(ed.isContentEditable){ed.focus();const r=document.createRange();r.selectNodeContents(ed);r.collapse(false);const sel=getSelection();sel.removeAllRanges();sel.addRange(r);}
   else ed.click();},true);
+function sitePickClose(){const m=document.querySelector('.site-pick');if(m)m.remove();}
+document.addEventListener('click',e=>{if(!ON_GAS)return;const a=e.target.closest&&e.target.closest('a[data-site]');if(!a||!SITE_URLS[a.dataset.site])return;
+  e.preventDefault();e.stopPropagation();const was=document.querySelector('.site-pick');sitePickClose();if(was&&was.dataset.for===a.dataset.site)return;
+  const k=a.dataset.site,m=document.createElement('div');m.className='site-pick';m.dataset.for=k;m.setAttribute('role','dialog');m.setAttribute('aria-label',SITE_NAMES[k]);
+  m.innerHTML='<div class="sp-t">'+esc(SITE_NAMES[k])+'</div><div class="sp-b">'+Object.keys(SITE_URLS[k]).map(n=>'<a class="kbtn" target="_blank" rel="noopener" href="'+esc('https:'+SLASH2+SITE_URLS[k][n])+'">'+esc(n)+'</a>').join('')+'</div>';
+  document.body.appendChild(m);const r=a.getBoundingClientRect(),w=m.offsetWidth,h=m.offsetHeight;
+  let x=Math.min(Math.max(8,r.left+r.width/2-w/2),innerWidth-w-8),y=r.bottom+8;if(y+h>innerHeight-8)y=Math.max(8,r.top-h-8);
+  m.style.left=x+'px';m.style.top=y+'px';m.addEventListener('click',ev=>{if(ev.target.closest('a'))setTimeout(sitePickClose,0);});},true);
 const MENUS=[
+  {open:()=>!!document.querySelector('.site-pick'),keep:['.site-pick','a[data-site]'],close:()=>sitePickClose()},
   {open:()=>moreDD.classList.contains('open'),keep:['.morewrap'],close:()=>{moreDD.classList.remove('open');moreBtn.classList.remove('dd-open');}},
   {open:()=>mMenu.classList.contains('open'),keep:['.mmenu','#menubtn'],close:()=>{mMenu.classList.remove('open');mMenu.setAttribute('aria-hidden','true');menuBtn.classList.remove('dd-open');}},
   {open:()=>!!document.querySelector('.tk-cls.open'),keep:['.tk-cls','.cn-pick'],close:()=>document.querySelectorAll('.tk-cls.open').forEach(m=>m.classList.remove('open'))},
