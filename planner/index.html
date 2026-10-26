@@ -587,7 +587,9 @@ html.chat-on .wrap{overflow:hidden;padding-bottom:0}
 .ch-gb{flex:1;min-width:0}
 .ch-gh{font-size:13px;margin-bottom:2px}.ch-gh b{font-weight:800}.ch-gh time{color:var(--fg2);font-size:11.5px;margin-left:8px}
 .ch-t{font-size:14.5px;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere;padding:1px 0}
-.ch-t.pend{opacity:.55}.ch-t.fail{color:var(--danger)}
+.ch-t.pend{opacity:.5}.ch-t.fail{color:var(--danger);cursor:pointer}
+.ch-st{display:flex;align-items:center;gap:6px;appearance:none;border:0;background:none;padding:0;margin:1px 0 2px;font:700 11.5px var(--font-ui);color:var(--fg2)}
+.ch-st .ch-spin{margin-left:0;width:10px;height:10px}.ch-st.fail{color:var(--danger);cursor:pointer}
 .ch-spin{display:inline-block;width:11px;height:11px;margin-left:8px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;opacity:.6;vertical-align:-1px;animation:chspin .7s linear infinite;flex:none}
 @keyframes chspin{to{transform:rotate(360deg)}}
 .chp .busy{pointer-events:none}
@@ -2095,6 +2097,7 @@ nav.tabs .mmenu .mcolors button.kbtn:hover{background:var(--panel);color:var(--f
 .rl-box{border:2px solid;border-bottom-width:4px;border-radius:var(--rs);font-weight:800}
 .rl-box.admin{background:var(--red-wash);border-color:var(--red)}
 .rl-box.mod{background:var(--pri-wash);border-color:var(--pri)}
+.rl-box.mp{background:var(--panel);border-color:var(--line)}.rl-box.mp .tg{color:var(--fg2)}
 .rl-user{border:2px solid var(--line);border-radius:var(--rs);background:var(--panel)}
 .rl-user+.rl-user{margin-top:6px}
 .rl-k{border-radius:999px;font-weight:800}
@@ -2121,6 +2124,38 @@ button.ch-row.on{background:var(--blue-wash);box-shadow:inset 0 0 0 2px var(--bl
 .ch-comp .kbtn,.ch-add .kbtn{min-height:44px;height:44px;border-radius:var(--rs);border-bottom-width:4px}
 .ch-comp .kbtn{background:var(--pri);border-color:var(--pri-dark);color:#fff;width:48px;padding:0}
 .ch-comp .kbtn:hover{background:var(--pri-hi);color:#fff}
+.ch-comp .kbtn svg{stroke:#fff}
+/* the meme of the day: drops onto Home and knocks the wordmark aside */
+.meme-ov{position:fixed;inset:0;z-index:150;overscroll-behavior:none;touch-action:none;cursor:pointer}
+.meme-card{position:absolute;background:var(--panel);border:2px solid var(--line);border-bottom-width:4px;border-radius:var(--r);padding:8px;box-shadow:0 10px 30px rgba(0,0,0,.18);will-change:transform}
+.meme-card img{display:block;width:100%;height:auto;border-radius:calc(var(--r) - 8px)}
+.hm-title.kicked{will-change:transform}
+/* the site's own dropdown, in place of a native select (class pickers, lunch) */
+.xdd{position:relative;min-width:0}
+.xdd .cdd-menu{overscroll-behavior:contain}
+.xdd .cdd-menu.open{grid-template-columns:1fr}
+.xdd .cdd-menu.up{top:auto;bottom:calc(100% + 6px)}
+.xdd .cdd-item:focus{outline:none}
+.xdd .cdd-item:focus-visible{background:var(--accent);color:var(--accent-fg)}
+.xdd .cdd-item[aria-selected="true"]{font-weight:800}
+.note .nsel-dd{display:inline-flex;max-width:100%;min-width:0}
+.note .nsel-dd .ncl{appearance:none;-webkit-appearance:none;background:none;border:0;padding:0;margin:0;font:inherit;color:inherit;text-align:left;min-height:0}
+.note .nsel-dd .cdd-menu{min-width:190px;max-width:min(320px,calc(100vw - 48px))}
+.su-row .xdd.su-lunch{display:block;min-width:0}
+.su-row .xdd.su-lunch .cdd-btn{height:100%;min-height:44px;padding:0 10px 0 14px;background:var(--input);border:2px solid var(--line);border-radius:var(--rs);font-size:15px}
+.su-row .xdd.su-lunch.on .cdd-btn{border-color:var(--blue);background:var(--bg)}
+.su-row .xdd.su-lunch .cdd-btn .car svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.su-row .xdd.su-lunch .cdd-menu{left:auto;right:0;min-width:130px}
+.su-row .xdd.su-lunch.off{visibility:hidden}
+@media (max-width:700px){.su-row .xdd.su-lunch.off{display:none}.su-list .su-row .xdd.su-lunch{width:86px}.su-row .xdd.su-lunch .cdd-btn{padding:0 5px 0 10px;gap:2px;font-size:13px}.su-row .xdd.su-lunch .cnm{overflow:visible}}
+.su-p4-ov .qbox{width:420px;border:2px solid var(--line);border-bottom-width:4px;border-radius:var(--r)}
+.su-p4-ov p{margin:0;font-size:15px;line-height:1.45}
+.su-p4-ov .gw-row{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;margin-top:18px}
+.su-p4-ov .gw-row button{min-height:44px;padding:0 18px}
+/* Courses page: an assignment dragged onto another class */
+.ccard.cdrop{outline:3px dashed var(--pri);outline-offset:-3px;background:color-mix(in srgb,var(--pri) 10%,var(--panel))}
+.tdrag-ghost{position:fixed;z-index:200;pointer-events:none;opacity:.9;transform:rotate(2deg);box-shadow:0 8px 20px rgba(0,0,0,.25)}
+[data-tid].lift{transform:scale(1.03);transition:transform .12s}
 .ch-add input,.ch-comp textarea{height:44px;min-height:44px;padding:10px 14px}
 .ch-tabs{border-bottom:2px solid var(--line);gap:4px;padding:8px 8px 0}
 .ch-tab{border-radius:10px 10px 0 0;font-weight:800;border-bottom:3px solid transparent}
@@ -2799,8 +2834,10 @@ const COURSE_DICT=(()=>{
   add('ap latin','AP Latin','LAT');
   add('ap art history|ap arth|ap art hist','AP Art History','ARTH');
   add('ap music theory|ap music','AP Music Theory','MUSIC');
-  add('ap 2d art|ap 2 d art|ap 2d art and design|ap 2 d art and design','AP 2-D Art and Design','2D');
-  add('ap 3d art|ap 3 d art|ap 3d art and design|ap 3 d art and design','AP 3-D Art and Design','3D');
+  add('ap 2d art|ap 2 d art|ap 2d art and design|ap 2 d art and design|ap 2d|ap 2 d|ap 2d design|ap 2 d design|ap 2d art design|ap 2 d art design','AP 2-D Art and Design','2D');
+  add('ap 3d art|ap 3 d art|ap 3d art and design|ap 3 d art and design|ap 3d|ap 3 d|ap 3d design|ap 3 d design|ap 3d art design|ap 3 d art design','AP 3-D Art and Design','3D');
+  /* AP Art alone is the whole program, not AP Art History */
+  add('ap art|ap art and design|ap art design|ap studio art','AP Art and Design','ART');
   add('ap drawing','AP Drawing','DRAW');
   add('ap seminar|ap sem','AP Seminar','SEM');
   add('ap research','AP Research','RES');
@@ -2813,6 +2850,7 @@ const COURSE_DICT=(()=>{
   add('epf|econ pf|econ and pf|econ and personal finance|economics and personal finance|personal finance','Economics and Personal Finance','EPF');
   add('psych|psychology','Psychology','PSYCH');
   add('soc|sociology','Sociology','SOC');
+  add('polisci|poli sci|pol sci|poly sci|political sci|political science','Political Science','POLSCI');
   add('chem|chemistry','Chemistry','CHEM');
   add('bio|biology','Biology','BIO');
   add('phys|physics','Physics','PHYS');
@@ -2857,6 +2895,9 @@ const COURSE_DICT=(()=>{
   add('engineering|engineering design','Engineering','ENGR');
   add('cybersecurity|cyber security|cybersecurity systems technology','Cybersecurity','CYBER');
   add('theory of knowledge|tok','Theory of Knowledge','TOK');
+  add('ib math|ib maths|ib mathematics','IB Mathematics','MATH');
+  add('ib history|ib hist','IB History','HIST');
+  add('ib art|ib va|ib visual art|ib visual arts','IB Visual Arts','VA');
   add('cs|comp sci|compsci|computer science','Computer Science','CS');
   add('asl|american sign language','American Sign Language','ASL');
   add('eng|english|ela|lang arts|language arts','English','ENG');
@@ -2981,6 +3022,515 @@ function normalizeCourse(input){
   return done(n,makeAbbr(n),[]);
 }
 
+  /* every FCPS high school course (the 2026-27 course catalogs and selection sheets of FCPS high schools), with the
+     shorthands students write: name|label|keys, without the HN, DE, IB, HL and SL markers (those are read around them).
+     Only names and shorthands the table above doesn't already know */
+  var FCPS_COURSES = ["English 11 Composition|EC11|english 11 composition|eng 111|eng 112|english 11 comp",
+    "English 12 Composition|EC12|english 12 composition|english 12 comp",
+    "English 12 Literature|EL12|english 12 literature|english 12 lit|eng 255",
+    "AP English Language and Composition|ELC|ap english lang and composition|ap english language and comp",
+    "AP English Literature and Composition|ELC|ap english lit and composition|ap english literature and comp",
+    "AP Seminar: English 10|SE10|ap seminar english 10|ap capstone english 10",
+    "English Literature|EL|eng lit|english lit hl 1|english lit hl 2",
+    "English Language and Literature|ELL|english language and literature|lang and lit|lang lit|l and l|english lang and literature|english language and lit",
+    "Creative Writing 1|CW1|cw 1",
+    "Creative Writing 2|CW2|cw 2",
+    "Creative Writing 3|CW3|cw 3",
+    "Creative Writing 4|CW4|cw 4",
+    "Advanced Composition 1|AC1|advanced composition 1|adv comp 1|writing center|adv composition 1|advanced comp 1",
+    "Advanced Composition 2|AC2|advanced composition 2|adv comp 2|adv composition 2|advanced comp 2",
+    "Advanced Composition 3|AC3|advanced composition 3|adv comp 3|adv composition 3|advanced comp 3",
+    "Film Study|FS|film study|film|film studies",
+    "Film Study 2|FS2|film study 2|film 2",
+    "Shakespeare Study|SS|shakespeare study|shakespeare",
+    "LGBTQ+ Perspectives in Literature|LPL|lgbtq perspectives in literature|lgbtq lit|lgbtq perspectives in lit",
+    "Speech|SPEEC|speech|public speaking",
+    "Debate|DEBAT|debate|speech and debate|speech debate",
+    "Forensics|FOREN|forensics|forensics speech",
+    "Journalism 1|JOURN1|journ 1|newspaper",
+    "Journalism 2|JOURN2|journ 2",
+    "Journalism 3|JOURN3|journ 3",
+    "Journalism 4|JOURN4|journ 4",
+    "Introduction to Journalism|IJ|introduction to journalism|intro to journalism|intro journ",
+    "Photojournalism 1|PHOTO1|photojourn 1|photo journalism 1",
+    "Photojournalism 2|PHOTO2|photojourn 2|photo journalism 2",
+    "Photojournalism 3|PHOTO3|photojourn 3|photo journalism 3",
+    "Photojournalism 4|PHOTO4|photojourn 4|photo journalism 4",
+    "Broadcast Journalism 1|BJ1|broadcast journalism 1|broadcast 1|broadcast journ 1|tv news",
+    "Broadcast Journalism 2|BJ2|broadcast journalism 2|broadcast 2|broadcast journ 2",
+    "Broadcast Journalism 3|BJ3|broadcast journalism 3|broadcast 3",
+    "Broadcast Journalism 4|BJ4|broadcast journalism 4|broadcast 4",
+    "Literacy Essentials|LE|literacy essentials",
+    "Literacy Lab 1|LL1|literacy lab 1|lit lab 1",
+    "Literacy Lab 2|LL2|literacy lab 2|lit lab 2",
+    "Literacy Lab 3|LL3|literacy lab 3|lit lab 3",
+    "Entering ELD 1|EE1|entering eld 1|eld 1|esol 1|english language development 1",
+    "Emerging ELD 2|EE2|emerging eld 2|eld 2|esol 2",
+    "Developing ELD 3|DE3|developing eld 3|eld 3|esol 3",
+    "Expanding ELD 4|EE4|expanding eld 4|eld 4|esol 4",
+    "Academic Literacy|AL|academic literacy",
+    "Literacy Foundations|LF|literacy foundations",
+    "Bridging to Literacy|BL|bridging to literacy",
+    "English 9 for Multilingual Learners|EML9|english 9 for multilingual learners|english 9 for mls|english 9 eld|english 9 esol|english 9 for english learners",
+    "English 10 for Multilingual Learners|EML10|english 10 for multilingual learners|english 10 for mls|english 10 eld|english 10 esol|english 10 for english learners",
+    "English 11 for Multilingual Learners|EML11|english 11 for multilingual learners|english 11 for mls|english 11 eld|english 11 esol|english 11 for english learners",
+    "English 12 for Multilingual Learners|EML12|english 12 for multilingual learners|english 12 for mls|english 12 eld|english 12 esol|english 12 for english learners",
+    "Math Readiness for Multilingual Learners|MRML|math readiness for multilingual learners|math readiness|math readiness for mls",
+    "Numeracy Essentials for Multilingual Learners|NEML|numeracy essentials for multilingual learners|numeracy essentials",
+    "Prealgebra for Multilingual Learners|PML|prealgebra for multilingual learners|prealgebra for mls|esol prealgebra",
+    "Active Physics for Multilingual Learners|APML|active physics for multilingual learners|active physics for mls|active phys for multilingual learners",
+    "US VA Government for Multilingual Learners|UVGML|us va government for multilingual learners|esol government|us va govt for mls|us va gov for multilingual learners|us va govt for multilingual learners",
+    "AVID for Multilingual Learners|AML|avid for multilingual learners|avid for mls|avid ml",
+    "Algebra 1 Part 1|AP11|algebra 1 part 1|alg 1 pt 1|algebra 1 pt 1",
+    "Algebra 1 Lab|AL1|algebra 1 lab|alg 1 lab",
+    "Algebra, Functions, and Data Analysis|AFDA|algebra functions and data analysis|afda|alg func data analysis",
+    "Algebra 2 Trigonometry|AT2|algebra 2 trigonometry|alg 2 trig|algebra 2 trig",
+    "Discrete Mathematics|DM|discrete mathematics|discrete math|discrete",
+    "Precalculus with Trigonometry|PT|precalculus w trig|math 161|math 162",
+    "AP Precalculus AB|PA|ap precalculus ab|ap precalc ab|ap pre calc ab",
+    "AP Precalculus BC|PB|ap precalculus bc|ap precalc bc|ap pre calc bc",
+    "Probability and Statistics|PS|probability and statistics|prob and stats|prob and stat|prob stats|probability and stats",
+    "Data Science|DS|data science|data sci",
+    "Applied Calculus|AC|applied calculus|applied calc",
+    "Calculus 1|CALCU1|math 263",
+    "Multivariable Calculus|MC|multivar calc",
+    "Linear Algebra|LA|linear alg|matrix algebra",
+    "Differential Equations|DE|differential equations|diff eq|diffeq|ode",
+    "Individualized Math|IM|individualized math|individual math",
+    "Math Strategies|MS|math strategies|math lab|math support",
+    "Math Analysis and Approaches|MAA|math analysis and approaches|math aa|math analysis|math aa sl 1|math aa sl 2|math aa hl 1|math aa hl 2",
+    "Math Applications and Interpretation|MAI|math applications and interpretation|math ai|math apps|math applications",
+    "Engineering Math|EM|engineering math|engineer math|eng math",
+    "Advanced Chemistry for IB Schools|ACS|advanced chemistry for ib schools|adv chem|adv chem for ib|advanced chem for ib schools|adv chemistry for ib schools",
+    "Chemistry 2|CHEMI2|chem 111|chem 112",
+    "Active Physics|AP|active physics|active phys",
+    "Environmental Science|ES|env science",
+    "Earth Science 2: Advanced Topics in Earth Science|ESATE2|earth science 2 advanced topics in earth science|adv topics in earth science|earth science 2 adv topics in earth science",
+    "Earth Science 2: Astronomy|ESA2|earth science 2 astronomy|astro|es 2 astronomy",
+    "Earth Science 2: Oceanography|ESO2|earth science 2 oceanography|ocean|es 2 oceanography",
+    "Earth Science 2: Geology|ESG2|earth science 2 geology|geology|es 2 geology",
+    "Earth Science 2: Geospatial Analysis|ESGA2|earth science 2 geospatial analysis|geospatial|geospatial analysis|es 2 geospatial|gis",
+    "Geosystems|GEOSY|geosys",
+    "Biology 2: Anatomy and Physiology|BAP2|biology 2 anatomy and physiology|bio 2 anatomy|human anatomy|bio 2 anatomy and physiology",
+    "Biology 2: Genetics|BG2|biology 2 genetics|genetics|bio 2 genetics|genetics and biotech",
+    "AP Environmental Science|ES|ap env science",
+    "AP Physics C: Mechanics|PCM|ap physics c m",
+    "AP Physics C: Electricity and Magnetism|PCEM|ap phys c electricity and magnetism",
+    "AP Physics C: Mechanics and Electricity and Magnetism|PCMEM|ap physics c mechanics and electricity and magnetism|ap phys c both|ap phys c mechanics and electricity and magnetism",
+    "Foundations of Science|FS|foundations of science|found of science",
+    "Biology|BIOLO|biology sl 1|biology sl 2|sl bio|hl bio|biology hl 1|biology hl 2|bio hl 1|bio hl 2",
+    "Chemistry|CHEMI|chemistry sl 1|chemistry sl 2|sl chem|hl chem|chemistry hl 1|chemistry hl 2|chem hl 1|chem hl 2",
+    "Physics|PHYSI|physics sl 1|physics sl 2|sl phys|hl phys|physics hl 1|physics hl 2|phys hl 1|phys hl 2",
+    "Environmental Systems and Societies|ESS|environmental systems and societies|ess|env sys|environmental systems|env systems and societies",
+    "Sports, Exercise and Health Science|SEHS|sports exercise and health science|sehs",
+    "World History and Geography 1|WHG1|world hist and geography 1|world history and geo 1|world history and geog 1",
+    "World History and Geography 2|WHG2|world hist and geography 2|world history and geo 2|world history and geog 2",
+    "US and Virginia History|UVH|us and virginia history|us and virginia hist|his 121|his 122",
+    "US and Virginia Government|UVG|us and virginia government|usvag|us and virginia gov|us and virginia govt|pls 135",
+    "AP Human Geography|HG|hug",
+    "AP World History: Modern|WHM|ap world hist modern",
+    "AP United States History|USH|ap united states hist",
+    "AP US Government and Politics|UGP|ap us gov and politics|ap us govt and politics",
+    "AP US and Comparative Government|UCG|ap us and comparative government|ap us and comp gov|ap gov and comp|ap us and comparative gov|ap us and comparative govt",
+    "AP European History|EH|ap european|ap european hist",
+    "AP Psychology|PSYCH|ap psy",
+    "AP African American Studies|AAS|ap african american",
+    "Sociology|SOCIO|socio",
+    "Current Affairs|CA|current affairs|current events",
+    "World Religions|WR|world religions|world religion|religions",
+    "World Religions and Philosophy|WRP|world religions and philosophy|wrp",
+    "Law in Action|LA|law in action|law",
+    "African American History|AAH|african american history|afam history|african amer history|african american hist",
+    "Combating Intolerance|CI|combating intolerance",
+    "Economics and Personal Finance Self-Directed|EPFSD|economics and personal finance self directed|epf self directed|self directed epf|summer epf|econ and personal finance self directed|economics and personal finance selfdirected",
+    "Foundations of US and Virginia History|FUVH|foundations of us and virginia history|found us va history|foundations of us and virginia hist",
+    "Foundations of World History and Geography|FWHG|foundations of world history and geography|found world history|foundations of world hist and geography|foundations of world history and geo|foundations of world history and geog",
+    "History of the Americas|HA|history of the americas|hoa|history americas|hota|history 1|hist of the americas",
+    "History: 20th Century World Topics|H2CWT|history 20th century world topics|20th century|world topics|hist 20th century world topics|history 2",
+    "Geography|GEOGR|geography|geog",
+    "Global Politics|GP|global politics|gpol",
+    "Social and Cultural Anthropology|SCA|social and cultural anthropology|anthro|soc anthro|anthropology|social anthropology",
+    "Philosophy|PHILO|philosophy|philo",
+    "Spanish for Careers|SC|spanish for careers|span for careers|spanish careers",
+    "French for Careers|FC|french for careers|fr for careers|french careers",
+    "Latin for Careers|LC|latin for careers|lat for careers|latin careers",
+    "German for Careers|GC|german for careers|ger for careers|german careers",
+    "Chinese for Careers|CC|chinese for careers|chin for careers|chinese careers",
+    "Japanese for Careers|JC|japanese for careers|jpn for careers|japanese careers",
+    "Russian for Careers|RC|russian for careers|rus for careers|russian careers",
+    "Korean for Careers|KC|korean for careers|kor for careers|korean careers",
+    "Arabic for Careers|AC|arabic for careers|arab for careers|arabic careers",
+    "Vietnamese 1|VIETN1|vietnamese 1|viet 1|vietnamese i|viet1",
+    "Vietnamese 2|VIETN2|vietnamese 2|viet 2|vietnamese ii|viet2",
+    "Vietnamese 3|VIETN3|vietnamese 3|viet 3|vietnamese iii|viet3",
+    "Vietnamese 4|VIETN4|vietnamese 4|viet 4|vietnamese iv|viet4",
+    "Vietnamese 5|VIETN5|vietnamese 5|viet 5|vietnamese v|viet5",
+    "Vietnamese for Careers|VC|vietnamese for careers|viet for careers|vietnamese careers",
+    "American Sign Language 1|ASL1|sign language 1|am sign language 1|american sign lang 1",
+    "American Sign Language 2|ASL2|sign language 2|am sign language 2|american sign lang 2",
+    "American Sign Language 3|ASL3|sign language 3|am sign language 3|american sign lang 3",
+    "American Sign Language 4|ASL4|sign language 4|am sign language 4|american sign lang 4",
+    "American Sign Language 5|ASL5|sign language 5|am sign language 5|american sign lang 5",
+    "Spanish for Heritage Speakers 1|SHS1|spanish for heritage speakers 1|shs 1|spanish heritage 1|spanish for fluent speakers 1|sfs 1|span heritage 1",
+    "Spanish for Heritage Speakers 2|SHS2|spanish for heritage speakers 2|shs 2|spanish heritage 2|spanish for fluent speakers 2|sfs 2|span heritage 2",
+    "Spanish for Heritage Speakers 3|SHS3|spanish for heritage speakers 3|shs 3|spanish heritage 3|spanish for fluent speakers 3|sfs 3|span heritage 3",
+    "Spanish for Heritage Speakers 4|SHS4|spanish for heritage speakers 4|shs 4|spanish heritage 4|spanish for fluent speakers 4|sfs 4",
+    "Korean for Heritage Speakers 1|KHS1|korean for heritage speakers 1|khs 1|korean heritage 1",
+    "Korean for Heritage Speakers 2|KHS2|korean for heritage speakers 2|khs 2|korean heritage 2",
+    "Korean for Heritage Speakers 3|KHS3|korean for heritage speakers 3|khs 3|korean heritage 3",
+    "AP Spanish Language and Culture|SLC|ap spanish lang and culture",
+    "AP Spanish Literature and Culture|SLC|ap spanish lit and culture",
+    "AP French Language and Culture|FLC|ap french lang and culture",
+    "AP German Language and Culture|GLC|ap german lang and culture",
+    "AP Latin|LATIN|ap latin vergil|ap vergil",
+    "AP Chinese Language and Culture|CLC|ap chinese lang and culture",
+    "AP Japanese Language and Culture|JLC|ap japanese lang and culture",
+    "Spanish|SPANI|spanish sl 2|spanish hl 2|spanish hl 1",
+    "French|FRENC|french sl 2|french hl 2|french hl 1",
+    "German|GERMA|german sl 2|german hl 2|german hl 1",
+    "Latin|LATIN|latin sl 2|latin hl 2|latin hl 1",
+    "Chinese|CHINE|chinese sl 2|chinese hl 2|chinese hl 1",
+    "Arabic|ARABI|arabic sl 2|arabic hl 2|arabic hl 1",
+    "Japanese|JAPAN|japanese sl 2|japanese hl 2|japanese hl 1",
+    "Spanish Ab Initio|SAI|spanish ab initio|ab initio spanish",
+    "French Ab Initio|FAI|french ab initio|ab initio french",
+    "Spanish Language and Literature|SLL|spanish language and literature|spanish a|span lang and lit|spanish l and l|spanish lang and literature|spanish language and lit",
+    "French Language and Literature|FLL|french language and literature|french a|french lang and lit|french l and l|french lang and literature|french language and lit",
+    "Studio Art and Design 1|SAD1|studio art and design 1|art 1|sad 1",
+    "Studio Art and Design 2|SAD2|studio art and design 2|art 2|sad 2",
+    "Studio Art and Design 3|SAD3|studio art and design 3|art 3|sad 3",
+    "Studio Art and Design 4|SAD4|studio art and design 4|art 4|portfolio prep",
+    "Digital Art and Design 1|DAD1|digital art and design 1|digital art 1|dad 1",
+    "Digital Art and Design 2|DAD2|digital art and design 2|digital art 2|dad 2",
+    "Digital Art and Design 3|DAD3|digital art and design 3|digital art 3|dad 3",
+    "Digital Art and Design 4|DAD4|digital art and design 4|digital art 4|digital portfolio prep",
+    "Photography 4|PHOTO4|photo portfolio prep",
+    "Ceramics 1|CERAM1|cer 1|pottery 1",
+    "Ceramics 2|CERAM2|cer 2|pottery 2",
+    "Ceramics 3|CERAM3|cer 3|pottery 3",
+    "Ceramics 4|CERAM4|cer 4",
+    "3-D Studio Art 1|DSA31|3 d studio art 1|3d art 1|3d studio art 1|3 d art 1|ceramics sculpture",
+    "3-D Studio Art 2|DSA32|3 d studio art 2|3d art 2|3d studio art 2|3 d art 2",
+    "3-D Studio Art 3|DSA33|3 d studio art 3|3d art 3|3d studio art 3|3 d art 3",
+    "3-D Studio Art 4|DSA34|3 d studio art 4|3d art 4|3d studio art 4",
+    "Sculpture 1|SCULP1|sculpture 1|sculpt 1",
+    "Sculpture 2|SCULP2|sculpture 2|sculpt 2",
+    "Sculpture 3 Portfolio Prep|SPP3|sculpture 3 portfolio prep|sculpture 3",
+    "2-D Studio Art 1|DSA21|2 d studio art 1|2d studio art 1|2d art 1",
+    "2-D Studio Art 2|DSA22|2 d studio art 2|2d studio art 2|2d art 2",
+    "Jewelry 1|JEWEL1|jewelry 1|jewelry i|metals",
+    "Jewelry 2|JEWEL2|jewelry 2|jewelry ii",
+    "Jewelry 3|JEWEL3|jewelry 3|jewelry iii",
+    "Jewelry 4|JEWEL4|jewelry 4",
+    "Animation|ANIMA|animation|anim",
+    "AP 2-D Art and Design|DAD2|ap studio art 2d",
+    "AP 2-D Art and Design: Digital Art|DADDA2|ap 2 d art and design digital art|ap 2d digital|ap digital art|ap 2d digital art|ap 2d cg|ap 2d art and design digital art",
+    "AP 2-D Art and Design: Photography|DADP2|ap 2 d art and design photography|ap 2d photo|ap 2d photography|ap 2d art and design photography",
+    "AP 3-D Art and Design|DAD3|ap studio art 3d",
+    "AP Drawing|DRAWI|ap draw|ap studio art drawing|ap studio drawing",
+    "Visual Arts|VA|visual arts|visual art",
+    "Beginning Band|BB|beginning band|beginner band",
+    "Band|BAND|intermediate band",
+    "Advanced Band|AB|advanced band|adv band|symphonic winds|marching band",
+    "Percussion Ensemble|PE|percussion ensemble|percussion|perc",
+    "Jazz Ensemble|JE|jazz",
+    "Orchestra|ORCHE|concert orchestra|orch",
+    "Advanced Orchestra|AO|advanced orchestra|adv orchestra|adv orch|philharmonic orchestra|chamber orchestra|sinfonia",
+    "Beginning Chorus|BC|beginning chorus",
+    "Chorus|CHORU|mixed chorus|intermediate chorus",
+    "Advanced Chorus|AC|advanced chorus|adv chorus|adv choir|madrigals|chamber choir",
+    "Soprano Alto Chorus|SAC|soprano alto chorus|treble choir|treble chorus|sopr alto chorus|women s choir",
+    "Advanced Soprano Alto Chorus|ASAC|advanced soprano alto chorus|adv treble choir|adv sopr alto chorus|adv treble chorus|adv soprano alto chorus",
+    "Tenor Bass Chorus|TBC|tenor bass chorus|men s choir|basso chorus|tenor bass choir",
+    "Vocal Ensemble|VE|vocal ensemble",
+    "Show Choir|SC|show choir|show swing choir|swing choir",
+    "Jazz Choir|JC|jazz choir|vocal jazz",
+    "Mixed Ensemble|ME|mixed ensemble",
+    "Guitar 1|GUITA1|guitar 1|guitar|guitar i",
+    "Guitar 2|GUITA2|guitar 2|guitar ii",
+    "Guitar 3|GUITA3|guitar 3|guitar iii",
+    "Guitar Ensemble 1|GE1|guitar ensemble 1|guitar ens|guitar ensemble",
+    "Guitar Ensemble 2|GE2|guitar ensemble 2|guitar 4|adv guitar ensemble",
+    "Piano Lab 1|PL1|piano lab 1|piano 1|piano|keyboard",
+    "Piano Lab 2|PL2|piano lab 2|piano 2",
+    "Music Theory|MT|mus theory",
+    "Music|MUSIC|music",
+    "Music and Computer Technology 1|MCT1|music and computer technology 1|music tech 1|music comp tech 1|music technology|music and computer tech 1",
+    "Music and Computer Technology 2|MCT2|music and computer technology 2|music tech 2|music comp tech 2|music and computer tech 2",
+    "Technical Theatre 1|TT1|stagecraft",
+    "Musical Theatre Intensive|MTI|musical theatre intensive|musical theater|musical theater intensive",
+    "Dance|DANCE|dance",
+    "Musical Theatre Fundamentals|MTF|musical theatre fundamentals|musical theater fundamentals|mt fundamentals",
+    "Musical Theatre Workshop|MTW|musical theatre workshop|music theatre workshop|mt workshop|musical theater workshop",
+    "Advanced Musical Theatre Workshop|AMTW|advanced musical theatre workshop|adv music theatre workshop|adv mt workshop|adv musical theatre workshop|advanced musical theater workshop",
+    "Pre-Professional Musical Theatre|PPMT|pre professional musical theatre|pre prof music theatre|pre pro musical theater|pre professional musical theater|preprofessional musical theatre",
+    "Acting Methods|AM|acting methods|acting",
+    "Advanced Acting Methods|AAM|advanced acting methods|adv acting|adv acting methods",
+    "Advanced Theatre Topics|ATT|advanced theatre topics|adv theatre topics|advanced theater topics",
+    "Dance 1|DANCE1|dance 1|dance i|academy dance",
+    "Dance 2|DANCE2|dance 2|dance ii",
+    "Dance 3|DANCE3|dance 3|dance iii",
+    "Dance 4|DANCE4|dance 4|dance iv",
+    "Broadway Dance|BD|broadway dance|broadway",
+    "Hip Hop Dance|HHD|hip hop dance|hip hop",
+    "Digital Filmmaking 1|DF1|digital filmmaking 1|film making 1|filmmaking 1|tv and media production 1|tv production 1",
+    "Digital Filmmaking 2|DF2|digital filmmaking 2|filmmaking 2|tv and media production 2",
+    "Digital Filmmaking 3|DF3|digital filmmaking 3|filmmaking 3|tv and media production 3",
+    "Professional Photography Studio 1|PPS1|professional photography studio 1|prof photo studio 1|pro photo 1",
+    "Professional Photography Studio 2|PPS2|professional photography studio 2|prof photo studio 2|pro photo 2",
+    "Driver Education|DE|behind the wheel",
+    "Advanced PE 1|AP1|advanced pe 1|adv pe 1|adv pe|team sports",
+    "Advanced PE 2|AP2|advanced pe 2|adv pe 2|adv pe 12",
+    "Personal Fitness 1|PF1|pf 1|weightlifting 1|pers fitness 1",
+    "Personal Fitness 2|PF2|pf 2|weightlifting 2|pers fitness 2",
+    "Fitness Instructor|FI|fitness instructor",
+    "Yoga for Wellness 1|YW1|yoga for wellness 1|yoga|yoga 1",
+    "Yoga for Wellness 2|YW2|yoga for wellness 2|yoga 2",
+    "Adapted PE|AP|adapted pe|adapted physical education",
+    "Health and PE 9 Adapted|HPA9|health and pe 9 adapted|adapted hpe 9",
+    "Health and PE 10 Adapted|HPA10|health and pe 10 adapted|adapted hpe 10",
+    "Advanced Adapted PE|AAP|advanced adapted pe|adv adapted pe",
+    "CS Foundations|CF|cs foundations|computer science foundations|cs found",
+    "CS Programming|CP|cs programming|programming|computer science programming|cs prog|intro to programming",
+    "Advanced CS Programming|ACP|advanced cs programming|adv cs programming",
+    "Advanced Programming|AP|advanced programming|adv programming|adv prog|itp 150",
+    "CS Data Structures|CDS|cs data structures|data structures|cs ds|adv computer science",
+    "Discrete Structures and Computer Organization|DSCO|discrete structures and computer organization|disc str and comp org|discrete structures",
+    "AP Computer Science A|CS|csa",
+    "Cybersecurity Fundamentals|CF|cybersecurity fundamentals|cyber fundamentals|cyber fund",
+    "AP Cybersecurity|CYBER|ap cyber|ap cybersecurity fundamentals",
+    "Game Design and Development|GDD|game design and development|game design|game dev|gdd",
+    "Advanced Game Design and Development|AGDD|advanced game design and development|adv game design|adv game dev|adv game design and development",
+    "Cyber: Exploring IT|CEI|cyber exploring it|exploring it",
+    "Cyber: Systems Technology|CST|cyber systems technology|cyber systems tech|comp sys tech",
+    "Cyber: Network Administration 1|CNA1|cyber network administration 1|net admin 1|cyber net admin 1|network admin 1",
+    "Cyber: Network Administration 2|CNA2|cyber network administration 2|net admin 2|cyber net admin 2|network admin 2",
+    "Cyber: Cisco 1|CC1|cyber cisco 1|cisco 1|routing and switching 1",
+    "Cyber: Cisco 2|CC2|cyber cisco 2|cisco 2|routing and switching 2",
+    "Cyber: Oracle 1|CO1|cyber oracle 1|oracle 1|database design",
+    "Cyber: Oracle 2|CO2|cyber oracle 2|oracle 2",
+    "Cyber: Security Capstone|CSC|cyber security capstone|security capstone|cyber capstone",
+    "Cloud Computing|CC|cloud computing|cloud|cyber cloud computing",
+    "Accounting|ACCOU|acct",
+    "Advanced Accounting|AA|advanced accounting|adv accounting|adv acct",
+    "Business Law|BL|business law|bus law",
+    "Business Management|BM|business management|bus mgmt|business mgmt|business",
+    "Principles of Business|PB|principles of business|intro to business|pob",
+    "Design, Multimedia, and Web Technologies|DMWT|design multimedia and web technologies|dmwt|design multimedia web tech|web tech|multimedia",
+    "Webpage Development|WD|webpage development|web design|web dev|web page development",
+    "Digital Applications|DA|digital applications|digital apps",
+    "Information Systems|IS|information systems|info systems|microsoft office",
+    "Advanced Information Systems|AIS|advanced information systems|adv info systems|adv information systems",
+    "AP Business Principles and Personal Finance|BPPF|ap business principles and personal finance|ap business|ap bus",
+    "Digital Society|DS|digital society|itgs",
+    "Child Development and Parenting|CDP|child development and parenting|child dev|child development",
+    "Early Childhood Careers 1|ECC1|early childhood careers 1|early childhood 1|ecc 1|early childhood",
+    "Early Childhood Careers 2|ECC2|early childhood careers 2|early childhood 2|ecc 2",
+    "Introduction to Culinary Arts|ICA|introduction to culinary arts|intro to culinary|intro culinary|cooking|intro to culinary arts",
+    "Culinary Arts 1|CA1|culinary arts 1|culinary 1|cooking 1",
+    "Culinary Arts 2|CA2|culinary arts 2|culinary 2",
+    "Culinary Operations|CO|culinary operations|culinary 3|culinary ops",
+    "Pastry Arts|PA|pastry arts|baking|pastry",
+    "Food and Hospitality Management|FHM|food and hospitality management|food and hospitality|hospitality mgmt|food and hospitality mgmt",
+    "Hospitality|HOSPI|hospitality",
+    "Introduction to Interior Design|IID|introduction to interior design|interior design|intro interior design|intro to interior design",
+    "Life Planning|LP|life planning",
+    "Nutrition and Wellness|NW|nutrition and wellness|nutrition|n and w",
+    "Fashion Careers 1|FC1|fashion careers 1|fashion design 1|fashion careers",
+    "Fashion Careers 2|FC2|fashion careers 2|fashion design 2",
+    "Exploring Health Sciences|EHS|exploring health sciences|ehs|explore health science",
+    "Exploring the Language of Medicine|ELM|exploring the language of medicine|language of medicine|lang of med|medical terminology|exploring the lang of medicine|hlt 143",
+    "Biotechnology Foundations|BF|biotechnology foundations|biotech|biotech foundations",
+    "Health Informatics|HI|health informatics|health info",
+    "Introduction to Nursing|IN|introduction to nursing|intro to nursing|nursing",
+    "Nurse Aide|NA|nurse aide|cna|certified nurse aide",
+    "Patient Care Technician|PCT|patient care technician|patient care tech|pct",
+    "Practical Nursing 1|PN1|practical nursing 1|lpn 1",
+    "Practical Nursing 2|PN2|practical nursing 2|lpn 2",
+    "Practical Nursing 3|PN3|practical nursing 3|lpn 3",
+    "Medical Assistant 1|MA1|medical assistant 1|med assistant 1|medical assisting 1",
+    "Medical Assistant 2|MA2|medical assistant 2|med assistant 2",
+    "Physical Therapy and Occupational Therapy 1|PTOT1|physical therapy and occupational therapy 1|pt ot 1|phys occ therapy 1|physical therapy 1",
+    "Physical Therapy and Occupational Therapy 2|PTOT2|physical therapy and occupational therapy 2|pt ot 2|phys occ therapy 2",
+    "Dental Careers 1|DC1|dental careers 1|dental 1",
+    "Dental Careers 2|DC2|dental careers 2|dental 2",
+    "Pharmacy Technician 1|PT1|pharmacy technician 1|pharm tech 1|pharmacy tech 1",
+    "Pharmacy Technician 2|PT2|pharmacy technician 2|pharm tech 2|pharmacy tech 2",
+    "Veterinary Science 1|VS1|veterinary science 1|vet science 1|vet sci 1",
+    "Veterinary Science 2|VS2|veterinary science 2|vet science 2|vet sci 2",
+    "Emergency Medical Technician 1|EMT1|emergency medical technician 1|emt 1|emt",
+    "Emergency Medical Technician 2|EMT2|emergency medical technician 2|emt 2",
+    "911 Dispatch|DISPA911|911 dispatch|dispatch|emergency dispatch",
+    "Firefighting 1|FIREF1|firefighting 1|fire 1|firefighter 1",
+    "Firefighting 2|FIREF2|firefighting 2|fire 2|firefighter 2",
+    "Medical Billing and Coding|MBC|medical billing and coding|medical billing",
+    "Marketing|MARKE|mkt",
+    "Marketing Exploration|ME|marketing exploration|mkt exploration",
+    "Strategic Marketing|SM|strategic marketing|adv marketing|advanced marketing",
+    "Marketing Management|MM|marketing management|classroom on the mall|mkt management|marketing mgmt",
+    "Small Business Marketing|SBM|small business marketing",
+    "Social Media Marketing|SMM|social media marketing|social media mkt",
+    "Sports, Entertainment, and Recreation Marketing|SERM|sports entertainment and recreation marketing|sports marketing|sports and entertainment marketing|sports ent marketing",
+    "Sports, Entertainment, and Recreation Management|SERM|sports entertainment and recreation management|sports management|sports ent management|sports entertainment and recreation mgmt",
+    "Fashion Marketing 1|FM1|fashion marketing 1|fashion mkt 1|fashion marketing",
+    "Fashion Marketing 2|FM2|fashion marketing 2|fashion mkt 2",
+    "Global Marketing|GM|global marketing|fashion 3|global mkt",
+    "Entrepreneurship 1|ENTRE1|entrepreneurship 1|entrepreneurship|entre 1",
+    "Entrepreneurship 2|ENTRE2|entrepreneurship 2|entre 2",
+    "Marketing Internship|MI|marketing internship|mkt internship|marketing co op",
+    "STEM Design|SD|stem design|stem des",
+    "STEM Pre-Engineering|SPE|stem pre engineering|pre engineering|stem preengineering",
+    "STEM Engineering|SE|stem engineering|stem eng",
+    "STEM Advanced Engineering|SAE|stem advanced engineering|stem adv engineering|adv engineering",
+    "STEM Robotics|SR|stem robotics|robotics",
+    "STEM Advanced Electronics and Robotics|SAER|stem advanced electronics and robotics|stem adv elec robotics|adv robotics|stem adv electronics and robotics",
+    "Advanced CAD|AC|advanced cad|cad|adv cad",
+    "Aerospace Science|AS|aerospace science|aerospace",
+    "Architectural Drawing|AD|architectural drawing|arch drawing|architecture",
+    "Engineering Drawing|ED|engineering drawing|eng drawing|drafting",
+    "Introduction to Technical Drawing|ITD|introduction to technical drawing|intro tech drawing|intro to technical drawing",
+    "Electronics|ELECT|electronics|elec",
+    "Integrated Engineering|IE|integrated engineering",
+    "Remote Piloted Vehicles|RPV|remote piloted vehicles|drones|rpv",
+    "Construction Technology|CT|construction technology|construction tech",
+    "Engineering Systems 1|ES1|engineering systems 1|eng sys 1",
+    "Engineering Systems 2|ES2|engineering systems 2|eng sys 2",
+    "Robotic Systems 1|RS1|robotic systems 1|robotics 1",
+    "Robotic Systems 2|RS2|robotic systems 2|robotics 2",
+    "Design Technology|DT|design technology|design tech|design and technology",
+    "Automotive Technology 1|AT1|automotive technology 1|auto tech 1|auto 1|automotive tech 1",
+    "Automotive Technology 2|AT2|automotive technology 2|auto tech 2|auto 2|automotive tech 2",
+    "Automotive Technology 3|AT3|automotive technology 3|auto tech 3|auto 3|automotive tech 3",
+    "Automotive Collision Service 1|ACS1|automotive collision service 1|auto collision 1|auto body 1",
+    "Automotive Collision Service 2|ACS2|automotive collision service 2|auto collision 2|auto body 2",
+    "Automotive Collision Service 3|ACS3|automotive collision service 3|auto collision 3|auto body 3",
+    "Carpentry 1|CARPE1|carpentry 1|carp 1|woodworking 1",
+    "Carpentry 2|CARPE2|carpentry 2|carp 2",
+    "Carpentry 3|CARPE3|carpentry 3|carp 3",
+    "Construction Technology 1|CT1|construction technology 1|construction tech 1|residential construction 1",
+    "Construction Technology 2|CT2|construction technology 2|construction tech 2|residential construction 2",
+    "Electrical Construction and Engineering 1|ECE1|electrical construction and engineering 1|electrical 1|elec const 1",
+    "Electrical Construction and Engineering 2|ECE2|electrical construction and engineering 2|electrical 2|elec const 2",
+    "Electrical Construction and Engineering 3|ECE3|electrical construction and engineering 3|electrical 3|elec const 3",
+    "Heating, Ventilation, Air Conditioning, and Refrigeration 1|HVACR1|heating ventilation air conditioning and refrigeration 1|hvac 1|hvacr 1|refrigeration 1|heating and ac 1",
+    "Heating, Ventilation, Air Conditioning, and Refrigeration 2|HVACR2|heating ventilation air conditioning and refrigeration 2|hvac 2|hvacr 2|refrigeration 2|heating and ac 2",
+    "Welding 1|WELDI1|welding 1|weld 1",
+    "Welding 2|WELDI2|welding 2|weld 2",
+    "Cosmetology 1|COSME1|cosmetology 1|cosmo 1|cosmetology",
+    "Cosmetology 2|COSME2|cosmetology 2|cosmo 2",
+    "Criminal Justice 1|CJ1|criminal justice 1|crim justice 1|cj 1",
+    "Criminal Justice 2|CJ2|criminal justice 2|crim justice 2|cj 2",
+    "Aircraft Pilot Training|APT|aircraft pilot training|pilot training|flight",
+    "Apprenticeship|APPRE|apprenticeship|apprentice",
+    "Leadership Training 1|LT1|leadership training 1|leadership 1|leadership|sga|student government",
+    "Leadership Training 2|LT2|leadership training 2|leadership 2|sga 2",
+    "Leadership Training 3|LT3|leadership training 3|leadership 3|sga 3",
+    "Leadership Training 4|LT4|leadership training 4|leadership 4|sga 4",
+    "Athletic and Sports Leadership 1|ASL1|athletic and sports leadership 1|sports leadership 1|ath and sports ldsp 1",
+    "Athletic and Sports Leadership 2|ASL2|athletic and sports leadership 2|sports leadership 2",
+    "Athletic and Sports Leadership 3|ASL3|athletic and sports leadership 3|sports leadership 3",
+    "Athletic and Sports Leadership 4|ASL4|athletic and sports leadership 4|sports leadership 4",
+    "Peer Helping|PH|peer helping|peer helpers|peer mediation",
+    "Peer Mediation 1|PM1|peer mediation 1",
+    "Peer Mediation 2|PM2|peer mediation 2",
+    "AVID 9|AVID9|avid 9|avid",
+    "AVID 10|AVID10|avid 10",
+    "AVID 11|AVID11|avid 11",
+    "AVID 12|AVID12|avid 12",
+    "AP Seminar|SEMIN|ap capstone 1|capstone 1",
+    "AP Research|RESEA|ap capstone 2|capstone 2",
+    "Advanced Academic Seminar|AAS|advanced academic seminar|adv academic seminar",
+    "Strategies for Success|SS|strategies for success|strats for success|strategies",
+    "Teachers for Tomorrow 1|TT1|teachers for tomorrow 1|tft 1|teacher cadet|teachers for tomorrow|tft|teach for tomorrow",
+    "Teachers for Tomorrow 2|TT2|teachers for tomorrow 2|tft 2",
+    "Internship|INTER|internship|cte internship|intern",
+    "Career Mentor|CM|career mentor|mentorship",
+    "Business Co-op Internship|BCOI|business co op internship|business internship|co op|business coop internship",
+    "Computer Technology Assistant|CTA|computer technology assistant|tech assistant|robo tech assistant|computer tech assistant",
+    "Diploma Programme Core Support|DPCS|diploma programme core support|core support|extended essay|dp core support",
+    "Personal and Professional Skills|PPS|personal and professional skills|pps|ibcp",
+    "Success Prep|SP|success prep",
+    "Teacher Aide|TA|teacher aide|teacher assistant|office aide|student aide",
+    "Study Hall|SH|study hall|free period",
+    "Campus|CAMPU|campus|virtual course",
+    "Air Force JROTC 1|AFJ1|air force jrotc 1|afjrotc 1|jrotc 1|rotc 1|air force rotc 1|aerospace science 1",
+    "Air Force JROTC 2|AFJ2|air force jrotc 2|afjrotc 2|jrotc 2|rotc 2|air force rotc 2|aerospace science 2",
+    "Air Force JROTC 3|AFJ3|air force jrotc 3|afjrotc 3|jrotc 3|rotc 3|air force rotc 3|aerospace science 3",
+    "Air Force JROTC 4|AFJ4|air force jrotc 4|afjrotc 4|jrotc 4|rotc 4|air force rotc 4|aerospace science 4",
+    "Army JROTC 1|AJ1|army jrotc 1|ajrotc 1|army rotc 1",
+    "Army JROTC 2|AJ2|army jrotc 2|ajrotc 2|army rotc 2",
+    "Army JROTC 3|AJ3|army jrotc 3|ajrotc 3|army rotc 3",
+    "Army JROTC 4|AJ4|army jrotc 4|ajrotc 4|army rotc 4",
+    "Navy JROTC 1|NJ1|navy jrotc 1|njrotc 1|navy rotc 1|naval science 1",
+    "Navy JROTC 2|NJ2|navy jrotc 2|njrotc 2|navy rotc 2|naval science 2",
+    "Navy JROTC 3|NJ3|navy jrotc 3|njrotc 3|navy rotc 3|naval science 3",
+    "Navy JROTC 4|NJ4|navy jrotc 4|njrotc 4|navy rotc 4|naval science 4",
+    "Marine Corps JROTC 1|MCJ1|marine corps jrotc 1|mcjrotc 1|marine corps rotc 1",
+    "Marine Corps JROTC 2|MCJ2|marine corps jrotc 2|mcjrotc 2|marine corps rotc 2",
+    "Marine Corps JROTC 3|MCJ3|marine corps jrotc 3|mcjrotc 3|marine corps rotc 3",
+    "Marine Corps JROTC 4|MCJ4|marine corps jrotc 4|mcjrotc 4|marine corps rotc 4",
+    "Life Skills|LS|life skills",
+    "Personal Development|PD|personal development",
+    "Independent Living Skills|ILS|independent living skills",
+    "Foundations of English|FE|foundations of english",
+    "Education for Employment 1|EE1|education for employment 1|efe 1",
+    "Education for Employment 2|EE2|education for employment 2|efe 2",
+    "Education for Employment Opportunities|EEO|education for employment opportunities",
+    "Work Awareness and Transition|WAT|work awareness and transition|wat",
+    "Office Technology and Procedures|OTP|office technology and procedures|office tech and procedures",
+    "Career Preparation|CP|career preparation",
+    "Personal Living and Finance|PLF|personal living and finance",
+    "Foundations of Computer Science|FCS|foundations of computer science|found comp sci",
+    "AP Computer Science A Plus|CSP|ap computer science a plus|ap csa plus",
+    "Computer Simulation and Game Design|CSGD|computer simulation and game design",
+    "Computer Vision 1|CV1|computer vision 1",
+    "Computer Vision 2|CV2|computer vision 2",
+    "Artificial Intelligence 1|AI1|artificial intelligence 1|ai 1",
+    "Artificial Intelligence 2|AI2|artificial intelligence 2|ai 2",
+    "Web Application Development|WAD|web application development",
+    "Mobile Application Development|MAD|mobile application development",
+    "Machine Learning 1|ML1|machine learning 1|ml 1",
+    "Machine Learning 2|ML2|machine learning 2|ml 2",
+    "Design and Technology|DT|d and t|design and tech",
+    "Engineering Fundamentals|EF|engineering fundamentals",
+    "Autonomous Robotic Systems 1|ARS1|autonomous robotic systems 1",
+    "Autonomous Robotic Microsystems 2|ARM2|autonomous robotic microsystems 2",
+    "Prototyping 1|PROTO1|prototyping 1",
+    "Prototyping 2|PROTO2|prototyping 2",
+    "Energy Systems 1|ES1|energy systems 1",
+    "Energy Systems 2|ES2|energy systems 2",
+    "Bioinformatics|BIOIN|bioinformatics",
+    "Electrodynamics|ELECT|electrodynamics",
+    "Advanced Astronomy: Solar System|AASS|advanced astronomy solar system|adv astronomy solar system",
+    "Advanced Astronomy: Universe|AAU|advanced astronomy universe|adv astronomy universe",
+    "Marine Science Technology|MST|marine science technology|marine science tech",
+    "Advanced Marine Biology|AMB|advanced marine biology|advanced marine bio|adv marine biology",
+    "DNA Science 1|DS1|dna science 1",
+    "DNA Science 2|DS2|dna science 2",
+    "Neurobiology|NEURO|neurobiology",
+    "Organic Chemistry|OC|organic chemistry|orgo|o chem|organic chem",
+    "Biological Nanotechnology|BN|biological nanotechnology",
+    "Intro to Calculus|IC|intro to calculus|intro calc|intro to calc",
+    "AP Calculus BC Post-AB|CBPA|ap calculus bc post ab|ap calc bc post ab|ap calculus bc postab",
+    "Complex Analysis|CA|complex analysis",
+    "Statistical Modeling and Data Science|SMDS|statistical modeling and data science",
+    "Math Techniques|MT|math techniques",
+    "Concrete Mathematics|CM|concrete mathematics|concrete math",
+    "Ancient and Classical Civilizations|ACC|ancient and classical civilizations",
+    "History of Science|HS|history of science|hist of science",
+    "20th Century World History|2CWH|20th century world history|20th century world hist",
+    "America and the World Since 1989|AWS1989|america and the world since 1989",
+    "Ethnic Studies|ES|ethnic studies",
+    "Anthropological Studies|AS|anthropological studies",
+    "Law and Society|LS|law and society",
+    "Psychology: Brain and Behavior|PBB|psychology brain and behavior|psych brain and behavior",
+    "Inquiry into Ideas|III|inquiry into ideas",
+    "Religious Studies|RS|religious studies",
+    "Ethical Leadership|EL|ethical leadership",
+    "Research Practicum|RP|research practicum|senior research|tj research"];
+  var FCPS_KEYS = {};
+  FCPS_COURSES.forEach(function (line) { var p = line.split('|'); p.slice(2).forEach(function (k) { if (!COURSE_DICT[k]) { COURSE_DICT[k] = [p[0], p[1]]; FCPS_KEYS[k] = 1; } }); });
+
   SX.normalizeCourse = normalizeCourse; SX.ckey = ckey; SX.makeAbbr = makeAbbr;
   /* a class's canonical key: its proper name, with levels written as numbers (Latin III and Latin 3 are one class) */
   var ROMAN_N = { i: 1, ii: 2, iii: 3, iv: 4, v: 5, vi: 6, vii: 7, viii: 8, ix: 9, x: 10 };
@@ -3054,10 +3604,28 @@ function normalizeCourse(input){
   };
   /* is a typed class name a known course (true when normalizeCourse found it in the table) */
   SX.courseKnown = function (name) { return !!normalizeCourse(name).known; };
+  /* a name that reads like a real course (Political Science, Rhetorical Science, Brainrot Science: real looking words with
+     a subject word among them) is never flagged, even when it isn't in the table */
+  var SUBJECT_WORDS = ('science sciences studies study history art arts design literature writing composition math mathematics engineering ' +
+    'technology theory music language languages culture lab laboratory seminar ensemble education health fitness media production finance ' +
+    'management business law ethics philosophy psychology sociology economics government politics geography biology chemistry physics anatomy ' +
+    'calculus algebra geometry statistics programming computing computer theatre theater dance drawing painting photography film journalism ' +
+    'debate speech rhetoric reading english french spanish latin german chinese japanese korean arabic russian italian marketing accounting ' +
+    'leadership research analysis methods principles fundamentals foundations systems skills topics careers training practicum internship ' +
+    'orchestra band chorus choir sculpture ceramics astronomy ecology geology oceanography robotics nutrition culinary criminology forensics ' +
+    'civics humanities mythology poetry drama studio workshop concepts applications development').split(' ');
+  SX.courseLooksReal = function (name) {
+    var ws = ckey(name).split(' ').filter(function (w) { return w && !/^(\d{1,2}|i{1,3}|iv|vi{0,3}|ix|x|ap|ib|hn|h|de|hl|sl|gt|oln)$/.test(w); });
+    var big = ws.filter(function (w) { return !SMALL_WORDS.has(w); });
+    if (big.length < 2) return false;
+    if (!big.every(function (w) { return /^[a-z]{3,}$/.test(w) && /[aeiouy]/.test(w) && !/[^aeiouy]{5}/.test(w) && !/(.)\1\1/.test(w); })) return false;
+    return big.some(function (w) { return SUBJECT_WORDS.indexOf(w) >= 0; });
+  };
   /* up to n proper course names close to a typed one, best first (AP Computer Science D -> AP Computer Science A, AP Computer Science Principles) */
   var OFFICIAL = (function () {
     var seen = {}, out = [];
-    Object.keys(COURSE_DICT).forEach(function (k) { var v = COURSE_DICT[k]; if (!seen[v[0]]) { seen[v[0]] = { name: v[0], abbr: v[1], keys: [] }; out.push(seen[v[0]]); } seen[v[0]].keys.push(k); });
+    /* the FCPS catalog's shorthands only make a name known; suggestions compare against its names */
+    Object.keys(COURSE_DICT).forEach(function (k) { var v = COURSE_DICT[k]; if (!seen[v[0]]) { seen[v[0]] = { name: v[0], abbr: v[1], keys: [] }; out.push(seen[v[0]]); } if (!FCPS_KEYS[k]) seen[v[0]].keys.push(k); });
     return out;
   })();
   SX.courseAlternatives = function (text, n) {
@@ -3715,6 +4283,31 @@ function normalizeCourse(input){
     all.forEach(function (r) { if (r.owner === me && r.from && (r.created || 0) > last) last = r.created || 0; });
     return Math.max(0, last + SX.LIB_COOLDOWN - now);
   };
+  /* old ProfeGPT and Interpres addresses (their Apps Script copies, the jsDelivr open.svg pages, the tinyurl
+     short links and the github.io sites) point at the current site; the path after the address is kept.
+     to: {profegpt: 'https:...', interpres: 'https:...'} with no slash at the end */
+  SX.SISTER_OLD = [
+    [/^https?:\/\/script\.google\.com\/macros\/s\/AKfycbzQJSe8rHdR9ZDTmpEfFtOtUaHbirB9jQd0rP8GuOYqA-5MNLCDGZYBfOPirBDVybsObQ\/(?:exec|dev)\/?/i, 'profegpt'],
+    [/^https?:\/\/script\.google\.com\/macros\/s\/AKfycbyfS0EeA5rlHcOyaDjO88BjaxAes0Zwvsh92wXzPKYgDciVoRuDa2eQXZ_eiJNECofn\/(?:exec|dev)\/?/i, 'interpres'],
+    [/^https?:\/\/(?:www\.)?tinyurl\.com\/(?:profegptapp|profegpt|profe-gpt)(?=[\/?#]|$)\/?/i, 'profegpt'],
+    [/^https?:\/\/(?:www\.)?tinyurl\.com\/(?:interpresapp|interpres-latin|interpres)(?=[\/?#]|$)\/?/i, 'interpres'],
+    [/^https?:\/\/(?:cdn|fastly|gcore)\.jsdelivr\.net\/gh\/profegpt\/[^?#]*?open\.svg/i, 'profegpt'],
+    [/^https?:\/\/(?:cdn|fastly|gcore)\.jsdelivr\.net\/gh\/interpres[a-z-]*\/[^?#]*?open\.svg/i, 'interpres'],
+    [/^https?:\/\/profegpt\.(?:github\.io|web\.app)\/?/i, 'profegpt'],
+    [/^https?:\/\/interpres(?:-latin)?\.(?:github\.io|web\.app)\/?/i, 'interpres']
+  ];
+  SX.sisterUrl = function (u, to) {
+    var s = String(u || '');
+    for (var i = 0; i < SX.SISTER_OLD.length; i++) {
+      var m = SX.SISTER_OLD[i][0].exec(s);
+      if (m && to && to[SX.SISTER_OLD[i][1]]) {
+        var rest = s.slice(m[0].length);
+        if (/^[?#]/.test(rest) && /open\.svg/i.test(m[0])) rest = '';
+        return to[SX.SISTER_OLD[i][1]] + '/' + rest.replace(/^\/+/, '');
+      }
+    }
+    return s;
+  };
   SX.isPdfUrl = function (u) { return /\.pdf($|[?#])/i.test(String(u || '')); };
   /* the public library: every registered class (by normalized name, with how many people take it) and every published resource */
   /* the owner's PUBLISHED built-in resources (public: true; resources.json and its resyncs, keyed by the owner's class ids) as
@@ -4042,6 +4635,8 @@ const SITE_URLS={
 const SITE_NAMES={planner:'Saxon Planner',profegpt:'ProfeGPT',interpres:'Interpres'};
 const ON_GAS=/googleusercontent\.com$/.test(location.hostname);
 const SITES={};Object.keys(SITE_URLS).forEach(k=>SITES[k]='https:'+SLASH2+SITE_URLS[k].Firebase);
+/* old ProfeGPT and Interpres addresses in resources open the current sites */
+const sisU=u=>SX.sisterUrl(u,{profegpt:SITES.profegpt.replace(/\/$/,''),interpres:SITES.interpres.replace(/\/$/,'')});
 function siteLinks(r){(r||document).querySelectorAll('a[data-site]').forEach(a=>{if(SITES[a.dataset.site])a.href=SITES[a.dataset.site];});}
 artFill(document);siteLinks(document);{const sa=document.querySelector('#splash .sp-art');if(sa)sa.innerHTML=heroArt();}
 const LOCAL_ORIGIN='http:'+SLASH2+'localhost:8741';
@@ -4394,12 +4989,16 @@ async function hostedDeepSync(){
   state.hostedSync=false;await loadData();
 }
 let pageV=null;
+function uiBusy(){return !!document.querySelector('.view.on [contenteditable="true"].editing,.tk-cls.open,.xdd.on,.ccard.cdrop,#su-p4ask')||tDragging;}
+function uiIdle(){const t0=Date.now();return new Promise(res=>{const t=setInterval(()=>{if(!uiBusy()||Date.now()-t0>45000){clearInterval(t);res();}},300);});}
 async function loadData(pre){
   if(!passKey){render();return false;}
   try{
     /* log in and sign up return the account's data, saving a second request */
     const gen=writeGen;
     const d=pre||await api('/api/data');
+    /* someone is typing in a box or has a menu open: load again once they're done, so nothing is redrawn under them */
+    if(!pre&&uiBusy()){await uiIdle();return loadData();}
     /* a change was sent while this was loading: this copy may be from before it, so wait and load again */
     if(!pre&&(writing||gen!==writeGen)){reloadAfterWrites=true;if(!writing){reloadAfterWrites=false;setTimeout(loadData,300);}return true;}
     /* the page was updated on disk: pick up the new version automatically */
@@ -4464,6 +5063,7 @@ async function completeTasks(ids){
 async function doUndo(){
   const u=undoStack.pop();if(!u)return false;
   const tt=document.getElementById('undo-toast');if(tt)tt.remove();
+  if(u.type==='move'){const t=state.tasks.find(x=>x.id===u.id);if(t){t.course=u.course;render();await patchTask(t.id,{course:u.course});await loadData();}return true;}
   if(u.type==='del'){state.tasks.push(u.task);render();await saveTask(u.task);}
   else if(u.type==='done'){const ts=u.ids.map(id=>state.tasks.find(x=>x.id===id)).filter(Boolean);
     ts.forEach(t=>{t.done=false;});render();for(const t of ts)await saveTask(t);}
@@ -4722,7 +5322,7 @@ function courseCard(c){
   const up=state.tasks.filter(t=>t.course===c.id&&!t.done&&t.date>=td&&modeOk(t)).sort((a,b)=>a.date<b.date?-1:1).slice(0,8);
   const p=state.settings.periods[c.id];
   const next=nextMeeting(c.id,td);
-  return `<div class="ccard">
+  return `<div class="ccard" data-dropc="${esc(c.id)}">
     <div class="chd"><span class="nm" style="cursor:pointer" data-act="markcourse" data-c="${c.id}" title="Mark all done"><span class="sq" style="background:${esc(color(c.id))}"></span>${cnHTML(c)}</span>
       <span style="font-size:12px;font-weight:500">${p?'P'+p:''}</span></div>
     <div class="cbody">${up.length?up.map(t=>taskHTML(t,true)).join(''):'<div class="muted" style="font-size:13px">No upcoming assignments</div>'}
@@ -4752,7 +5352,7 @@ function renderCourses(){
     if(p4)cells.push(advisoryCard());
   }else{cells=COURSES.map(courseCard);cells.push(advisoryCard());}
   document.getElementById('v-courses').innerHTML=
-    `<div style="display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px;margin-bottom:14px"><div class="hgroup" style="margin-right:auto"><button class="hbtn hb-box" data-act="classes">Edit classes</button><button class="hbtn hb-box faq-btn${state.settings.faqNew?' blink':''}" data-act="faq">FAQ</button><button class="hbtn hb-box" id="tutbtn" data-act-tut>Tutorial</button></div>${modeBtnHTML()}${syncBtnHTML()}</div>
+    `<div style="display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px;margin-bottom:14px"><div class="hgroup" style="margin-right:auto"><button class="hbtn hb-box" data-act="classes">Edit classes</button><button class="hbtn hb-box faq-btn${state.settings.faqNew?' blink':''}" data-act="faq">FAQ</button><button class="hbtn hb-box" id="tutbtn" data-act-tut>Tutorial</button><button class="hbtn hb-box" id="memebtn" data-act-meme>Meme</button></div>${modeBtnHTML()}${syncBtnHTML()}</div>
     <div class="cgrid">${cells.join('')}</div>`;
 }
 function advisoryCard(){
@@ -4818,7 +5418,7 @@ function editNote(n,isNew){
   nt.addEventListener('input',()=>noteMark(nt));
   nt._close=close;
   /* picking the note's class keeps it open */
-  const onBlur=ev=>{const to=ev.relatedTarget;if(to&&to.classList&&to.classList.contains('nsel')&&to.closest('.note')===nt.closest('.note'))return;nt.removeEventListener('blur',onBlur);close(true);};
+  const onBlur=ev=>{const to=ev.relatedTarget;if(to&&to.closest&&to.closest('.nsel-dd')&&to.closest('.note')===nt.closest('.note'))return;nt.removeEventListener('blur',onBlur);close(true);};
   nt.addEventListener('blur',onBlur);
   nt.addEventListener('keydown',ev=>{
     if(ev.key==='Enter'&&ev.shiftKey){ev.preventDefault();document.execCommand('insertParagraph');noteMark(nt);}
@@ -4838,7 +5438,9 @@ function renderAdvisory(){
       ${notes.length?'':`<div class="empty-card">${art('sticky')}Nothing at the moment!</div>`}
       <div class="ngrid">${notes.map(n=>{const nc=courseById(n.course);
         return `<div class="note" data-aid="${esc(n.id)}">
-          <div class="nhead"><label class="nc ncl${nc?'':' none'}" data-act="ncl"><select class="nsel" data-nid="${esc(n.id)}" aria-label="Class"><option value="">No class</option>${COURSES.map(o=>`<option value="${esc(o.id)}" ${o.id===n.course?'selected':''}>${esc(cname(o))}</option>`).join('')}</select><span class="ncv">${esc(nc?cname(nc):'Class')}</span><svg class="ncar" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></label>${n.date?`<span class="nd">${esc(fmtShort(n.date))}</span>`:''}
+          <div class="nhead">${xddHTML({kind:'note',id:n.id,cls:'nsel-dd',value:nc?n.course:'',label:'Class',btnCls:'nc ncl nsel'+(nc?'':' none'),
+            btn:`<span class="ncv">${esc(nc?cname(nc):'Class')}</span><svg class="ncar" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>`,
+            options:[{v:'',t:'No class'}].concat(COURSES.map(o=>({v:o.id,t:cname(o)})))})}${n.date?`<span class="nd">${esc(fmtShort(n.date))}</span>`:''}
           <button class="del" data-act="ndel" data-id="${esc(n.id)}" title="delete">×</button></div>
           <div class="nt">${noteHTML(n.text)}</div></div>`;}).join('')}</div>
     </div>
@@ -4934,7 +5536,7 @@ function tableHTML(groups,cols,hl=esc){
 const resView=()=>state.resTable?'table':'timeline';
 function resItemHTML(it){
   if(it.type==='links')return `<div class="rdoc">${(it.links||[]).map(l=>`<div class="rd-card">
-      <div class="rdt"><a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.title)}</a></div>
+      <div class="rdt"><a href="${esc(sisU(l.url))}" target="_blank" rel="noopener">${esc(l.title)}</a></div>
       <div class="rdm">${esc(hostOf(l.url))}</div>${l.note?`<div>${esc(l.note)}</div>`:''}</div>`).join('')}</div>`;
   if(it.type==='vocab'){const q=(state.resQ||'').toLowerCase();
     const rows=(it.terms||[]).filter(v=>!q||(v.term+' '+v.def).toLowerCase().includes(q));
@@ -4963,7 +5565,7 @@ function resItemHTML(it){
         <button class="hbtn ${u==='all'?'on':''}" data-act="keyunit" data-u="all">All units</button>
         ${(it.units||[]).map(x=>`<button class="hbtn ${String(u)===String(x.n)?'on':''}" data-act="keyunit" data-u="${esc(x.n)}">Unit ${esc(x.n)}: ${esc(x.title)}</button>`).join('')}</div>
       ${list.map(k=>`<div class="rd-card"><div class="rdm">Unit ${esc(k.unit)}${k.meta?', '+esc(k.meta):''}</div>
-        <div class="rdt"><a href="${esc(k.url)}" target="_blank" rel="noopener">${esc(k.title)}</a></div>
+        <div class="rdt"><a href="${esc(sisU(k.url))}" target="_blank" rel="noopener">${esc(k.title)}</a></div>
         ${k.note?`<div>${esc(k.note)}</div>`:''}</div>`).join('')||'<p>Nothing for this unit yet</p>'}</div>`;}
   if(it.type==='group')return `<div class="rdoc rd-group">${(it.items||[]).map(k=>`<button class="res-item" data-act="ressub" data-id="${esc(k.id)}">
       <span class="ri-t">${esc(k.title)}</span><span class="ri-s">${esc(KIND_LABEL[k.type]||'Reference')}</span></button>`).join('')}</div>`;
@@ -5044,7 +5646,7 @@ function renderResources(){
       `<div class="res-card"><div class="chd"><span class="nm"><span class="sq" style="background:${esc(color(c.id))}"></span>${cnHTML(c)}</span>
           ${owner||hasDown(c.id)?`<button class="res-sync ${state.resSyncing&&state.resSyncing[c.id]?'spin':''}" data-act="ressync" data-c="${c.id}" title="Resync">${SYNC_ICON}</button>`:''}</div>
         <div class="res-list">${builtIn(c.id).map(it=>it.url
-          ?`<a class="res-item" href="${esc(it.url)}" target="_blank" rel="noopener"><span class="ri-t">${esc(it.title)}</span><span class="ri-s">${esc(hostOf(it.url))}</span></a>`
+          ?`<a class="res-item" href="${esc(sisU(it.url))}" target="_blank" rel="noopener"><span class="ri-t">${esc(it.title)}</span><span class="ri-s">${esc(hostOf(it.url))}</span></a>`
           :`<button class="res-item" data-act="resopen" data-c="${c.id}" data-id="${esc(it.id)}"><span class="ri-t">${esc(it.title)}</span><span class="ri-s">${esc(it.type==='group'?(it.items||[]).length+' guides':(KIND_LABEL[it.type]||'Reference'))}</span></button>`).join('')}
           ${own(c.id).map(myItemHTML).join('')}</div>
         ${down?'':`<button class="res-add" data-act="resadd" data-c="${c.id}">+ Add resource</button>`}</div>`).join('')}
@@ -5175,7 +5777,7 @@ function libReviewHTML(){
   const q=LMQ.map(r=>`<div class="rl-q"><div class="t">${esc(r.title)}</div>
     <div class="m">${esc(['By '+r.owner,r.course,r.type==='doc'?r.words+' words':(r.pdfName?'PDF':'Link')].filter(Boolean).join(', '))}</div>
     <div class="rl-btns"><button class="kbtn" data-act="librvopen" data-id="${esc(r.id)}">${state.libRevOpen===r.id?'Close':'Open'}</button><button class="kbtn rl-ok" data-act="librvok" data-id="${esc(r.id)}">Approve</button><button class="kbtn" data-act="librvno" data-id="${esc(r.id)}">Turn down</button></div>
-    ${state.libRevOpen===r.id?`<div class="rl-doc">${r.type==='doc'?SX.sanitizeDoc(r.html):`${r.desc?esc(r.desc)+'<br>':''}${r.url?`<a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.url)}</a>`:esc(r.pdfName||'')}`}</div>`:''}</div>`).join('');
+    ${state.libRevOpen===r.id?`<div class="rl-doc">${r.type==='doc'?SX.sanitizeDoc(r.html):`${r.desc?esc(r.desc)+'<br>':''}${r.url?`<a href="${esc(sisU(r.url))}" target="_blank" rel="noopener">${esc(sisU(r.url))}</a>`:esc(r.pdfName||'')}`}</div>`:''}</div>`).join('');
   return `<div class="lib-rvl">${lmqMsg?`<div class="rl-msg" role="status">${esc(lmqMsg)}</div>`:''}${q||'<div class="lib-none">Nothing waiting</div>'}</div>`;
 }
 function libLbHTML(){
@@ -5234,7 +5836,7 @@ async function openPdfNow(id){
 function openResource(r,lib){
   if(r.type==='doc'||r.type==='builtin'){state.docQ='';state.tlQ='';if(lib)state.libOpen=r.id;else state.myOpen=r.id;document.querySelector('.wrap').scrollTop=0;render();return;}
   if(r.pdf){openPdf(r.id);return;}
-  if(r.url)window.open(r.url,'_blank','noopener');
+  if(r.url)window.open(sisU(r.url),'_blank','noopener');
 }
 
 /* ---------- resource editor: a title, then a document (whitelisted formatting) or a link / PDF ---------- */
@@ -5901,7 +6503,7 @@ document.addEventListener('click',async e=>{
   }
   /* single click on a sticky note opens its editor (delayed so a double click can still delete it) */
   const nb=e.target.closest('.note[data-aid]');
-  if(nb&&!e.target.closest('[data-act]')){const n=state.advisory.find(x=>x.id===nb.dataset.aid);
+  if(nb&&!e.target.closest('[data-act],.xdd')){const n=state.advisory.find(x=>x.id===nb.dataset.aid);
     if(n){clearTimeout(clickT);clickT=setTimeout(()=>{editNote(n,false);},260);}
     return;}
   /* single click opens the in-place editor (delayed so a double click can cancel it) */
@@ -6013,28 +6615,26 @@ document.addEventListener('click',async e=>{
   if(act==='uapick'){state.uaOpen=state.uaOpen===el.dataset.id?null:el.dataset.id;render();return;}
   /* filing an unassigned import: the server learns the title's format and files look-alikes, so reload after */
   if(act==='uaset'){const t=state.tasks.find(x=>x.id===el.dataset.id);state.uaOpen=null;
-    if(t)await pending('ua:'+t.id,`[data-act="uapick"][data-id="${t.id}"]`,async()=>{t.course=el.dataset.c;render();await saveTask(t);await loadData();});return;}
+    /* the latest pick wins: saves to one item go out in order */
+    if(t){t.course=el.dataset.c;render();await saveTask(t);await loadData();}return;}
   if(act==='asgf'){state.asgFilter=el.dataset.f;try{localStorage.setItem('sx-asgf',state.asgFilter);}catch(_){}render();return;}
   if(act==='syncreq'){resync();return;}
   if(act==='classes'){state.setOpen=false;closeNavMenus();state.setup=true;render();document.querySelector('.wrap').scrollTop=0;return;}
   if(act==='susave'){saveSetup();return;}
   if(act==='suimport'){suImport();return;}
   if(act==='suadd'){
-    /* keep what's typed, then add one more row */
-    const typed=[...document.querySelectorAll('#v-setup .su-row')].map(r=>[r.querySelector('.su-name').value,r.querySelector('.su-name').dataset.raw||'',r.querySelector('.su-per').value]);
-    setupRows=Math.min(SETUP_MAX,setupRows+1);renderSetup();
-    document.querySelectorAll('#v-setup .su-row').forEach((r,i)=>{if(!typed[i])return;const n=r.querySelector('.su-name');n.value=typed[i][0];n.dataset.raw=typed[i][1];r.querySelector('.su-per').value=typed[i][2];});
+    /* keep every row as typed (names, periods, lunches, colors), then add one more */
+    const m=suRowsFromDom();setupRows=Math.min(SETUP_MAX,setupRows+1);renderSetup(m);
     suFlagAll();
     const nx=document.getElementById('su-n'+(setupRows-1));if(nx)nx.focus();return;}
   if(act==='sudel'){
     /* empty the row (saving then drops that class); extra empty rows at the bottom go away */
+    /* the row goes; the rows under it move up with everything typed in them */
     const r=el.closest('.su-row');if(!r)return;
-    const n=r.querySelector('.su-name'),p=r.querySelector('.su-per'),l=r.querySelector('.su-lunch');
-    n.value='';n.dataset.raw='';p.value='';n.dataset.touched=p.dataset.touched='1';if(l){l.value='';l.classList.add('off');}
-    const rows=[...document.querySelectorAll('#v-setup .su-row')];
-    let last=-1;rows.forEach((x,i)=>{if(x.querySelector('.su-name').value.trim()||x.querySelector('.su-per').value)last=i;});
-    setupRows=Math.max(SETUP_MIN,last+1);
-    if(rows.some(x=>x.querySelector('.su-name').value.trim()))saveSetup(true);else render();return;}
+    const i=[...document.querySelectorAll('#v-setup .su-row')].indexOf(r),m=suRowsFromDom();if(i<0)return;
+    m.splice(i,1);while(m.length&&suEmpty(m[m.length-1]))m.pop();
+    setupRows=Math.max(SETUP_MIN,m.length);renderSetup(m);
+    if(m.some(x=>x.name.trim()))saveSetup(true,true);return;}
   if(act==='faq'){openFaq();return;}
   if(act==='oppsort'){state.oppSort=el.dataset.k;state.oppSortOpen=false;try{localStorage.setItem('sx-oppsort',state.oppSort);}catch(_){}render();return;}
   if(act==='oppsortopen'){state.oppSortOpen=!state.oppSortOpen;render();return;}
@@ -6108,7 +6708,7 @@ document.addEventListener('change',async e=>{
 /* double click deletes an assignment or a sticky note */
 document.addEventListener('dblclick',async e=>{
   clearTimeout(clickT);
-  if(e.target.isContentEditable||e.target.closest('.del'))return;
+  if(e.target.isContentEditable||e.target.closest('.del,.xdd,.cdd,.tk-cls,.cn-pick,button,input,textarea,select,a,.editing'))return;
   const nb=e.target.closest('[data-aid]');
   if(nb){const id=nb.dataset.aid;
     state.advisory=state.advisory.filter(x=>x.id!==id);render();await removeNote(id);return;}
@@ -6132,7 +6732,7 @@ async function holdDelete(el){
 }
 document.addEventListener('pointerdown',e=>{
   const el=e.target.closest('[data-tid]:not(.ro)');
-  if(!el||e.button!==0||e.target.closest('.del')||e.target.isContentEditable)return;
+  if(!el||e.button!==0||e.target.closest('.del,.tk-cls,.cn-pick,.xdd,.cdd')||e.target.isContentEditable||el.querySelector('.editing'))return;
   pressEl=el;px=e.clientX;py=e.clientY;
   pressT=setTimeout(()=>{pressT=null;holdDelete(pressEl);},500);
 });
@@ -6232,7 +6832,49 @@ document.addEventListener('drop',async e=>{
   if(t&&t.date!==z.dataset.drop){t.date=z.dataset.drop;render();await patchTask(id,{date:t.date});}
   else render();
 },true);
-document.addEventListener('dragend',()=>{dragId=null;document.querySelectorAll('.drop').forEach(x=>x.classList.remove('drop'));});
+document.addEventListener('dragend',()=>{dragId=null;document.querySelectorAll('.drop').forEach(x=>x.classList.remove('drop'));tDropMark(null);});
+/* Courses page: an assignment dropped on another class's card moves to that class (Undo puts it back) */
+let tDragging=false,tNoClick=0;
+function tDropMark(card){document.querySelectorAll('.ccard.cdrop').forEach(x=>{if(x!==card)x.classList.remove('cdrop');});if(card)card.classList.add('cdrop');}
+function tDropCard(el,id){const card=el&&el.closest&&el.closest('#v-courses [data-dropc]');const t=state.tasks.find(x=>x.id===id);
+  return card&&t&&card.dataset.dropc!==t.course?card:null;}
+async function tMoveCourse(id,course){const t=state.tasks.find(x=>x.id===id);if(!t||t.course===course||!courseById(course))return;
+  undoStack.push({type:'move',id,course:t.course});t.course=course;render();undoToast('Moved 1 assignment to '+sname(courseById(course)));
+  await patchTask(id,{course});await loadData();}
+document.addEventListener('dragover',e=>{if(!dragId)return;const card=tDropCard(e.target,dragId);tDropMark(card);if(card){e.preventDefault();e.dataTransfer.dropEffect='move';}});
+document.addEventListener('drop',e=>{if(!dragId)return;const card=tDropCard(e.target,dragId);if(!card)return;
+  e.preventDefault();const id=dragId;dragId=null;tDropMark(null);tMoveCourse(id,card.dataset.dropc);});
+/* touch: hold a box for a moment, then slide it onto another class (holding still longer still deletes it) */
+let tT=null;
+document.addEventListener('pointerdown',e=>{
+  if(e.pointerType==='mouse'||tT)return;const el=e.target.closest&&e.target.closest('#v-courses [data-tid]:not(.ro)');
+  if(!el||e.target.closest('.del,.tk-cls,.cn-pick')||el.querySelector('.editing'))return;
+  tT={el,id:el.dataset.tid,x:e.clientX,y:e.clientY,pid:e.pointerId,armed:false,ghost:null};
+  tT.timer=setTimeout(()=>{if(tT&&tT.el===el){tT.armed=true;el.classList.add('lift');}},280);
+},true);
+function tEnd(drop,e){const s=tT;tT=null;if(!s)return;clearTimeout(s.timer);s.el.classList.remove('lift');
+  if(s.ghost){s.ghost.remove();tNoClick=Date.now();}tDragging=false;
+  const card=drop&&s.ghost&&e?tDropCard(document.elementFromPoint(e.clientX,e.clientY),s.id):null;tDropMark(null);
+  if(card)tMoveCourse(s.id,card.dataset.dropc);}
+document.addEventListener('pointermove',e=>{const s=tT;if(!s||e.pointerId!==s.pid)return;
+  const dx=e.clientX-s.x,dy=e.clientY-s.y;
+  if(!s.armed){if(Math.abs(dx)>8||Math.abs(dy)>8)tEnd(false);return;}
+  if(!s.ghost){if(Math.abs(dx)<6&&Math.abs(dy)<6)return;
+    cancelPress();tDragging=true;const r=s.el.getBoundingClientRect();s.ox=s.x-r.left;s.oy=s.y-r.top;
+    s.ghost=s.el.cloneNode(true);s.ghost.classList.add('tdrag-ghost');s.ghost.classList.remove('lift');s.ghost.removeAttribute('data-tid');
+    s.ghost.style.width=r.width+'px';document.body.appendChild(s.ghost);}
+  s.ghost.style.left=(e.clientX-s.ox)+'px';s.ghost.style.top=(e.clientY-s.oy)+'px';s.cx=e.clientX;s.cy=e.clientY;
+  tDropMark(tDropCard(document.elementFromPoint(e.clientX,e.clientY),s.id));
+  /* near the top or bottom edge the page scrolls, so a class further down can be reached */
+  if(!s.raf){const step=()=>{if(tT!==s||!s.ghost){s.raf=0;return;}
+      const w=document.querySelector('.wrap'),edge=70,v=s.cy<edge?-(edge-s.cy)/3:s.cy>innerHeight-edge?(s.cy-innerHeight+edge)/3:0;
+      if(v&&w){w.scrollTop+=v;tDropMark(tDropCard(document.elementFromPoint(s.cx,s.cy),s.id));}
+      s.raf=requestAnimationFrame(step);};s.raf=requestAnimationFrame(step);}},true);
+document.addEventListener('pointerup',e=>{if(tT&&e.pointerId===tT.pid)tEnd(true,e);},true);
+document.addEventListener('pointercancel',e=>{if(tT&&e.pointerId===tT.pid)tEnd(false);},true);
+/* once the box is picked up, the finger moves it instead of scrolling the page */
+document.addEventListener('touchmove',e=>{if(tT&&tT.armed)e.preventDefault();},{passive:false,capture:true});
+document.addEventListener('click',e=>{if(tDragging||Date.now()-tNoClick<500){e.stopPropagation();e.preventDefault();}},true);
 
 /* ---------- class names: typed shorthand becomes the proper course name ---------- */
 /* key (lowercase, punctuation dropped) -> [proper name, short label] */
@@ -6242,17 +6884,31 @@ const normalizeCourse=SX.normalizeCourse,ckey=SX.ckey,makeAbbr=SX.makeAbbr;
 /* ---------- class setup: up to 9 classes, each with an optional period ---------- */
 const SETUP_MIN=7,SETUP_MAX=10;let setupRows=0;
 const WARN_ICON='<svg viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M12 2.5L1.5 21h21zM11 9h2v6.5h-2zM11 17h2v2h-2z"/></svg>';
-function renderSetup(){
+/* the table's rows: from the saved classes when the page opens, after that from the table itself, so a redraw (a reload
+   in the background, a new row, a removed row) never shifts what was typed into another row or drops a lunch */
+const XDD_ON={};
+let suFresh=true,suLastView='';
+function suRowsFromCourses(){const lunch=state.settings.lunch||{};
+  return COURSES.map(c=>{const p=state.settings.periods[c.id]||'';
+    return {id:c.id,name:c.name,raw:c.raw||'',per:p?String(p):'',lunch:(p==5||p==6)&&lunch[p]||'',col:color(c.id),p4ok:p==4};});}
+function suRowsFromDom(){return [...document.querySelectorAll('#v-setup .su-row')].map(r=>{
+  const n=r.querySelector('.su-name'),p=r.querySelector('.su-per'),l=r.querySelector('.su-lunch'),c=r.querySelector('.su-col');
+  return {id:n.dataset.id||'',name:n.value,raw:n.dataset.raw||'',per:p.value,lunch:l&&l.dataset.v||'',col:c?c.value:'',tn:n.dataset.touched==='1',tp:p.dataset.touched==='1',p4ok:p.dataset.p4ok==='1'};});}
+const suEmpty=m=>!m.name.trim()&&!m.per;
+function renderSetup(model){
   const el=document.getElementById('v-setup');
   const rows=[];
-  setupRows=Math.min(SETUP_MAX,Math.max(SETUP_MIN,COURSES.length,setupRows));
-  const lunch=state.settings.lunch||{},nextCol=i=>PALETTE[i%PALETTE.length];
-  for(let i=0;i<setupRows;i++){const c=COURSES[i],p=c?state.settings.periods[c.id]:'';
-    rows.push(`<div class="su-row"><span class="su-nw"><input type="text" class="su-name" id="su-n${i}" data-id="${c?esc(c.id):''}" data-raw="${c?esc(c.raw||''):''}"
-      value="${c?esc(c.name):''}" placeholder="Class" autocomplete="off" spellcheck="false" maxlength="80"><button type="button" class="su-warn" tabindex="0" aria-label="Not an official course name" aria-haspopup="true">${WARN_ICON}</button></span>
-      <input type="text" class="su-per" id="su-p${i}" value="${p?esc(p):''}" placeholder="Period" inputmode="numeric" maxlength="1" autocomplete="off">
-      <select class="su-lunch ${p==5||p==6?'':'off'}" id="su-l${i}" aria-label="Lunch"><option value="">Lunch</option>${['A','B','C','D'].map(l=>`<option value="${l}" ${(p==5||p==6)&&lunch[p]===l?'selected':''}>${l} lunch</option>`).join('')}</select>
-      <span class="cpk"><button type="button" class="cpk-btn" data-cpk aria-label="Color" title="Color" style="background:${esc(c?color(c.id):nextCol(i))}"></button><input type="color" class="su-col" id="su-c${i}" value="${esc(c?color(c.id):nextCol(i))}" tabindex="-1" aria-hidden="true"></span>
+  if(!model)model=!suFresh&&suLastView==='setup'&&el.querySelector('.su-row')?suRowsFromDom():suRowsFromCourses();
+  suFresh=false;
+  setupRows=Math.min(SETUP_MAX,Math.max(SETUP_MIN,model.length,setupRows));
+  const nextCol=i=>PALETTE[i%PALETTE.length];
+  for(let i=0;i<setupRows;i++){const c=model[i]||{id:'',name:'',raw:'',per:'',lunch:'',col:''},p=c.per,col=c.col||nextCol(i);
+    rows.push(`<div class="su-row"><span class="su-nw"><input type="text" class="su-name" id="su-n${i}" data-id="${esc(c.id)}" data-raw="${esc(c.raw)}"${c.tn?' data-touched="1"':''}
+      value="${esc(c.name)}" placeholder="Class" autocomplete="off" spellcheck="false" maxlength="80"><button type="button" class="su-warn" tabindex="0" aria-label="Not an official course name" aria-haspopup="true">${WARN_ICON}</button></span>
+      <input type="text" class="su-per" id="su-p${i}" value="${esc(p)}" placeholder="Period" inputmode="numeric" maxlength="1" autocomplete="off"${c.tp?' data-touched="1"':''}${c.p4ok?' data-p4ok="1"':''}>
+      ${xddHTML({kind:'lunch',id:'su-l'+i,cls:'su-lunch'+(p==5||p==6?'':' off'),value:c.lunch,ph:'Lunch',label:'Lunch',
+        options:[{v:'',t:'Lunch'}].concat(['A','B','C','D'].map(l=>({v:l,t:l+' lunch'})))})}
+      <span class="cpk"><button type="button" class="cpk-btn" data-cpk aria-label="Color" title="Color" style="background:${esc(col)}"></button><input type="color" class="su-col" id="su-c${i}" value="${esc(col)}" tabindex="-1" aria-hidden="true"></span>
       <button class="su-del" data-act="sudel" title="Remove" aria-label="Remove"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>`);}
   /* two steps, in order: your classes, then the Schoology link (optional, but nothing syncs without it) */
   const step1=`<div class="su-step"><div class="su-oh"><span class="su-n">1</span>Enter your classes and periods</div></div>`;
@@ -6281,6 +6937,25 @@ function renderSetup(){
    courses; the page then names them properly (loadData) and shows the filled table */
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='su-ical'){e.preventDefault();suImport();}});
 document.addEventListener('input',e=>{if(!e.target.classList||!e.target.classList.contains('su-per'))return;const l=e.target.parentElement.querySelector('.su-lunch');if(l)l.classList.toggle('off',!/^[56]$/.test(e.target.value.trim()));});
+XDD_ON.lunch=()=>suAutoSave(true);
+/* period 4 is Advisory: typing 4 asks first; Change empties the box, I understand keeps 4 for that row */
+document.addEventListener('input',e=>{const t=e.target;if(!t.classList||!t.classList.contains('su-per'))return;
+  if(t.value==='4'&&t.dataset.p4ok!=='1')suP4Ask(t);});
+function suP4Ask(inp){
+  if(document.getElementById('su-p4ask'))return;
+  const o=document.createElement('div');o.className='qov su-p4-ov';o.id='su-p4ask';
+  o.innerHTML=`<div class="qbox" role="alertdialog" aria-modal="true" aria-labelledby="su-p4-h" aria-describedby="su-p4-d"><div class="qhd" id="su-p4-h">Period 4 is Advisory</div>
+    <p id="su-p4-d">Period 4 is usually Advisory, not a class. Keep it only if you really have a class then.</p>
+    <div class="gw-row"><button type="button" class="btn" data-p4="change">Change</button><button type="button" class="kbtn" data-p4="ok">I understand</button></div></div>`;
+  document.body.appendChild(o);
+  const done=ok=>{o.remove();if(!inp.isConnected)return;
+    if(ok)inp.dataset.p4ok='1';else{inp.value='';inp.dataset.touched='1';}
+    const l=inp.closest('.su-row')&&inp.closest('.su-row').querySelector('.su-lunch');if(l)l.classList.toggle('off',!/^[56]$/.test(inp.value));
+    inp.focus({preventScroll:true});suAutoSave(true);};
+  o.addEventListener('click',e=>{const b=e.target.closest('[data-p4]');if(b)done(b.dataset.p4==='ok');});
+  o.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();done(false);}});
+  o.querySelector('[data-p4="change"]').focus({preventScroll:true});
+}
 async function suImport(){
   if(state.suBusy)return;
   const inp=document.getElementById('su-ical'),url=(inp?inp.value:'').trim();
@@ -6291,7 +6966,7 @@ async function suImport(){
   try{await api('/api/ical-import',{method:'POST',body:JSON.stringify({url,detect:true})});state.settings.ical=url;state.suManual=true;}
   catch(e){state.suErr='Couldn\'t read that calendar';}
   state.suBusy=false;
-  await loadData();if(!TUT||state.setup)state.setup=true;render();
+  suFresh=true;await loadData();if(!TUT||state.setup)state.setup=true;suFresh=true;render();
 }
 /* the typed name turns into the proper name when the box loses focus; it stays editable */
 /* some classes are usually taken together as one course: offer the combined name */
@@ -6334,7 +7009,7 @@ document.addEventListener('focusout',e=>{
    official names. Advisory isn't a class: typing it shows how Advisory works, and saving skips that row */
 const ADV_INFO='<b>Advisory isn\'t a class</b>It fills period 4 on Gold days when you have no period 4 class. Pick the class you go to then on the Advisory card on the Courses page. This row is skipped when you save.';
 let suPopFor=null,suPopTimer=0,suTouchAt=0,suPopTap=false;
-function suKind(v){v=String(v||'').trim();return !v?'':SX.isAdvisory(v)?'adv':SX.courseKnown(v)?'':'unk';}
+function suKind(v){v=String(v||'').trim();return !v?'':SX.isAdvisory(v)?'adv':SX.courseKnown(v)||SX.courseLooksReal(v)?'':'unk';}
 function suFlag(inp){
   const w=inp&&inp.closest('.su-nw');if(!w)return;
   const k=suKind(inp.value);w.classList.toggle('warn',!!k);w.dataset.kind=k;
@@ -6434,9 +7109,10 @@ async function saveSetup(stay,quiet){
     while(used.has(id))id=id+'x';
     used.add(id);ni.dataset.id=id;
     list.push({id,name:n.name,abbr:n.abbr,raw:raw||typed,keys:[...new Set(n.keys.concat(extra))].filter(Boolean).slice(0,16)});
-    const p=Number(pi.value);if(p>=1&&p<=8)periods[id]=p;
+    /* period 4 only once "I understand" was pressed for that row */
+    const p=Number(pi.value);if(p>=1&&p<=8&&(p!==4||pi.dataset.p4ok==='1'))periods[id]=p;
     const ci=r.querySelector('.su-col');if(ci&&/^#[0-9a-f]{6}$/i.test(ci.value))picked[id]=ci.value;
-    const li=r.querySelector('.su-lunch');if((p===5||p===6)&&li&&/^[ABCD]$/.test(li.value))lunch[p]=li.value;
+    const li=r.querySelector('.su-lunch');if((p===5||p===6)&&li&&/^[ABCD]$/.test(li.dataset.v||''))lunch[p]=li.dataset.v;
   });
   if(!list.length)return;
   const taken=new Set();
@@ -6581,7 +7257,71 @@ function renderHome(fly){
   /* behind the login page the cards wait; homeFly drops them in once it's gone */
   if(held){el.querySelectorAll('.hm-card').forEach(c=>{c.classList.add('wait');c.classList.remove('fly');});return;}
   if(fly){homeFly();el.classList.remove('in');void el.offsetWidth;el.classList.add('in');}
+  memeMaybe();
 }
+/* ---------- the meme of the day: once a day per account on this device it falls onto Home and knocks the wordmark out
+   of the way; a click anywhere sends it off and the wordmark comes back. The same meme for everyone on a given day.
+   Meme on the Courses page plays it again ---------- */
+const MEME_ALTS=["Two panel nope and yes meme: an orange cat turns away from \"doing homework\" and happily points at \"snack break number 4\".", "Distracted meme with original art: a pencil labeled \"me\" walks with a notebook labeled \"my homework\" but turns to stare at a phone labeled \"one new notification\".", "Everything is fine meme: a calm grey cat sips cocoa at a desk while the homework papers around it are on fire, with a speech bubble saying \"this is fine\" under the caption \"five tests this week\".", "Expanding brain meme in four panels: a brain grows from \"reading my notes\" to \"highlighting everything\" to \"making flashcards\" to a beaming brain for \"teaching it to my cat\".", "A backpack with legs zooms out of the classroom door in a cloud of dust as the wall bell rings, captioned \"when the bell rings on a Friday\".", "Two buttons meme: a nervous blue blob sweats over choosing between a red button \"start early\" and a blue button \"start at 11 PM\".", "A puzzled brown bear labeled \"me\" points at a floating video screen labeled \"a three hour video\" with the caption \"is this a study break?\".", "Change my mind meme: a smug green frog sits at an outdoor table with a mug and a sign reading \"homework should be optional on birthdays, change my mind\".", "Surprised reaction meme: \"me: studies zero minutes\", \"the quiz: is hard\", \"me:\" above a shocked hamster with wide eyes and an open mouth.", "Success meme: a determined green turtle pumps its fist on the grass, captioned \"found my missing homework in the other pocket\".", "Nobody versus me meme: \"nobody:\" then \"me at 11:59 PM:\" above a cat typing at a laptop at top speed, captioned \"submitted with one minute left\".", "How it started versus how it is going: a tall shiny new pencil smiling in September next to a tiny worn out stub of a pencil with a bandage in May.", "Four panel plan meme: a penguin presents a flip chart with steps \"make a planner\", \"write it all down\", \"never open it again\", then stares in shock at \"never open it again\".", "Trade offer meme: a confident phone character in a bow tie offers \"I receive: your whole afternoon\" and \"you receive: one funny video\".", "Waiting meme: a dusty dog sits on a bench covered in cobwebs next to a printer showing an error, captioned \"me waiting for the printer to work\".", "Panic, calm, panic meme with a white bunny: \"the test is tomorrow\" (panic), \"it is open note\" (calm), \"my notes are at school\" (panic)."];
+const MEME_BASE='https:'+SLASH2+'cdn.jsdelivr.net/gh/yuzhe-chen/saxon-arcade@main/memes/';
+let memeT=0;
+function memeIndex(){const d=new Date();return Math.floor(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())/864e5)%MEME_ALTS.length;}
+const memeKey=()=>'sx-meme-'+(state.user?state.user.name:'');
+function memeMaybe(){
+  if(!state.user||state.view!=='home'||memeT||document.getElementById('meme'))return;
+  let seen='';try{seen=localStorage.getItem(memeKey())||'';}catch(_){}
+  if(seen===todayStr())return;
+  memeT=setTimeout(()=>{memeT=0;if(state.view!=='home'||!state.user||document.documentElement.classList.contains('splash-on'))return;
+    try{localStorage.setItem(memeKey(),todayStr());}catch(_){}memeDrop();},1300);
+}
+function memeDrop(){
+  if(document.getElementById('meme'))return;
+  const i=memeIndex(),img=new Image();img.alt=MEME_ALTS[i];img.draggable=false;
+  img.onload=()=>{if(state.view==='home'&&!document.getElementById('meme'))memeLand(img);};
+  img.src=MEME_BASE+'meme-'+String(i+1).padStart(2,'0')+'.svg';
+}
+function memeLand(img){
+  const t=document.querySelector('#v-home .hm-title');if(!t||!t.offsetParent)return;
+  const ov=document.createElement('div');ov.id='meme';ov.className='meme-ov';ov.setAttribute('role','dialog');ov.setAttribute('aria-label','Meme of the day');ov.tabIndex=-1;
+  const card=document.createElement('div');card.className='meme-card';card.appendChild(img);ov.appendChild(card);document.body.appendChild(ov);
+  const r=t.getBoundingClientRect(),w=Math.min(440,innerWidth-32),h=w*.75+16,top0=(document.querySelector('header')||{getBoundingClientRect:()=>({bottom:0})}).getBoundingClientRect().bottom;
+  const cx=Math.min(Math.max(r.left+Math.min(r.width,w)/2,16+w/2),innerWidth-16-w/2),cy=Math.min(Math.max(r.top+r.height/2,top0+12+h/2),innerHeight-12-h/2);
+  card.style.width=w+'px';card.style.left=(cx-w/2)+'px';card.style.top=(cy-h/2)+'px';
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches,fall=-(cy+h/2+60),dir=r.left+r.width/2<innerWidth/2?-1:1;
+  /* the wordmark goes off the nearer edge, spinning, as the meme lands on it */
+  const kx=dir<0?-(r.right+60):innerWidth-r.left+60;
+  ov._kick=[{transform:'none'},{transform:`translate(${kx*.35}px,-40px) rotate(${dir*16}deg)`,offset:.3},{transform:`translate(${kx}px,60px) rotate(${dir*38}deg)`}];
+  ov._t=t;
+  ov.focus({preventScroll:true});
+  if(reduce){card.animate([{opacity:0},{opacity:1}],{duration:200,fill:'both'});t.style.visibility='hidden';ov._hid=true;}
+  else{
+    card.animate([{transform:`translateY(${fall}px) rotate(-12deg)`,easing:'cubic-bezier(.5,0,1,.6)'},{transform:'translateY(0) rotate(4deg)',offset:.72,easing:'cubic-bezier(.2,.7,.4,1)'},
+      {transform:'translateY(-22px) rotate(-2deg)',offset:.86,easing:'cubic-bezier(.6,0,1,.6)'},{transform:'translateY(0) rotate(0deg)'}],{duration:1000,fill:'both'});
+    ov._kt=setTimeout(()=>{t.classList.add('kicked');ov._ka=t.animate(ov._kick,{duration:650,easing:'cubic-bezier(.2,.6,.3,1)',fill:'forwards'});},700);}
+  const close=e=>{if(e){e.preventDefault();e.stopPropagation();}memeClose();};
+  ov.addEventListener('pointerdown',close);
+  ov.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();});
+  ov.addEventListener('keydown',e=>{if(e.key==='Escape'||e.key==='Enter'||e.key===' ')close(e);});
+  ov.addEventListener('wheel',e=>e.preventDefault(),{passive:false});
+}
+function memeClose(){
+  const ov=document.getElementById('meme');if(!ov||ov._closing)return;ov._closing=true;clearTimeout(ov._kt);
+  const card=ov.querySelector('.meme-card'),t=ov._t,reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  card.getAnimations().forEach(a=>a.commitStyles&&a.commitStyles());card.getAnimations().forEach(a=>a.cancel());
+  const out=card.animate(reduce?[{opacity:1},{opacity:0}]:[{transform:'translateY(0) rotate(0deg)',opacity:1},{transform:`translateY(${innerHeight}px) rotate(18deg)`,opacity:.6}],
+    {duration:reduce?150:520,easing:'cubic-bezier(.5,0,1,.6)',fill:'forwards'});
+  /* the wordmark springs back into place */
+  if(t){t.style.visibility='';
+    if(ov._ka){const back=ov._kick.slice().reverse().map((k,i,a)=>({transform:k.transform}));
+      ov._ka.cancel();const k=back[0].transform;
+      t.animate([{transform:k},{transform:'translate(0,-10px) rotate(-3deg)',offset:.7},{transform:'translate(0,3px) rotate(1deg)',offset:.86},{transform:'none'}],
+        {duration:reduce?1:700,easing:'cubic-bezier(.2,.7,.3,1)'}).onfinish=()=>t.classList.remove('kicked');}}
+  out.onfinish=()=>{ov.remove();};
+  setTimeout(()=>{if(ov.isConnected)ov.remove();},900);
+}
+document.addEventListener('click',e=>{if(!e.target.closest('[data-act-meme]'))return;e.stopPropagation();
+  const m=document.getElementById('meme');if(m)m.remove();
+  goHome();setTimeout(memeDrop,state.view==='home'?450:0);});
 function homeFly(){
   /* the bottom row drops first, so no card falls through one that has already landed */
   /* (rows below the screen drop at once, so the ones in view don't wait for them) */
@@ -6589,6 +7329,7 @@ function homeFly(){
   const tops=[...new Set(cs.filter(seen).map(c=>c.offsetTop))].sort((a,b)=>b-a);
   cs.forEach(c=>{c.style.setProperty('--i',seen(c)?tops.indexOf(c.offsetTop)*1.6+(c.offsetLeft>cs[0].offsetLeft?0.6:0):0);
     c.classList.remove('fly','wait');void c.offsetWidth;c.classList.add('fly');});
+  memeMaybe();
 }
 function goHome(){
   closeNavMenus();
@@ -6646,6 +7387,7 @@ function render(){
     state.view='calendar';try{localStorage.setItem('sx-tab','calendar');}catch(_){}
     return render();
   }
+  suLastView=v;
   renderSetdd();
   if(typeof scheduleMeasure==='function')scheduleMeasure();
   /* typed text survives a redraw; a box the user emptied stays empty (an untouched empty box takes the new value) */
@@ -7205,7 +7947,8 @@ function chMsgsHTML(id){
   c.msgs.forEach(m=>{const d=new Date(m.time),dk=d.toDateString();
     if(dk!==day){day=dk;prev=null;out+=`<div class="ch-day">${esc(d.toLocaleDateString([],{weekday:'long',month:'short',day:'numeric'}))}</div>`;}
     const same=prev&&prev.from===m.from&&m.time-prev.time<300000;
-    const body=`<div class="ch-t ${m.pend?'pend':''} ${m.fail?'fail':''}" ${m.fail?`data-ch="retry" data-k="${esc(m.k)}" title="Not sent, click to retry"`:`title="${esc(d.toLocaleString())}"`}>${esc(m.text)}${m.pend?'<i class="ch-spin" aria-label="Sending"></i>':''}</div>`;
+    const body=`<div class="ch-t ${m.pend?'pend':''} ${m.fail?'fail':''}" ${m.fail?`data-ch="retry" data-k="${esc(m.k)}"`:`title="${esc(d.toLocaleString())}"`}>${esc(m.text)}</div>`+
+      (m.pend?`<div class="ch-st" role="status"><i class="ch-spin" aria-hidden="true"></i>Sending</div>`:m.fail?`<button type="button" class="ch-st fail" data-ch="retry" data-k="${esc(m.k)}">Not sent, ${matchMedia('(pointer: coarse)').matches?'tap':'click'} to retry</button>`:'');
     if(same)out=out.replace(/<\/div><\/div>$/,'')+body+'</div></div>';
     else out+=`<div class="ch-g">${m.from==='system'?chSysAv():chAv(m.from)}<div class="ch-gb"><div class="ch-gh"><b>${esc(m.from==='system'?chTitle(id):m.from===me()?'You':m.from)}</b><time>${esc(d.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}))}</time></div>${body}</div></div>`;
     prev=m;});
@@ -7497,7 +8240,7 @@ const gmInSec=(x,lab)=>lab==='Online'?x.labels.includes('Online'):x.labels.inclu
 const mpLocked=()=>!(state.user&&state.user.mpUnlocked!==false);
 const gameLocked=x=>!!(x&&(x.labels.includes('Multiplayer')||x.labels.includes('Online'))&&!x.labels.includes('Social')&&mpLocked());
 const HOSTED_URL='https:'+SLASH2+'script.google.com/macros/s/AKfycbxDk0GrC7XrtoekZdrW4qPsffwxxuG0ujTopOYe5m3rzRPX1GOtbv9-aUtvaXAZlFLW/exec';
-const refLink=()=>state.user?(GS?HOSTED_URL:location.origin+location.pathname)+'?ref='+encodeURIComponent(state.user.refCode||state.user.name):'';
+const refLink=()=>state.user?(GS?SITES.planner:location.origin+location.pathname)+'?ref='+encodeURIComponent(state.user.refCode||state.user.name):'';
 const LOCK_SVG=art('lock');
 function gmLockPanel(){
   if(!state.user)return `<div class="gm-lock" id="gm-lock"><span class="gm-lock-i">${LOCK_SVG}</span><div class="gm-lock-t"><b>Multiplayer is locked</b>
@@ -7607,6 +8350,9 @@ function rolesPaint(msg){
         <h3>Moderators</h3>${RL.moderators.map(n=>box(n,'mod')).join('')||'<div class="rl-none">None</div>'}
         ${ed?`<form class="rl-add" autocomplete="off"><input type="text" id="rl-name" placeholder="Username" maxlength="24" spellcheck="false" aria-label="Username"><button class="kbtn" type="submit">Add moderator</button></form>`:''}
         <div class="rl-msg" role="status">${esc(msg||'')}</div>
+        ${ed?`<h3>Multiplayer unlocked</h3>${(RL.mpManual||[]).map(n=>`<div class="rl-box mp"><span class="nm">${esc(n)}</span><span class="tg">Unlocked</span><button data-rl-mplock="${esc(n)}" title="Lock again" aria-label="Lock again">×</button></div>`).join('')||'<div class="rl-none">None</div>'}
+        <form class="rl-add rl-mpf" autocomplete="off"><input type="text" id="rl-mpname" placeholder="Username" maxlength="24" spellcheck="false" aria-label="Username"><button class="kbtn" type="submit">Unlock multiplayer</button></form>
+        <div class="rl-mpmsg rl-msg" role="status"></div>`:''}
         ${RLS?`<h3>Message</h3><form class="rl-sys" autocomplete="off"><div class="rl-sys-to"><input type="text" id="rl-sys-to" placeholder="Username" maxlength="24" spellcheck="false" aria-label="To">
           <label class="rl-all">Everyone<input type="checkbox" class="switch" id="rl-sys-all"></label></div>
           <textarea id="rl-sys-text" maxlength="1000" placeholder="Message" aria-label="Message"></textarea><button class="kbtn" type="submit">Send</button></form>
@@ -7622,6 +8368,12 @@ async function rolesSet(name,remove){
   if(r&&r.ok){RL=Object.assign(r,{open:RL&&RL.open});rolesPaint();return;}
   rolesPaint(r&&r.error==='nouser'?'No account named '+name:'Couldn\u2019t change roles');
 }
+/* Multiplayer and Online unlocked by hand for one account, or locked again */
+async function rolesMp(name,unlock){
+  let r=null;try{r=await api('/api/roles',{method:'POST',body:JSON.stringify({op:'mp',name,unlock:!!unlock})});}catch(_){r={error:'conn'};}
+  if(r&&r.ok){RL=Object.assign(r,{open:RL&&RL.open});rolesPaint();return;}
+  rolesPaint();const m=document.querySelector('#roles .rl-mpmsg');if(m)m.textContent=r&&r.error==='nouser'?'No account named '+name:'Couldn\u2019t change it';
+}
 async function suggDone(id){
   let r=null;try{r=await api('/api/roles',{method:'POST',body:JSON.stringify({op:'suggDone',ids:[id]})});}catch(_){r={error:'conn'};}
   if(r&&r.ok){RLS=r.suggestions;rolesPaint();return;}
@@ -7636,6 +8388,7 @@ document.addEventListener('click',e=>{
   if(b.dataset.rlUnmod){b.disabled=true;rolesSet(b.dataset.rlUnmod,true);return;}
   if(b.dataset.rlSk){rlSK=b.dataset.rlSk;rolesPaint();return;}
   if(b.dataset.rlDone){b.disabled=true;suggDone(b.dataset.rlDone);return;}
+  if(b.dataset.rlMplock){b.disabled=true;rolesMp(b.dataset.rlMplock,false);return;}
 });
 /* a message from the site into one account's inbox, or everyone's */
 document.addEventListener('submit',async e=>{const f=e.target.closest('#roles .rl-sys');if(!f)return;e.preventDefault();
@@ -7647,7 +8400,8 @@ document.addEventListener('submit',async e=>{const f=e.target.closest('#roles .r
   if(r&&r.ok){tx.value='';if(m)m.textContent='Sent to '+(r.sent===1?'1 account':r.sent+' accounts');return;}
   if(m)m.textContent=r&&r.error==='nouser'?'No account named '+who:'Not sent';});
 document.addEventListener('change',e=>{if(e.target.id!=='rl-sys-all')return;const i=document.getElementById('rl-sys-to');if(i)i.disabled=e.target.checked;});
-document.addEventListener('submit',e=>{if(!e.target.closest('#roles .rl-add'))return;e.preventDefault();const i=document.getElementById('rl-name'),v=i&&i.value.trim().toLowerCase();if(v)rolesSet(v,false);});
+document.addEventListener('submit',e=>{if(!e.target.closest('#roles .rl-mpf'))return;e.preventDefault();const i=document.getElementById('rl-mpname'),v=i&&i.value.trim().toLowerCase();if(v)rolesMp(v,true);});
+document.addEventListener('submit',e=>{if(!e.target.closest('#roles .rl-add:not(.rl-mpf)'))return;e.preventDefault();const i=document.getElementById('rl-name'),v=i&&i.value.trim().toLowerCase();if(v)rolesSet(v,false);});
 document.addEventListener('keydown',e=>{const d=document.getElementById('roles');if(d&&!d.hidden&&e.key==='Escape'){e.stopPropagation();closeRoles();}},true);
 async function redeemGuest(code){
   code=String(code||'').trim().toLowerCase();if(!GUEST_RE.test(code))return {error:'bad'};
@@ -8303,21 +9057,64 @@ function frameMenus(f){try{f.contentWindow.document.addEventListener('pointerdow
 /* clicking into any other frame moves the focus into it */
 addEventListener('blur',()=>setTimeout(()=>{const a=document.activeElement;if(a&&a.tagName==='IFRAME')closeMenusAt(a);},0));
 /* ---------- a to-do's class ---------- */
-document.addEventListener('change',e=>{
-  const sel=e.target;if(!sel.classList||!sel.classList.contains('nsel'))return;
-  const n=state.advisory.find(x=>x.id===sel.dataset.nid);if(!n)return;
-  n.course=sel.value||'';
-  const card=sel.closest('.note'),nt=card&&card.querySelector('.nt'),c=courseById(n.course);
-  const lab=sel.closest('.ncl');if(lab){lab.classList.toggle('none',!c);const v=lab.querySelector('.ncv');if(v)v.textContent=c?cname(c):'Class';}
+XDD_ON.note=(w,v)=>{
+  const n=state.advisory.find(x=>x.id===w.dataset.id);if(!n)return;
+  n.course=v||'';
+  const card=w.closest('.note'),nt=card&&card.querySelector('.nt'),c=courseById(n.course);
+  const lab=w.querySelector('.ncl');if(lab){lab.classList.toggle('none',!c);const cv=lab.querySelector('.ncv');if(cv)cv.textContent=c?cname(c):'Class';}
   if(nt&&nt.isContentEditable){if(n.text)saveNote(n);nt.focus();
     const r=document.createRange();r.selectNodeContents(nt);r.collapse(false);const s=getSelection();s.removeAllRanges();s.addRange(r);return;}
   render();saveNote(n);
-});
+};
 document.addEventListener('focusout',e=>{
-  const sel=e.target;if(!sel.classList||!sel.classList.contains('nsel'))return;
-  const card=sel.closest('.note'),nt=card&&card.querySelector('.nt');
-  if(nt&&nt.isContentEditable&&nt._close&&e.relatedTarget!==nt)setTimeout(()=>{if(document.activeElement!==nt&&nt.isContentEditable)nt._close(true);},0);
+  const w=e.target.closest&&e.target.closest('.nsel-dd');if(!w)return;
+  const to=e.relatedTarget;if(to&&w.contains(to))return;
+  const card=w.closest('.note'),nt=card&&card.querySelector('.nt');
+  if(nt&&nt.isContentEditable&&nt._close&&to!==nt)setTimeout(()=>{if(document.activeElement!==nt&&!w.contains(document.activeElement)&&nt.isContentEditable)nt._close(true);},0);
 });
+/* ---------- the site's own dropdown: a button and a list in place of a native select. kind names the handler
+   in XDD_ON; the menu opens and closes in place, so nothing is redrawn while it's open ---------- */
+function xddHTML(o){
+  const val=o.value||'',cur=o.options.find(x=>x.v===val);
+  return `<div class="cdd xdd ${o.cls||''}" data-xdd="${esc(o.kind)}" data-id="${esc(o.id||'')}" data-v="${esc(val)}" data-ph="${esc(o.ph||'')}">`+
+    `<button type="button" class="cdd-btn xdd-btn ${o.btnCls||''}" aria-haspopup="listbox" aria-expanded="false" aria-label="${esc(o.label)}">${o.btn||`<span class="cnm">${esc(cur?cur.t:o.ph||'')}</span><span class="car"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></span>`}</button>`+
+    `<div class="cdd-menu xdd-menu" role="listbox" aria-label="${esc(o.label)}">${o.options.map(x=>`<button type="button" role="option" tabindex="-1" class="cdd-item${x.v===val?' sel':''}" data-xv="${esc(x.v)}" aria-selected="${x.v===val}">${esc(x.t)}</button>`).join('')}</div></div>`;
+}
+function xddClose(w,focus){if(!w)return;w.classList.remove('on');const m=w.querySelector('.xdd-menu'),b=w.querySelector('.xdd-btn');
+  if(m)m.classList.remove('open','up');if(b){b.setAttribute('aria-expanded','false');if(focus)b.focus({preventScroll:true});}}
+function xddCloseAll(but){document.querySelectorAll('.xdd.on').forEach(w=>{if(w!==but)xddClose(w);});}
+function xddOpen(w,kb){
+  xddCloseAll(w);w.classList.add('on');const m=w.querySelector('.xdd-menu'),b=w.querySelector('.xdd-btn');
+  m.classList.add('open');b.setAttribute('aria-expanded','true');
+  /* upward when there's no room below */
+  const r=m.getBoundingClientRect(),br=b.getBoundingClientRect();if(r.bottom>innerHeight-8&&br.top-r.height-8>0)m.classList.add('up');
+  const s=m.querySelector('[aria-selected="true"]');if(s)m.scrollTop=Math.max(0,s.offsetTop-m.clientHeight/2);
+  if(kb){const f=s||m.querySelector('.cdd-item');if(f)f.focus({preventScroll:true});}
+}
+/* sets the shown value without calling the handler */
+function xddSet(w,v){w.dataset.v=v;let t='';
+  w.querySelectorAll('.xdd-menu .cdd-item').forEach(x=>{const on=x.dataset.xv===v;x.classList.toggle('sel',on);x.setAttribute('aria-selected',on);if(on)t=x.textContent;});
+  const l=w.querySelector('.xdd-btn .cnm');if(l)l.textContent=t||w.dataset.ph||'';}
+function xddPick(w,v){xddSet(w,v);const kb=w.contains(document.activeElement)&&document.activeElement.classList.contains('cdd-item');xddClose(w,kb);
+  const f=XDD_ON[w.dataset.xdd];if(f)f(w,v);}
+/* a press on it never moves the focus (a note being typed stays open); Tab still reaches the button */
+['pointerdown','mousedown'].forEach(t=>document.addEventListener(t,e=>{if(e.target.closest&&e.target.closest('.xdd'))e.preventDefault();},true));
+document.addEventListener('click',e=>{
+  const w=e.target.closest&&e.target.closest('.xdd');if(!w)return;
+  e.stopPropagation();
+  const it=e.target.closest('.xdd-menu .cdd-item');if(it){xddPick(w,it.dataset.xv);return;}
+  if(e.target.closest('.xdd-btn')){if(w.classList.contains('on'))xddClose(w);else xddOpen(w,e.detail===0);}
+},true);
+document.addEventListener('keydown',e=>{
+  const w=e.target.closest&&e.target.closest('.xdd');if(!w)return;
+  const items=[...w.querySelectorAll('.xdd-menu .cdd-item')],i=items.indexOf(e.target),open=w.classList.contains('on');
+  if(e.key==='Escape'&&open){e.preventDefault();e.stopPropagation();xddClose(w,true);return;}
+  if(e.key==='Tab'){if(open)xddClose(w,i>=0);return;}
+  if(i<0){if(e.key==='ArrowDown'||e.key==='ArrowUp'||(!open&&(e.key==='Enter'||e.key===' '))){e.preventDefault();xddOpen(w,true);}return;}
+  if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();items[(i+(e.key==='ArrowDown'?1:-1)+items.length)%items.length].focus();}
+  else if(e.key==='Home'||e.key==='End'){e.preventDefault();items[e.key==='Home'?0:items.length-1].focus();}
+},true);
+MENUS.push({open:()=>!!document.querySelector('.xdd.on'),keep:['.xdd'],close:()=>{xddCloseAll();}});
 </script>
 </body>
 </html>
