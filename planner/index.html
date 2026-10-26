@@ -2618,7 +2618,7 @@ button.ch-row.on{background:var(--blue-wash);box-shadow:inset 0 0 0 2px var(--bl
   <div class="sp-mid">
     <div class="sp-kicker sp-mv"></div>
     <h2 class="sp-title"><span class="l1 sp-mv">Saxon</span><br><span class="l2 sp-mv">Planner</span></h2>
-    <div class="sp-url sp-mv"><a href="https://tinyurl.com/saxonplanner" target="_blank" rel="noopener">tinyurl.com/saxonplanner</a><button type="button" data-hm-copy aria-label="Copy link" title="Copy link"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12"/><path d="M5 15H3V3h12v2"/></svg></button><span class="hm-ok" aria-live="polite"></span></div>
+    <div class="sp-url sp-mv"><a href="https://saxonplanner.web.app/" target="_blank" rel="noopener">saxonplanner.web.app</a><button type="button" data-hm-copy aria-label="Copy link" title="Copy link"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12"/><path d="M5 15H3V3h12v2"/></svg></button><span class="hm-ok" aria-live="polite"></span></div>
     <div class="sp-rule sp-mv"></div>
     <form class="sp-gate" id="spgate" autocomplete="off" onsubmit="return false">
       <input type="text" id="spuser" placeholder="Username" aria-label="Username" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="24">
@@ -4018,9 +4018,9 @@ function heroArt(){const g=(k,x,y,s)=>`<g transform="translate(${x} ${y}) scale(
     g('globe',12,210,2.1)+g('calendar',360,30,1.55)+g('clock',40,54,1.35)+g('backpack',160,96,3.2)+g('books',356,244,1.95)+
     g('flask',176,6,0.95)+g('pencil',446,138,1.05)+'</svg>';}
 /* the sister sites, in the menus and on Home */
-const SITES={profegpt:'https:'+SLASH2+'script.google.com/macros/s/AKfycbzQJSe8rHdR9ZDTmpEfFtOtUaHbirB9jQd0rP8GuOYqA-5MNLCDGZYBfOPirBDVybsObQ/exec',
-  interpres:'https:'+SLASH2+'tinyurl.com/interpres-latin',
-  planner:'https:'+SLASH2+'tinyurl.com/saxonplanner'};
+const SITES={profegpt:'https:'+SLASH2+'profegpt.web.app/',
+  interpres:'https:'+SLASH2+'interpres.web.app/',
+  planner:'https:'+SLASH2+'saxonplanner.web.app/'};
 function siteLinks(r){(r||document).querySelectorAll('a[data-site]').forEach(a=>{if(SITES[a.dataset.site])a.href=SITES[a.dataset.site];});}
 artFill(document);siteLinks(document);{const sa=document.querySelector('#splash .sp-art');if(sa)sa.innerHTML=heroArt();}
 const LOCAL_ORIGIN='http:'+SLASH2+'localhost:8741';
@@ -6522,14 +6522,14 @@ const HM_PAGES=[['courses','Courses','Every class with its period and what is co
   ['advisory','To-Do','Sticky notes and school events'],['assignments','Assignments','Everything not done yet, oldest first'],
   ['resources','Resources','Documents and links for each class'],['tasks','Tasks','Contests, grants and programs'],['chat','Chat','Messages with friends and groups'],
   ['games','Games','Singleplayer, social and multiplayer games'],['guide','Guide','Every feature explained, step by step']];
-const HM_URL='tinyurl.com/saxonplanner';
+const HM_URL='saxonplanner.web.app';
 /* each Home card's drawing */
 const HM_ART={courses:'backpack',calendar:'calendar',advisory:'sticky',assignments:'clipboard',resources:'books',tasks:'trophy',chat:'chat',games:'controller',guide:'guide'};
 /* while the login page is turning into Home, Home's cards wait above the screen */
 let homeHold=false;
 /* the theme saved under a key: sx-theme is the account's, sx-theme-login only the login page's (no saved choice follows the system) */
 function themePref(k){let t=null;try{t=localStorage.getItem(k);}catch(_){}
-  const r=document.documentElement;if(t==='dark'||t==='light')r.setAttribute('data-theme',t);else r.removeAttribute('data-theme');}
+  const r=document.documentElement;r.setAttribute('data-theme',t==='dark'?'dark':'light');}
 /* Desmos from the login page's menu: the graphing calculator full screen */
 let dzFocus=null;
 function openDesmos(){const d=document.getElementById('desmos');dzFocus=document.activeElement;
@@ -6627,7 +6627,7 @@ function render(){
   pendApply();
 }
 (function boot(){
-  try{const th=localStorage.getItem('sx-theme');if(th)document.documentElement.setAttribute('data-theme',th);}catch(_){}
+  {let th=null;try{th=localStorage.getItem('sx-theme');}catch(_){}document.documentElement.setAttribute('data-theme',th==='dark'?'dark':'light');}
   try{state.extended=localStorage.getItem('sx-extended')!=='0';}catch(_){}
   try{const md=localStorage.getItem('sx-mode');if(md&&['all','hw','exam','notdue','notes'].includes(md))state.mode=md;}catch(_){}
   try{const t=localStorage.getItem('sx-tab');if(t&&['home','calendar','courses','advisory','assignments','resources','chat','tasks'].includes(t))state.view=t;}catch(_){}
@@ -8217,6 +8217,12 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.querySelec
 /* ---------- menus: a click or tap anywhere outside an open menu closes it, also where the click is stopped before it
    reaches the page or lands in a game frame; a menu's own button still opens and shuts it. Where the press landed is
    read on pointerdown (before anything redraws), the menus close once the click has been handled ---------- */
+/* sticky notes: a press anywhere on a note keeps (or starts) editing it, instead of ending the edit */
+document.addEventListener('pointerdown',e=>{const n=e.target.closest&&e.target.closest('.note');if(!n)return;
+  if(e.target.closest('button,select,label,input,textarea,a,.nt'))return;
+  const ed=n.querySelector('.nt');if(!ed)return;e.preventDefault();
+  if(ed.isContentEditable){ed.focus();const r=document.createRange();r.selectNodeContents(ed);r.collapse(false);const sel=getSelection();sel.removeAllRanges();sel.addRange(r);}
+  else ed.click();},true);
 const MENUS=[
   {open:()=>moreDD.classList.contains('open'),keep:['.morewrap'],close:()=>{moreDD.classList.remove('open');moreBtn.classList.remove('dd-open');}},
   {open:()=>mMenu.classList.contains('open'),keep:['.mmenu','#menubtn'],close:()=>{mMenu.classList.remove('open');mMenu.setAttribute('aria-hidden','true');menuBtn.classList.remove('dd-open');}},
