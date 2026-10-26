@@ -1399,6 +1399,11 @@ html.home-on body::before{opacity:1}
 #games .gm-load.done{opacity:0;pointer-events:none}
 #games .gm-lname{font:800 clamp(2rem,6vw,3.4rem)/1 var(--font-ui);text-transform:uppercase;letter-spacing:.02em}
 #games .gm-bar{width:min(240px,60vw);height:3px;background:rgba(242,240,234,.15);overflow:hidden}
+/* loading data: shown under the bar once the game has asked for its save; it sits outside the flow, so nothing moves */
+#games .gm-barw{position:relative}
+#games .gm-lsub{position:absolute;left:50%;top:100%;transform:translateX(-50%);margin-top:12px;white-space:nowrap;
+  font:600 13px/1 var(--font-ui);color:var(--fg2);opacity:0;transition:opacity .15s;pointer-events:none}
+#games .gm-load.data .gm-lsub{opacity:1}
 #games .gm-bar i{display:block;width:35%;height:100%;background:#f2f0ea;animation:gmbar 1s ease-in-out infinite}
 @keyframes gmbar{0%{transform:translateX(-100%)}100%{transform:translateX(290%)}}
 
@@ -7777,6 +7782,21 @@ function closeGames(){
 const gamesKey=e=>{const t=e.target;if(t&&(t.isContentEditable||/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName||'')))return;
   if((e.key==='h'||e.key==='H')&&!e.metaKey&&!e.ctrlKey&&!e.altKey&&!document.getElementById('games').hidden){e.preventDefault();closeGames();if(state.user)goHome();}};
 document.addEventListener('keydown',gamesKey);
+/* the loading screen stays over a game until its saved data is in. Games that post game-ready (their own game-ready
+   helper) are shown on that message; embeds restore their save before any game code runs, so they show once every
+   save request has been answered; anything else shows when the frame has loaded. Safety: 8 s after the frame loads it
+   shows anyway, but only once every save request it made has been answered */
+function gmReveal(f){const st=f&&f._gr;if(!st||st.shown)return;const g=document.getElementById('games');
+  if(!g||g.querySelector('.gm-frame')!==f)return;st.shown=true;clearTimeout(st.t8);clearTimeout(st.t20);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{const l=g.querySelector('.gm-load');if(l){l.classList.add('done');setTimeout(()=>l.remove(),300);}}));}
+function gmCheck(f){const st=f&&f._gr;if(!st||st.shown||!st.loaded)return;
+  const answered=st.asked===st.replied;
+  if(st.mode==='load'||st.ready&&st.mode==='wait'){setTimeout(()=>gmReveal(f),st.mode==='load'?150:0);return;}
+  if(st.mode==='embed'&&st.asked&&answered){setTimeout(()=>gmReveal(f),150);return;}
+  if(st.late&&st.asked&&answered)setTimeout(()=>gmReveal(f),400);}
+function gmAsked(f){const st=f&&f._gr;if(!st)return;st.asked++;
+  if(!st.shown){const l=document.querySelector('#games .gm-load');if(l)l.classList.add('data');}}
+function gmReplied(f){const st=f&&f._gr;if(!st)return;st.replied++;gmCheck(f);}
 function playGame(id){
   const g=document.getElementById('games');
   const gm=GAMES.find(x=>x.id===id);
@@ -7785,10 +7805,10 @@ function playGame(id){
   if(gmParent(id))metricaLast=id;
   roomLeaveAll();
   /* a loading screen covers the frame until the game has started */
-  g.innerHTML=`<div class="gm-load">${art('logo','gm-llogo')}<div class="gm-lname">${esc((gm?gm.name:id).toLowerCase())}</div><div class="gm-bar"><i></i></div></div>
+  g.innerHTML=`<div class="gm-load">${art('logo','gm-llogo')}<div class="gm-lname">${esc((gm?gm.name:id).toLowerCase())}</div><div class="gm-barw"><div class="gm-bar"><i></i></div><div class="gm-lsub">loading data</div></div></div>
     <iframe class="gm-frame" allow="fullscreen; gamepad; autoplay" title="${esc(id)}"></iframe>`;
   loadGame(id).then(src=>{const f=g.querySelector('.gm-frame');if(!f)return;
-    f.addEventListener('load',()=>{setTimeout(()=>{const l=g.querySelector('.gm-load');if(l){l.classList.add('done');setTimeout(()=>l.remove(),300);}},150);try{watchErrors(f.contentWindow,'game:'+id);f.contentWindow.document.addEventListener('keydown',gamesKey);frameMenus(f);f.contentWindow.focus();}catch(e){reportErr('game-load',e&&e.stack||e);}},{once:true});
+    f.addEventListener('load',()=>{const st=f._gr;st.loaded=true;st.t8=setTimeout(()=>{st.late=true;if(st.mode!=='wait'&&!st.asked)gmReveal(f);else gmCheck(f);},8000);st.t20=setTimeout(()=>{if(!st.asked)gmReveal(f);},20000);gmCheck(f);try{watchErrors(f.contentWindow,'game:'+id);f.contentWindow.document.addEventListener('keydown',gamesKey);frameMenus(f);f.contentWindow.focus();}catch(e){reportErr('game-load',e&&e.stack||e);}},{once:true});
     /* testing mode: window.SX_TEST tells the game to start maxed out and not save (lander also gets its TEST_MODE: J skips to the next body) */
     /* scrolling inside a game never carries on into the planner or the frame around it */
     const OVS='<style>html,body{overscroll-behavior:none}</style><script>(function(){var L=window.__sxAC=[];["AudioContext","webkitAudioContext"].forEach(function(k){var A=window[k];if(typeof A!="function"||typeof Proxy!="function")return;'+
@@ -7797,6 +7817,8 @@ function playGame(id){
     if(GAME_FILE[id])src=src.replace(/<head[^>]*>/i,m=>m+'<script>window.MX_ENTRY='+JSON.stringify(id)+';</'+'script>');
     const test=isGameAdmin()&&gameTest();
     if(test){const T='<script>window.SX_TEST=true;</'+'script>';src=src.replace('var TEST_MODE = false;','var TEST_MODE = true;');src=/<head[^>]*>/i.test(src)?src.replace(/<head[^>]*>/i,m=>m+T):T+src;}
+    /* how this frame waits for its save (see gmCheck): wrappers (arcade-load) as embeds, games with game-ready wait for it */
+    f._gr={asked:0,replied:0,ready:false,loaded:false,shown:false,late:false,mode:/arcade-load/.test(src)?(test?'load':'embed'):/game-ready/.test(src)?'wait':'load'};
     f.srcdoc=src;reportErr('game','srcdoc set '+src.length);}).catch(e=>{console.warn('game failed',e);reportErr('game-fetch',e&&e.message||e);});
 }
 /* each browser gets a random device id so saves are kept per player
@@ -8120,11 +8142,13 @@ window.addEventListener('message',async e=>{
     if(m.type==='games-menu'){const p=gmParent(f.title);if(gmDirect)closeGames();else if(p)playGame(p.id);else openGames();return;}
     if(m.type==='games-close'){closeGames();return;}
     if(m.type==='room'){roomBridge(f,m);return;}
+    if(m.type==='game-ready'){if(f._gr){f._gr.ready=true;gmCheck(f);}return;}
     /* saves for any game: game-load (reply game-load-res) and game-save (fire and forget); signed in they go to the account, otherwise under the guest code */
     if((m.type==='game-load'||m.type==='game-save')&&GAMES.some(x=>x.id===m.game)){
       if(m.type==='game-load'){
+        gmAsked(f);
         let data='';try{data=await gameLoad(m.game);}catch(_){}
-        if(document.querySelector('#games .gm-frame')===f)f.contentWindow.postMessage({type:'game-load-res',reqId:m.reqId,data:typeof data==='string'?data:''},'*');
+        if(document.querySelector('#games .gm-frame')===f){f.contentWindow.postMessage({type:'game-load-res',reqId:m.reqId,data:typeof data==='string'?data:''},'*');gmReplied(f);}
       }else if(typeof m.data==='string'&&m.data.length<=150000&&!(isGameAdmin()&&gameTest()))await gameSave(m.game,m.data);
       return;
     }
@@ -8136,8 +8160,10 @@ window.addEventListener('message',async e=>{
       return;
     }
     if(m.type==='lander-load'){
-      const data=await gameLoad('lander');
-      if(data)f.contentWindow.postMessage({type:'lander-progress',data},'*');
+      /* always answered ('' when there is no save): the answer is what lets Lander post game-ready */
+      gmAsked(f);
+      let data='';try{data=await gameLoad('lander');}catch(_){}
+      if(document.querySelector('#games .gm-frame')===f){f.contentWindow.postMessage({type:'lander-progress',data:typeof data==='string'?data:''},'*');gmReplied(f);}
     }else if(m.type==='lander-save'&&typeof m.data==='string'&&m.data.length<20000&&!(isGameAdmin()&&gameTest()))await gameSave('lander',m.data);
   }catch(err){console.warn('game save failed',err);}
 });
