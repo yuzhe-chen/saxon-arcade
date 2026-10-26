@@ -2367,6 +2367,12 @@ button.ch-row.on{background:var(--blue-wash);box-shadow:inset 0 0 0 2px var(--bl
 .site-pick .sp-t{font:800 15px/1.3 var(--font-ui);color:var(--fg);text-align:center;margin-bottom:10px}
 .site-pick .sp-b{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
 .site-pick .sp-b .kbtn{text-decoration:none;white-space:nowrap}
+#gasmove{position:fixed;inset:0;z-index:100000;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:16px;overscroll-behavior:none}
+#gasmove .gm-card{background:var(--panel);border:2px solid var(--line);border-radius:var(--r);box-shadow:0 4px 0 var(--line);max-width:440px;width:100%;padding:28px 24px 24px;text-align:center}
+#gasmove .gm-art{width:72px;height:72px;margin:0 auto 12px}#gasmove .gm-art svg{width:100%;height:100%}
+#gasmove h2{font:700 26px/1.2 var(--display);color:var(--pri);margin:0 0 12px}
+#gasmove p{font:600 15px/1.5 var(--font-ui);color:var(--fg);margin:0 0 10px}
+#gasmove .hm-btn{display:inline-flex;justify-content:center;margin-top:10px;text-decoration:none;width:100%;box-sizing:border-box}
 </style>
 </head>
 <body>
@@ -4399,6 +4405,7 @@ async function loadData(pre){
     const st=d.settings||{};
     COURSES=(st.courses||[]).map(c=>({id:c.id,name:c.name,abbr:c.abbr||makeAbbr(c.name),raw:c.raw||'',keys:c.keys||[],fresh:!!c.fresh}));
     settingsLoaded=true;
+    if(ON_GAS)setTimeout(gasMove,0);
     /* classes the calendar import just created get their proper names here */
     const fresh=COURSES.filter(c=>c.fresh);
     fresh.forEach(c=>{const n=normalizeCourse(c.raw||c.name);if(n.name){c.name=n.name;c.abbr=n.abbr;}
@@ -8233,6 +8240,18 @@ document.addEventListener('pointerdown',e=>{const n=e.target.closest&&e.target.c
   const ed=n.querySelector('.nt');if(!ed)return;e.preventDefault();
   if(ed.isContentEditable){ed.focus();const r=document.createRange();r.selectNodeContents(ed);r.collapse(false);const sel=getSelection();sel.removeAllRanges();sel.addRange(r);}
   else ed.click();},true);
+/* Google's Apps Script copy: once someone has signed in, a popup they can't close sends them to saxonplanner.web.app */
+function gasMove(){if(!ON_GAS||document.getElementById('gasmove'))return;const u='https:'+SLASH2+SITE_URLS.planner.Firebase;
+  const m=document.createElement('div');m.id='gasmove';m.setAttribute('role','alertdialog');m.setAttribute('aria-modal','true');m.setAttribute('aria-labelledby','gasmove-h');
+  m.innerHTML='<div class="gm-card"><div class="gm-art">'+art('logo')+'</div><h2 id="gasmove-h">Saxon Planner has moved</h2>'+
+   '<p>This Google Script version will get updates less often from now on. Everything new comes to <b>saxonplanner.web.app</b> first, and it works on every account and computer.</p>'+
+   '<p>Your account, classes and saves are the same there.</p>'+
+   '<a class="hm-btn" id="gasmove-go" href="'+esc(u)+'" target="_top">Go to saxonplanner.web.app</a></div>';
+  document.body.appendChild(m);const go=m.querySelector('#gasmove-go');go.focus({preventScroll:true});
+  go.addEventListener('click',e=>{e.preventDefault();try{window.top.location.href=u;}catch(_){window.open(u,'_blank','noopener');}setTimeout(()=>{try{window.open(u,'_blank','noopener');}catch(_){}} ,1500);});
+  /* nothing closes it: Escape and clicks outside the card do nothing */
+  m.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();e.stopPropagation();}if(e.key==='Tab'){e.preventDefault();go.focus();}},true);
+  m.addEventListener('click',e=>{if(e.target===m)e.stopPropagation();});}
 function sitePickClose(){const m=document.querySelector('.site-pick');if(m)m.remove();}
 document.addEventListener('click',e=>{if(!ON_GAS)return;const a=e.target.closest&&e.target.closest('a[data-site]');if(!a||!SITE_URLS[a.dataset.site])return;
   e.preventDefault();e.stopPropagation();const was=document.querySelector('.site-pick');sitePickClose();if(was&&was.dataset.for===a.dataset.site)return;
