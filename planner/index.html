@@ -1075,7 +1075,7 @@ html.splash-on,html.splash-on body{overflow:hidden}
 @media (min-width:900px){
   #spdoc .docs-in{max-width:1160px}
   #spdoc .docs-body{display:grid;grid-template-columns:210px minmax(0,1fr);column-gap:48px;align-items:start}
-  #spdoc .docs-toc{position:sticky;top:96px;margin-top:22px;max-height:calc(100vh - 112px);display:flex;flex-direction:column}
+  #spdoc .docs-toc{position:sticky;top:124px;margin-top:22px;max-height:calc(100vh - 140px);display:flex;flex-direction:column}
   #spdoc .dt-list{overflow-y:auto;overscroll-behavior:contain;min-height:0;flex:1 1 auto}
 }
 @media (max-width:899px){
@@ -1960,6 +1960,10 @@ nav.tabs .mmenu .mcolors button.kbtn:hover{background:var(--panel);color:var(--f
 .su-add:hover{background:var(--panel2);color:var(--fg2)}
 .su-nw.warn .su-name{box-shadow:none;border-color:var(--warn)}
 .shot{border:2px solid var(--line);border-radius:var(--rs)}
+/* the picture sits inside its rounded outline with the same gap on every side, so the outline never cuts its corners
+   (a gap of the corner radius less the line keeps the picture's corners square and whole) */
+.shot{box-sizing:content-box;width:auto;padding:10px;background-color:transparent;background-origin:content-box;background-clip:content-box}
+.su-how .shot{width:auto;margin-right:0}
 .su-opt.on{box-shadow:none;border-color:var(--blue-light);background:var(--blue-wash)}
 .su-row select{padding-right:8px}
 
@@ -2352,6 +2356,8 @@ button.ch-row.on{background:var(--blue-wash);box-shadow:inset 0 0 0 2px var(--bl
 .note .ncl select{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;min-height:0!important;opacity:0;cursor:pointer;
   margin:0!important;padding:0!important;border:0!important;font-size:16px;appearance:none;-webkit-appearance:none}
 .note .nd{flex:none;font-size:13px;font-weight:700;color:var(--fg2)}
+/* the login page writes the games in lowercase */
+#splash .sp-gm h2,#splash .sp-menu [data-spm="games"] span,#splash .sp-menu [data-spm="soundboard"] span{text-transform:none!important}
 </style>
 </head>
 <body>
@@ -2370,7 +2376,7 @@ button.ch-row.on{background:var(--blue-wash);box-shadow:inset 0 0 0 2px var(--bl
 <ul>
 <li><b>Top bar</b>: Courses, Calendar, To-Do, Assignments, Resources<span class="g-chat"> and Chat</span>, then the three lines at the top right. Their menu holds every page that doesn't fit in the bar, then <span class="g-games">Games, </span>Settings, Suggestions, this Guide, Dark mode, and links to ProfeGPT, Interpres and Planner. On a phone every page is in that menu.</li>
 <li><b>Home</b>: logging in opens it, and clicking Saxon Planner in the top bar returns to it. It has a card for every page, plus Edit classes and Suggestions. Only Log out returns to the login page.</li>
-<li><b>Login page</b>: the three lines at the top right open Games, Desmos, Soundboard, a dark mode switch that only applies to the login page, and links to ProfeGPT, Interpres and Planner. Scroll down, or press the arrow, for this documentation.</li>
+<li><b>Login page</b>: the three lines at the top right open Games, Desmos, soundboard, a dark mode switch that only applies to the login page, and links to ProfeGPT, Interpres and Planner. Scroll down, or press the arrow, for this documentation.</li>
 </ul>
 
 <h3>Finding your Schoology link</h3>
@@ -2538,32 +2544,31 @@ button.ch-row.on{background:var(--blue-wash);box-shadow:inset 0 0 0 2px var(--bl
 <p>Games marked Embed are outside games running inside the planner. Online ones play on live servers with real people.</p>
 <p>Multiplayer and Online games start locked on a new account (Social games never lock). The lock panel at the top of the games has your referral link: copy it and share it, and once one other person signs up with it, both sections unlock for you. They can also type your username into Referral code when they sign up. A referral only works on a device that hasn't been used for an account before. Guests need to sign up first.</p>
 <ul>
-<li><b>Lander</b>: fly a rocket from planet to planet and land softly. Coins buy upgrades, towers and bases.</li>
-<li><b>Solitaire</b>: classic Klondike. Build the four suits up from Ace to King.</li>
-<li><b>GeoBowl</b>: you get 8 countries one at a time and 8 world stats (life expectancy, chocolate eaten, Olympic medals and more). Put each country in the stat where you think it ranks highest; the lower your total rank, the better. Classic, Daily and Weekly rounds.</li>
-<li><b>Tycoon Simulator</b>: start with a lemonade stand and build a business empire. Hire managers so it runs while you're away.</li>
-<li><b>Little Fishing</b>: drop the hook as deep as it goes, catch fish on the way up, and spend the money on a longer line and more fish.</li>
-<li><b>Survivors</b>: fight off endless waves. Pick a new skill every level up, and collect and merge equipment between runs.</li>
-<li><b>Catfishing</b>: fish from your boat, sell the catch, and buy better rods, boats and gear to reach deeper waters.</li>
-<li><b>Chess</b>: play a friend or the computer, with a choice of boards and piece sets.</li>
-<li><b>Metrica</b>: one game, four worlds. <b>Classic</b>: the cube runs on its own; jump at the right moment to clear spikes, pads and portals, and fly the ship in Liftoff. Includes practice mode and a cube level editor. <b>Platformer</b>: a precise platformer. Reach the goal, collect gems, and build your own levels in its editor. <b>Wave</b>: hold to fly the dart up and let go to dive, threading it between the spikes. <b>Mixed</b>: the editor for levels that switch between cube, ship, platformer and wave through portals. Clearing every level in a world unlocks its mode there. All the worlds share one set of skins.</li>
-<li><b>Getaway Shootout</b> (Embed): race other players to the getaway, hopping and shooting your way there.</li>
-<li><b>Tag</b> (Embed): 2 to 4 players on one keyboard; whoever is it has to tag someone else before time runs out.</li>
-<li><b>Crossy Road</b> (Embed): hop across roads, rivers and train tracks without getting hit.</li>
-<li><b>Drive Mad</b> (Embed): drive a wobbly truck over ramps and bridges to the finish without flipping.</li>
-<li><b>Gladihoppers</b> (Embed): hop-and-swing gladiator fights. Win battles to buy better weapons and armor.</li>
-<li><b>Monkey Mart</b> (Embed): run a supermarket as a monkey; grow crops, stock shelves and serve customers.</li>
-<li><b>Stickman Hook</b> (Embed): swing from hook to hook and fling yourself to the finish.</li>
-<li><b>Paper.io 2</b> (Embed): claim ground by drawing loops, and cut off the other players' trails.</li>
-<li><b>Smash Karts</b> (Embed): online kart battles with weapons against real players.</li>
-<li><b>YoHoHo.io</b> (Embed): pirate brawler; knock other pirates off the shrinking island and level up.</li>
-<li><b>Basketball Random</b> (Embed): 1 or 2 player floppy basketball where the court, ball and players change every point.</li>
-<li><b>Gartic Phone</b>: draw what you're given, guess what others drew, and watch the chain go wrong.</li>
-<li><b>Guess the Drawing</b>: one player draws a word, the rest race to guess it.</li>
-<li><b>Imposter</b>: everyone but the imposter gets the secret word; give clues and vote out who's faking.</li>
-<li><b>Poker</b>: Texas Hold'em with friends.</li>
-<li><b>Votesout</b>: a party game where the group answers questions and votes on each other.</li>
-<li><b>Soundboard</b>: a board of sound effects to play.</li>
+<li><b>lander</b>: fly a rocket from planet to planet and land softly. Coins buy upgrades, towers and bases.</li>
+<li><b>solitaire</b>: classic Klondike. Build the four suits up from Ace to King.</li>
+<li><b>geobowl</b>: you get 8 countries one at a time and 8 world stats (life expectancy, chocolate eaten, Olympic medals and more). Put each country in the stat where you think it ranks highest; the lower your total rank, the better. Classic, Daily and Weekly rounds.</li>
+<li><b>krillion</b>: name answers to a prompt before the clock runs out. Rare answers sink you deeper, and every prompt hides one gem. Play the Daily Dive, Endless Dive, Free Dive or the Archive.</li>
+<li><b>tycoon simulator</b>: start with a lemonade stand and build a business empire. Hire managers so it runs while you're away.</li>
+<li><b>little fishing</b>: drop the hook as deep as it goes, catch fish on the way up, and spend the money on a longer line and more fish.</li>
+<li><b>chess</b>: play a friend or the computer, with a choice of boards and piece sets.</li>
+<li><b>metrica</b>: one game, four worlds. <b>classic</b>: the cube runs on its own; jump at the right moment to clear spikes, pads and portals, and fly the ship in Liftoff. Includes practice mode and a cube level editor. <b>platformer</b>: a precise platformer. Reach the goal, collect gems, and build your own levels in its editor. <b>wave</b>: hold to fly the dart up and let go to dive, threading it between the spikes. <b>mixed</b>: the editor for levels that switch between cube, ship, platformer and wave through portals. Clearing every level in a world unlocks its mode there. All the worlds share one set of skins.</li>
+<li><b>getaway shootout</b> (Embed): race other players to the getaway, hopping and shooting your way there.</li>
+<li><b>tag</b> (Embed): 2 to 4 players on one keyboard; whoever is it has to tag someone else before time runs out.</li>
+<li><b>crossy road</b> (Embed): hop across roads, rivers and train tracks without getting hit.</li>
+<li><b>drive mad</b> (Embed): drive a wobbly truck over ramps and bridges to the finish without flipping.</li>
+<li><b>gladihoppers</b> (Embed): hop-and-swing gladiator fights. Win battles to buy better weapons and armor.</li>
+<li><b>monkey mart</b> (Embed): run a supermarket as a monkey; grow crops, stock shelves and serve customers.</li>
+<li><b>stickman hook</b> (Embed): swing from hook to hook and fling yourself to the finish.</li>
+<li><b>paper.io 2</b> (Embed): claim ground by drawing loops, and cut off the other players' trails.</li>
+<li><b>smash karts</b> (Embed): online kart battles with weapons against real players.</li>
+<li><b>yohoho.io</b> (Embed): pirate brawler; knock other pirates off the shrinking island and level up.</li>
+<li><b>basketball random</b> (Embed): 1 or 2 player floppy basketball where the court, ball and players change every point.</li>
+<li><b>gartic phone</b>: draw what you're given, guess what others drew, and watch the chain go wrong.</li>
+<li><b>guess the drawing</b>: one player draws a word, the rest race to guess it.</li>
+<li><b>imposter</b>: everyone but the imposter gets the secret word; give clues and vote out who's faking.</li>
+<li><b>poker</b>: Texas Hold'em with friends.</li>
+<li><b>votesout</b>: a party game where the group answers questions and votes on each other.</li>
+<li><b>soundboard</b>: a board of sound effects to play.</li>
 </ul></div>
 
 <h3>Keyboard shortcuts</h3>
@@ -2592,9 +2597,9 @@ button.ch-row.on{background:var(--blue-wash);box-shadow:inset 0 0 0 2px var(--bl
     <div class="sp-mwrap">
       <button class="sp-burger" id="spmenubtn" aria-label="Menu" title="Menu" aria-haspopup="true" aria-expanded="false" aria-controls="spmenu"><svg viewBox="0 0 24 24"><path d="M4 6.5h16M4 12h16M4 17.5h16"/></svg></button>
       <div class="sp-menu" id="spmenu" role="menu" aria-label="Menu">
-        <button role="menuitem" data-spm="games"><i class="mi" data-art="controller"></i><span>Games</span></button>
+        <button role="menuitem" data-spm="games"><i class="mi" data-art="controller"></i><span>games</span></button>
         <button role="menuitem" data-spm="desmos"><i class="mi" data-art="graph"></i><span>Desmos</span></button>
-        <button role="menuitem" data-spm="soundboard"><i class="mi" data-art="speaker"></i><span>Soundboard</span></button>
+        <button role="menuitem" data-spm="soundboard"><i class="mi" data-art="speaker"></i><span>soundboard</span></button>
         <div class="sp-msep"></div>
         <button role="menuitemcheckbox" class="sp-mtheme" id="spthemesw" aria-checked="false"><i class="mi" data-art="moon"></i><span>Dark mode</span><i class="sp-sw" aria-hidden="true"></i></button>
         <div class="sp-msep"></div>
@@ -2608,7 +2613,7 @@ button.ch-row.on{background:var(--blue-wash);box-shadow:inset 0 0 0 2px var(--bl
   <div class="sp-mid">
     <div class="sp-kicker sp-mv"></div>
     <h2 class="sp-title"><span class="l1 sp-mv">Saxon</span><br><span class="l2 sp-mv">Planner</span></h2>
-    <div class="sp-url sp-mv"><a href="https://tinyurl.com/saxonplanner" target="_blank" rel="noopener">tinyurl.com/saxonplanner</a><button type="button" data-hm-copy aria-label="Copy link" title="Copy link"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12"/><path d="M5 15H3V3h12v2"/></svg></button><span class="hm-ok" aria-live="polite"></span></div>
+    <div class="sp-url sp-mv"><a href="https://tinyurl.com/saxonplannerapp" target="_blank" rel="noopener">tinyurl.com/saxonplannerapp</a><button type="button" data-hm-copy aria-label="Copy link" title="Copy link"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12"/><path d="M5 15H3V3h12v2"/></svg></button><span class="hm-ok" aria-live="polite"></span></div>
     <div class="sp-rule sp-mv"></div>
     <form class="sp-gate" id="spgate" autocomplete="off" onsubmit="return false">
       <input type="text" id="spuser" placeholder="Username" aria-label="Username" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="24">
@@ -2624,7 +2629,7 @@ button.ch-row.on{background:var(--blue-wash);box-shadow:inset 0 0 0 2px var(--bl
  </div>
  <div class="sp-more" id="spmore">
   <section class="sp-gm g-games" aria-labelledby="spgm-h">
-    <h2 id="spgm-h">Games</h2>
+    <h2 id="spgm-h">games</h2>
     <div class="sp-gm-grid">
       <div><b>Play as a guest</b><p>Your progress is kept in this browser under a guest code.</p></div>
       <div><b>Sign in to save</b><p>Signed in, progress saves to your account. A guest code moves its progress over once, in Settings.</p></div>
@@ -4008,9 +4013,9 @@ function heroArt(){const g=(k,x,y,s)=>`<g transform="translate(${x} ${y}) scale(
     g('globe',12,210,2.1)+g('calendar',360,30,1.55)+g('clock',40,54,1.35)+g('backpack',160,96,3.2)+g('books',356,244,1.95)+
     g('flask',176,6,0.95)+g('pencil',446,138,1.05)+'</svg>';}
 /* the sister sites, in the menus and on Home */
-const SITES={profegpt:'https:'+SLASH2+'script.google.com/macros/s/AKfycbzQJSe8rHdR9ZDTmpEfFtOtUaHbirB9jQd0rP8GuOYqA-5MNLCDGZYBfOPirBDVybsObQ/exec',
-  interpres:'https:'+SLASH2+'script.google.com/macros/s/AKfycbyfS0EeA5rlHcOyaDjO88BjaxAes0Zwvsh92wXzPKYgDciVoRuDa2eQXZ_eiJNECofn/exec',
-  planner:'https:'+SLASH2+'tinyurl.com/saxonplanner'};
+const SITES={profegpt:'https:'+SLASH2+'tinyurl.com/profegptapp',
+  interpres:'https:'+SLASH2+'tinyurl.com/interpresapp',
+  planner:'https:'+SLASH2+'tinyurl.com/saxonplannerapp'};
 function siteLinks(r){(r||document).querySelectorAll('a[data-site]').forEach(a=>{if(SITES[a.dataset.site])a.href=SITES[a.dataset.site];});}
 artFill(document);siteLinks(document);{const sa=document.querySelector('#splash .sp-art');if(sa)sa.innerHTML=heroArt();}
 const LOCAL_ORIGIN='http:'+SLASH2+'localhost:8741';
@@ -6512,7 +6517,7 @@ const HM_PAGES=[['courses','Courses','Every class with its period and what is co
   ['advisory','To-Do','Sticky notes and school events'],['assignments','Assignments','Everything not done yet, oldest first'],
   ['resources','Resources','Documents and links for each class'],['tasks','Tasks','Contests, grants and programs'],['chat','Chat','Messages with friends and groups'],
   ['games','Games','Singleplayer, social and multiplayer games'],['guide','Guide','Every feature explained, step by step']];
-const HM_URL='tinyurl.com/saxonplanner';
+const HM_URL='tinyurl.com/saxonplannerapp';
 /* each Home card's drawing */
 const HM_ART={courses:'backpack',calendar:'calendar',advisory:'sticky',assignments:'clipboard',resources:'books',tasks:'trophy',chat:'chat',games:'controller',guide:'guide'};
 /* while the login page is turning into Home, Home's cards wait above the screen */
@@ -6817,6 +6822,8 @@ if(window.SX_REF)sxRefArrived(window.SX_REF);
   /* the documentation under the wallpaper: the Guide, with its contents column */
   function buildSpDoc(){const d=document.getElementById('spdoc'),tpl=document.getElementById('docs-tpl');if(!d||d.firstChild||!tpl)return;
     d.innerHTML=`<div class="docs-in"><div class="res-head"><div class="rh-text"><span class="rh-art">${art('guide')}</span><span class="rc">Saxon Planner</span><span class="rt">Documentation</span></div></div><div class="docs-body"><nav class="docs-toc" aria-label="Contents"></nav><div class="rdoc udoc">${tpl.innerHTML}</div></div></div>`;
+    /* the login page writes the games in lowercase */
+    d.querySelectorAll('.g-games h3').forEach(h=>{if(h.textContent==='Games')h.textContent='games';});
     docsToc(sp);}
   document.documentElement.classList.add('splash-on');
   if(passKey){
@@ -7424,7 +7431,7 @@ const GAMES=[
      (metrica-mixed: the same file as Classic, opened as the Mixed editor, see GAME_FILE); each keeps its own saves */
   {id:'metrica',name:'Metrica',labels:['Multiplayer'],modes:[['geodash','Classic','The cube runs on its own. Jump spikes, fly the ship and build your own levels.'],['appel','Platformer','Reach the goal, collect gems and build your own levels.'],['metrica-wave','Wave','Hold to fly the dart up, let go to dive. Thread it between the spikes.'],['metrica-mixed','Mixed','Build levels that switch between cube, ship, platformer and wave.']]},
   {id:'lander',name:'Lander',labels:['Singleplayer']},
-  {id:'geohunter',name:'GeoBowl',labels:['Singleplayer']},
+  {id:'geohunter',name:'Geobowl',labels:['Singleplayer']},
   {id:'getaway',name:'Getaway Shootout',labels:['Multiplayer','Embed']},
   {id:'solitaire',name:'Solitaire',labels:['Singleplayer']},
   {id:'capitalist',name:'Tycoon Simulator',labels:['Singleplayer']},
@@ -7693,9 +7700,9 @@ function metricaPick(gm){
   const g=document.getElementById('games');
   roomLeaveAll();
   g.innerHTML=`<div class="mx" role="region" aria-label="${esc(gm.name)}"><header class="mx-top"><button class="mx-back" data-mx-back aria-label="Back" title="Back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
-    <div class="mx-brand" data-mx-back>${esc(gm.name)}</div></header>
-    <div class="mx-main"><div class="mx-wrap"><h1 class="mx-h1">${esc(gm.name)}</h1><div class="mx-modes n${gm.modes.length}">${gm.modes.map(([id,n,d],i)=>`<button class="mx-mode" data-game="${id}" aria-label="${esc(n)}">${MX_PV[id]||''}
-      <span class="mx-info"><span class="mx-lbl">World 0${i+1}</span><span class="mx-name">${esc(n)}</span><span class="mx-d">${esc(d)}</span>
+    <div class="mx-brand" data-mx-back>${esc(gm.name.toLowerCase())}</div></header>
+    <div class="mx-main"><div class="mx-wrap"><h1 class="mx-h1">${esc(gm.name.toLowerCase())}</h1><div class="mx-modes n${gm.modes.length}">${gm.modes.map(([id,n,d],i)=>`<button class="mx-mode" data-game="${id}" aria-label="${esc(n)}">${MX_PV[id]||''}
+      <span class="mx-info"><span class="mx-lbl">World 0${i+1}</span><span class="mx-name">${esc(n.toLowerCase())}</span><span class="mx-d">${esc(d)}</span>
       <span class="mx-go"><svg viewBox="0 0 10 10"><path d="M1 0l9 5-9 5z"/></svg>Play</span></span></button>`).join('')}</div></div></div></div>`;
   g.hidden=false;
   const ms=[...g.querySelectorAll('.mx-mode')];
@@ -7778,10 +7785,10 @@ function playGame(id){
   if(gmParent(id))metricaLast=id;
   roomLeaveAll();
   /* a loading screen covers the frame until the game has started */
-  g.innerHTML=`<div class="gm-load">${art('logo','gm-llogo')}<div class="gm-lname">${esc(gm?gm.name:id)}</div><div class="gm-bar"><i></i></div></div>
+  g.innerHTML=`<div class="gm-load">${art('logo','gm-llogo')}<div class="gm-lname">${esc((gm?gm.name:id).toLowerCase())}</div><div class="gm-bar"><i></i></div></div>
     <iframe class="gm-frame" allow="fullscreen; gamepad; autoplay" title="${esc(id)}"></iframe>`;
   loadGame(id).then(src=>{const f=g.querySelector('.gm-frame');if(!f)return;
-    f.addEventListener('load',()=>{setTimeout(()=>{const l=g.querySelector('.gm-load');if(l){l.classList.add('done');setTimeout(()=>l.remove(),300);}},150);try{watchErrors(f.contentWindow,'game:'+id);f.contentWindow.document.addEventListener('keydown',gamesKey);f.contentWindow.focus();}catch(e){reportErr('game-load',e&&e.stack||e);}},{once:true});
+    f.addEventListener('load',()=>{setTimeout(()=>{const l=g.querySelector('.gm-load');if(l){l.classList.add('done');setTimeout(()=>l.remove(),300);}},150);try{watchErrors(f.contentWindow,'game:'+id);f.contentWindow.document.addEventListener('keydown',gamesKey);frameMenus(f);f.contentWindow.focus();}catch(e){reportErr('game-load',e&&e.stack||e);}},{once:true});
     /* testing mode: window.SX_TEST tells the game to start maxed out and not save (lander also gets its TEST_MODE: J skips to the next body) */
     /* scrolling inside a game never carries on into the planner or the frame around it */
     const OVS='<style>html,body{overscroll-behavior:none}</style><script>(function(){var L=window.__sxAC=[];["AudioContext","webkitAudioContext"].forEach(function(k){var A=window[k];if(typeof A!="function"||typeof Proxy!="function")return;'+
@@ -8181,6 +8188,39 @@ document.addEventListener('click',e=>{
 });
 document.addEventListener('input',e=>{if(!e.target.closest||!e.target.closest('.cpk-add'))return;const w=e.target.closest('.cpk');cpkSet(w,e.target.value);const a=w.querySelector('.cpk-add');if(a)a.classList.add('on');});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.querySelector('.cpk-pop'))cpkClose();});
+/* ---------- menus: a click or tap anywhere outside an open menu closes it, also where the click is stopped before it
+   reaches the page or lands in a game frame; a menu's own button still opens and shuts it. Where the press landed is
+   read on pointerdown (before anything redraws), the menus close once the click has been handled ---------- */
+const MENUS=[
+  {open:()=>moreDD.classList.contains('open'),keep:['.morewrap'],close:()=>{moreDD.classList.remove('open');moreBtn.classList.remove('dd-open');}},
+  {open:()=>mMenu.classList.contains('open'),keep:['.mmenu','#menubtn'],close:()=>{mMenu.classList.remove('open');mMenu.setAttribute('aria-hidden','true');menuBtn.classList.remove('dd-open');}},
+  {open:()=>!!document.querySelector('.tk-cls.open'),keep:['.tk-cls','.cn-pick'],close:()=>document.querySelectorAll('.tk-cls.open').forEach(m=>m.classList.remove('open'))},
+  {open:()=>!!document.querySelector('.docs-toc.open'),keep:['.docs-toc'],close:()=>document.querySelectorAll('.docs-toc.open').forEach(n=>{n.classList.remove('open');const g=n.querySelector('.dt-tog');if(g)g.setAttribute('aria-expanded','false');})},
+  {open:()=>{const m=document.querySelector('#games .gm-fmenu');return !!(m&&!m.hidden);},keep:['.gm-fmenu','[data-act-gfilter]'],close:()=>gmMenu(false)},
+  {open:()=>!!document.querySelector('.cpk-pop'),keep:['.cpk-pop','[data-cpk]'],close:()=>cpkClose()},
+  {open:()=>!!state.setOpen,keep:['.bardd-wrap'],close:()=>{state.setOpen=false;renderSetdd();}},
+  {open:()=>!!state.advDDOpen,keep:['.cdd'],close:()=>{state.advDDOpen=false;return 1;}},
+  {open:()=>!!state.qaDDOpen,keep:['.cdd'],close:()=>{state.qaDDOpen=false;return 1;}},
+  {open:()=>!!state.libPick,keep:['.lib-imp'],close:()=>{state.libPick=null;return 1;}},
+  {open:()=>!!state.libFOpen,keep:['.lib-fw','.lib-chip'],close:()=>{state.libFOpen=false;return 1;}},
+  {open:()=>!!state.uaOpen,keep:['.ua-pick'],close:()=>{state.uaOpen=null;return 1;}},
+  {open:()=>!!state.advOpen,keep:['.advpop','[data-act="advpop"]'],close:()=>{state.advOpen=false;return 1;}},
+  {open:()=>!!state.dpOpen,keep:['.dp'],close:()=>{state.dpOpen=false;return 1;}},
+  {open:()=>!!state.modeOpen,keep:['.modedd','[data-act="modedd"]'],close:()=>{state.modeOpen=false;return 1;}},
+  {open:()=>!!state.oppSortOpen,keep:['.opp-sw'],close:()=>{state.oppSortOpen=false;return 1;}}];
+const menusOutside=t=>MENUS.filter(m=>m.open()&&!m.keep.some(s=>t&&t.closest&&t.closest(s)));
+function menusClose(ms){let re=false;ms.forEach(m=>{if(m.open()&&m.close())re=true;});if(re)render();}
+function closeMenusAt(t){menusClose(menusOutside(t));}
+let menuPend=[];
+document.addEventListener('pointerdown',e=>{menuPend=menusOutside(e.target);},true);
+/* checked once every handler has had the click (capture: nothing can stop it on the way) */
+document.addEventListener('click',()=>{const ms=menuPend;menuPend=[];if(ms.length)setTimeout(()=>menusClose(ms),0);},true);
+/* a tap whose click never comes (the page cancelled the touch) still closes them */
+document.addEventListener('pointerup',e=>{if(e.pointerType==='mouse')return;const ms=menuPend;if(ms.length)setTimeout(()=>{if(menuPend===ms){menuPend=[];menusClose(ms);}},80);},true);
+/* a press inside a game frame (the same page, so it can be listened to) */
+function frameMenus(f){try{f.contentWindow.document.addEventListener('pointerdown',()=>closeMenusAt(f),true);}catch(_){}}
+/* clicking into any other frame moves the focus into it */
+addEventListener('blur',()=>setTimeout(()=>{const a=document.activeElement;if(a&&a.tagName==='IFRAME')closeMenusAt(a);},0));
 /* ---------- a to-do's class ---------- */
 document.addEventListener('change',e=>{
   const sel=e.target;if(!sel.classList||!sel.classList.contains('nsel'))return;
