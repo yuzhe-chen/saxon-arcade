@@ -2194,6 +2194,38 @@ button.ch-row.on{background:var(--blue-wash);box-shadow:inset 0 0 0 2px var(--bl
 .opp-ib{border-radius:8px}
 .opp-ib.on{color:var(--gold-dark)}
 @media (min-width:701px){.opp-bar .opp-fields{-webkit-mask-image:none;mask-image:none;padding-bottom:2px}}
+/* Tasks: categories sidebar (pushes the list on wide screens, covers it on phones) */
+.opp-hd{display:flex;align-items:center;gap:12px}
+.opp-hd .display{margin:0}
+.opp-sidebtn{flex:none;width:44px;height:44px;padding:0;display:inline-flex;align-items:center;justify-content:center;border-radius:12px}
+.opp-sidebtn svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.opp-hd{margin-bottom:14px}
+.opp-body{display:flex;gap:20px;align-items:flex-start}
+.opp-main{flex:1;min-width:0}
+.opp-side{flex:none;width:232px;box-sizing:border-box;position:sticky;top:12px;max-height:calc(100vh - 150px);overflow-y:auto;overscroll-behavior:contain;
+  background:var(--bg);border:2px solid var(--line);border-bottom-width:4px;border-radius:var(--r);padding:10px 8px;display:flex;flex-direction:column;gap:2px;scrollbar-width:thin}
+.opp-side[hidden]{display:none}
+.opp-sh{font-size:12px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--faint);padding:4px 10px 8px;display:flex;align-items:center;justify-content:space-between;min-height:24px}
+.opp-sx{display:none;appearance:none;border:0;background:transparent;color:var(--faint);cursor:pointer;width:36px;height:36px;margin:-8px -4px -8px 0;border-radius:10px;align-items:center;justify-content:center}
+.opp-sx svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round}
+.opp-sx:focus-visible{outline:2px solid var(--blue-light)}
+.opp-cat{appearance:none;border:2px solid transparent;background:transparent;color:var(--fg);font:700 14.5px var(--font-ui);text-align:left;cursor:pointer;
+  display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:12px;min-height:40px}
+.opp-cat span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.opp-cat b{flex:none;font-weight:800;font-size:12.5px;color:var(--faint);min-width:22px;text-align:right}
+.opp-cat:hover{background:var(--panel2)}
+.opp-cat:focus-visible{outline:none;border-color:var(--blue-light)}
+.opp-cat.on{background:var(--blue-wash);border-color:var(--blue-light);color:var(--blue-dark)}
+.opp-cat.on b{color:var(--blue-dark)}
+.opp-sdiv{height:2px;background:var(--line);margin:8px 6px;flex:none}
+.opp-cur{font-weight:800;font-size:15px;display:flex;align-items:center;gap:8px;min-width:0}
+.opp-cur span{font-size:12.5px;color:var(--faint)}
+.opp-scrim{display:none}
+@media (max-width:700px){
+  .opp-side{position:fixed;left:0;top:0;bottom:0;max-height:none;width:min(290px,84vw);z-index:95;border-radius:0 var(--r) var(--r) 0;border-left:0;
+    padding:calc(14px + env(safe-area-inset-top)) 10px calc(14px + env(safe-area-inset-bottom));box-shadow:0 10px 40px rgba(0,0,0,.25)}
+  .opp-scrim{display:block;position:fixed;inset:0;z-index:94;background:rgba(0,0,0,.35);overscroll-behavior:none;touch-action:none}
+  .opp-cat{min-height:44px}.opp-sx{display:inline-flex}}
 
 /* ---------- tutorial ---------- */
 #tut .tut-card{border:2px solid var(--line);border-bottom-width:4px;border-radius:var(--r);padding:20px 22px 16px}
@@ -6695,6 +6727,11 @@ document.addEventListener('click',async e=>{
   if(act==='oppstar'){oppToggle('oppStar',el.dataset.id);return;}
   if(act==='opparch'){oppToggle('oppArch',el.dataset.id);return;}
   if(act==='oppfield'){state.oppField=el.dataset.k;render();return;}
+  if(act==='oppside'){oppSide(!oppSideOn());return;}
+  if(act==='oppcat'){const k=el.dataset.k;state.oppArchView=k==='arch';state.oppStarOnly=k==='star';state.oppField=k==='arch'||k==='star'?'all':k;
+    /* on a phone the list sits under the sidebar: picking a category shows it */
+    if(oppPhone())state.oppSideM=false;render();
+    const b=document.querySelector(oppPhone()?'.opp-sidebtn':`.opp-cat[data-k="${CSS.escape(k)}"]`);if(b)b.focus({preventScroll:true});return;}
   if(act==='evgo'){state.view='advisory';try{localStorage.setItem('sx-tab','advisory');}catch(_){}render();
     const h=[...document.querySelectorAll('#v-advisory .display')].find(x=>/school events/i.test(x.textContent));
     if(h)h.scrollIntoView({block:'start',behavior:'smooth'});return;}
@@ -7521,6 +7558,7 @@ function render(){
   try{const md=localStorage.getItem('sx-mode');if(md&&['all','hw','exam','notdue','notes'].includes(md))state.mode=md;}catch(_){}
   try{const t=localStorage.getItem('sx-tab');if(t&&['home','calendar','courses','advisory','assignments','resources','chat','tasks'].includes(t))state.view=t;}catch(_){}
   try{const o=localStorage.getItem('sx-oppsort');if(['deadline','prestige','difficulty','fit'].includes(o))state.oppSort=o;}catch(_){}
+  {let v=null;try{v=localStorage.getItem('sx-oppside');}catch(_){}state.oppSide=v!=='0';state.oppSideM=false;}
   try{state.asgFilter=localStorage.getItem('sx-asgf')==='overdue'?'overdue':'all';}catch(_){}
   try{state.resTable=localStorage.getItem('sx-resview')==='table';}catch(_){}
   try{state.resFilter=localStorage.getItem('sx-resf')==='down'?'down':'mine';}catch(_){}
@@ -8124,15 +8162,30 @@ function renderTasks(){
   list=list.slice().sort((a,b)=>stk(a)-stk(b)||(by==='deadline'?dk(a)-dk(b)||num(a,'prestige')-num(b,'prestige')
     :num(a,by)-num(b,by)||dk(a)-dk(b)));
   const nArch=OPPS.filter(o=>oppHas('oppArch',o.id)).length,sortLab=(OPP_SORTS.find(x=>x[0]===by)||OPP_SORTS[0])[1];
-  const menu=state.oppSortOpen?`<div class="opp-smenu" role="menu">${OPP_SORTS.map(([k,l])=>`<button class="opp-si ${by===k?'on':''}" data-act="oppsort" data-k="${k}" role="menuitemradio" aria-checked="${by===k}">${l}</button>`).join('')}
-    <button class="opp-si opp-sx ${starOnly?'on':''}" data-act="oppstaronly" role="menuitemcheckbox" aria-checked="${starOnly}"><span class="lib-fx"></span>Starred only</button></div>`:'';
-  el.innerHTML=`<div class="opp-wrap"><div class="display">Tasks</div>
+  const menu=state.oppSortOpen?`<div class="opp-smenu" role="menu">${OPP_SORTS.map(([k,l])=>`<button class="opp-si ${by===k?'on':''}" data-act="oppsort" data-k="${k}" role="menuitemradio" aria-checked="${by===k}">${l}</button>`).join('')}</div>`:'';
+  /* the categories sidebar: every field with how many open (not archived) tasks it has, then Starred and Archived */
+  const sel=arch?'arch':starOnly?'star':fld,open=OPPS.filter(o=>!oppHas('oppArch',o.id));
+  const cat=(k,label,n)=>`<button type="button" class="opp-cat${sel===k?' on':''}" data-act="oppcat" data-k="${esc(k)}"${sel===k?' aria-current="true"':''}><span>${esc(label)}</span><b>${n}</b></button>`;
+  const side=oppSideOn(),curLab=sel==='arch'?'Archived':sel==='star'?'Starred':sel==='all'?'All':sel;
+  const sideHTML=`<nav class="opp-side" id="opp-side" aria-label="Categories"${side?'':' hidden'}><div class="opp-sh">Categories<button type="button" class="opp-sx" data-act="oppside" aria-label="Close categories" title="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+    ${cat('all','All',open.length)}${fields.map(f=>cat(f,f,open.filter(o=>o.field===f).length)).join('')}
+    <div class="opp-sdiv" role="separator"></div>${cat('star','Starred',open.filter(o=>oppHas('oppStar',o.id)).length)}${cat('arch','Archived',nArch)}</nav>`;
+  el.innerHTML=`<div class="opp-wrap${side?' side-on':''}"><div class="opp-hd"><button type="button" class="hbtn hb-box opp-sidebtn${side?' on':''}" data-act="oppside" aria-controls="opp-side" aria-expanded="${side}" aria-label="${side?'Hide categories':'Show categories'}" title="${side?'Hide categories':'Show categories'}"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16"/></svg></button><div class="display">Tasks</div></div>
+    <div class="opp-body">${sideHTML}${side?'<div class="opp-scrim" data-act="oppside" aria-hidden="true"></div>':''}<div class="opp-main">
     <input type="text" id="opp-q" class="lib-q opp-q" placeholder="Search" value="${esc(state.oppQ||'')}" autocomplete="off" spellcheck="false" aria-label="Search tasks">
-    <div class="opp-bar"><div class="hgroup opp-fields"><button class="hbtn ${fld==='all'?'on':''}" data-act="oppfield" data-k="all">All</button>${fields.map(f=>`<button class="hbtn ${fld===f?'on':''}" data-act="oppfield" data-k="${esc(f)}">${esc(f)}</button>`).join('')}</div>
-      <div class="opp-right"><button class="hbtn opp-archbtn ${arch?'on':''}" data-act="opparchview">Archived${nArch?` (${nArch})`:''}</button>
-        <div class="opp-sw"><button class="hbtn hb-box opp-sortbtn ${state.oppSortOpen?'open':''}${starOnly?' star':''}" data-act="oppsortopen" aria-haspopup="true" aria-expanded="${!!state.oppSortOpen}">Sort: ${sortLab}${starOnly?', starred':''}<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>${menu}</div></div></div>
-    ${list.length?`<div class="opp-list">${list.map(oppCard).join('')}</div>`:`<div class="empty">${qw.length?'No matches':arch?'Nothing archived':'Nothing here'}</div>`}</div>`;
+    <div class="opp-bar"><div class="opp-cur">${esc(curLab)}<span>${list.length}</span></div>
+      <div class="opp-right"><div class="opp-sw"><button class="hbtn hb-box opp-sortbtn ${state.oppSortOpen?'open':''}" data-act="oppsortopen" aria-haspopup="true" aria-expanded="${!!state.oppSortOpen}">Sort: ${sortLab}<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>${menu}</div></div></div>
+    ${list.length?`<div class="opp-list">${list.map(oppCard).join('')}</div>`:`<div class="empty">${qw.length?'No matches':arch?'Nothing archived':starOnly?'Nothing starred':'Nothing here'}</div>`}</div></div></div>`;
 }
+const oppPhone=()=>innerWidth<=700;
+/* wide screens remember open or closed on this device; on a phone it covers the list, so it starts closed */
+const oppSideOn=()=>oppPhone()?!!state.oppSideM:!!state.oppSide;
+{let wasPhone=oppPhone();addEventListener('resize',()=>{const ph=oppPhone();if(ph!==wasPhone){wasPhone=ph;if(state.view==='tasks')render();}});}
+function oppSide(on){if(oppPhone())state.oppSideM=on;else{state.oppSide=on;try{localStorage.setItem('sx-oppside',on?'1':'0');}catch(_){}}render();
+  const f=on?document.querySelector('.opp-cat.on')||document.querySelector('.opp-cat'):document.querySelector('.opp-sidebtn');
+  if(f&&(on?oppPhone():true))f.focus({preventScroll:true});}
+/* phone: the sidebar covers the list; Escape closes it (a tap outside lands on the scrim) */
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&state.view==='tasks'&&oppPhone()&&state.oppSideM&&document.querySelector('.opp-side:not([hidden])')){e.preventDefault();oppSide(false);}});
 document.addEventListener('click',e=>{if(state.oppSortOpen&&e.target.isConnected&&!e.target.closest('.opp-sw')){state.oppSortOpen=false;if(state.view==='tasks')render();}});
 function oppToggle(k,id){const a=state.settings[k]||[];state.settings[k]=a.includes(id)?a.filter(x=>x!==id):a.concat([id]);render();saveSettings();}
 function renderChat(){
