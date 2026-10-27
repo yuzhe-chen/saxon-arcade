@@ -9126,6 +9126,14 @@ window.addEventListener('message',async e=>{
     if(m.type==='games-close'){closeGames();return;}
     if(m.type==='room'){roomBridge(f,m);return;}
     if(m.type==='game-ready'){if(f._gr){f._gr.ready=true;gmCheck(f);}return;}
+    /* shared levels (Metrica editors): level-share {game,data} and level-get {code}, answered with level-share-res / level-get-res {reqId,res} */
+    if(m.type==='level-share'||m.type==='level-get'){
+      let r;
+      try{r=m.type==='level-share'?await gsCall('rpcLevelShare',passKey||'',passKey?'':guestId(),String(m.game||''),String(m.data||'')):await gsCall('rpcLevelGet',String(m.code||''));}
+      catch(err){r={ok:false,error:String(err&&err.message||err).slice(0,80)};}
+      try{f.contentWindow.postMessage({type:m.type+'-res',reqId:m.reqId,res:r&&typeof r==='object'?r:{ok:false,error:'conn'}},'*');}catch(_){}
+      return;
+    }
     /* saves for any game: game-load (reply game-load-res) and game-save (fire and forget); signed in they go to the account, otherwise under the guest code */
     if((m.type==='game-load'||m.type==='game-save')&&GAMES.some(x=>x.id===m.game)){
       if(m.type==='game-load'){
