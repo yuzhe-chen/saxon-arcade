@@ -4609,7 +4609,7 @@ function normalizeCourse(input){
   /* ---------- the daily meme: picked on the server from meme-api.com (r/wholesomememes) once a day ----------
      Only safe posts: not nsfw, not a spoiler, a still image or gif (no video), and no title words that do not belong at
      school. Best voted first; the image is downloaded on the server and handed to the page as a data URL. */
-  SX.MEME_API = 'https:' + '/' + '/meme-api.com/gimme/wholesomememes/10';
+  SX.MEME_API = 'https:' + '/' + '/meme-api.com/gimme/wholesomememes/30';
   SX.MEME_MAX = 1500000;
   SX.MEME_BAD = /\b(sex\w*|porn\w*|nude\w*|naked|nsfw|kill\w*|suicid\w*|die[ds]?|dying|death|dead|funeral|grave|cancer|drunk|beer|vodka|wine|alcohol|weed|drugs?|stoned|gun\w*|shoot\w*|blood\w*|depress\w*|abuse\w*|damn|hell|wtf|f\W?ck\w*|shit\w*|bitch\w*|ass|crap|boob\w*|horny|thicc|onlyfans|politic\w*|trump|biden|religio\w*|war|gf|bf|girlfriend|boyfriend|wife|husband|shower\w*|bed|kiss\w*|crush|dating|date|marri\w*|divorc\w*|pregnan\w*|baby mama|love\w*|lover|romanc\w*|romantic|valentine\w*|hot|sexy|babe)\b/i;
   SX.memeTitle = function (t) { return String(t || '').replace(/\[[^\]]{0,12}\]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 140); };
@@ -7371,14 +7371,22 @@ function renderHome(fly){
 const MEME_ALTS=["Two panel nope and yes meme: an orange cat turns away from \"doing homework\" and happily points at \"snack break number 4\".", "Distracted meme with original art: a pencil labeled \"me\" walks with a notebook labeled \"my homework\" but turns to stare at a phone labeled \"one new notification\".", "Everything is fine meme: a calm grey cat sips cocoa at a desk while the homework papers around it are on fire, with a speech bubble saying \"this is fine\" under the caption \"five tests this week\".", "Expanding brain meme in four panels: a brain grows from \"reading my notes\" to \"highlighting everything\" to \"making flashcards\" to a beaming brain for \"teaching it to my cat\".", "A backpack with legs zooms out of the classroom door in a cloud of dust as the wall bell rings, captioned \"when the bell rings on a Friday\".", "Two buttons meme: a nervous blue blob sweats over choosing between a red button \"start early\" and a blue button \"start at 11 PM\".", "A puzzled brown bear labeled \"me\" points at a floating video screen labeled \"a three hour video\" with the caption \"is this a study break?\".", "Change my mind meme: a smug green frog sits at an outdoor table with a mug and a sign reading \"homework should be optional on birthdays, change my mind\".", "Surprised reaction meme: \"me: studies zero minutes\", \"the quiz: is hard\", \"me:\" above a shocked hamster with wide eyes and an open mouth.", "Success meme: a determined green turtle pumps its fist on the grass, captioned \"found my missing homework in the other pocket\".", "Nobody versus me meme: \"nobody:\" then \"me at 11:59 PM:\" above a cat typing at a laptop at top speed, captioned \"submitted with one minute left\".", "How it started versus how it is going: a tall shiny new pencil smiling in September next to a tiny worn out stub of a pencil with a bandage in May.", "Four panel plan meme: a penguin presents a flip chart with steps \"make a planner\", \"write it all down\", \"never open it again\", then stares in shock at \"never open it again\".", "Trade offer meme: a confident phone character in a bow tie offers \"I receive: your whole afternoon\" and \"you receive: one funny video\".", "Waiting meme: a dusty dog sits on a bench covered in cobwebs next to a printer showing an error, captioned \"me waiting for the printer to work\".", "Panic, calm, panic meme with a white bunny: \"the test is tomorrow\" (panic), \"it is open note\" (calm), \"my notes are at school\" (panic)."];
 const MEME_BASE='https:'+SLASH2+'cdn.jsdelivr.net/gh/yuzhe-chen/saxon-arcade@main/memes/';
 let memeT=0,memeGot=null;
+/* the meme day is Eastern time (the server switches memes at midnight there); a page left open picks up the new one then */
+const memeDay=()=>{try{return new Intl.DateTimeFormat('en-CA',{timeZone:'America/New_York'}).format(new Date());}catch(_){return todayStr();}};
+(function memeMidnight(){
+  let ms=36e5;
+  try{const p=new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',hour12:false,hour:'numeric',minute:'numeric',second:'numeric'}).formatToParts(new Date());
+    const g=t=>+(p.find(x=>x.type===t)||{}).value||0;ms=((24-g('hour')%24)*3600-g('minute')*60-g('second'))*1000+5000;}catch(_){}
+  setTimeout(()=>{memeGot=null;memeMaybe();memeMidnight();},Math.max(60000,Math.min(ms,864e5)));
+})();
 function memeIndex(){const d=new Date();return Math.floor(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())/864e5)%MEME_ALTS.length;}
 const memeKey=()=>'sx-meme-'+(state.user?state.user.name:'');
 function memeMaybe(){
   if(!state.user||state.view!=='home'||memeT||gmPlaying()||document.getElementById('meme'))return;
   let seen='';try{seen=localStorage.getItem(memeKey())||'';}catch(_){}
-  if(seen===todayStr())return;
+  if(seen===memeDay())return;
   memeT=setTimeout(()=>{memeT=0;if(state.view!=='home'||!state.user||gmPlaying()||document.documentElement.classList.contains('splash-on'))return;
-    try{localStorage.setItem(memeKey(),todayStr());}catch(_){}memeDrop();},1300);
+    memeDrop(true);},1300);
 }
 /* the server's meme: {date,title,dataUrl}, or null (kept for an hour, so Meme on Courses replays it without a new fetch) */
 function memeGet(){
@@ -7389,17 +7397,24 @@ function memeGet(){
     .catch(()=>null);
 }
 let memeBusy=false;
-function memeDrop(){
+function memeDrop(daily){
   if(document.getElementById('meme')||memeBusy)return;memeBusy=true;
   memeGet().then(m=>{
     const img=new Image();img.draggable=false;
     const old=()=>{const i=memeIndex();img.alt=MEME_ALTS[i];img.src=MEME_BASE+'meme-'+String(i+1).padStart(2,'0')+'.svg';};
-    img.onload=()=>{memeBusy=false;if(state.view==='home'&&!document.getElementById('meme'))memeLand(img,m?m.title:'');};
+    img.onload=()=>memeWait(img,m?m.title:'',daily,0);
     img.onerror=()=>{if(m){m=null;old();}else memeBusy=false;};
     if(m){img.alt=m.title?'Meme: '+m.title:'Meme of the day';img.src=m.dataUrl;}else old();
   });
 }
 const memeEase=x=>1-Math.pow(1-x,3);
+function memeWait(img,title,daily,n){
+  const t=document.querySelector('#v-home .hm-title');
+  if(state.view!=='home'||document.getElementById('meme')||n>20){memeBusy=false;return;}
+  if(!t||!t.offsetParent||document.documentElement.classList.contains('splash-on')){setTimeout(()=>memeWait(img,title,daily,n+1),250);return;}
+  memeBusy=false;memeLand(img,title);
+  if(daily&&document.getElementById('meme'))try{localStorage.setItem(memeKey(),memeDay());}catch(_){}
+}
 function memeLand(img,title){
   const t=document.querySelector('#v-home .hm-title'),u=document.querySelector('#v-home .hm-url');if(!t||!t.offsetParent)return;
   const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
