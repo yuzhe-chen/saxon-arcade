@@ -7452,7 +7452,7 @@ function picArt(id){
 }
 const pwRpc=(fn,...a)=>GS?gsCall(fn,...a):fetch('/api/rpc',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({fn,args:a})}).then(r=>r.json());
 const PWX_ERR={nouser:'No account with that username',empty:'Fill in both boxes',nolink:'This account has no Schoology link saved, so it can’t use this way',
-  nomatch:'That link and assignment don’t match this account. Check the spelling and capitals.',nopic:'This account has no picture password',
+  nomatch:'That link and assignment don’t match this account. Assignment names are case sensitive, so check the capitals and spelling.',nopic:'This account has no picture password',
   piclocked:'The picture password is locked after 6 wrong tries. Log in with your password to unlock it, or use Schoology.',
   short:'Password must be at least 6 characters',long:'Password is too long',mismatch:'Passwords don’t match',expired:'That took too long. Start again.',
   pic:'Pick 3 different pictures',conn:'Can’t connect, try again'};
@@ -7490,11 +7490,11 @@ function pwxHow(info){
     <div class="pwx-row"><button type="button" class="pwx-alt" data-pwx="back">Back</button></div>`);
 }
 function pwxSchool(){
-  pwxShow(`<h2>Schoology</h2><p>Spelling and capitals must match exactly, so copy and paste both from Schoology.</p>
+  pwxShow(`<h2>Schoology</h2><p>Copy and paste both from Schoology.</p>
     <label for="pwx-link">Schoology calendar link</label><input type="text" id="pwx-link" placeholder="iCal link" autocomplete="off" spellcheck="false">
     ${PWX_STEPS}
     <label for="pwx-task">One assignment from your Schoology calendar</label><input type="text" id="pwx-task" placeholder="Assignment title" autocomplete="off" spellcheck="false" maxlength="200">
-    <div class="pwx-note">Any assignment from this week or next week works.</div>
+    <div class="pwx-note"><b>Assignment names are case sensitive.</b> Capitals, spaces and spelling must match Schoology exactly. Any assignment from this week or next week works.</div>
     <div class="pwx-msg" role="alert"></div><div class="pwx-row"><button type="button" class="pwx-go" data-pwx="schoolgo">Check</button><button type="button" class="pwx-alt" data-pwx="back">Back</button></div>`);
 }
 function pwxPics(){
@@ -8034,6 +8034,10 @@ const TUT_STEPS=[
   {v:'advisory',s:'#v-advisory [data-act="nadd"]',t:'To-Dos',p:'Sticky notes for everything else. Press + to add one, and its first line becomes the title.'},
   {v:'courses',s:'#v-courses [data-act="faq"]',t:'FAQ',p:'Stuck? The FAQ answers the common questions. It blinks until you’ve read it.'},
   {v:'courses',s:'#docsbtn',m:'#mmenu [data-act-docs]',t:'Guide',p:'The Guide in this menu explains every feature.'},
+  {v:'courses',s:'#gearbtn',m:'#mgear',t:'Settings',
+    p:'Settings has Extended view, full course names, Edit classes, your Schoology link, a guest code for moving game progress, Hidden (to turn off Games or Chat) and your picture password.'},
+  {v:'courses',set:1,s:tutUp('#setdd input.picpw'),m:tutUp('#mcolors input.picpw'),t:'Picture password',
+    p:'Turn on Picture password and pick 3 of the 12 pictures, in order, then press Save. Write them down. If you ever forget your password, press Forgot my password on the login page and pick the same 3 to set a new one.'},
   {v:'courses',s:'#suggbtn',m:'#msugg',t:'Suggestions',p:'Have an idea or found a bug? Send it here. That’s the tour!',pl:'Have an idea or found a bug? Send it here.'},
   {v:'home',s:'#hm-classes',noIcal:1,t:'Your Schoology link',p:'Don’t forget your Schoology link. Without it nothing syncs. You can add it any time from Edit classes.'}];
 /* the steps for this tour; the Schoology reminder only while the account has no link */
@@ -8077,6 +8081,11 @@ function tutScene(s){
   if(s.cal&&state.calView!==s.cal){state.calView=s.cal;ch=true;}
   if(state.qaDay||state.modeOpen||state.advOpen||state.dpOpen){state.qaDay=null;state.modeOpen=false;state.advOpen=false;state.dpOpen=false;ch=true;}
   if(ch){render();const w=document.querySelector('.wrap');if(w)w.scrollTop=0;}
+  /* the Settings steps: the picture password step opens Settings (on phones, inside the menu) */
+  if(s.set){if(!state.setOpen){state.setOpen=true;renderSetdd();}
+    if(mColors.hidden){mColors.hidden=false;mGear.setAttribute('aria-expanded','true');mGear.classList.add('dd-open');renderMColors();}}
+  else{if(state.setOpen){state.setOpen=false;renderSetdd();}
+    if(!mColors.hidden){mColors.hidden=true;mGear.setAttribute('aria-expanded','false');mGear.classList.remove('dd-open');}}
   const ph=s.m&&!tutFind(s.s);
   if(ph){if(!mMenu.classList.contains('open')){mMenu.classList.add('open');mMenu.setAttribute('aria-hidden','false');menuBtn.classList.add('dd-open');}}
   else closeNavMenus();
@@ -8103,7 +8112,7 @@ async function tutGo(i){
   card.querySelector('p').innerHTML=el||!s.pa?(s.pl&&i<T.steps.length-1?s.pl:s.p):s.pa;
   card.querySelector('[data-tut="back"]').hidden=i===0;
   card.querySelector('[data-tut="next"]').textContent=i===T.steps.length-1?'Done':'Next';
-  if(tg&&!(s.m&&T.sel===s.m)){const r=tg.getBoundingClientRect();
+  if(tg&&(!(s.m&&T.sel===s.m)||s.set)){const r=tg.getBoundingClientRect();
     if(r.top<60||r.bottom>innerHeight-20)tg.scrollIntoView({block:'center',behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});}
   T.key='';tutPlace();card.classList.remove('swap');
   card.querySelector('[data-tut="next"]').focus({preventScroll:true});
@@ -8144,7 +8153,8 @@ function tutPlace(){
 function tutEnd(){
   const T=TUT;if(!T)return;TUT=null;cancelAnimationFrame(T.raf);
   document.documentElement.classList.remove('tut-cadd');
-  closeNavMenus();
+  closeNavMenus();if(state.setOpen){state.setOpen=false;renderSetdd();}
+  if(!mColors.hidden){mColors.hidden=true;mGear.setAttribute('aria-expanded','false');mGear.classList.remove('dd-open');}
   const g=document.getElementById('games');if(!g.hidden)closeGames();
   T.o.classList.remove('on');setTimeout(()=>T.o.remove(),400);
   if(!state.user)return;
