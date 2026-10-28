@@ -1949,6 +1949,8 @@ nav.tabs .mmenu .mcolors button.kbtn:hover{background:var(--panel);color:var(--f
 .hm-site:hover{background:var(--panel2);color:var(--fg2)}
 .hm-site:active{transform:translateY(2px);border-bottom-width:2px;margin-bottom:2px}
 .hm-site .art{width:30px;height:30px}
+button.hm-site{appearance:none;cursor:pointer}
+.hm-sites.hm-gsites{margin-top:10px}
 .hm-cards{gap:16px;max-width:880px}
 .hm-card{display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:18px;min-height:0;padding:18px 20px;
   background:var(--panel);color:var(--fg);border:2px solid var(--line);border-bottom-width:4px;border-radius:var(--r);transition:none}
@@ -4753,6 +4755,8 @@ function normalizeCourse(input){
    so URLs are assembled without writing the two slashes together. */
 const SLASH2='/'+'/';
 const ART={
+rocket:'<g transform="translate(48 48) rotate(40) scale(1.12) translate(0 3)"><path d="M-10 4L-19 15V22H-10z" fill="#ea2b2b"/><path d="M10 4L19 15V22H10z" fill="#c81e1e"/><path d="M-6 21Q0 37 6 21z" fill="#ff9600"/><path d="M-3 21Q0 30 3 21z" fill="#ffc800"/><path d="M-10 -16Q-10 -30 0 -42Q10 -30 10 -16V20H-10z" fill="#ffffff"/><path d="M0 -42Q10 -30 10 -16V20H0z" fill="#d3dde3"/><path d="M-6.6 -31Q-4 -37 0 -42V-31z" fill="#ff4b4b"/><path d="M0 -42Q4 -37 6.6 -31H0z" fill="#ea2b2b"/><rect x="-10" y="14" width="20" height="7" rx="2" fill="#8a9aa5"/><rect x="0" y="14" width="10" height="7" rx="2" fill="#6f7f8a"/><circle cx="0" cy="-10" r="6.6" fill="#8a9aa5"/><circle cx="0" cy="-10" r="5" fill="#1cb0f6"/><path d="M0 -15a5 5 0 0 1 0 10z" fill="#1899d6"/><ellipse cx="-2" cy="-12" rx="1.4" ry="2" fill="#bfeaff"/></g>',
+pawn:'<rect x="20" y="74" width="56" height="13" rx="6.5" fill="#5c6b75"/><rect x="20" y="70" width="56" height="13" rx="6.5" fill="#8a9aa5"/><rect x="48" y="70" width="28" height="13" rx="6.5" fill="#6f7f8a"/><rect x="44" y="70" width="8" height="13" fill="#6f7f8a"/><path d="M34 72Q36 52 41 42H55Q60 52 62 72z" fill="#a5b1ba"/><path d="M48 42H55Q60 52 62 72H48z" fill="#8a9aa5"/><rect x="31" y="37" width="34" height="9" rx="4.5" fill="#8a9aa5"/><rect x="48" y="37" width="17" height="9" rx="4.5" fill="#6f7f8a"/><rect x="44" y="37" width="8" height="9" fill="#6f7f8a"/><circle cx="48" cy="25" r="14" fill="#a5b1ba"/><path d="M48 11a14 14 0 0 1 0 28z" fill="#8a9aa5"/><ellipse cx="42" cy="20" rx="3.4" ry="5" transform="rotate(25 42 20)" fill="#d3dde3"/>',
 backpack:'<path d="M37 24v-5a11 11 0 0 1 22 0v5" fill="none" stroke="#3C81DB" stroke-width="6" stroke-linecap="round"/><rect x="9" y="50" width="13" height="28" rx="6.5" fill="#3C81DB"/><rect x="74" y="50" width="13" height="28" rx="6.5" fill="#3C81DB"/><rect x="9" y="47" width="13" height="28" rx="6.5" fill="#4B9AF3"/><rect x="74" y="47" width="13" height="28" rx="6.5" fill="#4B9AF3"/><rect x="17" y="25" width="62" height="66" rx="22" fill="#3C81DB"/><rect x="17" y="21" width="62" height="66" rx="22" fill="#4B9AF3"/><path d="M17 43a22 22 0 0 1 22-22h18a22 22 0 0 1 22 22v1a6 6 0 0 1-6 6H23a6 6 0 0 1-6-6z" fill="#78B0FC"/><rect x="24" y="27" width="7" height="12" rx="3.5" fill="#A4CEFF"/><rect x="45" y="44" width="6" height="15" rx="3" fill="#3C81DB"/><rect x="42.5" y="54" width="11" height="8" rx="2.5" fill="#E5A400"/><rect x="42.5" y="52" width="11" height="8" rx="2.5" fill="#FFC800"/><rect x="26" y="65" width="44" height="20" rx="9" fill="#5EA2F0"/><rect x="26" y="62" width="44" height="20" rx="9" fill="#78B0FC"/><rect x="30" y="66" width="36" height="2.5" rx="1.25" fill="#3C81DB"/><rect x="52" y="66" width="4.5" height="9" rx="2.25" fill="#FFC800"/>',
 books:'<path d="M16 66H86V86H16A6 6 0 0 1 10 80V72A6 6 0 0 1 16 66Z" fill="#FF4B4B"/><rect x="22" y="69" width="65.5" height="11" fill="#F4F4F4"/><rect x="25" y="72.1667" width="61" height="1" fill="#DCDCDC"/><rect x="25" y="75.8333" width="61" height="1" fill="#DCDCDC"/><path d="M22 46H82V66H22A6 6 0 0 1 16 60V52A6 6 0 0 1 22 46Z" fill="#B66EF0"/><rect x="28" y="49" width="55.5" height="11" fill="#F4F4F4"/><rect x="31" y="52.1667" width="51" height="1" fill="#DCDCDC"/><rect x="31" y="55.8333" width="51" height="1" fill="#DCDCDC"/><path d="M50 17c-4-4-16-4-18 8-2.2 11.5 4 21 10 21 3 0 5-1 8-1s5 1 8 1c6 0 12.2-9.5 10-21-2-12-14-12-18-8z" fill="#FF4B4B"/><ellipse cx="40.5" cy="26" rx="3" ry="6" transform="rotate(20 40.5 26)" fill="#FF9A9A"/><rect x="48.4" y="6" width="3.4" height="12" rx="1.7" transform="rotate(10 50 12)" fill="#8B5A2B"/><path d="M52 11c4-7 12-7 15-5-3 6-10 8-15 5z" fill="#58CC02"/>',
 pencil:'<g transform="rotate(-40 48 48)"><path d="M18 40L4 48l14 8z" fill="#ffd9a8"/><path d="M8.5 45.4L4 48l4.5 2.6z" fill="#4b4b4b"/>'+
@@ -7458,7 +7462,7 @@ function renderHome(fly){
     el.innerHTML=`<div class="hm-cards" id="hmcards">${pages.map(([k,n,d],i)=>`<button type="button" class="hm-card" id="hm-${k}" data-home-go="${k}" style="--i:${i}">${art(HM_ART[k],'hm-art')}<span class="hm-tx"><span class="hm-n">${n}</span><span class="hm-d">${d}</span></span></button>`).join('')}</div>
       <div class="hm-side" id="hmside"><div class="hm-kicker"></div><h2 class="hm-title"><span class="l1">Saxon</span><br><span class="l2">Planner</span></h2><div class="hm-url"><a href="https:${SLASH2}${HM_URL}" target="_blank" rel="noopener">${HM_URL}</a><button type="button" data-hm-copy aria-label="Copy link" title="Copy link"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12"/><path d="M5 15H3V3h12v2"/></svg></button><span class="hm-ok" aria-live="polite"></span></div><div class="hm-rule"></div>
       <div class="hm-btns"><button type="button" class="hm-btn" id="hm-classes" data-act="classes">Edit classes</button><button type="button" class="hm-btn alt" id="hm-sugg" data-act-sugg>Suggestions</button><button type="button" class="hm-btn alt" id="hm-tut" data-act-tut>Tutorial</button></div>
-      <div class="hm-sites"><a class="hm-site" data-site="profegpt" target="_blank" rel="noopener">${art('bubble')}<span>ProfeGPT</span></a><a class="hm-site" data-site="interpres" target="_blank" rel="noopener">${art('scroll')}<span>Interpres</span></a><a class="hm-site" data-site="planner" target="_blank" rel="noopener">${art('logo')}<span>Planner</span></a></div></div>`;
+      <div class="hm-sites"><a class="hm-site" data-site="profegpt" target="_blank" rel="noopener">${art('bubble')}<span>ProfeGPT</span></a><a class="hm-site" data-site="interpres" target="_blank" rel="noopener">${art('scroll')}<span>Interpres</span></a><a class="hm-site" data-site="planner" target="_blank" rel="noopener">${art('logo')}<span>Planner</span></a></div><div class="hm-sites hm-gsites g-games"><button type="button" class="hm-site" data-hm-game="lander">${art('rocket')}<span>Lander</span></button><button type="button" class="hm-site" data-hm-game="chess">${art('pawn')}<span>Chess</span></button></div></div>`;
     siteLinks(el);
     fly=true;
   }
@@ -8510,6 +8514,10 @@ function oppSide(on){if(oppPhone())state.oppSideM=on;else{state.oppSide=on;try{l
 /* phone: the sidebar covers the list; Escape closes it (a tap outside lands on the scrim) */
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&state.view==='tasks'&&oppPhone()&&state.oppSideM&&document.querySelector('.opp-side:not([hidden])')){e.preventDefault();oppSide(false);}});
 document.addEventListener('click',e=>{if(state.oppSortOpen&&e.target.isConnected&&!e.target.closest('.opp-sw')){state.oppSortOpen=false;if(state.view==='tasks')render();}});
+/* the categories list keeps the wheel: at its top or bottom (or when it all fits) the page behind doesn't scroll instead */
+document.addEventListener('wheel',e=>{const sd=e.target.closest&&e.target.closest('.opp-side');if(!sd||e.ctrlKey)return;
+  const up=e.deltaY<0,atTop=sd.scrollTop<=0,atBot=sd.scrollTop+sd.clientHeight>=sd.scrollHeight-1;
+  if(up?atTop:atBot)e.preventDefault();},{passive:false});
 function oppToggle(k,id){const a=state.settings[k]||[];state.settings[k]=a.includes(id)?a.filter(x=>x!==id):a.concat([id]);render();saveSettings();}
 function renderChat(){
   const v=document.getElementById('v-chat');
@@ -9048,6 +9056,10 @@ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest
   e.preventDefault();e.stopPropagation();gmStarToggle(b.dataset.gmStar);},true);
 document.addEventListener('keydown',e=>{const b=e.target.closest&&e.target.closest('#games [data-gm-star]');if(!b||(e.key!=='Enter'&&e.key!==' '))return;
   e.preventDefault();e.stopPropagation();gmStarToggle(b.dataset.gmStar);},true);
+/* Home: Lander and Chess open straight into the game (a locked game opens the games menu instead) */
+document.addEventListener('click',e=>{const b=e.target.closest('[data-hm-game]');if(!b)return;
+  const id=b.dataset.hmGame,x=GAMES.find(g=>g.id===id);
+  openGames();if(x&&!(typeof gameLocked==='function'&&gameLocked(x)))playGame(id);});
 function gmRenderPick(){
   const g=document.getElementById('games'),pick=g.querySelector('.gm-pick');if(!pick)return;
   const tile=x=>{const tags=`<span class="gm-tags">${x.labels.map(l=>`<i data-l="${esc(l)}">${esc(l)}</i>`).join('')}</span>`;
