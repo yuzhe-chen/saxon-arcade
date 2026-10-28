@@ -1260,8 +1260,8 @@ html.gm-play body>:not(#games):not(#gwarn):not(#gasmove),html.gm-play body>:not(
 #games .gm-sec h2{margin:0 0 12px;font:800 1.6rem/1.1 var(--font-ui);text-transform:uppercase;letter-spacing:-0.03em;color:#f2f0ea}
 #games .gm-grid{display:grid;grid-template-columns:repeat(5,minmax(0,220px));gap:18px;justify-content:start;grid-auto-flow:row dense}
 /* Lander gets a 2 by 2 tile; the others fill in around it */
-#games .gm-tile[data-game="lander"]{grid-column:span 2;grid-row:span 2}
-#games .gm-tile[data-game="lander"] .gm-foot b{font-size:20px}
+#games .gm-tile:is([data-game="lander"],[data-game="metrica"],[data-game-locked="metrica"]){grid-column:span 2;grid-row:span 2}
+#games .gm-tile:is([data-game="lander"],[data-game="metrica"],[data-game-locked="metrica"]) .gm-foot b{font-size:20px}
 #games .gm-tile{appearance:none;cursor:pointer;display:flex;flex-direction:column;padding:0;border-radius:0;background:#232322;color:#f2f0ea;
   border:1px solid rgba(242,240,234,.32);overflow:hidden;transition:border-color .15s,background .15s}
 #games .gm-tile{aspect-ratio:1}
@@ -1356,6 +1356,12 @@ html.gm-play body>:not(#games):not(#gwarn):not(#gasmove),html.gm-play body>:not(
 #games .gm-tile:hover{border-color:rgba(242,240,234,.8);background:#2c2c28}
 /* referral lock: locked tiles dim with a lock; the panel explains and holds the referral link */
 #games .gm-tile{position:relative}
+#games .gm-star{position:absolute;top:10px;left:10px;z-index:2;width:42px;height:42px;display:flex;align-items:center;justify-content:center;border-radius:var(--rs);background:var(--bg);border:2px solid var(--line);border-bottom-width:4px;cursor:pointer;opacity:0;transition:opacity .12s}
+#games .gm-tile:hover .gm-star,#games .gm-star:focus-visible,#games .gm-star.on{opacity:1}
+@media (hover:none){#games .gm-star{opacity:1}}
+#games .gm-star svg{width:22px;height:22px;fill:none;stroke:var(--fg2);stroke-width:2.2;stroke-linejoin:round}
+#games .gm-star.on svg{fill:#ffc800;stroke:#e5a400}
+#games .gm-star:active{transform:translateY(2px);border-bottom-width:2px}
 #games .gm-locked img,#games .gm-locked .gm-big,#games .gm-locked .gm-foot{opacity:.38;filter:grayscale(1)}
 #games .gm-li{position:absolute;top:10px;right:10px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;background:#171716;color:#f2f0ea;z-index:1}
 #games .gm-li svg,#games .gm-lock-i svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linejoin:miter}
@@ -2082,6 +2088,67 @@ nav.tabs .mmenu .mcolors button.kbtn:hover{background:var(--panel);color:var(--f
 .re-ov .re-foot{border-top:2px solid var(--line)}
 .re-pub,.re-ctl{font-weight:800;letter-spacing:.8px}
 
+/* ---------- forgot password and the picture password ---------- */
+.sp-forgot{appearance:none;background:none;border:0;padding:2px 0;margin:-2px 0 4px;align-self:flex-start;font:700 13px var(--font-ui);color:inherit;opacity:.78;
+  text-decoration:underline;text-decoration-color:color-mix(in srgb,currentColor 45%,transparent);text-underline-offset:3px;cursor:pointer}
+.sp-forgot:hover,.sp-forgot:focus-visible{opacity:1;text-decoration-color:currentColor}
+.sp-forgot[hidden]{display:none}
+#splash .sp-gate button.sp-forgot,#splash .sp-gate button.sp-forgot:hover,#splash .sp-gate button.sp-forgot:active{display:inline-block;min-height:0;width:auto;
+  padding:2px 0;margin:-2px 0 4px;border:0;border-radius:0;background:none;box-shadow:none;transform:none;color:var(--fg2);font:700 13px var(--font-ui);
+  letter-spacing:0;text-transform:none;text-decoration:underline;text-decoration-color:color-mix(in srgb,currentColor 45%,transparent);text-underline-offset:3px}
+#splash .sp-gate button.sp-forgot:hover,#splash .sp-gate button.sp-forgot:focus-visible{color:var(--fg);text-decoration-color:currentColor}
+#splash .sp-gate button.sp-forgot[hidden]{display:none}
+.pwx{position:fixed;inset:0;z-index:2000;display:flex;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;
+  background:color-mix(in srgb,#000 45%,transparent);overscroll-behavior:none}
+.pwx[hidden]{display:none}
+.pwx-card{position:relative;width:min(560px,100%);max-height:100%;overflow:auto;overscroll-behavior:none;box-sizing:border-box;padding:26px 24px 22px;
+  background:var(--bg);color:var(--fg);border:2px solid var(--line);border-bottom-width:4px;border-radius:var(--r);font-family:var(--font-ui)}
+.pwx-x{position:absolute;top:12px;right:12px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;appearance:none;cursor:pointer;
+  background:transparent;border:0;border-radius:var(--rs);color:var(--fg2)}
+.pwx-x:hover{background:var(--panel2)}
+.pwx-x svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round}
+.pwx h2{margin:0 44px 6px 0;font:800 24px/1.2 var(--display,var(--font-ui));color:var(--fg)}
+.pwx p{margin:0 0 14px;font-size:15px;line-height:1.45;color:var(--fg2)}
+.pwx p b{color:var(--fg)}
+.pwx label{display:block;margin:12px 0 6px;font-weight:800;font-size:14px;color:var(--fg)}
+.pwx input[type=text],.pwx input[type=password]{width:100%;box-sizing:border-box;padding:12px 14px;font:700 15px var(--font-ui);color:var(--fg);
+  background:var(--panel);border:2px solid var(--line);border-radius:var(--rs);outline:0}
+.pwx input:focus{border-color:var(--accent)}
+.pwx .pwx-note{margin:6px 0 0;font-size:13px;color:var(--fg2)}
+.pwx-msg{min-height:20px;margin:12px 0 0;font-weight:800;font-size:14px;color:#ea2b2b}
+.pwx-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.pwx-go,.pwx-alt{appearance:none;cursor:pointer;padding:12px 20px;font:800 15px var(--font-ui);letter-spacing:.02em;border-radius:var(--rs)}
+.pwx-go{background:var(--accent);color:var(--accent-fg);border:0;box-shadow:0 4px 0 color-mix(in srgb,var(--accent) 70%,#000)}
+.pwx-go:active{transform:translateY(4px);box-shadow:none}
+.pwx-go:disabled{opacity:.45;cursor:default;transform:none;box-shadow:0 4px 0 color-mix(in srgb,var(--accent) 70%,#000)}
+.pwx-go.busy{opacity:.7;cursor:progress}
+.pwx-alt{background:var(--bg);color:var(--fg);border:2px solid var(--line);border-bottom-width:4px}
+.pwx-alt:active{transform:translateY(2px);border-bottom-width:2px}
+.pwx-ways{display:grid;gap:10px;margin-top:6px}
+.pwx-way{appearance:none;cursor:pointer;text-align:left;display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--bg);color:var(--fg);
+  border:2px solid var(--line);border-bottom-width:4px;border-radius:var(--r);font:inherit}
+.pwx-way:hover{background:var(--panel2)}
+.pwx-way:disabled{opacity:.5;cursor:default}
+.pwx-way svg{width:46px;height:46px;flex:none}
+.pwx-way b{display:block;font-size:16px;font-weight:800}
+.pwx-way span{display:block;font-size:13.5px;color:var(--fg2);margin-top:2px}
+.pwx-pics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:4px}
+.pwx-pic{position:relative;appearance:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 4px 8px;
+  background:var(--bg);color:var(--fg);border:2px solid var(--line);border-bottom-width:4px;border-radius:var(--r);font:800 12.5px var(--font-ui)}
+.pwx-pic:hover{background:var(--panel2)}
+.pwx-pic svg{width:56px;height:56px}
+.pwx-pic.on{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,var(--bg))}
+.pwx-pic i{position:absolute;top:-9px;right:-9px;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  background:var(--accent);color:var(--accent-fg);font:900 14px var(--font-ui);font-style:normal}
+.pwx-seq{display:flex;gap:10px;justify-content:center;margin:6px 0 4px}
+.pwx-seq div{display:flex;flex-direction:column;align-items:center;gap:4px;font-weight:800;font-size:14px}
+.pwx-seq svg{width:72px;height:72px}
+.pwx details{margin:12px 0 0;border:2px solid var(--line);border-radius:var(--rs);padding:10px 14px}
+.pwx summary{cursor:pointer;font-weight:800;font-size:14px}
+.pwx details ol{margin:10px 0 0;padding-left:20px;font-size:14px;line-height:1.45}
+.pwx details li{margin-bottom:8px}
+.pwx details .shot{display:block;width:100%;max-width:400px;margin:8px 0 4px;background-size:contain;background-repeat:no-repeat}
+@media (max-width:520px){.pwx-pics{grid-template-columns:repeat(3,minmax(0,1fr))}.pwx-card{padding:22px 16px 18px}}
 /* ---------- Guide, Suggestions, Administration ---------- */
 #docs .dt-list a,#spdoc .dt-list a{border-left:0;border-radius:10px;padding:7px 12px;font-weight:700;color:var(--fg2)}
 #docs .dt-list .dt-sub a,#spdoc .dt-list .dt-sub a{padding-left:24px}
@@ -2267,7 +2334,7 @@ button.ch-row.on{background:var(--blue-wash);box-shadow:inset 0 0 0 2px var(--bl
 #games .gm-tile:hover{background:var(--panel2);border-color:var(--line-hi)}
 #games .gm-tile:active{transform:translateY(2px);border-bottom-width:2px;margin-bottom:-2px}
 #games .gm-tile img{background:var(--panel2);border-bottom:2px solid var(--line)}
-#games .gm-tile[data-game="lander"] .gm-foot b{font-size:22px}
+#games .gm-tile:is([data-game="lander"],[data-game="metrica"],[data-game-locked="metrica"]) .gm-foot b{font-size:22px}
 #games .gm-foot{gap:8px;padding:10px 12px 12px}
 #games .gm-foot b{font-family:var(--display);font-weight:600;font-size:18px;line-height:1.15;text-transform:none;letter-spacing:-0.01em}
 #games .gm-tags{gap:5px}
@@ -2295,7 +2362,7 @@ button.ch-row.on{background:var(--blue-wash);box-shadow:inset 0 0 0 2px var(--bl
 #games .gm-ref-copy:hover{background:var(--pri-hi)}
 #games .gm-unl{margin-left:4px;border-radius:999px;background:var(--pri-wash);color:var(--green);font:800 12px/1 var(--font-ui);letter-spacing:.8px;padding:6px 10px;text-transform:uppercase}
 @media (max-width:700px){#games .gm-pick{padding:0 var(--gut) 40px}#games .gm-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-  #games .gm-foot b{font-size:15px}#games .gm-tile[data-game="lander"] .gm-foot b{font-size:18px}#games .gm-sec h2{font-size:1.3rem}
+  #games .gm-foot b{font-size:15px}#games .gm-tile:is([data-game="lander"],[data-game="metrica"],[data-game-locked="metrica"]) .gm-foot b{font-size:18px}#games .gm-sec h2{font-size:1.3rem}
   #games .gm-lock{flex-direction:column;align-items:flex-start}#games .gm-ref{flex:1 1 auto;width:100%}}
 #games .gm-load{background:var(--bg);color:var(--fg)}
 #games .gm-lname{font-family:var(--display);font-weight:700;text-transform:none;letter-spacing:-0.02em;color:var(--pri)}
@@ -2332,7 +2399,7 @@ button.ch-row.on{background:var(--blue-wash);box-shadow:inset 0 0 0 2px var(--bl
 /* every screenshot the same shape; the labels may wrap under the name without squeezing it */
 #games .gm-tile{aspect-ratio:auto}
 #games .gm-tile img{flex:none;aspect-ratio:4/3;height:auto}
-#games .gm-tile[data-game="lander"] img{aspect-ratio:auto;height:0;flex:1 1 auto;min-height:220px}
+#games .gm-tile:is([data-game="lander"],[data-game="metrica"],[data-game-locked="metrica"]) img{aspect-ratio:auto;height:0;flex:1 1 auto;min-height:220px}
 #games .gm-plain .gm-big{min-height:120px}
 :root{--wrap-pt:32px}
 @media (max-width:820px){:root{--wrap-pt:20px}}
@@ -2360,9 +2427,9 @@ button.ch-row.on{background:var(--blue-wash);box-shadow:inset 0 0 0 2px var(--bl
 :root[data-theme="dark"] #games .mx{--bg:#131f24;--sf:#131f24;--box:#202f36;--box2:#37464f;--fg:#f1f7fb;--fg2:#8799a3;--line:#37464f;--grid:rgba(255,255,255,.05);--hatch:rgba(255,255,255,.06);--gnd:#202f36;--acc:#4b9af3;--acc2:#3c81db;--accfg:#ffffff}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #games .mx{--bg:#131f24;--sf:#131f24;--box:#202f36;--box2:#37464f;--fg:#f1f7fb;--fg2:#8799a3;--line:#37464f;--grid:rgba(255,255,255,.05);--hatch:rgba(255,255,255,.06);--gnd:#202f36;--acc:#4b9af3;--acc2:#3c81db;--accfg:#ffffff}}
 /* phone: every tile one size, so the list keeps its order */
-@media (max-width:700px){#games .gm-tile[data-game="lander"]{grid-column:auto;grid-row:auto}
-  #games .gm-tile[data-game="lander"] img{aspect-ratio:4/3;height:auto;flex:none;min-height:0}
-  #games .gm-tile[data-game="lander"] .gm-foot b{font-size:15px}}
+@media (max-width:700px){#games .gm-tile:is([data-game="lander"],[data-game="metrica"],[data-game-locked="metrica"]){grid-column:auto;grid-row:auto}
+  #games .gm-tile:is([data-game="lander"],[data-game="metrica"],[data-game-locked="metrica"]) img{aspect-ratio:4/3;height:auto;flex:none;min-height:0}
+  #games .gm-tile:is([data-game="lander"],[data-game="metrica"],[data-game-locked="metrica"]) .gm-foot b{font-size:15px}}
 
 /* dropdown carets: a drawn chevron (the ▾ character rendered as a dot) */
 .car svg{display:block;width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
@@ -2715,6 +2782,7 @@ button.ch-row.on{background:var(--blue-wash);box-shadow:inset 0 0 0 2px var(--bl
     <form class="sp-gate" id="spgate" autocomplete="off" onsubmit="return false">
       <input type="text" id="spuser" placeholder="Username" aria-label="Username" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="24">
       <input type="password" id="spcode" placeholder="Password" aria-label="Password" maxlength="200">
+      <button type="button" class="sp-forgot" id="spforgot">Forgot my password</button>
       <input type="password" id="spconf" placeholder="Confirm password" aria-label="Confirm password" maxlength="200" hidden>
       <input type="text" id="spref" placeholder="Referral code (optional)" aria-label="Referral code" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="24" hidden>
       <div class="sp-msg" id="spmsg" role="alert"></div>
@@ -5101,7 +5169,7 @@ async function loadData(pre){
     fresh.forEach(c=>{const n=normalizeCourse(c.raw||c.name);if(n.name){c.name=n.name;c.abbr=n.abbr;}
       c.keys=[...new Set((c.keys||[]).concat(n.keys))].filter(Boolean).slice(0,16);delete c.fresh;});
     state.settings={colors:{...DEFAULT_COLORS,...(st.colors||{})},periods:{...(st.periods||{})},
-      advisoryCourse:st.advisoryCourse||'',ical:st.ical||'',fullNames:!!st.fullNames,hideGames:!!st.hideGames,hideChat:!!st.hideChat,faqNew:!!st.faqNew,oppStar:[...(st.oppStar||[])],oppArch:[...(st.oppArch||[])],gamesIntro:!!st.gamesIntro,tutorialNew:!!st.tutorialNew,lunch:{...(st.lunch||{})}};
+      advisoryCourse:st.advisoryCourse||'',ical:st.ical||'',fullNames:!!st.fullNames,hideGames:!!st.hideGames,hideChat:!!st.hideChat,faqNew:!!st.faqNew,oppStar:[...(st.oppStar||[])],oppArch:[...(st.oppArch||[])],gamesIntro:!!st.gamesIntro,gameStar:[...(st.gameStar||[])],tutorialNew:!!st.tutorialNew,lunch:{...(st.lunch||{})}};
     state.calcmap=d.calcmap||{};
     if(fresh.length)saveSettings();
     state.user=d.user||null;
@@ -5183,7 +5251,7 @@ function confetti(x,y){
 }
 async function removeTask(id){try{await api('/api/task/'+encodeURIComponent(id),{method:'DELETE'});}catch(e){console.warn('delete failed',e);}}
 async function saveSettings(){if(!settingsLoaded)return;try{await api('/api/settings',{method:'POST',body:JSON.stringify({colors:state.settings.colors,periods:state.settings.periods,
-  advisoryCourse:state.settings.advisoryCourse||'',courses:COURSES,ical:state.settings.ical||'',fullNames:!!state.settings.fullNames,hideGames:!!state.settings.hideGames,hideChat:!!state.settings.hideChat,faqNew:!!state.settings.faqNew,oppStar:state.settings.oppStar||[],oppArch:state.settings.oppArch||[],gamesIntro:!!state.settings.gamesIntro,tutorialNew:!!state.settings.tutorialNew,lunch:state.settings.lunch||{}})});}catch(e){console.warn('save failed',e);}}
+  advisoryCourse:state.settings.advisoryCourse||'',courses:COURSES,ical:state.settings.ical||'',fullNames:!!state.settings.fullNames,hideGames:!!state.settings.hideGames,hideChat:!!state.settings.hideChat,faqNew:!!state.settings.faqNew,oppStar:state.settings.oppStar||[],oppArch:state.settings.oppArch||[],gamesIntro:!!state.settings.gamesIntro,gameStar:state.settings.gameStar||[],tutorialNew:!!state.settings.tutorialNew,lunch:state.settings.lunch||{}})});}catch(e){console.warn('save failed',e);}}
 async function saveNote(n){if(STALE.has(n))return;try{await api('/api/advisory',{method:'POST',body:JSON.stringify(n)});}catch(e){console.warn('save failed',e);}}
 async function removeNote(id){try{await api('/api/advisory/'+encodeURIComponent(id),{method:'DELETE'});}catch(e){console.warn('delete failed',e);}}
 async function saveEvent(ev){if(STALE.has(ev))return;try{await api('/api/event',{method:'POST',body:JSON.stringify(ev)});}catch(e){console.warn('save failed',e);}}
@@ -6387,6 +6455,8 @@ function settingsHTML(m){
       <div class="sx-redeem"><input type="text" id="${m}redeem" placeholder="Paste a guest code" autocomplete="off" spellcheck="false"><button class="kbtn" data-act-redeem="${m}">Move</button></div>
       <div class="sx-redeem-msg" id="${m}redeem-msg" role="status"></div></div>`+
     hideHTML()+
+    (state.user?`<div class="row"><span>Picture password</span>
+    <input type="checkbox" class="switch picpw" id="${m}picpw" ${state.user.pic?'checked':''} aria-label="picture password"></div>`:'')+
     (isModerator()?`<div class="row"><span>Administration</span><button class="kbtn wide hide-tog" data-act-roles>Open<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button></div>`:'');
 }
 /* ---------- FAQ: a pop-up from the Courses page; new accounts see the button blink until "I Can Read" ---------- */
@@ -7369,6 +7439,130 @@ function renderHome(fly){
    buttons. A click anywhere closes it and the wordmark springs back. Meme on the Courses page plays it again. When the
    server has no meme, one of the bundled pictures is used ---------- */
 const MEME_ALTS=["Two panel nope and yes meme: an orange cat turns away from \"doing homework\" and happily points at \"snack break number 4\".", "Distracted meme with original art: a pencil labeled \"me\" walks with a notebook labeled \"my homework\" but turns to stare at a phone labeled \"one new notification\".", "Everything is fine meme: a calm grey cat sips cocoa at a desk while the homework papers around it are on fire, with a speech bubble saying \"this is fine\" under the caption \"five tests this week\".", "Expanding brain meme in four panels: a brain grows from \"reading my notes\" to \"highlighting everything\" to \"making flashcards\" to a beaming brain for \"teaching it to my cat\".", "A backpack with legs zooms out of the classroom door in a cloud of dust as the wall bell rings, captioned \"when the bell rings on a Friday\".", "Two buttons meme: a nervous blue blob sweats over choosing between a red button \"start early\" and a blue button \"start at 11 PM\".", "A puzzled brown bear labeled \"me\" points at a floating video screen labeled \"a three hour video\" with the caption \"is this a study break?\".", "Change my mind meme: a smug green frog sits at an outdoor table with a mug and a sign reading \"homework should be optional on birthdays, change my mind\".", "Surprised reaction meme: \"me: studies zero minutes\", \"the quiz: is hard\", \"me:\" above a shocked hamster with wide eyes and an open mouth.", "Success meme: a determined green turtle pumps its fist on the grass, captioned \"found my missing homework in the other pocket\".", "Nobody versus me meme: \"nobody:\" then \"me at 11:59 PM:\" above a cat typing at a laptop at top speed, captioned \"submitted with one minute left\".", "How it started versus how it is going: a tall shiny new pencil smiling in September next to a tiny worn out stub of a pencil with a bandage in May.", "Four panel plan meme: a penguin presents a flip chart with steps \"make a planner\", \"write it all down\", \"never open it again\", then stares in shock at \"never open it again\".", "Trade offer meme: a confident phone character in a bow tie offers \"I receive: your whole afternoon\" and \"you receive: one funny video\".", "Waiting meme: a dusty dog sits on a bench covered in cobwebs next to a printer showing an error, captioned \"me waiting for the printer to work\".", "Panic, calm, panic meme with a white bunny: \"the test is tomorrow\" (panic), \"it is open note\" (calm), \"my notes are at school\" (panic)."];
+/* ---------- forgot password and the picture password ----------
+   Forgot my password (under the password box) proves the account is yours with your Schoology calendar link plus one
+   assignment from that calendar, or with your picture password: 3 of these 12 pictures, in order. Either opens the
+   new password screen. The picture password is turned on in Settings; 6 wrong tries lock it until you log in. */
+const PICS=[['books','Book'],['apple','Apple'],['controller','Controller'],['flask','Flask'],['calendar','Calendar'],['moon','Moon'],
+  ['globe','Globe'],['pencil','Pencil'],['clock','Alarm clock'],['backpack','Backpack'],['trophy','Trophy'],['bulb','Lightbulb']];
+function picArt(id){
+  const b=ART.books,i=b.indexOf('<path d="M50 17');
+  const g=id==='books'?'<g transform="translate(-1 -18)">'+b.slice(0,i)+'</g>':id==='apple'?'<g transform="translate(-30 6) scale(1.6)">'+b.slice(i)+'</g>':ART[id];
+  return '<svg viewBox="0 0 96 96" aria-hidden="true">'+g+'</svg>';
+}
+const pwRpc=(fn,...a)=>GS?gsCall(fn,...a):fetch('/api/rpc',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({fn,args:a})}).then(r=>r.json());
+const PWX_ERR={nouser:'No account with that username',empty:'Fill in both boxes',nolink:'This account has no Schoology link saved, so it can’t use this way',
+  nomatch:'That link and assignment don’t match this account. Check the spelling and capitals.',nopic:'This account has no picture password',
+  piclocked:'The picture password is locked after 6 wrong tries. Log in with your password to unlock it, or use Schoology.',
+  short:'Password must be at least 6 characters',long:'Password is too long',mismatch:'Passwords don’t match',expired:'That took too long. Start again.',
+  pic:'Pick 3 different pictures',conn:'Can’t connect, try again'};
+const PWX_STEPS=`<details><summary>How to find your Schoology link</summary><ol>
+<li>Sign in to Schoology at lms.fcps.edu and open <b>Calendar</b> from the top bar.</li>
+<li>Scroll below the calendar and click <b>Export</b>.<span class="shot shot-export" role="img" aria-label="The Export link below the Schoology calendar"></span></li>
+<li>In the Export iCal Feed box, click <b>Share Calendar</b>.<span class="shot shot-share" role="img" aria-label="Share Calendar in the Export iCal Feed box"></span></li>
+<li>If Share Calendar is gray, your calendar feed is turned off. Click <b>account settings</b> in that box.<span class="shot shot-disabled" role="img" aria-label="The account settings link when the feed is off"></span>Then press <b>Enable</b> under Share Your Schoology Calendar, go back to Calendar and do steps 2 and 3 again.<span class="shot shot-enable" role="img" aria-label="The Enable button under Share Your Schoology Calendar"></span></li>
+<li>Copy the calendar link that Share Calendar shows.</li>
+<li>Paste it in the box above.</li></ol></details>`;
+let pwx=null;
+function pwxShow(html){
+  let o=document.getElementById('pwx');
+  if(!o){o=document.createElement('div');o.id='pwx';o.className='pwx';o.setAttribute('role','dialog');o.setAttribute('aria-modal','true');o.setAttribute('aria-label','Password');
+    o.innerHTML='<div class="pwx-card"></div>';document.body.appendChild(o);
+    o.addEventListener('pointerdown',e=>{if(e.target===o)pwxClose();});}
+  o.hidden=false;const c=o.firstChild;
+  c.innerHTML='<button type="button" class="pwx-x" data-pwx="close" aria-label="Close" title="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>'+html;
+  c.scrollTop=0;setTimeout(()=>{const f=c.querySelector('input,.pwx-way,.pwx-pic');if(f)f.focus({preventScroll:true});},30);
+}
+function pwxClose(){const o=document.getElementById('pwx');if(o){o.hidden=true;o.firstChild.innerHTML='';}pwx=null;}
+const pwxMsg=t=>{const m=document.querySelector('#pwx .pwx-msg');if(m)m.textContent=t||'';};
+const pwxBusy=on=>{const b=document.querySelector('#pwx .pwx-go');if(b){b.classList.toggle('busy',on);b.disabled=!!on;}};
+function pwxStart(name){pwx={mode:'reset',name:name||'',seq:[]};pwxWho();}
+function pwxWho(){
+  pwxShow(`<h2>Forgot password</h2><p>Prove the account is yours, then pick a new password.</p>
+    <label for="pwx-name">Username</label><input type="text" id="pwx-name" value="${esc(pwx.name)}" maxlength="24" autocapitalize="off" autocorrect="off" spellcheck="false">
+    <div class="pwx-msg" role="alert"></div><div class="pwx-row"><button type="button" class="pwx-go" data-pwx="who">Next</button></div>`);
+}
+function pwxHow(info){
+  const pic=info.pic&&!info.picLocked;
+  pwxShow(`<h2>Forgot password</h2><p>How do you want to prove <b>${esc(pwx.name)}</b> is yours?</p><div class="pwx-ways">
+    <button type="button" class="pwx-way" data-pwx="school">${picArt('backpack')}<div><b>Schoology</b><span>Your Schoology calendar link and one assignment from that calendar</span></div></button>
+    <button type="button" class="pwx-way" data-pwx="pics" ${pic?'':'disabled'}>${picArt('trophy')}<div><b>Picture password</b><span>${info.picLocked?esc(PWX_ERR.piclocked):info.pic?'Your 3 pictures, in order':'Not turned on for this account (Settings, Picture password)'}</span></div></button></div>
+    <div class="pwx-row"><button type="button" class="pwx-alt" data-pwx="back">Back</button></div>`);
+}
+function pwxSchool(){
+  pwxShow(`<h2>Schoology</h2><p>Spelling and capitals must match exactly, so copy and paste both from Schoology.</p>
+    <label for="pwx-link">Schoology calendar link</label><input type="text" id="pwx-link" placeholder="iCal link" autocomplete="off" spellcheck="false">
+    ${PWX_STEPS}
+    <label for="pwx-task">One assignment from your Schoology calendar</label><input type="text" id="pwx-task" placeholder="Assignment title" autocomplete="off" spellcheck="false" maxlength="200">
+    <div class="pwx-note">Any assignment from this week or next week works.</div>
+    <div class="pwx-msg" role="alert"></div><div class="pwx-row"><button type="button" class="pwx-go" data-pwx="schoolgo">Check</button><button type="button" class="pwx-alt" data-pwx="back">Back</button></div>`);
+}
+function pwxPics(){
+  const set=pwx.mode==='set',q=pwx.seq;
+  pwxShow(`<h2>${set?'Picture password':'Picture password'}</h2><p>${set?'Pick 3 pictures, in order. If you ever forget your password, they let you pick a new one.':'Pick your 3 pictures, in order.'}</p>
+    <div class="pwx-pics">${PICS.map(([id,nm],i)=>{const k=q.indexOf(i);return `<button type="button" class="pwx-pic${k>=0?' on':''}" data-pwx-pic="${i}" aria-pressed="${k>=0}" aria-label="${esc(nm)}${k>=0?', picked '+(k+1):''}">${picArt(id)}${esc(nm)}${k>=0?'<i>'+(k+1)+'</i>':''}</button>`;}).join('')}</div>
+    <div class="pwx-msg" role="alert"></div><div class="pwx-row"><button type="button" class="pwx-go" data-pwx="${set?'picnext':'picgo'}" ${q.length===3?'':'disabled'}>${set?'Next':'Check'}</button><button type="button" class="pwx-alt" data-pwx="picclear">Clear</button>${set?'':'<button type="button" class="pwx-alt" data-pwx="back">Back</button>'}</div>`);
+}
+function pwxPicConfirm(){
+  const q=pwx.seq,names=q.map(i=>PICS[i][1]);
+  pwxShow(`<h2>Write these down</h2><p>Write down your 3 pictures, in this order: <b>${names.map((n,i)=>(i+1)+') '+esc(n)).join(', ')}</b>. You need all 3, in this order, to reset your password with them.</p>
+    <div class="pwx-seq">${q.map((i,k)=>`<div>${picArt(PICS[i][0])}${(k+1)+'. '+esc(PICS[i][1])}</div>`).join('')}</div>
+    <div class="pwx-msg" role="alert"></div><div class="pwx-row"><button type="button" class="pwx-go" data-pwx="picsave">Save</button><button type="button" class="pwx-alt" data-pwx="picagain">Pick again</button></div>`);
+}
+function pwxNew(){
+  pwxShow(`<h2>New password</h2><p>Pick a new password for <b>${esc(pwx.name)}</b>. Every computer signed in to it is signed out.</p>
+    <label for="pwx-pw">New password</label><input type="password" id="pwx-pw" maxlength="200">
+    <label for="pwx-pw2">Confirm new password</label><input type="password" id="pwx-pw2" maxlength="200">
+    <div class="pwx-msg" role="alert"></div><div class="pwx-row"><button type="button" class="pwx-go" data-pwx="newgo">Save password</button></div>`);
+}
+function picSync(){document.querySelectorAll('input.picpw').forEach(x=>{x.checked=!!(state.user&&state.user.pic);});}
+async function pwxAct(a){
+  if(!pwx&&a!=='close')return;
+  const v=id=>{const e=document.getElementById(id);return e?e.value:'';};
+  const call=async(fn,...args)=>{pwxBusy(true);let r=null;try{r=await pwRpc(fn,...args);}catch(_){r=null;}pwxBusy(false);return r||{error:'conn'};};
+  if(a==='close'){pwxClose();return;}
+  if(a==='back'){pwx.seq=[];if(pwx.info)pwxHow(pwx.info);else pwxWho();return;}
+  if(a==='who'){const n=v('pwx-name').trim().toLowerCase();if(!n)return pwxMsg(PWX_ERR.nouser);pwx.name=n;
+    const r=await call('rpcPwInfo',n);if(r.error)return pwxMsg(PWX_ERR[r.error]||PWX_ERR.conn);pwx.info=r;pwxHow(r);return;}
+  if(a==='school'){pwxSchool();return;}
+  if(a==='pics'){pwx.seq=[];pwxPics();return;}
+  if(a==='picclear'){pwx.seq=[];pwxPics();return;}
+  if(a==='schoolgo'){const l=v('pwx-link'),t=v('pwx-task');if(!l.trim()||!t.trim())return pwxMsg(PWX_ERR.empty);
+    const r=await call('rpcPwCheck',pwx.name,'school',l,t);if(!r.ticket)return pwxMsg(PWX_ERR[r.error]||PWX_ERR.conn);pwx.ticket=r.ticket;pwxNew();return;}
+  if(a==='picgo'){const r=await call('rpcPwCheck',pwx.name,'pic',pwx.seq);
+    if(!r.ticket){pwx.seq=[];pwxPics();if(r.error==='piclocked'&&pwx.info)pwx.info.picLocked=true;
+      return pwxMsg(r.error==='picwrong'?'Wrong pictures. '+r.left+' '+(r.left===1?'try':'tries')+' left.':PWX_ERR[r.error]||PWX_ERR.conn);}
+    pwx.ticket=r.ticket;pwxNew();return;}
+  if(a==='newgo'){const p1=v('pwx-pw'),p2=v('pwx-pw2');if(p1.length<6)return pwxMsg(PWX_ERR.short);if(p1!==p2)return pwxMsg(PWX_ERR.mismatch);
+    const r=await call('rpcPwReset',pwx.name,pwx.ticket,p1);if(!r.ok)return pwxMsg(PWX_ERR[r.error]||PWX_ERR.conn);
+    /* logged in with the new password, through the login form */
+    const name=pwx.name;pwxClose();
+    const u=document.getElementById('spuser'),c=document.getElementById('spcode'),g=document.getElementById('spgate');
+    if(u&&c&&g){u.value=name;c.value=p1;g.requestSubmit();}return;}
+  if(a==='picnext'){if(pwx.seq.length===3)pwxPicConfirm();return;}
+  if(a==='picagain'){pwx.seq=[];pwxPics();return;}
+  if(a==='picsave'){const r=await call('rpcPicSet',passKey,pwx.seq);if(!r.ok)return pwxMsg(PWX_ERR[r.error]||PWX_ERR.conn);
+    if(state.user)state.user.pic=true;pwxClose();picSync();return;}
+}
+document.addEventListener('click',e=>{
+  const f=e.target.closest('#spforgot');if(f){e.preventDefault();const u=document.getElementById('spuser');pwxStart(u?u.value.trim().toLowerCase():'');return;}
+  const p=e.target.closest('#pwx [data-pwx-pic]');
+  if(p&&pwx){const i=+p.dataset.pwxPic,q=pwx.seq,k=q.indexOf(i);if(k>=0)q.splice(k,1);else if(q.length<3)q.push(i);
+    pwxPics();const b=document.querySelector(`#pwx [data-pwx-pic="${i}"]`);if(b)b.focus({preventScroll:true});return;}
+  const b=e.target.closest('#pwx [data-pwx]');if(b)pwxAct(b.dataset.pwx);
+});
+document.addEventListener('keydown',e=>{
+  const o=document.getElementById('pwx');if(!o||o.hidden)return;
+  if(e.key==='Escape'){e.preventDefault();e.stopPropagation();pwxClose();return;}
+  if(e.key==='Enter'&&e.target.tagName==='INPUT'){e.preventDefault();const g=o.querySelector('.pwx-go');if(g&&!g.disabled)g.click();}
+},true);
+/* Settings: turning it on opens the picker (the switch stays off until the pictures are saved); off removes them */
+document.addEventListener('change',async e=>{
+  if(!e.target.classList||!e.target.classList.contains('picpw'))return;
+  if(e.target.checked){picSync();pwx={mode:'set',seq:[]};pwxPics();return;}
+  let r=null;try{r=await pwRpc('rpcPicSet',passKey,null);}catch(_){}
+  if(r&&r.ok&&state.user)state.user.pic=false;picSync();
+});
 const MEME_BASE='https:'+SLASH2+'cdn.jsdelivr.net/gh/yuzhe-chen/saxon-arcade@main/memes/';
 let memeT=0,memeGot=null;
 /* the meme day is Eastern time (the server switches memes at midnight there); a page left open picks up the new one then */
@@ -7383,6 +7577,7 @@ function memeIndex(){const d=new Date();return Math.floor(Date.UTC(d.getFullYear
 const memeKey=()=>'sx-meme-'+(state.user?state.user.name:'');
 function memeMaybe(){
   if(state.user&&!memeGot)memeGet();
+  if(state.user&&state.user.created&&Date.now()-state.user.created<864e5)return;
   if(!state.user||state.view!=='home'||memeT||gmPlaying()||document.getElementById('meme'))return;
   let seen='';try{seen=localStorage.getItem(memeKey())||'';}catch(_){}
   if(seen===memeDay())return;
@@ -7627,7 +7822,7 @@ if(window.SX_REF)sxRefArrived(window.SX_REF);
     sw=document.getElementById('spswitch'),msg=document.getElementById('spmsg');
   let signup=false,busy=false;
   const refIn=document.getElementById('spref');
-  const setMode=su=>{signup=su;conf.hidden=!su;refIn.hidden=!su;if(su&&!refIn.value)refIn.value=refStored();go.textContent=su?'Sign up':'Log in';sw.textContent=su?'Log in':'Sign up';
+  const setMode=su=>{signup=su;conf.hidden=!su;refIn.hidden=!su;if(su&&!refIn.value)refIn.value=refStored();go.textContent=su?'Sign up':'Log in';document.getElementById('spforgot').hidden=su;sw.textContent=su?'Log in':'Sign up';
     msg.textContent='';conf.value='';};
   const focusFirst=()=>setTimeout(()=>(user.value?code:user).focus(),0);
   const hero=document.getElementById('sphero'),img=sp.querySelector('.sp-img');
@@ -8406,16 +8601,16 @@ document.addEventListener('input',e=>{if(e.target.id==='res-q'){state.resQ=e.tar
 const GAMES=[
   {id:'drivemad',name:'Drive Mad',labels:['Singleplayer','Embed']},
   {id:'chess',name:'Chess',labels:['Multiplayer']},
-  /* Metrica: one tile for four worlds, Classic (geodash), Platformer (appel), Wave (metrica-wave) and Mixed
-     (metrica-mixed: the same file as Classic, opened as the Mixed editor, see GAME_FILE); each keeps its own saves */
-  {id:'metrica',name:'Metrica',labels:['Multiplayer'],modes:[['geodash','Classic','The cube runs on its own. Jump spikes, fly the ship and build your own levels.'],['appel','Platformer','Reach the goal, collect gems and build your own levels.'],['metrica-wave','Wave','Hold to fly the dart up, let go to dive. Thread it between the spikes.'],['metrica-mixed','Mixed','Build levels that switch between cube, ship, platformer and wave.']]},
+  {id:'krillion',name:'Krillion',labels:['Singleplayer']},
   {id:'lander',name:'Lander',labels:['Singleplayer']},
   {id:'geohunter',name:'Geobowl',labels:['Singleplayer']},
   {id:'getaway',name:'Getaway Shootout',labels:['Multiplayer','Embed']},
   {id:'solitaire',name:'Solitaire',labels:['Singleplayer']},
   {id:'capitalist',name:'Tycoon Simulator',labels:['Singleplayer']},
   {id:'tinyfishing',name:'Little Fishing',labels:['Singleplayer']},
-  {id:'krillion',name:'Krillion',labels:['Singleplayer']},
+  /* Metrica: one tile for four worlds, Classic (geodash), Platformer (appel), Wave (metrica-wave) and Mixed
+     (metrica-mixed: the same file as Classic, opened as the Mixed editor, see GAME_FILE); each keeps its own saves */
+  {id:'metrica',name:'Metrica',labels:['Multiplayer'],modes:[['geodash','Classic','The cube runs on its own. Jump spikes, fly the ship and build your own levels.'],['appel','Platformer','Reach the goal, collect gems and build your own levels.'],['metrica-wave','Wave','Hold to fly the dart up, let go to dive. Thread it between the spikes.'],['metrica-mixed','Mixed','Build levels that switch between cube, ship, platformer and wave.']]},
   {id:'pipworks',name:'Pipworks',labels:['Singleplayer']},
   {id:'geodash',name:'Metrica: Classic',labels:['Multiplayer'],hide:true},
   {id:'appel',name:'Metrica: Platformer',labels:['Multiplayer'],hide:true},
@@ -8740,6 +8935,20 @@ function openGames(){
 }
 /* the picker's filter: All or one section, remembered on this device */
 const gmFilter=()=>{let f='all';try{f=localStorage.getItem('sx-gfilter')||'all';}catch(_){}return f==='all'||GAME_SECTIONS.some(([l])=>l===f)?f:'all';};
+/* stars: an account can star games; starred ones come first, in menu order (saved with the account's settings) */
+const gmStarred=id=>!!state.user&&(state.settings.gameStar||[]).includes(id);
+const gmSorted=l=>l.filter(x=>gmStarred(x.id)).concat(l.filter(x=>!gmStarred(x.id)));
+const gmStar=x=>{if(!state.user)return '';const on=gmStarred(x.id);
+  return `<span class="gm-star${on?' on':''}" data-gm-star="${x.id}" role="button" tabindex="0" aria-pressed="${on}" aria-label="${on?'Unstar':'Star'} ${esc(x.name)}" title="${on?'Unstar':'Star'}"><svg viewBox="0 0 24 24"><path d="M12 3.2l2.6 5.5 6 .8-4.4 4.1 1.1 5.9L12 16.6l-5.3 2.9 1.1-5.9-4.4-4.1 6-.8z"/></svg></span>`;};
+function gmStarToggle(id){
+  const a=state.settings.gameStar||[];state.settings.gameStar=a.includes(id)?a.filter(x=>x!==id):a.concat([id]);
+  gmRenderPick();saveSettings();
+  const b=document.querySelector(`#games [data-gm-star="${id}"]`);if(b)b.focus({preventScroll:true});
+}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#games [data-gm-star]');if(!b)return;
+  e.preventDefault();e.stopPropagation();gmStarToggle(b.dataset.gmStar);},true);
+document.addEventListener('keydown',e=>{const b=e.target.closest&&e.target.closest('#games [data-gm-star]');if(!b||(e.key!=='Enter'&&e.key!==' '))return;
+  e.preventDefault();e.stopPropagation();gmStarToggle(b.dataset.gmStar);},true);
 function gmRenderPick(){
   const g=document.getElementById('games'),pick=g.querySelector('.gm-pick');if(!pick)return;
   const tile=x=>{const tags=`<span class="gm-tags">${x.labels.map(l=>`<i data-l="${esc(l)}">${esc(l)}</i>`).join('')}</span>`;
@@ -8752,7 +8961,7 @@ function gmRenderPick(){
   const list=GAMES.filter(x=>!x.hide);
   pick.innerHTML=`<div class="gm-head"><h1 class="gm-h"><span>games</span>${unl}</h1>
     <button class="gm-x" data-act-gclose aria-label="Close" title="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
-    <section class="gm-sec" data-sec="all">${list.some(gameLocked)?gmLockPanel():''}<div class="gm-grid">${list.map(tile).join('')}</div></section>`;
+    <section class="gm-sec" data-sec="all">${list.some(gameLocked)?gmLockPanel():''}<div class="gm-grid">${gmSorted(list).map(x=>tile(x).replace(/^<button[^>]*>/,m=>m+gmStar(x))).join('')}</div></section>`;
 }
 function gmMenu(open){const m=document.querySelector('#games .gm-fmenu');if(!m)return;m.hidden=!open;
   const b=document.querySelector('#games .gm-f');if(b){b.classList.toggle('open',open);b.setAttribute('aria-expanded',String(open));}}
