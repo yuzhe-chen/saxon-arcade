@@ -2149,6 +2149,42 @@ nav.tabs .mmenu .mcolors button.kbtn:hover{background:var(--panel);color:var(--f
 .pwx details li{margin-bottom:8px}
 .pwx details .shot{display:block;width:100%;max-width:400px;margin:8px 0 4px;background-size:contain;background-repeat:no-repeat}
 @media (max-width:520px){.pwx-pics{grid-template-columns:repeat(3,minmax(0,1fr))}.pwx-card{padding:22px 16px 18px}}
+/* Security page */
+.pwx-card.pwx-wide{width:min(660px,100%)}
+.pwx .sec section{border-top:2px solid var(--line);padding:16px 0 4px;margin-top:14px}
+.pwx .sec h3{margin:0 0 8px;font:800 17px var(--font-ui);color:var(--fg)}
+.pwx .sec-ok{margin:6px 0 4px;padding:10px 14px;border-radius:var(--rs);background:color-mix(in srgb,var(--accent) 14%,var(--bg));color:var(--fg);font-weight:800;font-size:14px}
+.sec-todo,.sec-notes{list-style:none;margin:0;padding:0}
+.sec-todo li{display:flex;align-items:center;gap:12px;padding:10px 0}
+.sec-todo li+li{border-top:1px solid var(--line)}
+.sec-todo i{flex:none;width:26px;height:26px;border-radius:50%;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;box-sizing:border-box}
+.sec-todo li.done i{background:#58cc02;border-color:#58cc02}
+.sec-todo i svg{width:16px;height:16px;fill:none;stroke:#fff;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.sec-todo div{flex:1;min-width:0}
+.sec-todo b{display:block;font-size:15px}
+.sec-todo li.done b{color:var(--fg2);text-decoration:line-through}
+.sec-todo span{display:block;font-size:13px;color:var(--fg2)}
+.sec-todo .pwx-alt{padding:8px 14px;font-size:13px}
+.sec-sw{display:flex;align-items:center;gap:14px}
+.sec-sw p{flex:1;margin:0}
+.sec-notes li{padding:8px 0;font-size:14px;line-height:1.4}
+.sec-notes li+li{border-top:1px solid var(--line)}
+.sec-notes span{display:block;font-size:12px;font-weight:800;color:var(--fg2)}
+/* Courses: no way to reset the password yet */
+.sec-warn{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:0 0 14px;padding:14px 16px;border-radius:var(--r);
+  border:2px solid var(--gold-dark,#e5a400);border-bottom-width:4px;background:color-mix(in srgb,#ffc800 14%,var(--bg))}
+.sec-warn-i{flex:none;width:44px;height:44px}
+.sec-warn-i svg{width:44px;height:44px}
+.sec-warn-t{flex:1 1 320px;min-width:0}
+.sec-warn-t>b{display:block;font-size:16px;font-weight:800;color:var(--fg)}
+.sec-warn-t p b{color:var(--fg)}
+.sec-warn-t p{margin:3px 0 0;font-size:14px;line-height:1.45;color:var(--fg2)}
+.sec-warn-b{display:flex;gap:8px;flex-wrap:wrap}
+/* a flashing button says why on hover */
+.hbtn.blink[data-why]{position:relative}
+.hbtn.blink[data-why]:hover::after,.hbtn.blink[data-why]:focus-visible::after{content:attr(data-why);position:absolute;left:0;top:calc(100% + 10px);z-index:60;width:250px;
+  padding:10px 12px;border-radius:var(--rs);background:var(--fg);color:var(--bg);font:700 13px/1.4 var(--font-ui);letter-spacing:0;text-transform:none;
+  text-align:left;white-space:normal;pointer-events:none;box-shadow:0 4px 14px rgba(0,0,0,.18)}
 /* ---------- Guide, Suggestions, Administration ---------- */
 #docs .dt-list a,#spdoc .dt-list a{border-left:0;border-radius:10px;padding:7px 12px;font-weight:700;color:var(--fg2)}
 #docs .dt-list .dt-sub a,#spdoc .dt-list .dt-sub a{padding-left:24px}
@@ -5035,10 +5071,10 @@ function setToken(t){
 }
 /* log in / sign up: resolves to {token,user} or {error} */
 /* both carry this browser's device id (referrals only count from a device never seen before); sign up also the referral code */
-async function authCall(kind,username,password,ref){
+async function authCall(kind,username,password,ref,seq){
   const device=deviceId();ref=kind==='signup'?String(ref||'').trim().toLowerCase():'';
-  if(GS)return kind==='signup'?gsCall('rpcSignup',username,password,ref,device):gsCall('rpcLogin',username,password,device);
-  const r=await fetch('/api/'+kind,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,password,ref,device})});
+  if(GS)return kind==='signup'?gsCall('rpcSignup',username,password,ref,device):gsCall('rpcLogin',username,password,device,seq||null);
+  const r=await fetch('/api/'+kind,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,password,ref,device,seq:seq||null})});
   return r.json();
 }
 /* every change goes through api(); changes to the same item run one after another (a slow save can't land after a
@@ -5506,7 +5542,7 @@ function renderCourses(){
     if(p4)cells.push(advisoryCard());
   }else{cells=COURSES.map(courseCard);cells.push(advisoryCard());}
   document.getElementById('v-courses').innerHTML=
-    `<div style="display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px;margin-bottom:14px"><div class="hgroup" style="margin-right:auto"><button class="hbtn hb-box" data-act="classes">Edit classes</button><button class="hbtn hb-box faq-btn${state.settings.faqNew?' blink':''}" data-act="faq">FAQ</button><button class="hbtn hb-box" id="tutbtn" data-act-tut>Tutorial</button><button class="hbtn hb-box" id="memebtn" data-act-meme>Meme</button></div>${modeBtnHTML()}${syncBtnHTML()}</div>
+    `<div style="display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px;margin-bottom:14px"><div class="hgroup" style="margin-right:auto;flex-wrap:wrap;max-width:100%"><button class="hbtn hb-box faq-btn${state.settings.ical?'':' blink'}" data-act="classes" ${state.settings.ical?'':'data-why="No Schoology link yet. Add it here so your assignments sync, and so you can reset your password with it if you forget it."'}>Edit classes</button><button class="hbtn hb-box faq-btn${state.settings.faqNew?' blink':''}" data-act="faq" ${state.settings.faqNew?'data-why="New here? The FAQ answers the common questions. Read it, then press I Can Read at the bottom to stop the flashing."':''}>FAQ</button><button class="hbtn hb-box" id="tutbtn" data-act-tut>Tutorial</button><button class="hbtn hb-box" id="memebtn" data-act-meme>Meme</button></div>${modeBtnHTML()}${syncBtnHTML()}</div>${secWarnHTML()}
     <div class="cgrid">${cells.join('')}</div>`;
 }
 function advisoryCard(){
@@ -6455,8 +6491,7 @@ function settingsHTML(m){
       <div class="sx-redeem"><input type="text" id="${m}redeem" placeholder="Paste a guest code" autocomplete="off" spellcheck="false"><button class="kbtn" data-act-redeem="${m}">Move</button></div>
       <div class="sx-redeem-msg" id="${m}redeem-msg" role="status"></div></div>`+
     hideHTML()+
-    (state.user?`<div class="row"><span>Picture password</span>
-    <input type="checkbox" class="switch picpw" id="${m}picpw" ${state.user.pic?'checked':''} aria-label="picture password"></div>`:'')+
+    (state.user?`<div class="row"><span>Passwords</span><button class="kbtn wide hide-tog" data-act-sec>Open<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button></div>`:'')+
     (isModerator()?`<div class="row"><span>Administration</span><button class="kbtn wide hide-tog" data-act-roles>Open<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button></div>`:'');
 }
 /* ---------- FAQ: a pop-up from the Courses page; new accounts see the button blink until "I Can Read" ---------- */
@@ -7455,7 +7490,7 @@ const PWX_ERR={nouser:'No account with that username',empty:'Fill in both boxes'
   nomatch:'That link and assignment don’t match this account. Assignment names are case sensitive, so check the capitals and spelling.',nopic:'This account has no picture password',
   piclocked:'The picture password is locked after 6 wrong tries. Log in with your password to unlock it, or use Schoology.',
   short:'Password must be at least 6 characters',long:'Password is too long',mismatch:'Passwords don’t match',expired:'That took too long. Start again.',
-  pic:'Pick 3 different pictures',conn:'Can’t connect, try again'};
+  pic:'Pick 3 different pictures',wrongcur:'That isn\u2019t your current password',conn:'Can’t connect, try again'};
 const PWX_STEPS=`<details><summary>How to find your Schoology link</summary><ol>
 <li>Sign in to Schoology at lms.fcps.edu and open <b>Calendar</b> from the top bar.</li>
 <li>Scroll below the calendar and click <b>Export</b>.<span class="shot shot-export" role="img" aria-label="The Export link below the Schoology calendar"></span></li>
@@ -7464,12 +7499,12 @@ const PWX_STEPS=`<details><summary>How to find your Schoology link</summary><ol>
 <li>Copy the calendar link that Share Calendar shows.</li>
 <li>Paste it in the box above.</li></ol></details>`;
 let pwx=null;
-function pwxShow(html){
+function pwxShow(html,wide){
   let o=document.getElementById('pwx');
   if(!o){o=document.createElement('div');o.id='pwx';o.className='pwx';o.setAttribute('role','dialog');o.setAttribute('aria-modal','true');o.setAttribute('aria-label','Password');
     o.innerHTML='<div class="pwx-card"></div>';document.body.appendChild(o);
     o.addEventListener('pointerdown',e=>{if(e.target===o)pwxClose();});}
-  o.hidden=false;const c=o.firstChild;
+  o.hidden=false;const c=o.firstChild;c.classList.toggle('pwx-wide',!!wide);
   c.innerHTML='<button type="button" class="pwx-x" data-pwx="close" aria-label="Close" title="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>'+html;
   c.scrollTop=0;setTimeout(()=>{const f=c.querySelector('input,.pwx-way,.pwx-pic');if(f)f.focus({preventScroll:true});},30);
 }
@@ -7486,7 +7521,7 @@ function pwxHow(info){
   const pic=info.pic&&!info.picLocked;
   pwxShow(`<h2>Forgot password</h2><p>How do you want to prove <b>${esc(pwx.name)}</b> is yours?</p><div class="pwx-ways">
     <button type="button" class="pwx-way" data-pwx="school">${picArt('backpack')}<div><b>Schoology</b><span>Your Schoology calendar link and one assignment from that calendar</span></div></button>
-    <button type="button" class="pwx-way" data-pwx="pics" ${pic?'':'disabled'}>${picArt('trophy')}<div><b>Picture password</b><span>${info.picLocked?esc(PWX_ERR.piclocked):info.pic?'Your 3 pictures, in order':'Not turned on for this account (Settings, Picture password)'}</span></div></button></div>
+    <button type="button" class="pwx-way" data-pwx="pics" ${pic?'':'disabled'}>${picArt('trophy')}<div><b>Picture password</b><span>${info.picLocked?esc(PWX_ERR.piclocked):info.pic?'Your 3 pictures, in order':'Not set for this account (Settings, Passwords)'}</span></div></button></div>
     <div class="pwx-row"><button type="button" class="pwx-alt" data-pwx="back">Back</button></div>`);
 }
 function pwxSchool(){
@@ -7498,10 +7533,10 @@ function pwxSchool(){
     <div class="pwx-msg" role="alert"></div><div class="pwx-row"><button type="button" class="pwx-go" data-pwx="schoolgo">Check</button><button type="button" class="pwx-alt" data-pwx="back">Back</button></div>`);
 }
 function pwxPics(){
-  const set=pwx.mode==='set',q=pwx.seq;
-  pwxShow(`<h2>${set?'Picture password':'Picture password'}</h2><p>${set?'Pick 3 pictures, in order. If you ever forget your password, they let you pick a new one.':'Pick your 3 pictures, in order.'}</p>
+  const set=pwx.mode==='set',lg=pwx.mode==='login',q=pwx.seq;
+  pwxShow(`<h2>${lg?'Two-step login':'Picture password'}</h2><p>${set?'Pick 3 pictures, in order. If you ever forget your password, they let you pick a new one.':'Pick your 3 pictures, in order.'}</p>
     <div class="pwx-pics">${PICS.map(([id,nm],i)=>{const k=q.indexOf(i);return `<button type="button" class="pwx-pic${k>=0?' on':''}" data-pwx-pic="${i}" aria-pressed="${k>=0}" aria-label="${esc(nm)}${k>=0?', picked '+(k+1):''}">${picArt(id)}${esc(nm)}${k>=0?'<i>'+(k+1)+'</i>':''}</button>`;}).join('')}</div>
-    <div class="pwx-msg" role="alert"></div><div class="pwx-row"><button type="button" class="pwx-go" data-pwx="${set?'picnext':'picgo'}" ${q.length===3?'':'disabled'}>${set?'Next':'Check'}</button><button type="button" class="pwx-alt" data-pwx="picclear">Clear</button>${set?'':'<button type="button" class="pwx-alt" data-pwx="back">Back</button>'}</div>`);
+    <div class="pwx-msg" role="alert"></div><div class="pwx-row"><button type="button" class="pwx-go" data-pwx="${set?'picnext':'picgo'}" ${q.length===3?'':'disabled'}>${set?'Next':'Check'}</button><button type="button" class="pwx-alt" data-pwx="picclear">Clear</button>${set&&!pwx.back||lg?'':'<button type="button" class="pwx-alt" data-pwx="back">Back</button>'}</div>`);
 }
 function pwxPicConfirm(){
   const q=pwx.seq,names=q.map(i=>PICS[i][1]);
@@ -7521,7 +7556,13 @@ async function pwxAct(a){
   const v=id=>{const e=document.getElementById(id);return e?e.value:'';};
   const call=async(fn,...args)=>{pwxBusy(true);let r=null;try{r=await pwRpc(fn,...args);}catch(_){r=null;}pwxBusy(false);return r||{error:'conn'};};
   if(a==='close'){pwxClose();return;}
-  if(a==='back'){pwx.seq=[];if(pwx.info)pwxHow(pwx.info);else pwxWho();return;}
+  if(a==='back'){pwx.seq=[];if(pwx.back==='sec'){secOpen();return;}if(pwx.info)pwxHow(pwx.info);else pwxWho();return;}
+  if(pwx.mode==='login'&&a==='picgo'){loginSeq=pwx.seq.slice();pwxClose();const g=document.getElementById('spgate');if(g)g.requestSubmit();return;}
+  if(a==='chg'){const c=v('sec-cur'),n1=v('sec-new'),n2=v('sec-new2');if(!c)return pwxMsg(PWX_ERR.wrongcur);if(n1.length<6)return pwxMsg(PWX_ERR.short);if(n1!==n2)return pwxMsg(PWX_ERR.mismatch);
+    const r=await call('rpcPwChange',passKey,c,n1);if(!r.ok)return pwxMsg(PWX_ERR[r.error]||PWX_ERR.conn);secOpen('Password changed. Your old password still works for 3 days.');return;}
+  if(a==='picset'){pwx={mode:'set',seq:[],back:'sec'};pwxPics();return;}
+  if(a==='picoff'){const r=await call('rpcPicSet',passKey,null);if(r.ok&&state.user)state.user.pic=false;secOpen(r.ok?'Picture password turned off.':PWX_ERR.conn);render();return;}
+  if(a==='classes'){pwxClose();state.setOpen=false;closeNavMenus();state.setup=true;render();const w=document.querySelector('.wrap');if(w)w.scrollTop=0;return;}
   if(a==='who'){const n=v('pwx-name').trim().toLowerCase();if(!n)return pwxMsg(PWX_ERR.nouser);pwx.name=n;
     const r=await call('rpcPwInfo',n);if(r.error)return pwxMsg(PWX_ERR[r.error]||PWX_ERR.conn);pwx.info=r;pwxHow(r);return;}
   if(a==='school'){pwxSchool();return;}
@@ -7542,7 +7583,7 @@ async function pwxAct(a){
   if(a==='picnext'){if(pwx.seq.length===3)pwxPicConfirm();return;}
   if(a==='picagain'){pwx.seq=[];pwxPics();return;}
   if(a==='picsave'){const r=await call('rpcPicSet',passKey,pwx.seq);if(!r.ok)return pwxMsg(PWX_ERR[r.error]||PWX_ERR.conn);
-    if(state.user)state.user.pic=true;pwxClose();picSync();return;}
+    if(state.user)state.user.pic=true;render();if(pwx&&pwx.back==='sec')secOpen('Picture password saved.');else pwxClose();return;}
 }
 document.addEventListener('click',e=>{
   const f=e.target.closest('#spforgot');if(f){e.preventDefault();const u=document.getElementById('spuser');pwxStart(u?u.value.trim().toLowerCase():'');return;}
@@ -7556,13 +7597,58 @@ document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){e.preventDefault();e.stopPropagation();pwxClose();return;}
   if(e.key==='Enter'&&e.target.tagName==='INPUT'){e.preventDefault();const g=o.querySelector('.pwx-go');if(g&&!g.disabled)g.click();}
 },true);
-/* Settings: turning it on opens the picker (the switch stays off until the pictures are saved); off removes them */
+/* the Security page (Settings, Passwords): change the password, the picture password, two-step login, what's still
+   worth doing, and the account's security notices */
+let loginSeq=null;
+/* the login form: an account with two-step login is asked for its pictures; true when the form should wait */
+function tfaAsk(r,name,go){
+  if(!r||(r.error!=='need2fa'&&r.error!=='tfawrong'))return false;
+  go.classList.remove('busy');pwx={mode:'login',name,seq:[]};pwxPics();
+  if(r.error==='tfawrong')pwxMsg('Wrong pictures. '+r.left+' '+(r.left===1?'try':'tries')+' left.');
+  return true;
+}
+const secDate=t=>{const d=new Date(t);return d.toLocaleDateString(undefined,{month:'short',day:'numeric'})+', '+d.toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'});};
+async function secOpen(note){
+  if(!state.user)return;
+  pwx={mode:'sec',seq:[]};
+  if(!document.querySelector('#pwx .sec'))pwxShow('<h2>Security</h2><p>Loading</p>',true);
+  let r=null;try{r=await pwRpc('rpcSecurity',passKey);}catch(_){}
+  if(!pwx||pwx.mode!=='sec')return;
+  if(!r||!r.ok){pwxShow('<h2>Security</h2><div class="pwx-msg">'+esc(PWX_ERR.conn)+'</div>',true);return;}
+  state.user.pic=r.pic;
+  const todo=[[r.ical,'Add your Schoology link','Your assignments sync, and you can reset your password with it.','<button type="button" class="pwx-alt" data-pwx="classes">Edit classes</button>'],
+    [r.pic,'Set a picture password','Another way to reset your password, and needed for two-step login.','<button type="button" class="pwx-alt" data-pwx="picset">Set</button>'],
+    [r.tfa,'Turn on two-step login','Nobody can log in with just your password.','']];
+  const ok='<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+  pwxShow(`<div class="sec"><h2>Security</h2>
+    ${note?`<div class="sec-ok">${esc(note)}</div>`:''}
+    <section><h3>To do</h3><ul class="sec-todo">${todo.map(([d,t,w,b])=>`<li class="${d?'done':''}"><i>${d?ok:''}</i><div><b>${t}</b><span>${w}</span></div>${d?'':b}</li>`).join('')}</ul></section>
+    <section><h3>Change password</h3>
+      <label for="sec-cur">Current password</label><input type="password" id="sec-cur" maxlength="200" autocomplete="current-password">
+      <label for="sec-new">New password</label><input type="password" id="sec-new" maxlength="200" autocomplete="new-password">
+      <label for="sec-new2">Confirm new password</label><input type="password" id="sec-new2" maxlength="200" autocomplete="new-password">
+      <div class="pwx-note">Your old password keeps working for 3 days after a change.</div>
+      <div class="pwx-msg" role="alert"></div><div class="pwx-row"><button type="button" class="pwx-go" data-pwx="chg">Change password</button></div></section>
+    <section><h3>Picture password</h3><p>${r.pic?(r.picLocked?'On, but locked after 6 wrong tries. Logging in with your password unlocks it.':'On.'):'Off.'} 3 of 12 pictures, in order, that let you reset your password if you forget it.</p>
+      <div class="pwx-row">${r.pic?'<button type="button" class="pwx-alt" data-pwx="picset">Change</button><button type="button" class="pwx-alt" data-pwx="picoff">Turn off</button>':'<button type="button" class="pwx-alt" data-pwx="picset">Set picture password</button>'}</div></section>
+    <section><h3>Two-step login</h3><div class="sec-sw"><p>Asks for your picture password every time you log in.${r.pic?'':' Set a picture password first.'}</p>
+      <input type="checkbox" class="switch tfa-sw" ${r.tfa?'checked':''} ${r.pic?'':'disabled'} aria-label="Two-step login"></div></section>
+    <section><h3>Security notices</h3>${r.notices.length?`<ul class="sec-notes">${r.notices.map(([t,m])=>`<li><span>${esc(secDate(t))}</span>${esc(m)}</li>`).join('')}</ul>`:'<p>No security notices yet.</p>'}</section></div>`,true);
+}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-act-sec]');if(!b)return;e.preventDefault();e.stopPropagation();
+  state.setOpen=false;closeNavMenus();renderSetdd();secOpen();},true);
 document.addEventListener('change',async e=>{
-  if(!e.target.classList||!e.target.classList.contains('picpw'))return;
-  if(e.target.checked){picSync();pwx={mode:'set',seq:[]};pwxPics();return;}
-  let r=null;try{r=await pwRpc('rpcPicSet',passKey,null);}catch(_){}
-  if(r&&r.ok&&state.user)state.user.pic=false;picSync();
+  if(!e.target.classList||!e.target.classList.contains('tfa-sw'))return;
+  const on=e.target.checked;let r=null;try{r=await pwRpc('rpcTfa',passKey,on);}catch(_){}
+  secOpen(r&&r.ok?(on?'Two-step login is on.':'Two-step login is off.'):PWX_ERR[r&&r.error]||PWX_ERR.conn);
 });
+/* Courses: a notice while the account has no way to reset its password */
+function secWarnHTML(){
+  if(!state.user||state.settings.ical||state.user.pic)return '';
+  return `<div class="sec-warn" role="note"><span class="sec-warn-i" aria-hidden="true">${art('lock')}</span><div class="sec-warn-t"><b>No way to reset your password</b>
+    <p>If you forget your password, there are only two ways back in: your Schoology link, or a picture password. Add your Schoology link in <b>Edit classes</b>, or set a picture password in <b>Settings</b>, <b>Passwords</b>.</p></div>
+    <div class="sec-warn-b"><button class="hbtn hb-box" data-act="classes">Add Schoology link</button><button class="hbtn hb-box" data-act-sec>Set picture password</button></div></div>`;
+}
 const MEME_BASE='https:'+SLASH2+'cdn.jsdelivr.net/gh/yuzhe-chen/saxon-arcade@main/memes/';
 let memeT=0,memeGot=null;
 /* the meme day is Eastern time (the server switches memes at midnight there); a page left open picks up the new one then */
@@ -7917,6 +8003,7 @@ if(window.SX_REF)sxRefArrived(window.SX_REF);
     if(k==='refdevice'){refIn.value='';try{localStorage.removeItem('sx-ref');}catch(_){}}};
   ERR.refdevice='Referral links can’t be used on a device that already has an account. Sign up without the link instead.';
   ERR.noref='No account with that referral code';
+  ERR.tfalocked='Too many wrong pictures. Logins are locked for an hour.';
   gate.addEventListener('submit',async e=>{
     e.preventDefault();
     if(busy)return;
@@ -7931,8 +8018,10 @@ if(window.SX_REF)sxRefArrived(window.SX_REF);
     }
     busy=true;msg.textContent='';go.classList.add('busy');
     let r=null;
-    try{r=await authCall(signup?'signup':'login',name,pw,signup?refIn.value:'');}catch(_){r=null;}
+    const sq=loginSeq;loginSeq=null;
+    try{r=await authCall(signup?'signup':'login',name,pw,signup?refIn.value:'',sq);}catch(_){r=null;}
     busy=false;
+    if(tfaAsk(r,name,go))return;
     if(!r||!r.token)return fail(r&&r.error||'conn');
     try{localStorage.removeItem('sx-ref');}catch(_){}refIn.value='';
     setToken(r.token);state.user=r.user;
@@ -8035,9 +8124,9 @@ const TUT_STEPS=[
   {v:'courses',s:'#v-courses [data-act="faq"]',t:'FAQ',p:'Stuck? The FAQ answers the common questions. It blinks until you’ve read it.'},
   {v:'courses',s:'#docsbtn',m:'#mmenu [data-act-docs]',t:'Guide',p:'The Guide in this menu explains every feature.'},
   {v:'courses',s:'#gearbtn',m:'#mgear',t:'Settings',
-    p:'Settings has Extended view, full course names, Edit classes, your Schoology link, a guest code for moving game progress, Hidden (to turn off Games or Chat) and your picture password.'},
-  {v:'courses',set:1,s:tutUp('#setdd input.picpw'),m:tutUp('#mcolors input.picpw'),t:'Picture password',
-    p:'Turn on Picture password and pick 3 of the 12 pictures, in order, then press Save. Write them down. If you ever forget your password, press Forgot my password on the login page and pick the same 3 to set a new one.'},
+    p:'Settings has Extended view, full course names, Edit classes, your Schoology link, a guest code for moving game progress, Hidden (to turn off Games or Chat) and Passwords.'},
+  {v:'courses',set:1,s:tutUp('#setdd [data-act-sec]'),m:tutUp('#mcolors [data-act-sec]'),t:'Passwords',
+    p:'Passwords opens Security. Set a picture password there: pick 3 of the 12 pictures, in order, press Save and write them down. If you ever forget your password, press Forgot my password on the login page and pick the same 3. Security also changes your password, turns on two-step login and lists security notices.'},
   {v:'courses',s:'#suggbtn',m:'#msugg',t:'Suggestions',p:'Have an idea or found a bug? Send it here. That’s the tour!',pl:'Have an idea or found a bug? Send it here.'},
   {v:'home',s:'#hm-classes',noIcal:1,t:'Your Schoology link',p:'Don’t forget your Schoology link. Without it nothing syncs. You can add it any time from Edit classes.'}];
 /* the steps for this tour; the Schoology reminder only while the account has no link */
