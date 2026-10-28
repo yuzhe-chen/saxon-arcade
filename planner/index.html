@@ -5754,8 +5754,10 @@ function resItemHTML(it){
   if(it.type==='links')return `<div class="rdoc">${(it.links||[]).map(l=>`<div class="rd-card">
       <div class="rdt"><a href="${esc(sisU(l.url))}" target="_blank" rel="noopener">${esc(l.title)}</a></div>
       <div class="rdm">${esc(hostOf(l.url))}</div>${l.note?`<div>${esc(l.note)}</div>`:''}</div>`).join('')}</div>`;
-  if(it.type==='vocab'){const q=(state.resQ||'').toLowerCase();
-    const rows=(it.terms||[]).filter(v=>!q||(v.term+' '+v.def).toLowerCase().includes(q));
+  if(it.type==='vocab'){
+    /* the search ignores macrons and case (postea finds posteā) and looks at the word, its meaning and its note */
+    const plain=t=>String(t||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase(),q=plain(state.resQ).trim();
+    const rows=(it.terms||[]).filter(v=>!q||plain(v.term+' '+v.def+' '+(v.ex||'')).includes(q));
     return `<div class="rdoc"><input type="text" id="res-q" class="vocab-filter" placeholder="Search" value="${esc(state.resQ||'')}" autocomplete="off">
       ${it.groups?it.groups.map(g=>{const gr=rows.filter(v=>v.group===g);return gr.length?`<h3>${esc(g)}</h3>`+gr.map(vrow).join(''):'';}).join(''):rows.map(vrow).join('')}</div>`;}
   if(it.type==='timeline'){
