@@ -7377,23 +7377,30 @@ const memeDay=()=>{try{return new Intl.DateTimeFormat('en-CA',{timeZone:'America
   let ms=36e5;
   try{const p=new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',hour12:false,hour:'numeric',minute:'numeric',second:'numeric'}).formatToParts(new Date());
     const g=t=>+(p.find(x=>x.type===t)||{}).value||0;ms=((24-g('hour')%24)*3600-g('minute')*60-g('second'))*1000+5000;}catch(_){}
-  setTimeout(()=>{memeGot=null;memeMaybe();memeMidnight();},Math.max(60000,Math.min(ms,864e5)));
+  setTimeout(()=>{memeGot=null;memeP=null;memeMaybe();memeMidnight();},Math.max(60000,Math.min(ms,864e5)));
 })();
 function memeIndex(){const d=new Date();return Math.floor(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())/864e5)%MEME_ALTS.length;}
 const memeKey=()=>'sx-meme-'+(state.user?state.user.name:'');
 function memeMaybe(){
+  if(state.user&&!memeGot)memeGet();
   if(!state.user||state.view!=='home'||memeT||gmPlaying()||document.getElementById('meme'))return;
   let seen='';try{seen=localStorage.getItem(memeKey())||'';}catch(_){}
   if(seen===memeDay())return;
   memeT=setTimeout(()=>{memeT=0;if(state.view!=='home'||!state.user||gmPlaying()||document.documentElement.classList.contains('splash-on'))return;
     memeDrop(true);},1300);
 }
-/* the server's meme: {date,title,dataUrl}, or null (kept for an hour, so Meme on Courses replays it without a new fetch) */
+/* the server's meme: {date,title,dataUrl}, or null. Fetched in the background once signed in and kept for the day,
+   so Meme on Courses shows it at once; a click during the fetch waits for that same fetch */
+let memeP=null;
 function memeGet(){
-  if(memeGot&&Date.now()-memeGot.at<36e5)return Promise.resolve(memeGot.m);
+  if(memeGot&&memeGot.day===memeDay())return Promise.resolve(memeGot.m);
+  if(memeP)return memeP;
+  return memeP=memeFetch().finally(()=>{memeP=null;});
+}
+function memeFetch(){
   const call=GS?gsCall('rpcDailyMeme'):fetch('/api/meme',{cache:'no-store'}).then(r=>r.json()).then(o=>o&&o.meme);
   return Promise.race([call,new Promise(r=>setTimeout(()=>r(null),20000))])
-    .then(m=>{m=m&&typeof m.dataUrl==='string'&&/^data:image\/(png|jpeg|gif|webp);base64,/.test(m.dataUrl)?m:null;if(m)memeGot={m,at:Date.now()};return m;})
+    .then(m=>{m=m&&typeof m.dataUrl==='string'&&/^data:image\/(png|jpeg|gif|webp);base64,/.test(m.dataUrl)?m:null;if(m)memeGot={m,day:memeDay()};return m;})
     .catch(()=>null);
 }
 let memeBusy=false;
@@ -7490,7 +7497,8 @@ function memeClose(){
 }
 document.addEventListener('click',e=>{if(!e.target.closest('[data-act-meme]'))return;e.stopPropagation();
   memeKill();
-  goHome();setTimeout(memeDrop,state.view==='home'?450:0);});
+  goHome();document.documentElement.style.cursor='progress';
+  setTimeout(()=>{memeDrop();memeGet().finally(()=>setTimeout(()=>{document.documentElement.style.cursor='';},300));},state.view==='home'?450:0);});
 function homeFly(){
   /* the bottom row drops first, so no card falls through one that has already landed */
   /* (rows below the screen drop at once, so the ones in view don't wait for them) */
@@ -7528,6 +7536,7 @@ function dataWait(){const on=!!(state.user&&!settingsLoaded);let d=document.getE
     d._t=setTimeout(()=>{const s=d.querySelector('.dl-sub');if(s&&document.body.contains(d))s.textContent='still loading, check your connection';},20000);}
   if(!on&&d){clearTimeout(d._t);d.remove();}}
 function render(){
+  if(state.user&&!memeGot&&!memeP)setTimeout(memeGet,0);
   if(gmPlaying()){gmMissed.render=true;return;}
   /* an assignment open for editing is saved first: redrawing would throw away its text and picked class */
   if(tkEdit){const f=tkEdit;tkEdit=null;if(f.span.isConnected&&f.span.isContentEditable)f.finish(true);}
