@@ -2329,7 +2329,7 @@ button.ch-row.on{background:var(--blue-wash);box-shadow:inset 0 0 0 2px var(--bl
 .opp-hd{margin-bottom:14px}
 .opp-body{display:flex;gap:20px;align-items:flex-start}
 .opp-main{flex:1;min-width:0}
-.opp-side{flex:none;width:232px;box-sizing:border-box;position:sticky;top:12px;max-height:calc(100vh - 150px);overflow-y:auto;overscroll-behavior:contain;
+.opp-side{flex:none;width:232px;box-sizing:border-box;position:sticky;top:12px;max-height:calc(100vh - 150px);overflow-y:auto;overscroll-behavior-y:auto;
   background:var(--bg);border:2px solid var(--line);border-bottom-width:4px;border-radius:var(--r);padding:10px 8px;display:flex;flex-direction:column;gap:2px;scrollbar-width:thin}
 .opp-side[hidden]{display:none}
 .opp-sh{font-size:12px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--faint);padding:4px 10px 8px;display:flex;align-items:center;justify-content:space-between;min-height:24px}
@@ -2349,7 +2349,7 @@ button.ch-row.on{background:var(--blue-wash);box-shadow:inset 0 0 0 2px var(--bl
 .opp-cur span{font-size:12.5px;color:var(--faint)}
 .opp-scrim{display:none}
 @media (max-width:700px){
-  .opp-side{position:fixed;left:0;top:0;bottom:0;max-height:none;width:min(290px,84vw);z-index:95;border-radius:0 var(--r) var(--r) 0;border-left:0;
+  .opp-side{position:fixed;left:0;top:0;bottom:0;max-height:none;overscroll-behavior-y:contain;width:min(290px,84vw);z-index:95;border-radius:0 var(--r) var(--r) 0;border-left:0;
     padding:calc(14px + env(safe-area-inset-top)) 10px calc(14px + env(safe-area-inset-bottom));box-shadow:0 10px 40px rgba(0,0,0,.25)}
   .opp-scrim{display:block;position:fixed;inset:0;z-index:94;background:rgba(0,0,0,.35);overscroll-behavior:none;touch-action:none}
   .opp-cat{min-height:44px}.opp-sx{display:inline-flex}}
@@ -7962,8 +7962,9 @@ function render(){
    see-through so the wheel still reaches the page */
 function scrollOb(e){for(let el=e.target;el&&el.nodeType===1;el=el.parentElement){const o=getComputedStyle(el).overflowY;
   if(o!=='auto'&&o!=='scroll')continue;
-  /* the Schoology link guide on Your Classes hands the scroll on to the page at its ends */
-  const on=el.scrollHeight>el.clientHeight+2&&!el.classList.contains('su-how');if(on!==el.hasAttribute('data-ob'))el.toggleAttribute('data-ob',on);}}
+  /* the Schoology link guide on Your Classes and the Tasks categories list (not the phone drawer) hand the scroll on to
+     the page at their ends */
+  const on=el.scrollHeight>el.clientHeight+2&&!el.classList.contains('su-how')&&!(el.classList.contains('opp-side')&&!oppPhone());if(on!==el.hasAttribute('data-ob'))el.toggleAttribute('data-ob',on);}}
 ['pointerover','wheel','touchstart'].forEach(t=>addEventListener(t,scrollOb,{capture:true,passive:true}));
 /* ---------- opening splash: log in or sign up; a saved session goes straight in ---------- */
 let splashShow=null,splashLeave=null;
@@ -8585,10 +8586,6 @@ function oppSide(on){if(oppPhone())state.oppSideM=on;else{state.oppSide=on;try{l
 /* phone: the sidebar covers the list; Escape closes it (a tap outside lands on the scrim) */
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&state.view==='tasks'&&oppPhone()&&state.oppSideM&&document.querySelector('.opp-side:not([hidden])')){e.preventDefault();oppSide(false);}});
 document.addEventListener('click',e=>{if(state.oppSortOpen&&e.target.isConnected&&!e.target.closest('.opp-sw')){state.oppSortOpen=false;if(state.view==='tasks')render();}});
-/* the categories list keeps the wheel: at its top or bottom (or when it all fits) the page behind doesn't scroll instead */
-document.addEventListener('wheel',e=>{const sd=e.target.closest&&e.target.closest('.opp-side');if(!sd||e.ctrlKey)return;
-  const up=e.deltaY<0,atTop=sd.scrollTop<=0,atBot=sd.scrollTop+sd.clientHeight>=sd.scrollHeight-1;
-  if(up?atTop:atBot)e.preventDefault();},{passive:false});
 function oppToggle(k,id){const a=state.settings[k]||[];state.settings[k]=a.includes(id)?a.filter(x=>x!==id):a.concat([id]);render();saveSettings();}
 function renderChat(){
   const v=document.getElementById('v-chat');
