@@ -7548,7 +7548,7 @@ function pwxWho(){
 function pwxHow(info){
   const pic=info.pic&&!info.picLocked;
   pwxShow(`<h2>Forgot password</h2><p>How do you want to prove <b>${esc(pwx.name)}</b> is yours?</p><div class="pwx-ways">
-    <button type="button" class="pwx-way" data-pwx="school">${picArt('backpack')}<div><b>Schoology</b><span>Your Schoology calendar link and one assignment from that calendar</span></div></button>
+    <button type="button" class="pwx-way" data-pwx="school" ${info.school?'':'disabled'}>${picArt('backpack')}<div><b>Schoology</b><span>${info.school?'Your Schoology calendar link and one assignment from that calendar':'No Schoology link is saved on this account'}</span></div></button>
     <button type="button" class="pwx-way" data-pwx="pics" ${pic?'':'disabled'}>${picArt('trophy')}<div><b>Picture password</b><span>${info.picLocked?esc(PWX_ERR.piclocked):info.pic?'Your 3 pictures, in order':'Not set for this account (Settings, Passwords)'}</span></div></button></div>
     <div class="pwx-row"><button type="button" class="pwx-alt" data-pwx="back">Back</button></div>`);
 }
@@ -7593,7 +7593,7 @@ async function pwxAct(a){
   if(a==='classes'){pwxClose();state.setOpen=false;closeNavMenus();state.setup=true;render();const w=document.querySelector('.wrap');if(w)w.scrollTop=0;return;}
   if(a==='who'){const n=v('pwx-name').trim().toLowerCase();if(!n)return pwxMsg(PWX_ERR.nouser);pwx.name=n;
     const r=await call('rpcPwInfo',n);if(r.error)return pwxMsg(PWX_ERR[r.error]||PWX_ERR.conn);pwx.info=r;pwxHow(r);return;}
-  if(a==='school'){pwxSchool();return;}
+  if(a==='school'){if(pwx.info&&pwx.info.school)pwxSchool();return;}
   if(a==='pics'){pwx.seq=[];pwxPics();return;}
   if(a==='picclear'){pwx.seq=[];pwxPics();return;}
   if(a==='schoolgo'){const l=v('pwx-link'),t=v('pwx-task');if(!l.trim()||!t.trim())return pwxMsg(PWX_ERR.empty);
