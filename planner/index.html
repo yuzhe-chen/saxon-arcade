@@ -2022,6 +2022,9 @@ button.hm-site{appearance:none;cursor:pointer}
 .res-head .hbtn{height:auto}
 .res-detail .rdoc{--lane:52px}
 .rdoc{background:var(--panel);border:2px solid var(--line);border-bottom-width:4px;border-radius:var(--r);font-weight:600}
+/* the editor's text sits under the browser's bold line (600), so the Bold button adds bold instead of taking it away */
+#re-doc{font-weight:500}
+#re-doc b,.rdoc b{font-weight:800}
 #docs .rdoc,#spdoc .rdoc{border:0;border-radius:0;background:transparent}
 .rdoc h3{font-family:var(--display);font-weight:600;font-size:clamp(1.4rem,2.4vw,1.8rem);letter-spacing:-0.01em;text-transform:none;border-bottom:2px solid var(--line);color:var(--fg)}
 .rdoc h4{font-weight:800;font-size:15px}
@@ -6268,9 +6271,15 @@ function edList(lines){
 /* Highlight: the selected lines' blocks become one passage, or stop being one when they all are */
 function edAns(doc,lines){
   const tops=[...new Set(lines.map(l=>{let e=l;while(e.parentElement!==doc)e=e.parentElement;return e;}))];
-  if(tops.every(t=>t.matches('div.ans'))){tops.forEach(t=>t.replaceWith(...t.childNodes));return;}
+  if(tops.every(t=>t.matches('div.ans'))){edUnAns(doc,lines);return;}
   const d=document.createElement('div');d.className='ans';tops[0].before(d);
   tops.forEach(t=>{if(t.matches('div.ans')){while(t.firstChild)d.appendChild(t.firstChild);t.remove();}else d.appendChild(t);});
+}
+/* takes just these lines out of their highlight; the rest of the passage stays highlighted, split around them */
+function edUnAns(doc,lines){
+  lines.forEach(l=>{const a=edAnsOf(doc,l);if(!a)return;let top=l;while(top.parentElement!==a)top=top.parentElement;
+    const rest=document.createElement('div');rest.className='ans';while(top.nextSibling)rest.appendChild(top.nextSibling);
+    a.after(top);if(rest.firstChild)top.after(rest);if(!a.firstChild)a.remove();});
 }
 /* Blue with no selection works like Bold: inside blue text it steps out of it, otherwise what's typed next is blue */
 function edBlueCaret(doc){
@@ -6361,7 +6370,7 @@ function reCmd(cmd){
   if(cmd==='bold'||cmd==='italic')document.execCommand(cmd);
   else if(cmd==='blue'&&caret)edBlueCaret(doc);
   else if(cmd==='blue')edBlue(doc);
-  else if(cmd==='ans'&&caret&&edAnsOf(doc,sel.anchorNode))edAnsExit(doc,edAnsOf(doc,sel.anchorNode));
+  else if(cmd==='ans'&&caret&&edAnsOf(doc,sel.anchorNode)){const m=edMark(doc);edUnAns(doc,[edLineOf(doc,sel.anchorNode)].filter(Boolean));edFix(doc);edRestore(doc,m);}
   else{const m=edMark(doc),lines=edLines(doc);
     if(lines.length){
       if(cmd==='h3'||cmd==='p'){const tag=cmd==='h3'&&lines.every(l=>l.tagName==='H3')?'p':cmd;lines.forEach(l=>edRetag(l,tag));}
