@@ -8999,10 +8999,13 @@ async function redeemGuest(code){
 const guestReply=r=>{if(r&&typeof r==='object'&&r.used){newGuestId();return '';}return typeof r==='string'?r:'';};
 /* a game's saves go out at most every 1.5 s: a burst of saves (some games save on every jump) is one request with the
    latest copy, sent in order. Leaving the game or the page sends what is waiting at once, and a load gets it too */
-const gmSaveQ=new Map();let gmSaveT=0,gmSaveRun=Promise.resolve();
-function gameSaveSoon(id,data){gmSaveQ.set(id,data);if(!gmSaveT)gmSaveT=setTimeout(gameSaveFlush,1500);}
+const gmSaveQ=new Map(),gmSent=new Map();let gmSaveT=0,gmSaveRun=Promise.resolve();
+/* every 8 s at most, a copy already saved is not sent again, and a save the server is too busy for waits for the next round */
+function gameSaveSoon(id,data){if(gmSent.get(id)===data&&!gmSaveQ.has(id))return;gmSaveQ.set(id,data);if(!gmSaveT)gmSaveT=setTimeout(gameSaveFlush,8000);}
 function gameSaveFlush(){clearTimeout(gmSaveT);gmSaveT=0;if(!gmSaveQ.size)return gmSaveRun;const q=[...gmSaveQ];gmSaveQ.clear();
-  return gmSaveRun=gmSaveRun.then(()=>Promise.all(q.map(([id,d])=>gameSave(id,d).catch(err=>console.warn('game save failed',err)))));}
+  return gmSaveRun=gmSaveRun.then(()=>Promise.all(q.map(([id,d])=>gameSave(id,d).then(()=>{gmSent.set(id,d);}).catch(err=>{
+    if(err&&err.busy){if(!gmSaveQ.has(id))gmSaveQ.set(id,d);if(!gmSaveT)gmSaveT=setTimeout(gameSaveFlush,8000);}
+    else console.warn('game save failed',err);}))));}
 addEventListener('pagehide',gameSaveFlush);
 document.addEventListener('visibilitychange',()=>{if(document.hidden)gameSaveFlush();});
 async function gameLoad(id){
@@ -9014,9 +9017,9 @@ async function gameLoad(id){
   return t==='{"used":true}'?guestReply({used:true}):t;
 }
 async function gameSave(id,data){
-  if(passKey){if(GS)await gsCall('rpcSaveGame',passKey,id,data);else await fetch('/api/game/'+id,{method:'POST',headers:{'Content-Type':'application/json','X-Token':passKey},body:data});return;}
+  if(passKey){if(GS){const r=await gsCall('rpcSaveGame',passKey,id,data);if(r&&r.busy)throw {busy:true};}else await fetch('/api/game/'+id,{method:'POST',headers:{'Content-Type':'application/json','X-Token':passKey},body:data});return;}
   const g=guestId();
-  if(GS)guestReply(await gsCall('rpcSaveGuestGame',g,id,data));
+  if(GS){const r=await gsCall('rpcSaveGuestGame',g,id,data);if(r&&r.busy)throw {busy:true};guestReply(r);}
   else guestReply(await (await fetch('/api/guest/'+id+'?g='+g,{method:'POST',headers:{'Content-Type':'application/json'},body:data})).json());
 }
 /* leaderboards: signed in, scores post under the account; otherwise under the guest code */
