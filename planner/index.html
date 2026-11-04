@@ -2372,6 +2372,22 @@ button.ch-row.on{background:var(--blue-wash);box-shadow:inset 0 0 0 2px var(--bl
 #tut .tut-row .hbtn:hover{background:var(--panel2);color:var(--fg2)}
 #tut .tut-hole{box-shadow:0 0 0 3px #fff,0 0 0 200vmax rgba(19,31,36,.7)}
 
+#dash{position:fixed;inset:0;z-index:1300;background:var(--bg);overflow-y:auto;overscroll-behavior:none;color:var(--fg)}
+#dash[hidden]{display:none}
+#dash .docs-in{max-width:1000px;margin:0 auto;padding:28px 30px 60px;position:relative}
+#dash .res-head{margin-bottom:22px}
+.db-stats{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:28px}
+.db-st{display:flex;flex-direction:column;gap:2px;padding:12px 18px;border:2px solid var(--line);border-bottom-width:4px;border-radius:16px;background:var(--bg);min-width:120px}
+.db-st.big{border-color:var(--pri)}
+.db-v{font:700 32px/1.1 var(--display);color:var(--fg)}.db-st.big .db-v{font-size:44px;color:var(--pri)}
+.db-l{font:700 13px/1.2 var(--font-ui);color:var(--faint);text-transform:uppercase;letter-spacing:.04em}
+.db-h{font:700 22px/1.2 var(--display);margin:0 0 12px;color:var(--fg)}
+.db-bars{display:flex;flex-direction:column;gap:6px}
+.db-row{display:grid;grid-template-columns:64px 1fr 40px;gap:10px;align-items:center;font:700 14px var(--font-ui);color:var(--fg2)}
+.db-bar{height:18px;background:var(--panel2);border-radius:9px;overflow:hidden}
+.db-bar i{display:block;height:100%;background:var(--pri);border-radius:9px;min-width:2px}
+.db-n{text-align:right}
+@media (max-width:700px){#dash .docs-in{padding:20px 16px 40px}.db-st{flex:1 1 40%;min-width:0}}
 /* ---------- Tools page: physics helper and GPA calculator ---------- */
 #games .tl-tile{aspect-ratio:auto;min-height:150px;justify-content:flex-start}
 #games .tl-tile.gm-plain .gm-big{flex:none;min-height:0;align-items:flex-start;padding:18px 16px 6px;font-size:26px;line-height:1.1}
@@ -2665,6 +2681,7 @@ html.no-v-tools [data-act-tools],html.no-v-tools #hm-tools{display:none!importan
 <div id="docs" hidden role="dialog" aria-label="Guide"></div>
 <div id="sugg" hidden role="dialog" aria-label="Suggestions"></div>
 <div id="roles" hidden role="dialog" aria-label="Administration"></div>
+<div id="dash" hidden role="dialog" aria-label="Dashboard"></div>
 <div id="gwarn" hidden role="dialog" aria-modal="true" aria-label="Playing as a guest"></div>
 
 <template id="docs-tpl">
@@ -2996,6 +3013,7 @@ html.no-v-tools [data-act-tools],html.no-v-tools #hm-tools{display:none!importan
       <a class="mm-row" data-site="profegpt" target="_blank" rel="noopener"><i class="mi" data-art="bubble"></i><span>ProfeGPT</span><svg class="mm-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
       <a class="mm-row" data-site="interpres" target="_blank" rel="noopener"><i class="mi" data-art="scroll"></i><span>Interpres</span><svg class="mm-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
       <a class="mm-row" data-site="planner" target="_blank" rel="noopener"><i class="mi" data-art="logo"></i><span>Planner</span><svg class="mm-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
+      <button class="mm-row" data-act-dash hidden><i class="mi" data-art="graph"></i><span>Dashboard</span><svg class="mm-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></button>
       <div class="mm-sep mm-acsep"></div>
       <div class="mm-acct" id="macct"><span class="mm-who" id="mwho"></span><button class="mm-out" data-act="logout">Log out</button></div>
     </div>
@@ -4868,6 +4886,23 @@ function normalizeCourse(input){
   SX.ELO_K = 32;
   SX.ELO_FLOOR = 100;
   SX.ELO_AWAY = 45000;
+  /* the owner's dashboard: accounts, new ones, and who logged in lately (u.c created, u.k login times), sign-ups per week for 12 weeks */
+  SX.userStats = function (list, now) {
+    var D = 864e5, out = { ok: true, total: list.length, new7: 0, new30: 0, active7: 0, active30: 0, weeks: [] }, i;
+    for (i = 0; i < 12; i++) out.weeks.push(0);
+    list.forEach(function (u) {
+      var c = Number(u.c) || 0, last = 0;
+      (u.k || []).forEach(function (t) { t = Number(t) || 0; if (t > last) last = t; });
+      if (c > last) last = c;
+      if (c && now - c < 7 * D) out.new7++;
+      if (c && now - c < 30 * D) out.new30++;
+      if (last && now - last < 7 * D) out.active7++;
+      if (last && now - last < 30 * D) out.active30++;
+      var w = Math.floor((now - c) / (7 * D));
+      if (c && w >= 0 && w < 12) out.weeks[11 - w]++;
+    });
+    return out;
+  };
   /* GPA calculator: FCPS grade points, Honors +0.5, AP AV DE IB +1 (an F gets no bonus) */
   SX.GPA_LEVELS = [['reg', 'Regular', 0], ['hn', 'HN', 0.5], ['ap', 'AP', 1], ['av', 'AV', 1], ['de', 'DE', 1], ['ib', 'IB', 1]];
   SX.GPA_GRADES = [['A', 4], ['A-', 3.7], ['B+', 3.3], ['B', 3], ['B-', 2.7], ['C+', 2.3], ['C', 2], ['C-', 1.7], ['D+', 1.3], ['D', 1], ['F', 0], ['P', null]];
@@ -5970,11 +6005,23 @@ function renderAssignments(){
 
 /* ---------- resources view: course cards, each opening reference subpages ---------- */
 let RES=null,resLoading=false;
+/* the last answer for a slow page (Resources, Tasks, Administration, Dashboard), kept per account on this device:
+   the page shows it at once and asks the server again in the background */
+const PC={};
+const pcKey=k=>'sx-pc-'+((state.user&&state.user.name)||'')+'-'+k;
+function pcGet(k){const key=pcKey(k);if(PC[key])return PC[key];try{const v=JSON.parse(localStorage.getItem(key)||'null');if(v&&v.d!==undefined){PC[key]=v;return v;}}catch(_){}return null;}
+function pcPut(k,d){const key=pcKey(k),v={t:Date.now(),d:d};PC[key]=v;try{localStorage.setItem(key,JSON.stringify(v));}catch(_){}}
+const pcSame=(a,b)=>{try{return JSON.stringify(a)===JSON.stringify(b);}catch(_){return false;}};
 async function loadResources(force){
-  if(resLoading||(RES&&MYRES&&!force))return;resLoading=true;
-  try{if(!RES||force)RES=await api('/api/resources');}catch(e){console.warn('resources failed',e);RES=RES||{courses:{}};}
-  try{const m=await api('/api/myres');MYRES=(m&&m.resources)||[];}catch(e){console.warn('own resources failed',e);MYRES=MYRES||[];}
-  resLoading=false;if(state.view==='resources')render();
+  if(resLoading||(RES&&MYRES&&!force))return;
+  if(!force&&!RES){const a=pcGet('res'),b=pcGet('myres');
+    if(a&&b){RES=a.d;MYRES=b.d;if(state.view==='resources')render();if(Date.now()-Math.min(a.t,b.t)<10*60000)return;}}
+  resLoading=true;
+  const [r,m]=await Promise.all([api('/api/resources').catch(e=>{console.warn('resources failed',e);return null;}),api('/api/myres').catch(e=>{console.warn('own resources failed',e);return null;})]);
+  const was=[RES,MYRES];
+  if(r){RES=r;pcPut('res',r);}else RES=RES||{courses:{}};
+  if(m){MYRES=m.resources||[];pcPut('myres',MYRES);}else MYRES=MYRES||[];
+  resLoading=false;if(state.view==='resources'&&!(pcSame(was[0],RES)&&pcSame(was[1],MYRES)))render();
 }
 const hostOf=u=>{try{return new URL(u).hostname.replace(/^www\./,'');}catch(_){return'';}};
 const KIND_LABEL={keys:'Answer keys',group:'Guides',practice:'Practice',html:'Reference',vocab:'Vocabulary',timeline:'Timeline',years:'Timeline',readings:'Summaries',links:'Links'};
@@ -8405,6 +8452,7 @@ function render(){
   const isOwn=!!(state.user&&state.user.owner);
   document.querySelectorAll('[data-v="tasks"]').forEach(b=>{if(b.hidden===isOwn)b.hidden=!isOwn;});
   if(state.view==='tasks'&&!isOwn)state.view='calendar';
+  {const on=!!(state.user&&(state.user.owner||isGameAdmin()));document.querySelectorAll('[data-act-dash]').forEach(b=>{if(b.hidden===on)b.hidden=!on;});}
   const v=state.setup&&state.user?'setup':state.view;
   const homeEl=document.getElementById('v-home'),wasHome=!!(homeEl&&homeEl.classList.contains('on'));
   document.querySelectorAll('#tabs button[data-v]').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
@@ -9013,9 +9061,11 @@ function chMsgsHTML(id){
    difficulty or fit; owner only (the server refuses everyone else) ---------- */
 let OPPS=null,oppsLoading=false;
 async function loadOpps(force){
-  if(oppsLoading||(OPPS&&!force))return;oppsLoading=true;
-  try{const r=await api('/api/opps');OPPS=Array.isArray(r)?r:(r&&r.opps)||[];}catch(e){OPPS=[];}
-  oppsLoading=false;if(state.view==='tasks')render();
+  if(oppsLoading||(OPPS&&!force))return;
+  if(!force&&!OPPS){const c=pcGet('opps');if(c){OPPS=c.d;if(state.view==='tasks')render();if(Date.now()-c.t<10*60000)return;}}
+  oppsLoading=true;const was=OPPS;
+  try{const r=await api('/api/opps');OPPS=Array.isArray(r)?r:(r&&r.opps)||[];pcPut('opps',OPPS);}catch(e){OPPS=OPPS||[];}
+  oppsLoading=false;if(state.view==='tasks'&&!pcSame(was,OPPS))render();
 }
 const OPP_SORTS=[['deadline','Deadline'],['prestige','Prestige'],['difficulty','Difficulty'],['fit','Fit']];
 const oppDays=ds=>{if(!ds)return null;const t=new Date(todayStr()+'T00:00:00'),d=new Date(ds+'T00:00:00');return Math.round((d-t)/864e5);};
@@ -9400,12 +9450,43 @@ document.addEventListener('keydown',e=>{const d=document.getElementById('gwarn')
 /* ---------- administration page: administrators (red) and moderators (green), recent sign-ups, game testing mode (game admins),
    and suggestions and bug reports (administrators; the server checks) ---------- */
 let RL=null,RLS=null,rlSK='all';
+/* ---------- Dashboard (administrators): how many accounts there are and how many signed in lately ---------- */
+let DB=null;
+async function openDash(){
+  const d=document.getElementById('dash');closeNavMenus();d.hidden=false;
+  const c=pcGet('dash');DB=c?c.d:null;dashPaint();
+  try{const r=await api('/api/roles',{method:'POST',body:JSON.stringify({op:'stats'})});if(r&&r.ok){if(!pcSame(r,DB)){DB=r;dashPaint();}pcPut('dash',r);}else if(!DB){DB={error:1};dashPaint();}}
+  catch(_){if(!DB){DB={error:1};dashPaint();}}
+}
+function closeDash(){const d=document.getElementById('dash');d.hidden=true;d.innerHTML='';}
+function dashPaint(){
+  const d=document.getElementById('dash');if(d.hidden)return;
+  const head=`<button class="hbtn res-x" data-db-close title="Close">\u00d7</button><div class="res-head"><div class="rh-text"><span class="rt">Dashboard</span></div></div>`;
+  if(!DB){d.innerHTML=`<div class="docs-in">${head}<div class="res-load">${resRunHTML()}</div></div>`;return;}
+  if(DB.error){d.innerHTML=`<div class="docs-in">${head}<div class="rl-none">Can't load the dashboard</div></div>`;return;}
+  const st=(v,l,big)=>`<div class="db-st${big?' big':''}"><span class="db-v">${esc(String(v))}</span><span class="db-l">${esc(l)}</span></div>`;
+  const w=DB.weeks||[],mx=Math.max(1,...w),now=Date.now();
+  const wk=i=>new Date(now-(w.length-1-i)*7*864e5).toLocaleDateString([],{month:'short',day:'numeric'});
+  d.innerHTML=`<div class="docs-in">${head}
+    <div class="db-stats">${st(DB.total,'Accounts',1)}${st(DB.new7,'New this week')}${st(DB.new30,'New this month')}${st(DB.active7,'Logged in this week')}${st(DB.active30,'Logged in this month')}</div>
+    <h2 class="db-h">Sign-ups by week</h2>
+    <div class="db-bars">${w.map((n,i)=>`<div class="db-row"><span class="db-d">${esc(wk(i))}</span><span class="db-bar"><i style="width:${Math.round(n/mx*100)}%"></i></span><span class="db-n">${n}</span></div>`).join('')}</div></div>`;
+}
+document.addEventListener('click',e=>{
+  if(e.target.closest&&e.target.closest('[data-act-dash]')){openDash();return;}
+  if(e.target.closest&&e.target.closest('[data-db-close]'))closeDash();
+});
+document.addEventListener('keydown',e=>{const d=document.getElementById('dash');if(d&&!d.hidden&&e.key==='Escape'){e.stopPropagation();closeDash();}},true);
 async function openRoles(){
   const d=document.getElementById('roles');closeNavMenus();state.setOpen=false;renderSetdd();
-  d.hidden=false;d.innerHTML=`<div class="docs-in"><div class="res-load">${resRunHTML()}</div></div>`;
+  d.hidden=false;const pc=pcGet('roles');
+  if(pc){RL=pc.d.RL;RLS=pc.d.RLS;rolesPaint();}else d.innerHTML=`<div class="docs-in"><div class="res-load">${resRunHTML()}</div></div>`;
+  let nl=null,ns=null;
   try{const [a,b]=await Promise.all([api('/api/roles',{method:'POST',body:JSON.stringify({op:'list'})}),api('/api/roles',{method:'POST',body:JSON.stringify({op:'suggestions'})}).catch(()=>null)]);
-    RL=a;RLS=b&&b.ok?b.suggestions:null;}catch(_){RL={error:'conn'};RLS=null;}
-  rolesPaint();
+    nl=a;ns=b&&b.ok?b.suggestions:null;}catch(_){nl={error:'conn'};ns=null;}
+  if(d.hidden)return;
+  if(nl&&!nl.error)pcPut('roles',{RL:nl,RLS:ns});else if(pc)return;
+  if(!pcSame(nl,RL)||!pcSame(ns,RLS)){RL=nl;RLS=ns;rolesPaint();}
 }
 function closeRoles(){const d=document.getElementById('roles');d.hidden=true;d.innerHTML='';RL=null;RLS=null;}
 function rolesPaint(msg){
