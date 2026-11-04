@@ -7644,6 +7644,19 @@ document.addEventListener('click',e=>{
   state.toolTab=id;try{localStorage.setItem('sx-tooltab',id);localStorage.setItem('sx-tab','tools');}catch(_){}
   state.view='tools';render();scrollTo(0,0);
 });
+/* class names tidy up when the box is left, as on Your Classes (apush becomes AP United States History); the level
+   follows the new name unless it was picked by hand. Enter goes to the next class, or adds one after the last */
+document.addEventListener('focusout',e=>{const t=e.target;if(!t.classList||!t.classList.contains('gpa-n'))return;
+  const r=gpaRows()[gpaIdx(t)],v=t.value.trim();if(!r||!v)return;
+  const n=normalizeCourse(v).name;if(!n||n===r.n)return;
+  const was=gpaLevel(r.n);r.n=n;t.value=n;
+  const lv=gpaLevel(n);if(r.lv===was&&lv!==r.lv){r.lv=lv;const w=t.closest('.gpa-row').querySelector('.gpa-lv');if(w)xddSet(w,lv);}
+  gpaSum();gpaSave();});
+document.addEventListener('keydown',e=>{const t=e.target;if(e.key!=='Enter'||!t.classList||!t.classList.contains('gpa-n'))return;
+  e.preventDefault();const i=gpaIdx(t),rows=gpaRows(),next=document.getElementById('gpa-n'+(i+1));
+  if(next){next.focus();return;}
+  if(!t.value.trim()||rows.length>=120)return;
+  t.blur();rows.push({n:'',lv:'reg',cr:1,g:'',x:''});gpaRedraw(true);});
 function renderTools(){
   const el=document.getElementById('v-tools');if(!el)return;
   const tab=state.toolTab==='gpa'?'gpa':'phys';
