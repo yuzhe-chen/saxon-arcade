@@ -176,7 +176,6 @@ label.fl{display:block;font-size:11px;font-weight:700;letter-spacing:.07em;text-
 .mcell{background:var(--panel);min-height:clamp(120px,12.5vw,200px);min-width:0;padding:7px 8px 30px;cursor:pointer;overflow:hidden}
 .mcell:hover{background:color-mix(in srgb, var(--panel) 72%, var(--panel2))}
 .mcell.drop{background:var(--panel2)}
-.navbtn.drop{background:var(--panel2);transform:scale(1.12)}
 .mcell.out{background:var(--panel2)}
 .mcell.out .dnum{color:var(--fg2)}
 .mcell .dnum{font-size:12.5px;font-weight:700;padding:0 2px}
@@ -212,6 +211,8 @@ label.fl{display:block;font-size:11px;font-weight:700;letter-spacing:.07em;text-
 .wcol{background:var(--panel);padding:10px;min-height:220px;min-width:0}
 .wcol.hl{background:color-mix(in srgb, var(--panel) 70%, var(--panel2))}
 .wcol.drop{background:var(--panel2)}
+.cal-next{margin-top:16px;height:84px;display:flex;align-items:center;justify-content:center;border:2px dashed var(--line);border-radius:var(--rs,14px);background:var(--input,var(--panel2));color:var(--faint);font:600 16px var(--font-ui);user-select:none}
+.cal-next.drop{border-color:var(--blue,#1cb0f6);background:var(--blue-wash,#ddf4ff);color:var(--blue-dark,#1899d6)}
 .wcol .wd{font-size:12.5px;font-weight:700;letter-spacing:.03em;text-transform:uppercase}
 .meet{font-size:11.5px;color:var(--fg);margin:8px 0 2px;line-height:1.7}
 .meet b{font-weight:700}
@@ -5871,7 +5872,16 @@ function renderCalendar(){
   if(state.calView==='today')el.innerHTML=todayHTML();
   else if(state.calView==='week')el.innerHTML=weekHTML();
   else el.innerHTML=monthHTML();
+  el.insertAdjacentHTML('beforeend',nextMonthDrop());
   if(state.qaDay)el.insertAdjacentHTML('beforeend',qaHTML());
+}
+/* below the calendar: an assignment dropped here moves to the 1st of the month after the one shown */
+function nextMonthDrop(){
+  let y,m;
+  if(state.calView==='month')[y,m]=state.month;
+  else{const d=parse(state.calView==='week'?(state.weekAnchor||mondayOf(todayStr())):todayStr());y=d.getFullYear();m=d.getMonth();}
+  m++;if(m>11){m=0;y++;}
+  return `<div class="cal-next" data-drop="${y}-${String(m+1).padStart(2,'0')}-01">Send to next month</div>`;
 }
 function todayHTML(){
   const td=todayStr();
@@ -7479,18 +7489,6 @@ function calStep(n){
   render();}
 /* drag and drop: move an assignment to another date */
 let dragId=null;
-/* holding a dragged assignment over the previous or next arrow turns the page, again every half second while it stays */
-let calNavHold=null;
-function calNavOff(){if(!calNavHold)return;clearTimeout(calNavHold.t);calNavHold.b.classList.remove('drop');calNavHold=null;}
-document.addEventListener('dragover',e=>{
-  if(!dragId)return;const b=e.target.closest('[data-act="nav"]');
-  if(!b){calNavOff();return;}
-  e.preventDefault();e.dataTransfer.dropEffect='move';
-  if(calNavHold&&calNavHold.b===b)return;calNavOff();b.classList.add('drop');
-  calNavHold={b,t:setTimeout(()=>{calNavHold=null;calStep(Number(b.dataset.n));},500)};
-});
-document.addEventListener('dragend',calNavOff);
-document.addEventListener('drop',calNavOff,true);
 document.addEventListener('dragstart',e=>{
   const el=e.target.closest('[data-tid]');
   /* GPA classes drag by their own handle (their own handlers) */
