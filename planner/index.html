@@ -2389,6 +2389,35 @@ button.ch-row.on{background:var(--blue-wash);box-shadow:inset 0 0 0 2px var(--bl
 .db-n{text-align:right}
 @media (max-width:700px){#dash .docs-in{padding:20px 16px 40px}.db-st{flex:1 1 40%;min-width:0}}
 /* ---------- Tools page: physics helper and GPA calculator ---------- */
+.gpa-top{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch}
+.gpa-top .xdd{display:block}
+.gpa-curyr .cdd-btn{height:100%;min-height:44px;padding:0 10px 0 14px;background:var(--input);border:2px solid var(--line);border-radius:var(--rs);font-size:15px;gap:8px}
+.gpa-curyr .cdd-btn .car svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.gpa-sec{display:flex;flex-direction:column;gap:8px;padding-top:6px}
+.gpa-yh{margin:0;font:700 20px/1.2 var(--display);color:var(--fg);display:flex;align-items:center;gap:10px}
+.gpa-tag{font:800 11px/1 var(--font-ui);text-transform:uppercase;letter-spacing:.06em;padding:5px 8px;border-radius:8px;background:var(--panel2);color:var(--faint)}
+.gpa-tag.now{background:var(--pri);color:#fff}
+.gpa-row.prosp .gpa-n{border-style:dashed;font-style:italic}
+.gpa-sb{width:150px}.gpa-yr{width:140px}
+.gpa-proj{border-style:dashed!important}
+.gpa-req{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.gpa-dip{border:2px solid var(--line);border-bottom-width:4px;border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.gpa-dh{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:4px}
+.gpa-dn{font:700 19px/1.2 var(--display);color:var(--fg)}
+.gpa-ds{font:800 11px/1 var(--font-ui);text-transform:uppercase;letter-spacing:.06em;padding:6px 9px;border-radius:8px;background:var(--panel2);color:var(--faint);white-space:nowrap}
+.gpa-dip.done .gpa-ds{background:#58cc02;color:#fff}.gpa-dip.plan .gpa-ds{background:var(--pri);color:#fff}.gpa-dip.short .gpa-ds{background:#ff4b4b;color:#fff}
+.gpa-rq{display:grid;grid-template-columns:minmax(0,1fr) 90px 78px;gap:10px;align-items:center;font:700 13.5px/1.25 var(--font-ui);color:var(--fg2)}
+.gpa-rq.tot{border-top:2px solid var(--line);padding-top:8px;color:var(--fg)}
+.gpa-rb{position:relative;height:12px;border-radius:6px;background:var(--panel2);overflow:hidden}
+.gpa-rb i{position:absolute;left:0;top:0;bottom:0;border-radius:6px}
+.gpa-rb .p{background:var(--pri);opacity:.35}.gpa-rb .h{background:#58cc02;z-index:1}
+.gpa-rq.short .gpa-rn{color:#ff4b4b}
+.gpa-rn{text-align:right;white-space:nowrap}
+.tl-size{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 12px;border:2px solid var(--line);border-radius:var(--rs);background:var(--input)}
+.tl-size input[type=range]{width:130px;accent-color:var(--pri)}
+.tl-size input[type=number]{width:58px;height:32px;box-sizing:border-box;border:2px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);font:700 14px var(--font-ui);text-align:center;padding:0 2px}
+.tl-size span{font:700 14px var(--font-ui);color:var(--faint)}
+@media (max-width:760px){.gpa-row.by .xdd.gpa-sb,.gpa-row.by .xdd.gpa-yr{flex:1 1 40%;width:auto;min-width:0}.tl-size{flex:1 1 100%}.tl-size input[type=range]{flex:1;width:auto}.gpa-rq{grid-template-columns:minmax(0,1fr) 60px 70px}}
 #games .tl-tile{aspect-ratio:auto;min-height:150px;justify-content:flex-start}
 #games .tl-tile.gm-plain .gm-big{flex:none;min-height:0;align-items:flex-start;padding:18px 16px 6px;font-size:26px;line-height:1.1}
 #games .tl-desc{display:block;padding:0 16px 18px;text-align:left;font:700 15px/1.35 var(--font-ui);color:var(--faint)}
@@ -2400,7 +2429,7 @@ html.no-v-tools [data-v="tools"],html.no-v-tools #hm-tools{display:none!importan
 .tl-root{max-width:1000px;margin:0 auto}
 .tl-card{border:2px solid var(--line);border-bottom-width:4px;border-radius:16px;display:flex;flex-direction:column;gap:14px}
 .tl-paste{width:100%;box-sizing:border-box;min-height:84px;resize:none;border:2px dashed var(--line);border-radius:var(--rs);background:var(--input);color:var(--fg);
-  font:600 16px/1.4 var(--font-ui);padding:28px 14px;text-align:center;overscroll-behavior:none}
+  font:600 16px/1.4 var(--font-ui);padding:28px 14px;text-align:center;overflow:hidden}
 .tl-paste:focus{outline:none;border-color:var(--blue);background:var(--bg)}
 .tl-opts{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch}
 .tl-opts .xdd{display:block;min-width:0}
@@ -2412,7 +2441,7 @@ html.no-v-tools [data-v="tools"],html.no-v-tools #hm-tools{display:none!importan
   font:700 14px/1 var(--font-ui);cursor:pointer;white-space:nowrap}
 .tl-chip:active{transform:translateY(2px);border-bottom-width:2px}
 .tl-chip.on{background:var(--blue);border-color:var(--blue);color:#fff;box-shadow:inset 0 -4px 0 rgba(0,0,0,.18);border-bottom-width:2px}
-.tl-out{overflow-x:auto;overscroll-behavior:none;padding-bottom:4px}
+.tl-out{overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:none;padding-bottom:4px}
 .tl-units{position:relative;height:44px;margin-bottom:8px;min-width:100%}
 .tl-u{position:absolute;top:0;box-sizing:border-box;height:40px;padding:0 4px;text-align:center;border:2px solid var(--line);border-radius:10px;background:var(--input);color:var(--fg);font:600 14px var(--font-ui)}
 .tl-u:focus{outline:none;border-color:var(--blue);background:var(--bg)}
@@ -2755,7 +2784,7 @@ html.no-v-tools [data-v="tools"],html.no-v-tools #hm-tools{display:none!importan
 <li>Delete a task with its ×, a double click, or by pressing and holding it.</li>
 <li><kbd>Ctrl</kbd>+<kbd>Z</kbd> (<kbd>Cmd</kbd>+<kbd>Z</kbd> on a Mac) brings back the last task you deleted or crossed off. An <b>Undo</b> button also pops up at the bottom of the screen for a few seconds after you delete or cross something off.</li>
 <li>The <b>Assignments</b> page lists every assignment not done yet, oldest first. <b>Overdue</b> narrows it to ones due today or earlier.</li>
-<li><b>Tools</b>, in the top bar, opens a screen of tools: Physics Helper, GPA Calculator, Soundboard and Desmos. <b>Physics Helper</b>: paste cells copied from Google Sheets, type a unit over any column and it is added after every number in that column, pick the font, size, borders and alignment (Times New Roman 12 with black borders to start), then press <b>Copy table</b> and paste into Google Docs. <b>GPA Calculator</b>: list every class you have taken with its level, credit and letter grade; Honors adds 0.5 and AP, AV, DE and IB add 1, as FCPS does. <b>Expunge</b> leaves a class out, <b>Pass/fail</b> leaves it out unless the grade is F, which counts as 0.</li>
+<li><b>Tools</b>, in the top bar, opens a screen of tools: Physics Helper, GPA Calculator, Soundboard and Desmos. In the GPA Calculator, <b>Add by year</b> sorts classes by grade; classes after your current year are prospective (enter the grade you expect), and the Standard and Advanced Studies diploma credits show below. <b>Physics Helper</b>: paste cells copied from Google Sheets, type a unit over any column and it is added after every number in that column, pick the font, size, borders and alignment (Times New Roman 12 with black borders to start), then press <b>Copy table</b> and paste into Google Docs. <b>GPA Calculator</b>: list every class you have taken with its level, credit and letter grade; Honors adds 0.5 and AP, AV, DE and IB add 1, as FCPS does. <b>Expunge</b> leaves a class out, <b>Pass/fail</b> leaves it out unless the grade is F, which counts as 0.</li>
 <li><b>Unassigned</b> on the Assignments page lists items of any kind with no class, each with a Class picker.</li>
 </ul>
 
@@ -4904,6 +4933,49 @@ function normalizeCourse(input){
     });
     return out;
   };
+  /* Add by year: the year a GPA list is in, a class's subject, and Virginia's diploma credits (8VAC20-131-51) */
+  SX.cleanGpaYear = function (v) { v = String(v || ''); return /^(9|10|11|12)$/.test(v) ? v : ''; };
+  SX.GPA_SUBJ = [['eng', 'English'], ['math', 'Math'], ['sci', 'Lab science'], ['ss', 'History'], ['wl', 'World language'], ['art', 'Fine arts'],
+    ['cte', 'CTE'], ['hpe', 'Health and PE'], ['epf', 'Personal finance'], ['other', 'Elective']];
+  SX.gpaSubject = function (n) {
+    n = String(n || '');
+    if (/personal finance|\bEPF\b/i.test(n)) return 'epf';
+    var d = SX.courseDivision(n);
+    return ['eng', 'math', 'sci', 'ss', 'wl', 'art', 'cte', 'hpe'].indexOf(d) >= 0 ? d : 'other';
+  };
+  SX.DIPLOMAS = [
+    ['Standard Diploma', 22, 4, [['English', ['eng'], 4], ['Math', ['math'], 3], ['Lab science', ['sci'], 3], ['History and social science', ['ss'], 3],
+      ['Health and PE', ['hpe'], 2], ['World language, fine arts or CTE', ['wl', 'art', 'cte'], 2], ['Economics and personal finance', ['epf'], 1]]],
+    ['Advanced Studies Diploma', 26, 3, [['English', ['eng'], 4], ['Math', ['math'], 4], ['Lab science', ['sci'], 4], ['History and social science', ['ss'], 4],
+      ['World language', ['wl'], 3], ['Health and PE', ['hpe'], 2], ['Fine arts or CTE', ['art', 'cte'], 1], ['Economics and personal finance', ['epf'], 1]]]];
+  /* credits by subject, earned (past and current years with a passing grade) and planned (also later years, and current
+     classes without a grade yet); each requirement takes what it can, the rest are electives */
+  SX.gradReqs = function (rows, cur) {
+    var c = Number(cur) || 9, have = {}, plan = {};
+    (rows || []).forEach(function (r) {
+      if (!r || !(String(r.n || '').trim() || r.g) || r.x === 'exp' || r.g === 'F') return;
+      var cr = Number(r.cr) === 0.5 ? 0.5 : 1, s = r.s || SX.gpaSubject(r.n), fut = /^\d+$/.test(r.y || '') && Number(r.y) > c;
+      plan[s] = (plan[s] || 0) + cr;
+      if (!fut && r.g) have[s] = (have[s] || 0) + cr;
+    });
+    function alloc(pool, reqs, elec) {
+      var p = {}, k, sum = 0, rest = 0;
+      for (k in pool) { p[k] = pool[k]; sum += pool[k]; }
+      var got = reqs.map(function (q) {
+        var g = 0;
+        q[1].forEach(function (s) { var t = Math.min(q[2] - g, p[s] || 0); if (t > 0) { g += t; p[s] -= t; } });
+        return g;
+      });
+      for (k in p) rest += p[k];
+      got.push(Math.min(elec, rest));
+      return { got: got, sum: sum };
+    }
+    return SX.DIPLOMAS.map(function (d) {
+      var h = alloc(have, d[3], d[2]), pl = alloc(plan, d[3], d[2]);
+      return { name: d[0], need: d[1], have: h.sum, plan: pl.sum,
+        items: d[3].concat([['Electives', [], d[2]]]).map(function (q, i) { return { label: q[0], need: q[2], have: h.got[i], plan: pl.got[i] }; }) };
+    });
+  };
   /* GPA calculator: FCPS grade points, Honors +0.5, AP AV DE IB +1 (an F gets no bonus) */
   SX.GPA_LEVELS = [['reg', 'Regular', 0], ['hn', 'HN', 0.5], ['ap', 'AP', 1], ['av', 'AV', 1], ['de', 'DE', 1], ['ib', 'IB', 1]];
   SX.GPA_GRADES = [['A', 4], ['A-', 3.7], ['B+', 3.3], ['B', 3], ['B-', 2.7], ['C+', 2.3], ['C', 2], ['C-', 1.7], ['D+', 1.3], ['D', 1], ['F', 0], ['P', null]];
@@ -4913,7 +4985,8 @@ function normalizeCourse(input){
     return (Array.isArray(a) ? a.slice(0, 120) : []).map(function (r) {
       if (!r || typeof r !== 'object') return null;
       return { n: String(r.n || '').replace(/[\u0000-\u001f<>]/g, '').slice(0, 80), lv: lv.hasOwnProperty(r.lv) ? r.lv : 'reg', cr: Number(r.cr) === 0.5 ? 0.5 : 1,
-        g: gr.hasOwnProperty(r.g) ? r.g : '', x: r.x === 'exp' || r.x === 'pf' ? r.x : '' };
+        g: gr.hasOwnProperty(r.g) ? r.g : '', x: r.x === 'exp' || r.x === 'pf' ? r.x : '',
+        y: /^(ms|9|10|11|12)$/.test(r.y) ? r.y : '', s: SX.GPA_SUBJ.some(function (q) { return q[0] === r.s; }) ? r.s : '' };
     }).filter(function (r) { return r && (r.n.trim() || r.g); });
   };
   /* weighted and unweighted GPA over the counted credits; expunged rows and passes are left out, a pass/fail F counts as 0 */
@@ -5497,7 +5570,7 @@ async function loadData(pre){
     fresh.forEach(c=>{const n=normalizeCourse(c.raw||c.name);if(n.name){c.name=n.name;c.abbr=n.abbr;}
       c.keys=[...new Set((c.keys||[]).concat(n.keys))].filter(Boolean).slice(0,16);delete c.fresh;});
     state.settings={colors:{...DEFAULT_COLORS,...(st.colors||{})},periods:{...(st.periods||{})},
-      advisoryCourse:st.advisoryCourse||'',ical:st.ical||'',fullNames:!!st.fullNames,hideGames:!!st.hideGames,hideChat:!!st.hideChat,faqNew:!!st.faqNew,oppStar:[...(st.oppStar||[])],oppArch:[...(st.oppArch||[])],gamesIntro:!!st.gamesIntro,gameStar:[...(st.gameStar||[])],hidePages:[...(st.hidePages||[])],tutorialNew:!!st.tutorialNew,lunch:{...(st.lunch||{})},rel:{...(st.rel||{})},gpa:GPA_DIRTY&&state.settings&&Array.isArray(state.settings.gpa)?state.settings.gpa:SX.cleanGpa(st.gpa)};
+      advisoryCourse:st.advisoryCourse||'',ical:st.ical||'',fullNames:!!st.fullNames,hideGames:!!st.hideGames,hideChat:!!st.hideChat,faqNew:!!st.faqNew,oppStar:[...(st.oppStar||[])],oppArch:[...(st.oppArch||[])],gamesIntro:!!st.gamesIntro,gameStar:[...(st.gameStar||[])],hidePages:[...(st.hidePages||[])],tutorialNew:!!st.tutorialNew,lunch:{...(st.lunch||{})},rel:{...(st.rel||{})},gpa:GPA_DIRTY&&state.settings&&Array.isArray(state.settings.gpa)?state.settings.gpa:SX.cleanGpa(st.gpa),gpaYear:GPA_DIRTY&&state.settings?state.settings.gpaYear:SX.cleanGpaYear(st.gpaYear),gpaByYear:GPA_DIRTY&&state.settings?!!state.settings.gpaByYear:!!st.gpaByYear};
     state.calcmap=d.calcmap||{};
     if(fresh.length)saveSettings();
     state.user=d.user||null;
@@ -5612,7 +5685,7 @@ function confetti(x,y){
 }
 async function removeTask(id){try{await api('/api/task/'+encodeURIComponent(id),{method:'DELETE'});}catch(e){console.warn('delete failed',e);}}
 async function saveSettings(){if(!settingsLoaded)return;try{await api('/api/settings',{method:'POST',body:JSON.stringify({colors:state.settings.colors,periods:state.settings.periods,
-  advisoryCourse:state.settings.advisoryCourse||'',courses:COURSES,ical:state.settings.ical||'',fullNames:!!state.settings.fullNames,hideGames:!!state.settings.hideGames,hideChat:!!state.settings.hideChat,faqNew:!!state.settings.faqNew,oppStar:state.settings.oppStar||[],oppArch:state.settings.oppArch||[],gamesIntro:!!state.settings.gamesIntro,gameStar:state.settings.gameStar||[],hidePages:state.settings.hidePages||[],tutorialNew:!!state.settings.tutorialNew,rel:state.settings.rel||{},lunch:state.settings.lunch||{},gpa:SX.cleanGpa(state.settings.gpa)})});}catch(e){console.warn('save failed',e);}}
+  advisoryCourse:state.settings.advisoryCourse||'',courses:COURSES,ical:state.settings.ical||'',fullNames:!!state.settings.fullNames,hideGames:!!state.settings.hideGames,hideChat:!!state.settings.hideChat,faqNew:!!state.settings.faqNew,oppStar:state.settings.oppStar||[],oppArch:state.settings.oppArch||[],gamesIntro:!!state.settings.gamesIntro,gameStar:state.settings.gameStar||[],hidePages:state.settings.hidePages||[],tutorialNew:!!state.settings.tutorialNew,rel:state.settings.rel||{},lunch:state.settings.lunch||{},gpa:SX.cleanGpa(state.settings.gpa),gpaYear:SX.cleanGpaYear(state.settings.gpaYear),gpaByYear:!!state.settings.gpaByYear})});}catch(e){console.warn('save failed',e);}}
 async function saveNote(n){if(STALE.has(n))return;try{await api('/api/advisory',{method:'POST',body:JSON.stringify(n)});}catch(e){console.warn('save failed',e);}}
 async function removeNote(id){try{await api('/api/advisory/'+encodeURIComponent(id),{method:'DELETE'});}catch(e){console.warn('delete failed',e);}}
 async function saveEvent(ev){if(STALE.has(ev))return;try{await api('/api/event',{method:'POST',body:JSON.stringify(ev)});}catch(e){console.warn('save failed',e);}}
@@ -7474,7 +7547,7 @@ const suEmpty=m=>!m.name.trim()&&!m.per;
    calculator (every class ever taken, FCPS weights: HN +0.5, AP AV DE IB +1). Both pages keep their own DOM across
    redraws, so a pasted table or a half typed class is never thrown away ---------- */
 var GPA_DIRTY=false;
-const TL={data:null,units:[],o:{font:'Times New Roman',size:'12',border:'#000000',align:'center',bold:'1'}};
+const TL={data:null,units:[],o:{font:'Times New Roman',size:'12',border:'#000000',align:'center',bold:'1',full:'1'}};
 try{const o=JSON.parse(localStorage.getItem('sx-tl')||'{}');Object.keys(TL.o).forEach(k=>{if(typeof o[k]==='string')TL.o[k]=o[k];});}catch(_){}
 const TL_FONTS=['Times New Roman','Arial','Calibri','Cambria','Georgia','Verdana','Courier New'];
 const TL_SIZES=['8','9','10','11','12','14','16','18'];
@@ -7496,13 +7569,16 @@ function tlParse(html,text){
   while(rows.length&&rows[0].length&&rows.every(r=>!r[r.length-1]))rows.forEach(r=>r.pop());
   return rows.length&&rows[0].length?rows.slice(0,200).map(r=>r.slice(0,30)):null;
 }
-const tlCell=(v,c)=>{const u=tlUnit(TL.units[c]);return u&&TL_NUM.test(v)?v+' '+u:v;};
+/* numbers get the unit after them; the top row's labels get it in brackets: t becomes t (s) */
+const tlCell=(v,c,i)=>{const u=tlUnit(TL.units[c]);if(!u||!v)return v;if(TL_NUM.test(v))return v+' '+u;return i===0&&!v.includes('('+u+')')?v+' ('+u+')':v;};
 /* the table exactly as it goes into Google Docs: inline styles only, so Docs keeps the font, size and borders */
 function tlTableHTML(){
   const o=TL.o,bd=o.border==='none'?'none':'1pt solid '+o.border,ff=`'${o.font}'`;
-  const span=(v,b)=>`<span style="font-family:${ff};font-size:${o.size}pt;color:#000000;${b?'font-weight:700;':''}">${esc(v)}</span>`;
-  return `<table style="border-collapse:collapse;border:${bd}"><tbody>${TL.data.map((r,i)=>`<tr>${r.map((v,c)=>
-    `<td style="border:${bd};padding:2pt 6pt;text-align:${o.align};vertical-align:middle;font-family:${ff};font-size:${o.size}pt">${span(tlCell(v,c),o.bold==='1'&&i===0)}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+  const span=(v,b)=>`<span style="font-family:${ff};font-size:${o.size}pt;color:#000000;font-weight:${b?700:400};">${esc(v)}</span>`;
+  /* full width: a Google Doc's page is 6.5 in (468 pt) between the default margins */
+  const full=o.full!=='0',n=TL.data[0].length,cw=(468/n).toFixed(2),wd=full?`width:${cw}pt;`:'';
+  return `<table style="border-collapse:collapse;border:${bd};${full?'width:468pt;':''}">${full?`<colgroup>${TL.data[0].map(()=>`<col width="${Math.round(cw*4/3)}">`).join('')}</colgroup>`:''}<tbody>${TL.data.map((r,i)=>`<tr>${r.map((v,c)=>
+    `<td style="border:${bd};${wd}padding:2pt 6pt;text-align:${o.align};vertical-align:middle;font-family:${ff};font-size:${o.size}pt">${span(tlCell(v,c,i),o.bold==='1'&&i===0)}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
 }
 function tlPaint(){
   const box=document.getElementById('tl-out');if(!box)return;
@@ -7526,7 +7602,7 @@ addEventListener('resize',()=>{if(state.view==='tools')tlFitUnits();});
 function tlRepaintTable(){const p=document.querySelector('#tl-out .tl-paper');if(p){p.innerHTML=tlTableHTML();tlFitUnits();}}
 async function tlCopy(btn){
   if(!TL.data)return;
-  const html='<meta charset="utf-8">'+tlTableHTML(),text=TL.data.map(r=>r.map((v,c)=>tlCell(v,c)).join('\t')).join('\n');
+  const html='<meta charset="utf-8">'+tlTableHTML(),text=TL.data.map((r,i)=>r.map((v,c)=>tlCell(v,c,i)).join('\t')).join('\n');
   let ok=false;
   try{await navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([html],{type:'text/html'}),'text/plain':new Blob([text],{type:'text/plain'})})]);ok=true;}catch(_){}
   if(!ok){const d=document.createElement('div');d.style.cssText='position:fixed;left:-9999px;top:0;background:#fff';d.innerHTML=tlTableHTML();document.body.appendChild(d);
@@ -7540,17 +7616,22 @@ function tlPhysicsHTML(){
     <textarea id="tl-paste" class="tl-paste" placeholder="Paste cells from Google Sheets" rows="2" spellcheck="false"></textarea>
     <div class="tl-opts">
       ${x('tlfont','Font',o.font,TL_FONTS.map(f=>({v:f,t:f})))}
-      ${x('tlsize','Size',o.size,TL_SIZES.map(s=>({v:s,t:s+' pt'})))}
+      <div class="tl-size"><input type="range" id="tl-sr" min="6" max="48" step="0.5" value="${esc(o.size)}" aria-label="Font size"><input type="number" id="tl-sn" min="4" max="96" step="0.5" value="${esc(o.size)}" aria-label="Font size"><span>pt</span></div>
       ${x('tlborder','Borders',o.border,[{v:'#000000',t:'Black borders'},{v:'#999999',t:'Gray borders'},{v:'none',t:'No borders'}])}
       ${x('tlalign','Align',o.align,[{v:'center',t:'Centered'},{v:'left',t:'Left'},{v:'right',t:'Right'}])}
       <button type="button" class="tl-chip ${o.bold==='1'?'on':''}" data-tlbold aria-pressed="${o.bold==='1'}">Bold top row</button>
+      <button type="button" class="tl-chip ${o.full!=='0'?'on':''}" data-tlfull aria-pressed="${o.full!=='0'}">Full width</button>
     </div>
     <div id="tl-out" class="tl-out" hidden></div>
     <div class="tl-acts" id="tl-acts" hidden><button type="button" class="btn tl-copy" data-tlcopy><span>Copy table</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button><button type="button" class="kbtn" data-tlclear>Clear</button></div>
   </div>`;
 }
 XDD_ON.tlfont=(w,v)=>{TL.o.font=v;tlSave();tlRepaintTable();};
-XDD_ON.tlsize=(w,v)=>{TL.o.size=v;tlSave();tlRepaintTable();};
+/* font size: the slider and the box move together; the box takes any size from 4 to 96 */
+document.addEventListener('input',e=>{const t=e.target;if(t.id!=='tl-sr'&&t.id!=='tl-sn')return;
+  const v=parseFloat(t.value);if(!(v>=4&&v<=96))return;TL.o.size=String(Math.round(v*2)/2);
+  const o=document.getElementById(t.id==='tl-sr'?'tl-sn':'tl-sr');if(o&&o!==document.activeElement)o.value=TL.o.size;tlSave();tlRepaintTable();});
+document.addEventListener('change',e=>{if(e.target.id==='tl-sn')e.target.value=TL.o.size;});
 XDD_ON.tlborder=(w,v)=>{TL.o.border=v;tlSave();tlRepaintTable();};
 XDD_ON.tlalign=(w,v)=>{TL.o.align=v;tlSave();tlRepaintTable();};
 document.addEventListener('paste',e=>{
@@ -7562,62 +7643,106 @@ document.addEventListener('paste',e=>{
 document.addEventListener('input',e=>{const t=e.target;if(!t.classList||!t.classList.contains('tl-u'))return;
   TL.units[+t.dataset.c]=t.value;const p=document.querySelector('#tl-out .tl-paper');if(p)p.innerHTML=tlTableHTML();tlFitUnits();});
 
-/* ---------- GPA calculator ---------- */
+/* ---------- GPA calculator: one list, or (Add by year) a list per grade with the current year picked; classes in
+   later years are prospective (expected grades), and the Standard and Advanced Studies diploma credits show below ---------- */
 const gpaRows=()=>{if(!Array.isArray(state.settings.gpa))state.settings.gpa=[];return state.settings.gpa;};
 let gpaT=0;
 function gpaSave(){GPA_DIRTY=true;clearTimeout(gpaT);gpaT=setTimeout(async()=>{await saveSettings();GPA_DIRTY=false;},700);}
 const gpaFmt=x=>x==null?'0.00':x.toFixed(2);
+const gpaBy=()=>!!state.settings.gpaByYear;
+const gpaCur=()=>state.settings.gpaYear||'9';
+const GPA_YEARS=[['ms','Middle school'],['9','9th grade'],['10','10th grade'],['11','11th grade'],['12','12th grade']];
+const gpaFuture=r=>gpaBy()&&/^\d+$/.test(r.y||'')&&+r.y>+gpaCur();
+const gpaNew=y=>{const r={n:'',lv:'reg',cr:1,g:'',x:''};if(gpaBy()){r.y=y||gpaCur();r.s='other';}return r;};
+/* a guess at the level and the subject from the class name */
+function gpaLevel(n){if(/\bAV\b/.test(String(n||'')))return 'av';const l=SX.courseLevel(String(n||''));return ['ap','ib','de','hn'].includes(l)?l:'reg';}
+const gpaSubj=n=>SX.gpaSubject(String(n||''));
+/* the level and subject follow the name until they are picked by hand */
+function gpaRename(r,n,row){
+  const wl=gpaLevel(r.n),ws=gpaSubj(r.n);r.n=n;
+  const lv=gpaLevel(n);if(r.lv===wl&&lv!==r.lv){r.lv=lv;const w=row&&row.querySelector('.gpa-lv');if(w)xddSet(w,lv);}
+  const sb=gpaSubj(n);if((!r.s||r.s===ws)&&sb!==r.s){r.s=sb;const w=row&&row.querySelector('.gpa-sb');if(w)xddSet(w,sb);}
+}
 function gpaSum(){
-  const s=SX.gpaCalc(gpaRows()),el=document.getElementById('gpa-sum');if(!el)return;
-  el.innerHTML=`<div class="gpa-big"><span class="gpa-v">${s?gpaFmt(s.w):'0.00'}</span><span class="gpa-l">Weighted GPA</span></div>
-    <div class="gpa-sm"><span class="gpa-v">${s?gpaFmt(s.u):'0.00'}</span><span class="gpa-l">Unweighted</span></div>
-    <div class="gpa-sm"><span class="gpa-v">${s?String(s.cr):'0'}</span><span class="gpa-l">Credits counted</span></div>`;
+  const el=document.getElementById('gpa-sum');if(!el)return;
+  const rows=gpaRows(),by=gpaBy(),now=SX.gpaCalc(by?rows.filter(r=>!gpaFuture(r)):rows),all=by?SX.gpaCalc(rows):null;
+  const box=(v,l,c)=>`<div class="${c||'gpa-sm'}"><span class="gpa-v">${v}</span><span class="gpa-l">${l}</span></div>`;
+  el.innerHTML=box(now?gpaFmt(now.w):'0.00','Weighted GPA','gpa-big')+box(now?gpaFmt(now.u):'0.00','Unweighted')+box(now?String(now.cr):'0','Credits counted')+
+    (by&&rows.some(gpaFuture)?box(all?gpaFmt(all.w):'0.00','Projected weighted','gpa-sm gpa-proj'):'');
+  gpaReqPaint();
+}
+function gpaReqPaint(){
+  const el=document.getElementById('gpa-req');if(!el)return;
+  if(!gpaBy()){el.innerHTML='';return;}
+  const q=SX.gradReqs(gpaRows(),gpaCur());
+  el.innerHTML=q.map(d=>{
+    const st=d.have>=d.need&&d.items.every(i=>i.have>=i.need)?'done':d.plan>=d.need&&d.items.every(i=>i.plan>=i.need)?'plan':'short';
+    return `<div class="gpa-dip ${st}"><div class="gpa-dh"><span class="gpa-dn">${esc(d.name)}</span><span class="gpa-ds">${st==='done'?'Fulfilled':st==='plan'?'On track':'Not yet'}</span></div>
+      ${d.items.concat([{label:'Total',need:d.need,have:d.have,plan:d.plan,tot:1}]).map(i=>{const s=i.have>=i.need?'done':i.plan>=i.need?'plan':'short';
+        return `<div class="gpa-rq ${s}${i.tot?' tot':''}"><span class="gpa-rl">${esc(i.label)}</span><span class="gpa-rb"><i class="h" style="width:${Math.min(100,i.have/i.need*100)}%"></i><i class="p" style="width:${Math.min(100,i.plan/i.need*100)}%"></i></span><span class="gpa-rn">${i.have}${i.plan>i.have?' + '+(i.plan-i.have):''} of ${i.need}</span></div>`;}).join('')}</div>`;}).join('');
 }
 function gpaRowHTML(r,i){
-  const lv=SX.GPA_LEVELS.map(l=>({v:l[0],t:l[1]})),gr=[{v:'',t:'Grade'}].concat(SX.GPA_GRADES.map(g=>({v:g[0],t:g[0]})));
-  return `<div class="gpa-row ${r.x?'x-'+r.x:''}" data-i="${i}">
+  const by=gpaBy(),lv=SX.GPA_LEVELS.map(l=>({v:l[0],t:l[1]})),gr=[{v:'',t:gpaFuture(r)?'Expected':'Grade'}].concat(SX.GPA_GRADES.map(g=>({v:g[0],t:g[0]})));
+  return `<div class="gpa-row ${r.x?'x-'+r.x:''}${gpaFuture(r)?' prosp':''}${by?' by':''}" data-i="${i}">
     <input type="text" class="gpa-n" id="gpa-n${i}" value="${esc(r.n||'')}" placeholder="Class" autocomplete="off" spellcheck="false" maxlength="80">
+    ${by&&!r.y?xddHTML({kind:'gpayr',id:'gpa-y'+i,cls:'gpa-yr',value:'',label:'Year',ph:'Year',options:GPA_YEARS.map(([v,t])=>({v,t}))}):''}
+    ${by?xddHTML({kind:'gpasb',id:'gpa-sb'+i,cls:'gpa-sb',value:r.s||'other',label:'Subject',options:SX.GPA_SUBJ.map(([v,t])=>({v,t}))}):''}
     ${xddHTML({kind:'gpalv',id:'gpa-lv'+i,cls:'gpa-lv',value:r.lv||'reg',label:'Level',options:lv})}
     ${xddHTML({kind:'gpacr',id:'gpa-cr'+i,cls:'gpa-cr',value:String(r.cr||1),label:'Credit',options:[{v:'1',t:'1 credit'},{v:'0.5',t:'0.5 credit'}]})}
-    ${xddHTML({kind:'gpag',id:'gpa-g'+i,cls:'gpa-g',value:r.g||'',label:'Grade',ph:'Grade',options:gr})}
+    ${xddHTML({kind:'gpag',id:'gpa-g'+i,cls:'gpa-g',value:r.g||'',label:'Grade',ph:gpaFuture(r)?'Expected':'Grade',options:gr})}
     <button type="button" class="tl-chip ${r.x==='exp'?'on':''}" data-gpax="exp" aria-pressed="${r.x==='exp'}">Expunge</button>
     <button type="button" class="tl-chip ${r.x==='pf'?'on':''}" data-gpax="pf" aria-pressed="${r.x==='pf'}">Pass/fail</button>
     <button type="button" class="su-del gpa-del" data-gpadel title="Remove" aria-label="Remove"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>`;
 }
-function gpaHTML(){
-  const rows=gpaRows();if(!rows.length)rows.push({n:'',lv:'reg',cr:1,g:'',x:''});
-  return `<div class="panel tl-card gpa-card"><div class="gpa-list" id="gpa-list">${rows.map(gpaRowHTML).join('')}</div>
-    <div class="gpa-addrow"><button class="su-add" data-gpaadd title="Add a class">+</button></div>
-    ${COURSES.length?`<div class="gpa-mine"><button type="button" class="kbtn" data-gpamine>Add my classes</button></div>`:''}
-    <div class="gpa-sum" id="gpa-sum"></div></div>`;
+const gpaAdd=y=>`<div class="gpa-addrow"><button class="su-add" data-gpaadd${y?` data-y="${y}"`:''} title="Add a class">+</button></div>`;
+function gpaBody(){
+  const rows=gpaRows(),by=gpaBy();
+  if(!rows.length)rows.push(gpaNew());
+  const top=`<div class="gpa-top"><button type="button" class="tl-chip ${by?'on':''}" data-gpaby aria-pressed="${by}">Add by year</button>
+    ${by?xddHTML({kind:'gpacur',id:'gpa-cur',cls:'gpa-curyr',value:gpaCur(),label:'Current year',options:GPA_YEARS.slice(1).map(([v,t])=>({v,t:'In '+t}))}):''}
+    ${COURSES.length?`<button type="button" class="kbtn" data-gpamine>Add my classes</button>`:''}</div>`;
+  let list;
+  if(!by)list=`<div class="gpa-list">${rows.map(gpaRowHTML).join('')}</div>${gpaAdd('')}`;
+  else{
+    const idx=rows.map((r,i)=>i),none=idx.filter(i=>!rows[i].y);
+    list=(none.length?`<section class="gpa-sec"><h3 class="gpa-yh">No year</h3><div class="gpa-list">${none.map(i=>gpaRowHTML(rows[i],i)).join('')}</div></section>`:'')+
+      GPA_YEARS.map(([y,t])=>{const its=idx.filter(i=>rows[i].y===y),fut=/^\d+$/.test(y)&&+y>+gpaCur();
+        return `<section class="gpa-sec${fut?' fut':''}" data-y="${y}"><h3 class="gpa-yh">${t}${fut?'<span class="gpa-tag">Prospective</span>':y===gpaCur()?'<span class="gpa-tag now">Now</span>':''}</h3>
+          ${its.length?`<div class="gpa-list">${its.map(i=>gpaRowHTML(rows[i],i)).join('')}</div>`:''}${gpaAdd(y)}</section>`;}).join('');
+  }
+  return top+list+`<div class="gpa-sum" id="gpa-sum"></div>${by?'<div class="gpa-req" id="gpa-req"></div>':''}`;
 }
-function gpaRedraw(focusLast){const l=document.getElementById('gpa-list');if(!l)return;l.innerHTML=gpaRows().map(gpaRowHTML).join('');gpaSum();
-  if(focusLast){const n=l.querySelectorAll('.gpa-n');if(n.length)n[n.length-1].focus();}}
+function gpaHTML(){return `<div class="panel tl-card gpa-card" id="gpa-card">${gpaBody()}</div>`;}
+function gpaRedraw(focusIdx){const c=document.getElementById('gpa-card');if(!c)return;c.innerHTML=gpaBody();gpaSum();
+  if(focusIdx!=null){const n=document.getElementById('gpa-n'+focusIdx);if(n)n.focus();}}
 const gpaIdx=el=>{const r=el.closest('.gpa-row');return r?+r.dataset.i:-1;};
 XDD_ON.gpalv=(w,v)=>{const r=gpaRows()[gpaIdx(w)];if(r){r.lv=v;gpaSum();gpaSave();}};
 XDD_ON.gpacr=(w,v)=>{const r=gpaRows()[gpaIdx(w)];if(r){r.cr=v==='0.5'?0.5:1;gpaSum();gpaSave();}};
 XDD_ON.gpag=(w,v)=>{const r=gpaRows()[gpaIdx(w)];if(r){r.g=v;gpaSum();gpaSave();}};
-/* a guess at the level from the class name */
-function gpaLevel(n){if(/\bAV\b/.test(String(n||'')))return 'av';const l=SX.courseLevel(String(n||''));return ['ap','ib','de','hn'].includes(l)?l:'reg';}
+XDD_ON.gpasb=(w,v)=>{const r=gpaRows()[gpaIdx(w)];if(r){r.s=v;gpaSum();gpaSave();}};
+XDD_ON.gpayr=(w,v)=>{const r=gpaRows()[gpaIdx(w)];if(r){r.y=v;gpaRedraw();gpaSave();}};
+XDD_ON.gpacur=(w,v)=>{state.settings.gpaYear=v;gpaRedraw();gpaSave();};
 document.addEventListener('input',e=>{const t=e.target;if(!t.classList||!t.classList.contains('gpa-n'))return;
-  const r=gpaRows()[gpaIdx(t)];if(!r)return;const was=gpaLevel(r.n);r.n=t.value;
-  /* the level follows the name until it is picked by hand */
-  const lv=gpaLevel(r.n);if(r.lv===was&&lv!==r.lv){r.lv=lv;const w=t.closest('.gpa-row').querySelector('.gpa-lv');if(w)xddSet(w,lv);gpaSum();}
-  gpaSave();});
+  const r=gpaRows()[gpaIdx(t)];if(!r)return;gpaRename(r,t.value,t.closest('.gpa-row'));gpaSum();gpaSave();});
 document.addEventListener('click',e=>{
   const v=e.target.closest&&e.target.closest('#v-tools');if(!v)return;
   if(e.target.closest('[data-tlback]')){openTools();return;}
   if(e.target.closest('[data-tlcopy]'))return void tlCopy(e.target.closest('[data-tlcopy]'));
   if(e.target.closest('[data-tlclear]')){TL.data=null;TL.units=[];tlPaint();return;}
+  const fb=e.target.closest('[data-tlfull]');if(fb){TL.o.full=TL.o.full==='0'?'1':'0';fb.classList.toggle('on',TL.o.full!=='0');fb.setAttribute('aria-pressed',TL.o.full!=='0');tlSave();tlRepaintTable();return;}
   const b=e.target.closest('[data-tlbold]');if(b){TL.o.bold=TL.o.bold==='1'?'0':'1';b.classList.toggle('on',TL.o.bold==='1');b.setAttribute('aria-pressed',TL.o.bold==='1');tlSave();tlRepaintTable();return;}
+  if(e.target.closest('[data-gpaby]')){state.settings.gpaByYear=!gpaBy();
+    /* every class gets a subject guess the first time */
+    if(gpaBy())gpaRows().forEach(r=>{if(!r.s)r.s=gpaSubj(r.n);});
+    gpaRedraw();gpaSave();return;}
   const x=e.target.closest('[data-gpax]');if(x){const r=gpaRows()[gpaIdx(x)];if(!r)return;r.x=r.x===x.dataset.gpax?'':x.dataset.gpax;
-    const row=x.closest('.gpa-row');row.className='gpa-row'+(r.x?' x-'+r.x:'');
+    const row=x.closest('.gpa-row');row.classList.toggle('x-exp',r.x==='exp');row.classList.toggle('x-pf',r.x==='pf');
     row.querySelectorAll('[data-gpax]').forEach(c=>{const on=c.dataset.gpax===r.x;c.classList.toggle('on',on);c.setAttribute('aria-pressed',on);});gpaSum();gpaSave();return;}
-  if(e.target.closest('[data-gpadel]')){const rows=gpaRows(),i=gpaIdx(e.target);if(i<0)return;rows.splice(i,1);if(!rows.length)rows.push({n:'',lv:'reg',cr:1,g:'',x:''});gpaRedraw();gpaSave();return;}
-  if(e.target.closest('[data-gpaadd]')){const rows=gpaRows();if(rows.length>=120)return;rows.push({n:'',lv:'reg',cr:1,g:'',x:''});gpaRedraw(true);return;}
+  if(e.target.closest('[data-gpadel]')){const rows=gpaRows(),i=gpaIdx(e.target);if(i<0)return;rows.splice(i,1);if(!rows.length)rows.push(gpaNew());gpaRedraw();gpaSave();return;}
+  const ad=e.target.closest('[data-gpaadd]');if(ad){const rows=gpaRows();if(rows.length>=120)return;rows.push(gpaNew(ad.dataset.y));gpaRedraw(rows.length-1);return;}
   if(e.target.closest('[data-gpamine]')){const rows=gpaRows(),have=new Set(rows.map(r=>String(r.n).trim().toLowerCase()));
     for(let i=rows.length-1;i>=0;i--)if(!rows[i].n&&!rows[i].g)rows.splice(i,1);
-    COURSES.forEach(c=>{if(!have.has(c.name.toLowerCase())&&rows.length<120)rows.push({n:c.name,lv:gpaLevel(c.name),cr:1,g:'',x:''});});
+    COURSES.forEach(c=>{if(!have.has(c.name.toLowerCase())&&rows.length<120){const r=gpaNew();r.n=c.name;r.lv=gpaLevel(c.name);if(gpaBy())r.s=gpaSubj(c.name);rows.push(r);}});
     gpaRedraw();gpaSave();return;}
 });
 /* the tools screen: like the games screen, one box per tool with a title and a short description */
@@ -7644,19 +7769,17 @@ document.addEventListener('click',e=>{
   state.toolTab=id;try{localStorage.setItem('sx-tooltab',id);localStorage.setItem('sx-tab','tools');}catch(_){}
   state.view='tools';render();scrollTo(0,0);
 });
-/* class names tidy up when the box is left, as on Your Classes (apush becomes AP United States History); the level
-   follows the new name unless it was picked by hand. Enter goes to the next class, or adds one after the last */
+/* class names tidy up when the box is left, as on Your Classes (apush becomes AP United States History). Enter goes
+   to the next class in the same list, or adds one after the last */
 document.addEventListener('focusout',e=>{const t=e.target;if(!t.classList||!t.classList.contains('gpa-n'))return;
   const r=gpaRows()[gpaIdx(t)],v=t.value.trim();if(!r||!v)return;
   const n=normalizeCourse(v).name;if(!n||n===r.n)return;
-  const was=gpaLevel(r.n);r.n=n;t.value=n;
-  const lv=gpaLevel(n);if(r.lv===was&&lv!==r.lv){r.lv=lv;const w=t.closest('.gpa-row').querySelector('.gpa-lv');if(w)xddSet(w,lv);}
-  gpaSum();gpaSave();});
+  gpaRename(r,n,t.closest('.gpa-row'));t.value=n;gpaSum();gpaSave();});
 document.addEventListener('keydown',e=>{const t=e.target;if(e.key!=='Enter'||!t.classList||!t.classList.contains('gpa-n'))return;
-  e.preventDefault();const i=gpaIdx(t),rows=gpaRows(),next=document.getElementById('gpa-n'+(i+1));
-  if(next){next.focus();return;}
-  if(!t.value.trim()||rows.length>=120)return;
-  t.blur();rows.push({n:'',lv:'reg',cr:1,g:'',x:''});gpaRedraw(true);});
+  e.preventDefault();const box=t.closest('.gpa-sec')||t.closest('.gpa-card'),ns=[...box.querySelectorAll('.gpa-n')],k=ns.indexOf(t);
+  if(k>=0&&k<ns.length-1){ns[k+1].focus();return;}
+  const rows=gpaRows();if(!t.value.trim()||rows.length>=120)return;
+  const y=(gpaRows()[gpaIdx(t)]||{}).y;t.blur();rows.push(gpaNew(y));gpaRedraw(rows.length-1);});
 function renderTools(){
   const el=document.getElementById('v-tools');if(!el)return;
   const tab=state.toolTab==='gpa'?'gpa':'phys';
