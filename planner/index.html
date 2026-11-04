@@ -2395,7 +2395,7 @@ button.ch-row.on{background:var(--blue-wash);box-shadow:inset 0 0 0 2px var(--bl
 @media (max-width:700px){#games .tl-tile{min-height:130px}#games .tl-tile.gm-plain .gm-big{font-size:21px;padding:14px 12px 6px}#games .tl-desc{font-size:13.5px;padding:0 12px 14px}}
 .tl-top{display:flex;align-items:center;gap:14px}
 .tl-title{font:700 28px/1.1 var(--display);color:var(--pri);letter-spacing:-0.02em}
-html.no-v-tools [data-act-tools],html.no-v-tools #hm-tools{display:none!important}
+html.no-v-tools [data-v="tools"],html.no-v-tools #hm-tools{display:none!important}
 
 .tl-root{max-width:1000px;margin:0 auto}
 .tl-card{border:2px solid var(--line);border-bottom-width:4px;border-radius:16px;display:flex;flex-direction:column;gap:14px}
@@ -2755,7 +2755,7 @@ html.no-v-tools [data-act-tools],html.no-v-tools #hm-tools{display:none!importan
 <li>Delete a task with its ×, a double click, or by pressing and holding it.</li>
 <li><kbd>Ctrl</kbd>+<kbd>Z</kbd> (<kbd>Cmd</kbd>+<kbd>Z</kbd> on a Mac) brings back the last task you deleted or crossed off. An <b>Undo</b> button also pops up at the bottom of the screen for a few seconds after you delete or cross something off.</li>
 <li>The <b>Assignments</b> page lists every assignment not done yet, oldest first. <b>Overdue</b> narrows it to ones due today or earlier.</li>
-<li><b>Tools</b>, in the menu under Games, opens a screen of tools: Physics Helper, GPA Calculator, Soundboard and Desmos. <b>Physics Helper</b>: paste cells copied from Google Sheets, type a unit over any column and it is added after every number in that column, pick the font, size, borders and alignment (Times New Roman 12 with black borders to start), then press <b>Copy table</b> and paste into Google Docs. <b>GPA Calculator</b>: list every class you have taken with its level, credit and letter grade; Honors adds 0.5 and AP, AV, DE and IB add 1, as FCPS does. <b>Expunge</b> leaves a class out, <b>Pass/fail</b> leaves it out unless the grade is F, which counts as 0.</li>
+<li><b>Tools</b>, in the top bar, opens a screen of tools: Physics Helper, GPA Calculator, Soundboard and Desmos. <b>Physics Helper</b>: paste cells copied from Google Sheets, type a unit over any column and it is added after every number in that column, pick the font, size, borders and alignment (Times New Roman 12 with black borders to start), then press <b>Copy table</b> and paste into Google Docs. <b>GPA Calculator</b>: list every class you have taken with its level, credit and letter grade; Honors adds 0.5 and AP, AV, DE and IB add 1, as FCPS does. <b>Expunge</b> leaves a class out, <b>Pass/fail</b> leaves it out unless the grade is F, which counts as 0.</li>
 <li><b>Unassigned</b> on the Assignments page lists items of any kind with no class, each with a Class picker.</li>
 </ul>
 
@@ -2970,6 +2970,7 @@ html.no-v-tools [data-act-tools],html.no-v-tools #hm-tools{display:none!importan
       <button data-v="advisory">To-Do</button>
       <button data-v="assignments">Assignments</button>
       <button data-v="resources">Resources</button>
+      <button data-v="tools">Tools</button>
       <button data-v="tasks" hidden>Tasks</button>
       <button data-v="chat">Chat<i class="tdot" hidden></i></button>
       <div class="morewrap" id="morewrap" hidden>
@@ -2998,12 +2999,12 @@ html.no-v-tools [data-act-tools],html.no-v-tools #hm-tools{display:none!importan
         <button class="mtab" data-v="advisory"><i class="mi" data-art="sticky"></i><span>To-Do</span></button>
         <button class="mtab" data-v="assignments"><i class="mi" data-art="clipboard"></i><span>Assignments</span></button>
         <button class="mtab" data-v="resources"><i class="mi" data-art="books"></i><span>Resources</span></button>
+        <button class="mtab" data-v="tools"><i class="mi" data-art="calc"></i><span>Tools</span></button>
         <button class="mtab" data-v="tasks" hidden><i class="mi" data-art="trophy"></i><span>Tasks</span></button>
         <button class="mtab" data-v="chat"><i class="mi" data-art="chat"></i><span>Chat</span><i class="tdot" hidden></i></button>
       </div>
       <div class="mm-sep mm-psep"></div>
       <button class="mm-row" data-act-games><i class="mi" data-art="controller"></i><span>Games</span></button>
-      <button class="mm-row" data-act-tools><i class="mi" data-art="calc"></i><span>Tools</span></button>
       <button class="mm-row" id="mgear" aria-expanded="false"><i class="mi" data-art="gear"></i><span>Settings</span><svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
       <div class="mcolors" id="mcolors" hidden></div>
       <button class="mm-row" id="msugg" data-act-sugg><i class="mi" data-art="bulb"></i><span>Suggestions</span></button>
@@ -6898,6 +6899,8 @@ function needClasses(btn){
 /* ---------- events ---------- */
 document.getElementById('tabs').addEventListener('click',e=>{
   const b=e.target.closest('button[data-v]');if(!b)return;
+  /* Tools opens the tools screen over the page, like Games */
+  if(b.dataset.v==='tools'){closeNavMenus();openTools();return;}
   /* no classes yet: the other pages have nothing to show, so point back to setup */
   if(state.user&&!COURSES.length&&b.dataset.v!=='courses'){needClasses(b);return;}
   closeNavMenus();
