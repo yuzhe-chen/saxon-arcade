@@ -2392,6 +2392,23 @@ button.ch-row.on{background:var(--blue-wash);box-shadow:inset 0 0 0 2px var(--bl
 /* copy buttons: the label stays centered; the check mark makes room only while it shows */
 .btn.tl-copy{gap:0;justify-content:center}.btn.tl-copy.tl-ok svg{margin-left:8px}
 .tl-root.wide{max-width:none}
+.gpa-row{align-items:stretch}
+.gpa-drag{flex:none;width:22px;display:flex;align-items:center;justify-content:center;cursor:grab;color:var(--faint);border-radius:8px}
+.gpa-drag svg{width:18px;height:18px;fill:currentColor}
+.gpa-drag:hover{background:var(--panel2);color:var(--fg2)}
+.gpa-row.dragging{opacity:.4}
+.gpa-sec.drop{background:var(--blue-wash,#ddf4ff);border-radius:14px;outline:2px dashed var(--blue-light,#84d8ff);outline-offset:4px}
+.gpa-row .xdd.gpa-yr{width:136px}.gpa-row .xdd.gpa-sb{width:150px}.gpa-row .xdd.gpa-lv{width:120px}.gpa-row .xdd.gpa-g{width:104px}
+.gpa-setw{position:relative;flex:none;display:flex}
+.gpa-set{appearance:none;width:44px;min-height:44px;border:2px solid var(--line);border-bottom-width:4px;border-radius:var(--rs);background:var(--bg);color:var(--fg2);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;padding:0}
+.gpa-set:active{transform:translateY(2px);border-bottom-width:2px}
+.gpa-set svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
+.gpa-set.dot::after{content:'';position:absolute;top:4px;right:4px;width:8px;height:8px;border-radius:50%;background:var(--pri)}
+.gpa-pop{position:absolute;right:0;top:calc(100% + 6px);z-index:30;background:var(--bg);border:2px solid var(--line);border-bottom-width:4px;border-radius:14px;padding:10px;display:flex;flex-direction:column;gap:8px;width:190px;box-shadow:0 10px 28px rgba(0,0,0,.14)}
+.gpa-pop[hidden]{display:none}
+.gpa-row .gpa-pop .xdd.gpa-cr{width:100%}
+.gpa-pop .tl-chip{width:100%}
+@media (max-width:760px){.gpa-row.by .gpa-drag{order:0}.gpa-row .gpa-setw{order:2}.gpa-row.by .gpa-n{flex:1 1 calc(100% - 82px)}.gpa-row .xdd.gpa-lv,.gpa-row .xdd.gpa-g{width:auto}}
 textarea.tl-paste{height:96px;min-height:0;padding:36px 14px;line-height:24px}
 .tl-hdr{display:flex;align-items:center;gap:12px}
 .tl-body{display:flex;gap:20px;align-items:flex-start}
@@ -2416,7 +2433,6 @@ a.opp-cat.tl-sl{text-decoration:none}
 .gpa-tag.now{background:var(--pri);color:#fff}
 .gpa-row.prosp .gpa-n{border-style:dashed;font-style:italic}
 .gpa-sb{width:172px}.gpa-yr{width:140px}
-.gpa-row.by{flex-wrap:wrap;padding-bottom:10px;border-bottom:2px solid var(--line)}.gpa-row.by .gpa-n{order:0;flex:1 1 calc(100% - 44px)}.gpa-row.by .gpa-del{order:1}.gpa-row.by>:not(.gpa-n):not(.gpa-del){order:2}
 .gpa-proj{border-style:dashed!important}
 .gpa-req{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
 .gpa-dip{border:2px solid var(--line);border-bottom-width:4px;border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
@@ -2802,7 +2818,7 @@ html.no-v-tools [data-v="tools"],html.no-v-tools #hm-tools{display:none!importan
 <li>Delete a task with its ×, a double click, or by pressing and holding it.</li>
 <li><kbd>Ctrl</kbd>+<kbd>Z</kbd> (<kbd>Cmd</kbd>+<kbd>Z</kbd> on a Mac) brings back the last task you deleted or crossed off. An <b>Undo</b> button also pops up at the bottom of the screen for a few seconds after you delete or cross something off.</li>
 <li>The <b>Assignments</b> page lists every assignment not done yet, oldest first. <b>Overdue</b> narrows it to ones due today or earlier.</li>
-<li><b>Tools</b>, in the top bar, opens a screen of tools: Physics Helper, GPA Calculator, Soundboard and Desmos. In the GPA Calculator, <b>Add by year</b> sorts classes by grade; classes after your current year are prospective (enter the grade you expect), and the Standard and Advanced Studies diploma credits show below. <b>Physics Helper</b>: paste cells copied from Google Sheets, type a unit over any column and it is added after every number in that column, pick the font, size, borders and alignment (Times New Roman 12 with black borders to start), then press <b>Copy table</b> and paste into Google Docs. <b>GPA Calculator</b>: list every class you have taken with its level, credit and letter grade; Honors adds 0.5 and AP, AV, DE and IB add 1, as FCPS does. <b>Expunge</b> leaves a class out, <b>Pass/fail</b> leaves it out unless the grade is F, which counts as 0.</li>
+<li><b>Tools</b>, in the top bar, opens a screen of tools: Physics Helper, GPA Calculator, Soundboard and Desmos. In the GPA Calculator, <b>Add by year</b> sorts classes by grade; classes after your current year are prospective (enter the grade you expect), and the Standard and Advanced Studies diploma credits show below. <b>Physics Helper</b>: paste cells copied from Google Sheets, type a unit over any column and it is added after every number in that column, pick the font, size, borders and alignment (Times New Roman 12 with black borders to start), then press <b>Copy table</b> and paste into Google Docs. <b>GPA Calculator</b>: list every class you have taken with its level, credit and letter grade; Honors adds 0.5 and AP, AV, DE and IB add 1, as FCPS does. The options button next to the grade holds the credit, <b>Expunge</b> (leaves a class out) and <b>Pass/Fail</b> (leaves it out unless the grade is F, which counts as 0).</li>
 <li><b>Unassigned</b> on the Assignments page lists items of any kind with no class, each with a Class picker.</li>
 </ul>
 
@@ -7477,7 +7493,8 @@ document.addEventListener('dragend',calNavOff);
 document.addEventListener('drop',calNavOff,true);
 document.addEventListener('dragstart',e=>{
   const el=e.target.closest('[data-tid]');
-  if(!el){e.preventDefault();return;}
+  /* GPA classes drag by their own handle (their own handlers) */
+  if(!el){if(!e.target.closest('[data-gpadrag]'))e.preventDefault();return;}
   dragId=el.dataset.tid;
   e.dataTransfer.setData('text/plain',dragId);
   e.dataTransfer.effectAllowed='move';
@@ -7664,6 +7681,7 @@ document.addEventListener('input',e=>{const t=e.target;if(!t.classList||!t.class
 /* ---------- GPA calculator: one list, or (Add by year) a list per grade with the current year picked; classes in
    later years are prospective (expected grades), and the Standard and Advanced Studies diploma credits show below ---------- */
 const gpaRows=()=>{if(!Array.isArray(state.settings.gpa))state.settings.gpa=[];return state.settings.gpa;};
+
 let gpaT=0;
 function gpaSave(){GPA_DIRTY=true;clearTimeout(gpaT);gpaT=setTimeout(async()=>{await saveSettings();GPA_DIRTY=false;},700);}
 const gpaFmt=x=>x==null?'0.00':x.toFixed(2);
@@ -7671,7 +7689,7 @@ const gpaBy=()=>!!state.settings.gpaByYear;
 const gpaCur=()=>state.settings.gpaYear||'9';
 const GPA_YEARS=[['ms','Middle school'],['9','9th grade'],['10','10th grade'],['11','11th grade'],['12','12th grade']];
 const gpaFuture=r=>gpaBy()&&/^\d+$/.test(r.y||'')&&+r.y>+gpaCur();
-const gpaNew=y=>{const r={n:'',lv:'reg',cr:1,g:'',x:''};if(gpaBy()){r.y=y||gpaCur();r.s='other';}return r;};
+const gpaNew=y=>{const r={n:'',lv:'reg',cr:1,g:'A',x:''};if(gpaBy()){r.y=y||gpaCur();r.s='other';}return r;};
 /* a guess at the level and the subject from the class name */
 function gpaLevel(n){if(/\bAV\b/.test(String(n||'')))return 'av';const l=SX.courseLevel(String(n||''));return ['ap','ib','de','hn'].includes(l)?l:'reg';}
 const gpaSubj=n=>SX.gpaSubject(String(n||''));
@@ -7700,18 +7718,43 @@ function gpaReqPaint(){
         return `<div class="gpa-rq ${s}${i.tot?' tot':''}"><span class="gpa-rl">${esc(i.label)}</span><span class="gpa-rb"><i class="h" style="width:${Math.min(100,i.have/i.need*100)}%"></i><i class="p" style="width:${Math.min(100,i.plan/i.need*100)}%"></i></span><span class="gpa-rn">${i.have}${i.plan>i.have?' + '+(i.plan-i.have):''} of ${i.need}</span></div>`;}).join('')}</div>`;}).join('');
 }
 function gpaRowHTML(r,i){
-  const by=gpaBy(),lv=SX.GPA_LEVELS.map(l=>({v:l[0],t:l[1]})),gr=[{v:'',t:gpaFuture(r)?'Expected':'Grade'}].concat(SX.GPA_GRADES.map(g=>({v:g[0],t:g[0]})));
-  return `<div class="gpa-row ${r.x?'x-'+r.x:''}${gpaFuture(r)?' prosp':''}${by?' by':''}" data-i="${i}">
+  const by=gpaBy(),fut=gpaFuture(r),lv=SX.GPA_LEVELS.map(l=>({v:l[0],t:l[1]})),gr=[{v:'',t:'No grade'}].concat(SX.GPA_GRADES.map(g=>({v:g[0],t:g[0]})));
+  const odd=!!(r.x||Number(r.cr)===0.5);
+  return `<div class="gpa-row ${r.x?'x-'+r.x:''}${fut?' prosp':''}${by?' by':''}" data-i="${i}">
+    ${by?`<span class="gpa-drag" draggable="true" data-gpadrag title="Drag to another year" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="9" cy="6" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg></span>`:''}
     <input type="text" class="gpa-n" id="gpa-n${i}" value="${esc(r.n||'')}" placeholder="Class" autocomplete="off" spellcheck="false" maxlength="80">
     ${by?xddHTML({kind:'gpayr',id:'gpa-y'+i,cls:'gpa-yr',value:r.y||'',label:'Year',ph:'Year',options:GPA_YEARS.map(([v,t])=>({v,t}))}):''}
     ${by?xddHTML({kind:'gpasb',id:'gpa-sb'+i,cls:'gpa-sb',value:r.s||'other',label:'Subject',options:SX.GPA_SUBJ.map(([v,t])=>({v,t}))}):''}
     ${xddHTML({kind:'gpalv',id:'gpa-lv'+i,cls:'gpa-lv',value:r.lv||'reg',label:'Level',options:lv})}
-    ${xddHTML({kind:'gpacr',id:'gpa-cr'+i,cls:'gpa-cr',value:String(r.cr||1),label:'Credit',options:[{v:'1',t:'1 credit'},{v:'0.5',t:'0.5 credit'}]})}
-    ${xddHTML({kind:'gpag',id:'gpa-g'+i,cls:'gpa-g',value:r.g||'',label:'Grade',ph:gpaFuture(r)?'Expected':'Grade',options:gr})}
-    <button type="button" class="tl-chip ${r.x==='exp'?'on':''}" data-gpax="exp" aria-pressed="${r.x==='exp'}">Expunge</button>
-    <button type="button" class="tl-chip ${r.x==='pf'?'on':''}" data-gpax="pf" aria-pressed="${r.x==='pf'}">Pass/fail</button>
+    ${xddHTML({kind:'gpag',id:'gpa-g'+i,cls:'gpa-g',value:r.g||'',label:fut?'Expected grade':'Grade',ph:'No grade',options:gr})}
+    <span class="gpa-setw"><button type="button" class="gpa-set${odd?' dot':''}" data-gpaset aria-haspopup="true" aria-expanded="false" aria-label="Credit, Expunge and Pass/Fail" title="Credit, Expunge and Pass/Fail"><svg viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2.2"/><circle cx="9" cy="17" r="2.2"/></svg></button>
+      <div class="gpa-pop" hidden>
+        ${xddHTML({kind:'gpacr',id:'gpa-cr'+i,cls:'gpa-cr',value:String(r.cr||1),label:'Credit',options:[{v:'1',t:'1 credit'},{v:'0.5',t:'0.5 credit'}]})}
+        <button type="button" class="tl-chip ${r.x==='exp'?'on':''}" data-gpax="exp" aria-pressed="${r.x==='exp'}">Expunge</button>
+        <button type="button" class="tl-chip ${r.x==='pf'?'on':''}" data-gpax="pf" aria-pressed="${r.x==='pf'}">Pass/Fail</button></div></span>
     <button type="button" class="su-del gpa-del" data-gpadel title="Remove" aria-label="Remove"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>`;
 }
+/* the options button (credit, Expunge, Pass/Fail): one open at a time; a dot shows when any is not the usual */
+function gpaPopClose(){document.querySelectorAll('.gpa-pop:not([hidden])').forEach(p=>{p.hidden=true;const b=p.parentElement.querySelector('.gpa-set');if(b)b.setAttribute('aria-expanded','false');});}
+function gpaDot(row){const r=gpaRows()[+row.dataset.i],b=row.querySelector('.gpa-set');if(r&&b)b.classList.toggle('dot',!!(r.x||Number(r.cr)===0.5));}
+document.addEventListener('click',e=>{if(!(e.target.closest&&e.target.closest('.gpa-setw')))gpaPopClose();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.querySelector('.gpa-pop:not([hidden])'))gpaPopClose();});
+/* drag a class by its handle onto another year (the year selector does the same); it lands where it is dropped */
+let gpaDragI=-1;
+document.addEventListener('dragstart',e=>{const h=e.target.closest&&e.target.closest('[data-gpadrag]');if(!h)return;
+  const row=h.closest('.gpa-row');gpaDragI=+row.dataset.i;e.dataTransfer.effectAllowed='move';try{e.dataTransfer.setData('text/plain','gpa');e.dataTransfer.setDragImage(row,20,22);}catch(_){}
+  setTimeout(()=>row.classList.add('dragging'),0);});
+document.addEventListener('dragend',()=>{gpaDragI=-1;document.querySelectorAll('.gpa-row.dragging,.gpa-sec.drop').forEach(x=>x.classList.remove('dragging','drop'));});
+document.addEventListener('dragover',e=>{if(gpaDragI<0)return;const sec=e.target.closest&&e.target.closest('#gpa-card .gpa-sec');if(!sec)return;
+  e.preventDefault();e.dataTransfer.dropEffect='move';document.querySelectorAll('.gpa-sec.drop').forEach(x=>{if(x!==sec)x.classList.remove('drop');});sec.classList.add('drop');});
+document.addEventListener('drop',e=>{if(gpaDragI<0)return;const sec=e.target.closest&&e.target.closest('#gpa-card .gpa-sec');if(!sec)return;e.preventDefault();
+  const rows=gpaRows(),r=rows[gpaDragI];if(!r)return;
+  /* before the row under the pointer, or at the end of that year */
+  const over=[...sec.querySelectorAll('.gpa-row')].find(x=>{const b=x.getBoundingClientRect();return e.clientY<b.top+b.height/2;});
+  const ti=over?+over.dataset.i:-1;rows.splice(gpaDragI,1);r.y=sec.dataset.y||'';
+  let at=ti<0?rows.length:(ti>gpaDragI?ti-1:ti);
+  if(ti<0){const last=rows.map((x,k)=>x.y===r.y?k:-1).filter(k=>k>=0).pop();at=last==null?rows.length:last+1;}
+  rows.splice(at,0,r);gpaDragI=-1;gpaRedraw();gpaSave();});
 const gpaAdd=y=>`<div class="gpa-addrow"><button class="su-add" data-gpaadd${y?` data-y="${y}"`:''} title="Add a class">+</button></div>`;
 function gpaBody(){
   const rows=gpaRows(),by=gpaBy();
@@ -7735,7 +7778,7 @@ function gpaRedraw(focusIdx){const c=document.getElementById('gpa-card');if(!c)r
   if(focusIdx!=null){const n=document.getElementById('gpa-n'+focusIdx);if(n)n.focus();}}
 const gpaIdx=el=>{const r=el.closest('.gpa-row');return r?+r.dataset.i:-1;};
 XDD_ON.gpalv=(w,v)=>{const r=gpaRows()[gpaIdx(w)];if(r){r.lv=v;gpaSum();gpaSave();}};
-XDD_ON.gpacr=(w,v)=>{const r=gpaRows()[gpaIdx(w)];if(r){r.cr=v==='0.5'?0.5:1;gpaSum();gpaSave();}};
+XDD_ON.gpacr=(w,v)=>{const r=gpaRows()[gpaIdx(w)];if(r){r.cr=v==='0.5'?0.5:1;gpaDot(w.closest('.gpa-row'));gpaSum();gpaSave();}};
 XDD_ON.gpag=(w,v)=>{const r=gpaRows()[gpaIdx(w)];if(r){r.g=v;gpaSum();gpaSave();}};
 XDD_ON.gpasb=(w,v)=>{const r=gpaRows()[gpaIdx(w)];if(r){r.s=v;gpaSum();gpaSave();}};
 XDD_ON.gpayr=(w,v)=>{const r=gpaRows()[gpaIdx(w)];if(r){r.y=v;gpaRedraw();gpaSave();}};
@@ -7749,13 +7792,14 @@ document.addEventListener('click',e=>{
   if(e.target.closest('[data-tlclear]')){TL.data=null;TL.units=[];tlPaint();return;}
   const fb=e.target.closest('[data-tlfull]');if(fb){TL.o.full=TL.o.full==='0'?'1':'0';fb.classList.toggle('on',TL.o.full!=='0');fb.setAttribute('aria-pressed',TL.o.full!=='0');tlSave();tlRepaintTable();return;}
   const b=e.target.closest('[data-tlbold]');if(b){TL.o.bold=TL.o.bold==='1'?'0':'1';b.classList.toggle('on',TL.o.bold==='1');b.setAttribute('aria-pressed',TL.o.bold==='1');tlSave();tlRepaintTable();return;}
+  const gs=e.target.closest('[data-gpaset]');if(gs){const pop=gs.parentElement.querySelector('.gpa-pop'),open=pop.hidden;gpaPopClose();pop.hidden=!open;gs.setAttribute('aria-expanded',String(open));return;}
   if(e.target.closest('[data-gpaby]')){state.settings.gpaByYear=!gpaBy();
     /* every class gets a subject guess the first time */
     if(gpaBy())gpaRows().forEach(r=>{if(!r.s)r.s=gpaSubj(r.n);if(!r.y&&String(r.n||'').trim())r.y=gpaTypYear(r.n);});
     gpaRedraw();gpaSave();return;}
   const x=e.target.closest('[data-gpax]');if(x){const r=gpaRows()[gpaIdx(x)];if(!r)return;r.x=r.x===x.dataset.gpax?'':x.dataset.gpax;
     const row=x.closest('.gpa-row');row.classList.toggle('x-exp',r.x==='exp');row.classList.toggle('x-pf',r.x==='pf');
-    row.querySelectorAll('[data-gpax]').forEach(c=>{const on=c.dataset.gpax===r.x;c.classList.toggle('on',on);c.setAttribute('aria-pressed',on);});gpaSum();gpaSave();return;}
+    row.querySelectorAll('[data-gpax]').forEach(c=>{const on=c.dataset.gpax===r.x;c.classList.toggle('on',on);c.setAttribute('aria-pressed',on);});gpaDot(row);gpaSum();gpaSave();return;}
   if(e.target.closest('[data-gpadel]')){const rows=gpaRows(),i=gpaIdx(e.target);if(i<0)return;rows.splice(i,1);if(!rows.length)rows.push(gpaNew());gpaRedraw();gpaSave();return;}
   const ad=e.target.closest('[data-gpaadd]');if(ad){const rows=gpaRows();if(rows.length>=120)return;rows.push(gpaNew(ad.dataset.y));gpaRedraw(rows.length-1);return;}
   if(e.target.closest('[data-gpamine]')){const rows=gpaRows(),have=new Set(rows.map(r=>String(r.n).trim().toLowerCase()));
