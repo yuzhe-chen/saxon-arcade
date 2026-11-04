@@ -2373,6 +2373,14 @@ button.ch-row.on{background:var(--blue-wash);box-shadow:inset 0 0 0 2px var(--bl
 #tut .tut-hole{box-shadow:0 0 0 3px #fff,0 0 0 200vmax rgba(19,31,36,.7)}
 
 /* ---------- Tools page: physics helper and GPA calculator ---------- */
+#games .tl-tile{aspect-ratio:auto;min-height:150px;justify-content:flex-start}
+#games .tl-tile.gm-plain .gm-big{flex:none;min-height:0;align-items:flex-start;padding:18px 16px 6px;font-size:26px;line-height:1.1}
+#games .tl-desc{display:block;padding:0 16px 18px;text-align:left;font:700 15px/1.35 var(--font-ui);color:var(--faint)}
+@media (max-width:700px){#games .tl-tile{min-height:130px}#games .tl-tile.gm-plain .gm-big{font-size:21px;padding:14px 12px 6px}#games .tl-desc{font-size:13.5px;padding:0 12px 14px}}
+.tl-top{display:flex;align-items:center;gap:14px}
+.tl-title{font:700 28px/1.1 var(--display);color:var(--pri);letter-spacing:-0.02em}
+html.no-v-tools [data-act-tools],html.no-v-tools #hm-tools{display:none!important}
+
 .tl-root{max-width:1000px;margin:0 auto}
 .tl-card{border:2px solid var(--line);border-bottom-width:4px;border-radius:16px;display:flex;flex-direction:column;gap:14px}
 .tl-paste{width:100%;box-sizing:border-box;min-height:84px;resize:none;border:2px dashed var(--line);border-radius:var(--rs);background:var(--input);color:var(--fg);
@@ -2730,7 +2738,7 @@ button.ch-row.on{background:var(--blue-wash);box-shadow:inset 0 0 0 2px var(--bl
 <li>Delete a task with its ×, a double click, or by pressing and holding it.</li>
 <li><kbd>Ctrl</kbd>+<kbd>Z</kbd> (<kbd>Cmd</kbd>+<kbd>Z</kbd> on a Mac) brings back the last task you deleted or crossed off. An <b>Undo</b> button also pops up at the bottom of the screen for a few seconds after you delete or cross something off.</li>
 <li>The <b>Assignments</b> page lists every assignment not done yet, oldest first. <b>Overdue</b> narrows it to ones due today or earlier.</li>
-<li>The <b>Tools</b> page has two tools. <b>Physics Helper</b>: paste cells copied from Google Sheets, type a unit over any column and it is added after every number in that column, pick the font, size, borders and alignment (Times New Roman 12 with black borders to start), then press <b>Copy table</b> and paste into Google Docs. <b>GPA Calculator</b>: list every class you have taken with its level, credit and letter grade; Honors adds 0.5 and AP, AV, DE and IB add 1, as FCPS does. <b>Expunge</b> leaves a class out, <b>Pass/fail</b> leaves it out unless the grade is F, which counts as 0.</li>
+<li><b>Tools</b>, in the menu under Games, opens a screen of tools: Physics Helper, GPA Calculator, Soundboard and Desmos. <b>Physics Helper</b>: paste cells copied from Google Sheets, type a unit over any column and it is added after every number in that column, pick the font, size, borders and alignment (Times New Roman 12 with black borders to start), then press <b>Copy table</b> and paste into Google Docs. <b>GPA Calculator</b>: list every class you have taken with its level, credit and letter grade; Honors adds 0.5 and AP, AV, DE and IB add 1, as FCPS does. <b>Expunge</b> leaves a class out, <b>Pass/fail</b> leaves it out unless the grade is F, which counts as 0.</li>
 <li><b>Unassigned</b> on the Assignments page lists items of any kind with no class, each with a Class picker.</li>
 </ul>
 
@@ -2945,7 +2953,6 @@ button.ch-row.on{background:var(--blue-wash);box-shadow:inset 0 0 0 2px var(--bl
       <button data-v="advisory">To-Do</button>
       <button data-v="assignments">Assignments</button>
       <button data-v="resources">Resources</button>
-      <button data-v="tools">Tools</button>
       <button data-v="tasks" hidden>Tasks</button>
       <button data-v="chat">Chat<i class="tdot" hidden></i></button>
       <div class="morewrap" id="morewrap" hidden>
@@ -2974,12 +2981,12 @@ button.ch-row.on{background:var(--blue-wash);box-shadow:inset 0 0 0 2px var(--bl
         <button class="mtab" data-v="advisory"><i class="mi" data-art="sticky"></i><span>To-Do</span></button>
         <button class="mtab" data-v="assignments"><i class="mi" data-art="clipboard"></i><span>Assignments</span></button>
         <button class="mtab" data-v="resources"><i class="mi" data-art="books"></i><span>Resources</span></button>
-        <button class="mtab" data-v="tools"><i class="mi" data-art="calc"></i><span>Tools</span></button>
         <button class="mtab" data-v="tasks" hidden><i class="mi" data-art="trophy"></i><span>Tasks</span></button>
         <button class="mtab" data-v="chat"><i class="mi" data-art="chat"></i><span>Chat</span><i class="tdot" hidden></i></button>
       </div>
       <div class="mm-sep mm-psep"></div>
       <button class="mm-row" data-act-games><i class="mi" data-art="controller"></i><span>Games</span></button>
+      <button class="mm-row" data-act-tools><i class="mi" data-art="calc"></i><span>Tools</span></button>
       <button class="mm-row" id="mgear" aria-expanded="false"><i class="mi" data-art="gear"></i><span>Settings</span><svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
       <div class="mcolors" id="mcolors" hidden></div>
       <button class="mm-row" id="msugg" data-act-sugg><i class="mi" data-art="bulb"></i><span>Suggestions</span></button>
@@ -7549,7 +7556,7 @@ document.addEventListener('input',e=>{const t=e.target;if(!t.classList||!t.class
   gpaSave();});
 document.addEventListener('click',e=>{
   const v=e.target.closest&&e.target.closest('#v-tools');if(!v)return;
-  const tab=e.target.closest('[data-tltab]');if(tab){state.toolTab=tab.dataset.tltab;try{localStorage.setItem('sx-tooltab',state.toolTab);}catch(_){}renderTools();return;}
+  if(e.target.closest('[data-tlback]')){openTools();return;}
   if(e.target.closest('[data-tlcopy]'))return void tlCopy(e.target.closest('[data-tlcopy]'));
   if(e.target.closest('[data-tlclear]')){TL.data=null;TL.units=[];tlPaint();return;}
   const b=e.target.closest('[data-tlbold]');if(b){TL.o.bold=TL.o.bold==='1'?'0':'1';b.classList.toggle('on',TL.o.bold==='1');b.setAttribute('aria-pressed',TL.o.bold==='1');tlSave();tlRepaintTable();return;}
@@ -7563,6 +7570,30 @@ document.addEventListener('click',e=>{
     COURSES.forEach(c=>{if(!have.has(c.name.toLowerCase())&&rows.length<120)rows.push({n:c.name,lv:gpaLevel(c.name),cr:1,g:'',x:''});});
     gpaRedraw();gpaSave();return;}
 });
+/* the tools screen: like the games screen, one box per tool with a title and a short description */
+const TOOLS=[['phys','Physics Helper','Paste cells from Google Sheets and get a Google Docs table with units'],
+  ['gpa','GPA Calculator','Weighted and unweighted GPA from every class you have taken'],
+  ['soundboard','Soundboard','Sound effects at the press of a button'],
+  ['desmos','Desmos','The Desmos graphing calculator']];
+var tlBack=false;
+function openTools(){
+  tlBack=false;
+  const g=document.getElementById('games');roomLeaveAll();
+  g.innerHTML=`<div class="gm-pick tl-pick"><div class="gm-head"><h1 class="gm-h"><span>tools</span></h1>
+    <button class="gm-x" data-act-gclose aria-label="Close" title="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+    <section class="gm-sec"><div class="gm-grid">${TOOLS.map(([id,n,d])=>`<button class="gm-tile gm-plain tl-tile" data-tool="${id}"><span class="gm-big">${esc(n)}</span><span class="tl-desc">${esc(d)}</span></button>`).join('')}</div></section></div>`;
+  g.hidden=false;
+}
+document.addEventListener('click',e=>{
+  if(e.target.closest&&e.target.closest('[data-act-tools]')&&state.user){closeNavMenus();openTools();return;}
+  const t=e.target.closest&&e.target.closest('#games [data-tool]');if(!t)return;
+  const id=t.dataset.tool;
+  if(id==='soundboard'){tlBack=true;playGame('soundboard');return;}
+  closeGames();
+  if(id==='desmos'){openDesmos();return;}
+  state.toolTab=id;try{localStorage.setItem('sx-tooltab',id);localStorage.setItem('sx-tab','tools');}catch(_){}
+  state.view='tools';render();scrollTo(0,0);
+});
 function renderTools(){
   const el=document.getElementById('v-tools');if(!el)return;
   const tab=state.toolTab==='gpa'?'gpa':'phys';
@@ -7571,9 +7602,8 @@ function renderTools(){
     if(tab==='gpa'&&el._gpa!==gpaRows()&&!GPA_DIRTY&&!el.contains(document.activeElement)){el._gpa=gpaRows();gpaRedraw();}
     return;}
   el.dataset.tab=tab;
-  el.innerHTML=`<div class="tl-root"><div class="cal-head" style="justify-content:flex-start"><div class="hgroup">
-      <button class="hbtn ${tab==='phys'?'on':''}" data-tltab="phys">Physics Helper</button>
-      <button class="hbtn ${tab==='gpa'?'on':''}" data-tltab="gpa">GPA Calculator</button></div></div>
+  el.innerHTML=`<div class="tl-root"><div class="cal-head tl-top" style="justify-content:flex-start"><button class="hbtn" data-tlback>Tools</button>
+      <span class="tl-title">${tab==='phys'?'Physics Helper':'GPA Calculator'}</span></div>
     ${tab==='phys'?tlPhysicsHTML():gpaHTML()}</div>`;
   if(tab==='phys')tlPaint();else{el._gpa=gpaRows();gpaSum();}
 }
@@ -7900,7 +7930,7 @@ const HM_I={
   games:'<path d="M6 11h4M8 9v4M15 12h.01M18 10h.01"/><path d="M17.3 5H6.7a4 4 0 0 0-4 3.6C2.6 9.4 2 14.5 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.4-1.4A2 2 0 0 1 9.8 16h4.4a2 2 0 0 1 1.4.6L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.5-.6-6.6-.7-7.4A4 4 0 0 0 17.3 5z"/>'};
 const HM_PAGES=[['courses','Courses','Every class with its period and what is coming up'],['calendar','Calendar','Assignments and tests by day, week or month'],
   ['advisory','To-Do','Sticky notes and school events'],['assignments','Assignments','Everything not done yet, oldest first'],
-  ['resources','Resources','Documents and links for each class'],['tools','Tools','Physics table helper and GPA calculator'],['tasks','Tasks','Contests, grants and programs'],['chat','Chat','Messages with friends and groups'],
+  ['resources','Resources','Documents and links for each class'],['tools','Tools','Physics helper, GPA calculator, soundboard and Desmos'],['tasks','Tasks','Contests, grants and programs'],['chat','Chat','Messages with friends and groups'],
   ['games','Games','Singleplayer, social and multiplayer games'],['guide','Guide','Every feature explained, step by step']];
 const HM_URL='saxonplanner.web.app';
 /* each Home card's drawing */
@@ -8337,6 +8367,7 @@ document.addEventListener('click',e=>{
   if(c){const v=c.dataset.homeGo;
     /* Games opens the games screen over the page (it isn't a tab) */
     if(v==='games'){openGames();return;}
+    if(v==='tools'){openTools();return;}
     if(v==='guide'){openDocs();return;}
     if(state.user&&!COURSES.length&&v!=='courses'){needClasses(c);return;}
     state.view=v;if(v==='calendar')state.calView='month';
@@ -9564,7 +9595,7 @@ document.addEventListener('click',e=>{if(e.target.closest('[data-mx-back]'))open
 /* a game opened straight from the login page's menu (Soundboard) goes back to the login page, not to the games picker */
 let gmDirect=false;
 function openGames(){
-  gmDirect=false;
+  gmDirect=false;tlBack=false;
   if(gmResume())return;
   const g=document.getElementById('games');
   setTimeout(()=>{if(!g.hidden&&g.querySelector('.gm-pick'))gamesIntro(g);},0);
@@ -10012,6 +10043,7 @@ window.addEventListener('message',async e=>{
   if(!f||e.source!==f.contentWindow||!e.data||typeof e.data!=='object')return;
   const m=e.data;
   try{
+    if(m.type==='games-menu'&&tlBack){openTools();return;}
     if(m.type==='games-menu'){const p=gmParent(f.title);if(gmDirect)closeGames();else if(p)playGame(p.id);else openGames();return;}
     if(m.type==='games-close'){closeGames();return;}
     if(m.type==='room'){roomBridge(f,m);return;}
