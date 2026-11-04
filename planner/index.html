@@ -2389,6 +2389,20 @@ button.ch-row.on{background:var(--blue-wash);box-shadow:inset 0 0 0 2px var(--bl
 .db-n{text-align:right}
 @media (max-width:700px){#dash .docs-in{padding:20px 16px 40px}.db-st{flex:1 1 40%;min-width:0}}
 /* ---------- Tools page: physics helper and GPA calculator ---------- */
+textarea.tl-paste{height:96px;min-height:0;padding:36px 14px;line-height:24px}
+.tl-hdr{display:flex;align-items:center;gap:12px}
+.tl-body{display:flex;gap:20px;align-items:flex-start}
+.tl-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:18px}
+.tl-side{width:250px}
+.tl-slist{display:flex;flex-direction:column;gap:2px}
+a.opp-cat.tl-sl{text-decoration:none}
+.tl-sl span{white-space:normal!important;line-height:1.25}
+.tl-snone{padding:6px 10px;font:700 14px var(--font-ui);color:var(--faint)}
+.tl-scrim[hidden]{display:none!important}
+.tl-eqh{font:700 20px/1.2 var(--display);color:var(--fg)}
+.tl-eqbox{border:2px solid var(--line);border-radius:var(--rs);background:#fff;padding:6px 10px}
+.tl-mf{display:block;width:100%;font-size:26px;min-height:52px;border:0;outline:none;background:transparent;color:#000;--caret-color:var(--pri);--selection-background-color:#d7ecff}
+.tl-mf::part(menu-toggle){display:none}
 .gpa-top{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch}
 .gpa-top .xdd{display:block}
 .gpa-curyr .cdd-btn{height:100%;min-height:44px;padding:0 10px 0 14px;background:var(--input);border:2px solid var(--line);border-radius:var(--rs);font-size:15px;gap:8px}
@@ -2398,7 +2412,8 @@ button.ch-row.on{background:var(--blue-wash);box-shadow:inset 0 0 0 2px var(--bl
 .gpa-tag{font:800 11px/1 var(--font-ui);text-transform:uppercase;letter-spacing:.06em;padding:5px 8px;border-radius:8px;background:var(--panel2);color:var(--faint)}
 .gpa-tag.now{background:var(--pri);color:#fff}
 .gpa-row.prosp .gpa-n{border-style:dashed;font-style:italic}
-.gpa-sb{width:150px}.gpa-yr{width:140px}
+.gpa-sb{width:172px}.gpa-yr{width:140px}
+.gpa-row.by{flex-wrap:wrap;padding-bottom:10px;border-bottom:2px solid var(--line)}.gpa-row.by .gpa-n{order:0;flex:1 1 calc(100% - 44px)}.gpa-row.by .gpa-del{order:1}.gpa-row.by>:not(.gpa-n):not(.gpa-del){order:2}
 .gpa-proj{border-style:dashed!important}
 .gpa-req{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
 .gpa-dip{border:2px solid var(--line);border-bottom-width:4px;border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
@@ -7613,7 +7628,7 @@ async function tlCopy(btn){
 function tlPhysicsHTML(){
   const o=TL.o,x=(kind,label,val,opts)=>xddHTML({kind,id:'tl-'+kind,cls:'tl-dd',value:val,label,ph:label,options:opts});
   return `<div class="panel tl-card">
-    <textarea id="tl-paste" class="tl-paste" placeholder="Paste cells from Google Sheets" rows="2" spellcheck="false"></textarea>
+    <textarea id="tl-paste" class="tl-paste" placeholder="Paste cells from Google Sheets" rows="1" spellcheck="false"></textarea>
     <div class="tl-opts">
       ${x('tlfont','Font',o.font,TL_FONTS.map(f=>({v:f,t:f})))}
       <div class="tl-size"><input type="range" id="tl-sr" min="6" max="48" step="0.5" value="${esc(o.size)}" aria-label="Font size"><input type="number" id="tl-sn" min="4" max="96" step="0.5" value="${esc(o.size)}" aria-label="Font size"><span>pt</span></div>
@@ -7685,7 +7700,7 @@ function gpaRowHTML(r,i){
   const by=gpaBy(),lv=SX.GPA_LEVELS.map(l=>({v:l[0],t:l[1]})),gr=[{v:'',t:gpaFuture(r)?'Expected':'Grade'}].concat(SX.GPA_GRADES.map(g=>({v:g[0],t:g[0]})));
   return `<div class="gpa-row ${r.x?'x-'+r.x:''}${gpaFuture(r)?' prosp':''}${by?' by':''}" data-i="${i}">
     <input type="text" class="gpa-n" id="gpa-n${i}" value="${esc(r.n||'')}" placeholder="Class" autocomplete="off" spellcheck="false" maxlength="80">
-    ${by&&!r.y?xddHTML({kind:'gpayr',id:'gpa-y'+i,cls:'gpa-yr',value:'',label:'Year',ph:'Year',options:GPA_YEARS.map(([v,t])=>({v,t}))}):''}
+    ${by?xddHTML({kind:'gpayr',id:'gpa-y'+i,cls:'gpa-yr',value:r.y||'',label:'Year',ph:'Year',options:GPA_YEARS.map(([v,t])=>({v,t}))}):''}
     ${by?xddHTML({kind:'gpasb',id:'gpa-sb'+i,cls:'gpa-sb',value:r.s||'other',label:'Subject',options:SX.GPA_SUBJ.map(([v,t])=>({v,t}))}):''}
     ${xddHTML({kind:'gpalv',id:'gpa-lv'+i,cls:'gpa-lv',value:r.lv||'reg',label:'Level',options:lv})}
     ${xddHTML({kind:'gpacr',id:'gpa-cr'+i,cls:'gpa-cr',value:String(r.cr||1),label:'Credit',options:[{v:'1',t:'1 credit'},{v:'0.5',t:'0.5 credit'}]})}
@@ -7733,7 +7748,7 @@ document.addEventListener('click',e=>{
   const b=e.target.closest('[data-tlbold]');if(b){TL.o.bold=TL.o.bold==='1'?'0':'1';b.classList.toggle('on',TL.o.bold==='1');b.setAttribute('aria-pressed',TL.o.bold==='1');tlSave();tlRepaintTable();return;}
   if(e.target.closest('[data-gpaby]')){state.settings.gpaByYear=!gpaBy();
     /* every class gets a subject guess the first time */
-    if(gpaBy())gpaRows().forEach(r=>{if(!r.s)r.s=gpaSubj(r.n);});
+    if(gpaBy())gpaRows().forEach(r=>{if(!r.s)r.s=gpaSubj(r.n);if(!r.y&&String(r.n||'').trim())r.y=gpaTypYear(r.n);});
     gpaRedraw();gpaSave();return;}
   const x=e.target.closest('[data-gpax]');if(x){const r=gpaRows()[gpaIdx(x)];if(!r)return;r.x=r.x===x.dataset.gpax?'':x.dataset.gpax;
     const row=x.closest('.gpa-row');row.classList.toggle('x-exp',r.x==='exp');row.classList.toggle('x-pf',r.x==='pf');
@@ -7750,7 +7765,7 @@ const TOOLS=[['phys','Physics Helper','Paste cells from Google Sheets and get a 
   ['gpa','GPA Calculator','Weighted and unweighted GPA from every class you have taken'],
   ['soundboard','Soundboard','Sound effects at the press of a button'],
   ['desmos','Desmos','The Desmos graphing calculator']];
-var tlBack=false;
+var tlBack=false,tlDz=false;
 function openTools(){
   tlBack=false;
   const g=document.getElementById('games');roomLeaveAll();
@@ -7765,7 +7780,7 @@ document.addEventListener('click',e=>{
   const id=t.dataset.tool;
   if(id==='soundboard'){tlBack=true;playGame('soundboard');return;}
   closeGames();
-  if(id==='desmos'){openDesmos();return;}
+  if(id==='desmos'){tlDz=true;openDesmos();return;}
   state.toolTab=id;try{localStorage.setItem('sx-tooltab',id);localStorage.setItem('sx-tab','tools');}catch(_){}
   state.view='tools';render();scrollTo(0,0);
 });
@@ -7780,6 +7795,107 @@ document.addEventListener('keydown',e=>{const t=e.target;if(e.key!=='Enter'||!t.
   if(k>=0&&k<ns.length-1){ns[k+1].focus();return;}
   const rows=gpaRows();if(!t.value.trim()||rows.length>=120)return;
   const y=(gpaRows()[gpaIdx(t)]||{}).y;t.blur();rows.push(gpaNew(y));gpaRedraw(rows.length-1);});
+/* ---------- Physics Helper sidebar: links to every Physics resource (they open on the Resources page), like the Tasks
+   sidebar; open or closed is remembered on this device (on a phone it covers the page and starts closed) ---------- */
+let tlSideOn=false,tlSideM=false;try{tlSideOn=localStorage.getItem('sx-tlside')==='1';}catch(_){}
+const tlSideShown=()=>oppPhone()?tlSideM:tlSideOn;
+const tlPhys=()=>COURSES.find(c=>/physics/i.test(c.name))||null;
+const TL_DOC_ICON='<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/></svg>';
+function tlSideList(){
+  const c=tlPhys();
+  if(!c)return '<div class="tl-snone">No physics class</div>';
+  if(!RES||!MYRES){loadResources().then(()=>{const l=document.getElementById('tl-slist');if(l)l.innerHTML=tlSideList();});return '<div class="tl-snone">Loading</div>';}
+  const its=((RES.courses[c.id]||{}).items||[]),mine=MYRES.filter(r=>!r.from&&(()=>{const k=resClass(r);return k&&k.id===c.id;})());
+  const own=!!(state.user&&state.user.owner),u='https:'+SLASH2+'docs.google.com/document/d/1HdAOf-SNYpBCh7MxKxhUayY6BWINkGRS/';
+  const row=(inner,attrs)=>`<${attrs.startsWith('href')?'a':'button type="button"'} class="opp-cat tl-sl" ${attrs}><span>${inner}</span></${attrs.startsWith('href')?'a':'button'}>`;
+  const out=its.map(it=>it.url?row(esc(it.title),`href="${esc(sisU(it.url))}" target="_blank" rel="noopener"`):row(esc(it.title),`data-tlres="${esc(it.id)}" data-c="${esc(c.id)}"`))
+    .concat(mine.map(r=>row(esc(r.title),`data-tlmy="${esc(r.id)}"`)));
+  if(own)out.push('<div class="opp-sdiv" role="separator"></div>',row('Formal Lab Guidelines',`href="${u}edit" target="_blank" rel="noopener"`),row('Make a copy of the guidelines',`href="${u}copy" target="_blank" rel="noopener"`));
+  return out.length?out.join(''):'<div class="tl-snone">Nothing yet</div>';
+}
+function tlSideHTML(){const on=tlSideShown();
+  return `<nav class="opp-side tl-side" id="tl-side" aria-label="Physics resources"${on?'':' hidden'}><div class="opp-sh">Physics resources<button type="button" class="opp-sx" data-tlside aria-label="Close" title="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div><div id="tl-slist" class="tl-slist">${tlSideList()}</div></nav><div class="opp-scrim tl-scrim" data-tlside aria-hidden="true"${on&&oppPhone()?'':' hidden'}></div>`;}
+function tlSide(on){
+  if(oppPhone())tlSideM=on;else{tlSideOn=on;try{localStorage.setItem('sx-tlside',on?'1':'0');}catch(_){}}
+  const s=document.getElementById('tl-side'),sc=document.querySelector('.tl-scrim'),b=document.querySelector('.tl-sidebtn');
+  if(s){s.hidden=!on;if(on)document.getElementById('tl-slist').innerHTML=tlSideList();}
+  if(sc)sc.hidden=!(on&&oppPhone());
+  if(b){b.classList.toggle('on',on);b.setAttribute('aria-expanded',on);}
+  setTimeout(tlFitUnits,0);
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&state.view==='tools'&&oppPhone()&&tlSideM){e.preventDefault();tlSide(false);}});
+/* ---------- equation typer: type like Desmos (MathLive), copy it as a picture that pastes into Google Docs at the
+   table's font size, or as plain text with symbols ---------- */
+let mlP=null,mjP=null;
+function tlScript(src){return new Promise((ok,no)=>{const t=document.createElement('script');t.src=src;t.onload=ok;t.onerror=no;document.head.appendChild(t);});}
+function tlMathLive(){if(!mlP)mlP=tlScript('https:'+SLASH2+'cdn.jsdelivr.net/npm/mathlive@0.100.0/dist/mathlive.min.js').then(()=>{try{MathfieldElement.soundsDirectory=null;}catch(_){}}).catch(e=>{mlP=null;throw e;});return mlP;}
+function tlMathJax(){if(!mjP){window.MathJax={svg:{fontCache:'none'},startup:{typeset:false}};
+  mjP=tlScript('https:'+SLASH2+'cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js').then(()=>MathJax.startup.promise).catch(e=>{mjP=null;throw e;});}return mjP;}
+let tlEqTex='';
+function tlEqHTML(){return `<div class="panel tl-card tl-eqc"><div class="tl-eqh">Equation</div>
+  <div class="tl-eqbox"><math-field id="tl-mf" class="tl-mf" aria-label="Equation"></math-field></div>
+  <div class="tl-acts"><button type="button" class="btn tl-copy" data-eqcopy><span>Copy equation</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button><button type="button" class="kbtn" data-eqtext>Copy as text</button><button type="button" class="kbtn" data-eqclear>Clear</button></div></div>`;}
+function tlEqInit(){tlMathLive().then(()=>{const f=document.getElementById('tl-mf');if(!f||f._on)return;f._on=1;
+  try{f.mathVirtualKeyboardPolicy='auto';f.smartFence=true;}catch(_){}
+  if(tlEqTex)f.value=tlEqTex;f.addEventListener('input',()=>{tlEqTex=f.value;});}).catch(()=>{});}
+const TEX_SYM={alpha:'α',beta:'β',gamma:'γ',delta:'δ',epsilon:'ε',varepsilon:'ε',theta:'θ',lambda:'λ',mu:'μ',pi:'π',rho:'ρ',sigma:'σ',tau:'τ',phi:'φ',varphi:'φ',omega:'ω',
+  Delta:'Δ',Sigma:'Σ',Omega:'Ω',Phi:'Φ',Theta:'Θ',Gamma:'Γ',Lambda:'Λ',Pi:'Π',cdot:'·',times:'×',div:'÷',pm:'±',le:'≤',leq:'≤',ge:'≥',geq:'≥',ne:'≠',neq:'≠',
+  approx:'≈',to:'→',rightarrow:'→',infty:'∞',circ:'°',degree:'°',partial:'∂',int:'∫',sum:'Σ',propto:'∝',vec:''};
+const SUP={'0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','+':'⁺','-':'⁻','=':'⁼','(':'⁽',')':'⁾','n':'ⁿ','i':'ⁱ','°':'°'};
+const SUB={'0':'₀','1':'₁','2':'₂','3':'₃','4':'₄','5':'₅','6':'₆','7':'₇','8':'₈','9':'₉','+':'₊','-':'₋','=':'₌','(':'₍',')':'₎','a':'ₐ','e':'ₑ','o':'ₒ','x':'ₓ','i':'ᵢ','r':'ᵣ','u':'ᵤ','v':'ᵥ','k':'ₖ','m':'ₘ','n':'ₙ','p':'ₚ','s':'ₛ','t':'ₜ'};
+/* LaTeX to plain text with symbols: v_0^2 becomes v₀², \frac{a}{b} becomes (a)/(b) */
+function texText(t){
+  let s=String(t||'');const grp='\\{([^{}]*)\\}';
+  s=s.replace(/\\left|\\right/g,'').replace(/\\(?:mathrm|text|operatorname|mathbf|mathit)\{([^{}]*)\}/g,'$1').replace(/\\[,;:!]|\\ |~/g,' ');
+  for(let k=0;k<6;k++){s=s.replace(new RegExp('\\\\[dt]?frac'+grp+grp,'g'),(_,a,b)=>(a.length>1?'('+a+')':a)+'/'+(b.length>1?'('+b+')':b))
+    .replace(new RegExp('\\\\sqrt'+grp,'g'),(_,a)=>'√'+(a.length>1?'('+a+')':a)).replace(new RegExp('\\\\vec'+grp,'g'),'$1');}
+  s=s.replace(/\\([A-Za-z]+) ?/g,(m,n)=>n in TEX_SYM?TEX_SYM[n]:n);
+  const conv=(x,map,mark)=>[...x].every(c=>map[c])?[...x].map(c=>map[c]).join(''):mark+(x.length>1?'('+x+')':x);
+  s=s.replace(/\^\{([^{}]*)\}|\^(.)/g,(_,a,b)=>conv(a!=null?a:b,SUP,'^')).replace(/_\{([^{}]*)\}|_(.)/g,(_,a,b)=>conv(a!=null?a:b,SUB,'_'));
+  return s.replace(/[{}]/g,'').replace(/\s+/g,' ').trim();
+}
+async function tlEqCopy(btn){
+  const tex=(tlEqTex||'').trim();if(!tex)return;
+  let ok=false;
+  try{await tlMathJax();
+    const svg=MathJax.tex2svg(tex,{display:false}).querySelector('svg'),ex=parseFloat(TL.o.size||'12')*4/3*0.5;
+    const w=parseFloat(svg.getAttribute('width'))*ex,h=parseFloat(svg.getAttribute('height'))*ex,S=4;
+    svg.setAttribute('width',w*S);svg.setAttribute('height',h*S);svg.setAttribute('color','#000');
+    const img=new Image();img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(new XMLSerializer().serializeToString(svg));
+    await img.decode();const cv=document.createElement('canvas');cv.width=Math.ceil(w*S);cv.height=Math.ceil(h*S);cv.getContext('2d').drawImage(img,0,0);
+    const url=cv.toDataURL('image/png'),blob=await new Promise(r=>cv.toBlob(r,'image/png'));
+    const html=`<meta charset="utf-8"><img src="${url}" width="${Math.round(w)}" height="${Math.round(h)}" alt="${esc(texText(tex))}">`;
+    try{await navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([html],{type:'text/html'}),'image/png':blob})]);ok=true;}catch(_){}
+    if(!ok){const d=document.createElement('div');d.style.cssText='position:fixed;left:-9999px;top:0';d.innerHTML=html;document.body.appendChild(d);
+      const s=getSelection(),r=document.createRange();r.selectNodeContents(d);s.removeAllRanges();s.addRange(r);try{ok=document.execCommand('copy');}catch(_){}s.removeAllRanges();d.remove();}
+  }catch(e){console.warn('equation copy failed',e);}
+  if(ok&&btn){btn.classList.remove('tl-ok');void btn.offsetWidth;btn.classList.add('tl-ok');clearTimeout(btn._t);btn._t=setTimeout(()=>btn.classList.remove('tl-ok'),1400);}
+}
+document.addEventListener('click',e=>{
+  const v=e.target.closest&&e.target.closest('#v-tools');if(!v)return;
+  if(e.target.closest('[data-tlside]')){tlSide(!tlSideShown());return;}
+  const rs=e.target.closest('[data-tlres]');if(rs){if(oppPhone())tlSideM=false;
+    state.resLib=false;state.myOpen=null;state.resCourse=rs.dataset.c;state.resItem=rs.dataset.tlres;state.resSub=null;state.resQ='';state.tlQ='';state.resScroll=true;
+    state.view='resources';try{localStorage.setItem('sx-tab','resources');}catch(_){}document.querySelector('.wrap').scrollTop=0;render();return;}
+  const my=e.target.closest('[data-tlmy]');if(my){const r=(MYRES||[]).find(x=>x.id===my.dataset.tlmy);if(!r)return;if(oppPhone())tlSideM=false;
+    state.resLib=false;state.view='resources';try{localStorage.setItem('sx-tab','resources');}catch(_){}openResource(r,false);if(state.view!=='resources')render();return;}
+  if(e.target.closest('[data-eqcopy]'))return void tlEqCopy(e.target.closest('[data-eqcopy]'));
+  if(e.target.closest('[data-eqtext]')){const t=texText(tlEqTex),b=e.target.closest('[data-eqtext]');if(!t)return;
+    (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).catch(()=>{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove();});return;}
+  if(e.target.closest('[data-eqclear]')){tlEqTex='';const f=document.getElementById('tl-mf');if(f)f.value='';return;}
+});
+/* GPA by year: the grade a class is usually taken in, used when classes first get years */
+function gpaTypYear(n){n=String(n||'');
+  const g=/\b(9|10|11|12)\b/.exec(n);if(g&&/english|health|physical|\bPE\b|world history|history/i.test(n))return g[1];
+  const L=/\b(spanish|french|latin|german|chinese|japanese|arabic|korean|italian|russian|asl|american sign language)\b\D*\b([1-6]|i{1,3}|iv|v|vi)\b/i.exec(n);
+  if(L){const r={i:1,ii:2,iii:3,iv:4,v:5,vi:6}[L[2].toLowerCase()]||+L[2];return String(Math.min(12,Math.max(9,8+r)));}
+  const T=[[/algebra 1|algebra i\b|earth science|world history( and geography)? 1|world history i\b|biology(?! 2)|health and (physical education|pe) 9/i,'9'],
+    [/geometry|chemistry|world history( and geography)? 2|world history ii\b|ap world|ap human geography|health and (physical education|pe) 10/i,'10'],
+    [/algebra 2|algebra ii\b|united states|u\.?s\.?\/?va|us history|ap english language|english 11|physics|ap psychology|economics and personal finance|\bEPF\b/i,'11'],
+    [/precalc|calculus|statistics|government|ap english literature|english 12|macroeconomics|microeconomics|ap econ/i,'12']];
+  for(const [re,y] of T)if(re.test(n))return y;
+  return gpaCur();
+}
 function renderTools(){
   const el=document.getElementById('v-tools');if(!el)return;
   const tab=state.toolTab==='gpa'?'gpa':'phys';
@@ -7788,10 +7904,11 @@ function renderTools(){
     if(tab==='gpa'&&el._gpa!==gpaRows()&&!GPA_DIRTY&&!el.contains(document.activeElement)){el._gpa=gpaRows();gpaRedraw();}
     return;}
   el.dataset.tab=tab;
-  el.innerHTML=`<div class="tl-root"><div class="cal-head tl-top" style="justify-content:flex-start"><button class="hbtn" data-tlback>Tools</button>
+  const sb=tab==='phys'?`<button type="button" class="hbtn hb-box opp-sidebtn tl-sidebtn${tlSideShown()?' on':''}" data-tlside aria-controls="tl-side" aria-expanded="${tlSideShown()}" aria-label="Physics resources" title="Physics resources">${TL_DOC_ICON}</button>`:'';
+  el.innerHTML=`<div class="tl-root"><div class="cal-head tl-top" style="justify-content:flex-start">${sb}<button class="hbtn" data-tlback>Tools</button>
       <span class="tl-title">${tab==='phys'?'Physics Helper':'GPA Calculator'}</span></div>
-    ${tab==='phys'?tlPhysicsHTML():gpaHTML()}</div>`;
-  if(tab==='phys')tlPaint();else{el._gpa=gpaRows();gpaSum();}
+    ${tab==='phys'?`<div class="tl-body">${tlSideHTML()}<div class="tl-main">${tlPhysicsHTML()}${tlEqHTML()}</div></div>`:gpaHTML()}</div>`;
+  if(tab==='phys'){tlPaint();tlEqInit();}else{el._gpa=gpaRows();gpaSum();}
 }
 function renderSetup(model){
   const el=document.getElementById('v-setup');
@@ -8132,6 +8249,7 @@ function openDesmos(){const d=document.getElementById('desmos');dzFocus=document
   d.innerHTML=`<div class="dz-bar"><span class="dz-t" data-dz-close title="Back">Desmos</span><button class="dz-x" data-dz-close aria-label="Close" title="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div><iframe title="Desmos graphing calculator" src="https:${SLASH2}www.desmos.com/calculator" allow="clipboard-write; fullscreen"></iframe>`;
   d.hidden=false;d.querySelector('.dz-x').focus({preventScroll:true});}
 function closeDesmos(){const d=document.getElementById('desmos');if(d.hidden)return;d.hidden=true;d.innerHTML='';
+  if(typeof tlDz!=='undefined'&&tlDz){tlDz=false;dzFocus=null;openTools();return;}
   const b=document.getElementById('spmenubtn');(dzFocus&&dzFocus.isConnected&&dzFocus.offsetParent?dzFocus:b).focus({preventScroll:true});dzFocus=null;}
 document.addEventListener('click',e=>{if(e.target.closest('[data-dz-close]'))closeDesmos();});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.getElementById('desmos').hidden){e.stopPropagation();closeDesmos();}},true);
