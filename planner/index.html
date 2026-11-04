@@ -2389,6 +2389,9 @@ button.ch-row.on{background:var(--blue-wash);box-shadow:inset 0 0 0 2px var(--bl
 .db-n{text-align:right}
 @media (max-width:700px){#dash .docs-in{padding:20px 16px 40px}.db-st{flex:1 1 40%;min-width:0}}
 /* ---------- Tools page: physics helper and GPA calculator ---------- */
+/* copy buttons: the label stays centered; the check mark makes room only while it shows */
+.btn.tl-copy{gap:0;justify-content:center}.btn.tl-copy.tl-ok svg{margin-left:8px}
+.tl-root.wide{max-width:none}
 textarea.tl-paste{height:96px;min-height:0;padding:36px 14px;line-height:24px}
 .tl-hdr{display:flex;align-items:center;gap:12px}
 .tl-body{display:flex;gap:20px;align-items:flex-start}
@@ -7767,7 +7770,7 @@ const TOOLS=[['phys','Physics Helper','Paste cells from Google Sheets and get a 
   ['desmos','Desmos','The Desmos graphing calculator']];
 var tlBack=false,tlDz=false;
 function openTools(){
-  tlBack=false;
+  tlBack=false;if(typeof tlKbHide==='function')tlKbHide();
   const g=document.getElementById('games');roomLeaveAll();
   g.innerHTML=`<div class="gm-pick tl-pick"><div class="gm-head"><h1 class="gm-h"><span>tools</span></h1>
     <button class="gm-x" data-act-gclose aria-label="Close" title="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
@@ -7834,10 +7837,11 @@ function tlMathJax(){if(!mjP){window.MathJax={svg:{fontCache:'none'},startup:{ty
 let tlEqTex='';
 function tlEqHTML(){return `<div class="panel tl-card tl-eqc"><div class="tl-eqh">Equation</div>
   <div class="tl-eqbox"><math-field id="tl-mf" class="tl-mf" aria-label="Equation"></math-field></div>
-  <div class="tl-acts"><button type="button" class="btn tl-copy" data-eqcopy><span>Copy equation</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button><button type="button" class="kbtn" data-eqtext>Copy as text</button><button type="button" class="kbtn" data-eqclear>Clear</button></div></div>`;}
+  <div class="tl-acts"><button type="button" class="btn tl-copy" data-eqcopy><span>Copy equation</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button><button type="button" class="kbtn" data-eqtext>Copy as text</button><button type="button" class="kbtn" data-eqclear>Clear</button><button type="button" class="kbtn" data-eqkb>Show keyboard</button></div></div>`;}
 function tlEqInit(){tlMathLive().then(()=>{const f=document.getElementById('tl-mf');if(!f||f._on)return;f._on=1;
   try{f.mathVirtualKeyboardPolicy='auto';f.smartFence=true;}catch(_){}
-  if(tlEqTex)f.value=tlEqTex;f.addEventListener('input',()=>{tlEqTex=f.value;});}).catch(()=>{});}
+  if(tlEqTex)f.value=tlEqTex;f.addEventListener('input',()=>{tlEqTex=f.value;});
+  const k=tlKb();if(k&&!k._tl){k._tl=1;k.addEventListener('geometrychange',tlKbLabel);}tlKbLabel();}).catch(()=>{});}
 const TEX_SYM={alpha:'α',beta:'β',gamma:'γ',delta:'δ',epsilon:'ε',varepsilon:'ε',theta:'θ',lambda:'λ',mu:'μ',pi:'π',rho:'ρ',sigma:'σ',tau:'τ',phi:'φ',varphi:'φ',omega:'ω',
   Delta:'Δ',Sigma:'Σ',Omega:'Ω',Phi:'Φ',Theta:'Θ',Gamma:'Γ',Lambda:'Λ',Pi:'Π',cdot:'·',times:'×',div:'÷',pm:'±',le:'≤',leq:'≤',ge:'≥',geq:'≥',ne:'≠',neq:'≠',
   approx:'≈',to:'→',rightarrow:'→',infty:'∞',circ:'°',degree:'°',partial:'∂',int:'∫',sum:'Σ',propto:'∝',vec:''};
@@ -7854,27 +7858,24 @@ function texText(t){
   s=s.replace(/\^\{([^{}]*)\}|\^(.)/g,(_,a,b)=>conv(a!=null?a:b,SUP,'^')).replace(/_\{([^{}]*)\}|_(.)/g,(_,a,b)=>conv(a!=null?a:b,SUB,'_'));
   return s.replace(/[{}]/g,'').replace(/\s+/g,' ').trim();
 }
+/* Copy equation: the LaTeX between $$ and $$, which Docs Typer (Ctrl or Cmd + Option + V in a Google Doc) types
+   as a real Google Docs equation */
 async function tlEqCopy(btn){
-  const tex=(tlEqTex||'').trim();if(!tex)return;
-  let ok=false;
-  try{await tlMathJax();
-    const svg=MathJax.tex2svg(tex,{display:false}).querySelector('svg'),ex=parseFloat(TL.o.size||'12')*4/3*0.5;
-    const w=parseFloat(svg.getAttribute('width'))*ex,h=parseFloat(svg.getAttribute('height'))*ex,S=4;
-    svg.setAttribute('width',w*S);svg.setAttribute('height',h*S);svg.setAttribute('color','#000');
-    const img=new Image();img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(new XMLSerializer().serializeToString(svg));
-    await img.decode();const cv=document.createElement('canvas');cv.width=Math.ceil(w*S);cv.height=Math.ceil(h*S);cv.getContext('2d').drawImage(img,0,0);
-    const url=cv.toDataURL('image/png'),blob=await new Promise(r=>cv.toBlob(r,'image/png'));
-    const html=`<meta charset="utf-8"><img src="${url}" width="${Math.round(w)}" height="${Math.round(h)}" alt="${esc(texText(tex))}">`;
-    try{await navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([html],{type:'text/html'}),'image/png':blob})]);ok=true;}catch(_){}
-    if(!ok){const d=document.createElement('div');d.style.cssText='position:fixed;left:-9999px;top:0';d.innerHTML=html;document.body.appendChild(d);
-      const s=getSelection(),r=document.createRange();r.selectNodeContents(d);s.removeAllRanges();s.addRange(r);try{ok=document.execCommand('copy');}catch(_){}s.removeAllRanges();d.remove();}
-  }catch(e){console.warn('equation copy failed',e);}
+  const tex=(tlEqTex||'').trim();if(!tex)return;const t='$$'+tex+'$$';let ok=false;
+  try{await navigator.clipboard.writeText(t);ok=true;}catch(_){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{ok=document.execCommand('copy');}catch(__){}a.remove();}
   if(ok&&btn){btn.classList.remove('tl-ok');void btn.offsetWidth;btn.classList.add('tl-ok');clearTimeout(btn._t);btn._t=setTimeout(()=>btn.classList.remove('tl-ok'),1400);}
 }
+/* the on-screen math keyboard: one button shows or hides it */
+const tlKb=()=>window.mathVirtualKeyboard||null;
+function tlKbLabel(){const b=document.querySelector('[data-eqkb]'),k=tlKb(),on=!!(k&&k.visible);if(b)b.textContent=on?'Hide keyboard':'Show keyboard';
+  /* the page leaves room under the equation for the keyboard, so its buttons stay reachable */
+  const v=document.getElementById('v-tools'),h=on&&k.boundingRect?Math.ceil(k.boundingRect.height):0;if(v)v.style.paddingBottom=h?h+16+'px':'';
+  if(h){const c=document.querySelector('.tl-eqc');if(c)c.scrollIntoView({block:'end',behavior:'smooth'});}}
+function tlKbHide(){const k=tlKb();if(k&&k.visible)k.hide();}
 document.addEventListener('click',e=>{
   const v=e.target.closest&&e.target.closest('#v-tools');if(!v)return;
   if(e.target.closest('[data-tlside]')){tlSide(!tlSideShown());return;}
-  const rs=e.target.closest('[data-tlres]');if(rs){if(oppPhone())tlSideM=false;
+  const rs=e.target.closest('[data-tlres]');if(rs){tlKbHide();if(oppPhone())tlSideM=false;
     state.resLib=false;state.myOpen=null;state.resCourse=rs.dataset.c;state.resItem=rs.dataset.tlres;state.resSub=null;state.resQ='';state.tlQ='';state.resScroll=true;
     state.view='resources';try{localStorage.setItem('sx-tab','resources');}catch(_){}document.querySelector('.wrap').scrollTop=0;render();return;}
   const my=e.target.closest('[data-tlmy]');if(my){const r=(MYRES||[]).find(x=>x.id===my.dataset.tlmy);if(!r)return;if(oppPhone())tlSideM=false;
@@ -7882,6 +7883,7 @@ document.addEventListener('click',e=>{
   if(e.target.closest('[data-eqcopy]'))return void tlEqCopy(e.target.closest('[data-eqcopy]'));
   if(e.target.closest('[data-eqtext]')){const t=texText(tlEqTex),b=e.target.closest('[data-eqtext]');if(!t)return;
     (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).catch(()=>{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove();});return;}
+  if(e.target.closest('[data-eqkb]')){const k=tlKb();if(!k)return;if(k.visible)k.hide();else{const f=document.getElementById('tl-mf');if(f)f.focus();k.show();}setTimeout(tlKbLabel,350);return;}
   if(e.target.closest('[data-eqclear]')){tlEqTex='';const f=document.getElementById('tl-mf');if(f)f.value='';return;}
 });
 /* GPA by year: the grade a class is usually taken in, used when classes first get years */
@@ -7905,7 +7907,7 @@ function renderTools(){
     return;}
   el.dataset.tab=tab;
   const sb=tab==='phys'?`<button type="button" class="hbtn hb-box opp-sidebtn tl-sidebtn${tlSideShown()?' on':''}" data-tlside aria-controls="tl-side" aria-expanded="${tlSideShown()}" aria-label="Physics resources" title="Physics resources">${TL_DOC_ICON}</button>`:'';
-  el.innerHTML=`<div class="tl-root"><div class="cal-head tl-top" style="justify-content:flex-start">${sb}<button class="hbtn" data-tlback>Tools</button>
+  el.innerHTML=`<div class="tl-root${tab==='phys'?' wide':''}"><div class="cal-head tl-top" style="justify-content:flex-start">${sb}<button class="hbtn" data-tlback>Tools</button>
       <span class="tl-title">${tab==='phys'?'Physics Helper':'GPA Calculator'}</span></div>
     ${tab==='phys'?`<div class="tl-body">${tlSideHTML()}<div class="tl-main">${tlPhysicsHTML()}${tlEqHTML()}</div></div>`:gpaHTML()}</div>`;
   if(tab==='phys'){tlPaint();tlEqInit();}else{el._gpa=gpaRows();gpaSum();}
