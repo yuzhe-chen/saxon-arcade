@@ -4753,13 +4753,15 @@ function normalizeCourse(input){
     return true;
   };
   /* what a suggestion's sender is told when it is marked done */
-  SX.suggDoneText = function (s) {
+  /* note: an optional line from the owner, added after the message */
+  SX.suggDoneText = function (s, note) {
     var t = clip(s && s.text, 2000).replace(/\s+/g, ' '), q = t.length > 80 ? t.slice(0, 77).replace(/\s+\S*$/, '') + '...' : t;
-    return (s && s.kind === 'bug' ? 'Your bug report "' + q + '" was fixed' : 'Your suggestion "' + q + '" was accepted');
+    var n = clip(note, 300).replace(/\s+/g, ' ').trim();
+    return (s && s.kind === 'bug' ? 'Your bug report "' + q + '" was fixed' : 'Your suggestion "' + q + '" was accepted') + (n ? '. Note: ' + n : '');
   };
-  SX.suggDoneNotify = function (io, s, site) {
+  SX.suggDoneNotify = function (io, s, site, note) {
     if (!s || !s.user || s.user === 'guest') return false;
-    return SX.inboxAdd(io, s.user, SX.suggDoneText(s), site);
+    return SX.inboxAdd(io, s.user, SX.suggDoneText(s, note), site);
   };
   var linkFriends = function (io, me, a, name, b) { drop(a.i, name); drop(a.o, name); drop(b.i, me); drop(b.o, me);
     if (a.f.indexOf(name) < 0) a.f.push(name); if (b.f.indexOf(me) < 0) b.f.push(me); };
