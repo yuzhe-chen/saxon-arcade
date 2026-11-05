@@ -2617,6 +2617,8 @@ html.no-v-tools [data-v="tools"],html.no-v-tools #hm-tools{display:none!importan
 #games .gm-tile{aspect-ratio:auto}
 #games .gm-tile img{flex:none;aspect-ratio:4/3;height:auto}
 #games .gm-tile:is([data-game="lander"],[data-game="metrica"],[data-game-locked="metrica"],[data-game="krillion"],[data-game-locked="krillion"]) img{aspect-ratio:auto;height:0;flex:1 1 auto;min-height:220px}
+/* the Krillion picture is wider than its tile: keep the title block in the middle so all of its text shows */
+#games .gm-tile:is([data-game="krillion"],[data-game-locked="krillion"]) img{object-position:96% 50%}
 #games .gm-plain .gm-big{min-height:120px}
 :root{--wrap-pt:32px}
 @media (max-width:820px){:root{--wrap-pt:20px}}
