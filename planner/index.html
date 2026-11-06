@@ -9848,6 +9848,8 @@ const INK_C=document.createElement('canvas').getContext('2d');
 function inkAlign(){
   [['#games','.gm-h > span','.gm-x'],['#dash','.res-head .rt','.res-x'],['#roles','.res-head .rt','.res-x'],['#docs','.res-head .rt','.res-x'],['#sugg','.res-head .rt','.res-x']].forEach(([c,t,x])=>{
     const box=document.querySelector(c);if(!box||box.hidden)return;const el=box.querySelector(t),bt=box.querySelector(x);if(!el||!bt)return;
+    /* a title under a small heading (Suggestions, Guide) stays where the layout puts it */
+    if(el.parentElement&&el.parentElement.querySelector('.rc')){el.style.transform='';return;}
     el.style.transform='';if(getComputedStyle(el).display==='inline')el.style.display='inline-block';
     const r=el.getBoundingClientRect(),b=bt.getBoundingClientRect();if(!r.height||!b.height)return;
     const cs=getComputedStyle(el),fs=parseFloat(cs.fontSize);INK_C.font=cs.fontWeight+' '+cs.fontSize+' '+cs.fontFamily;
