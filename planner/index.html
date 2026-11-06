@@ -1865,6 +1865,8 @@ header.topbar .mmenu::-webkit-scrollbar{display:none}
 .mm-ext{width:16px;height:16px;margin-left:auto;flex:none;fill:none;stroke:var(--faint);stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
 .mmenu .mm-row .chev{width:16px;height:16px;margin-left:auto;stroke:var(--faint);stroke-width:3}
 #mgear.dd-open .chev{transform:rotate(180deg)}
+#mother.dd-open .chev{transform:rotate(180deg)}
+.mmenu .mm-other .mm-sub{padding-left:28px}
 .mmenu .tdot,.tabs .mmenu .mtab .tdot{margin-left:auto;width:10px;height:10px;vertical-align:middle}
 /* the account at the bottom of the menu: the username and a red Log out */
 .mm-acct{display:flex;align-items:center;gap:12px;padding:6px 6px 4px 10px}
@@ -2573,6 +2575,9 @@ html.no-v-tools [data-v="tools"],html.no-v-tools #hm-tools{display:none!importan
 #games .gm-tile img{background:var(--panel2);border-bottom:2px solid var(--line)}
 #games .gm-tile:is([data-game="lander"],[data-game="metrica"],[data-game-locked="metrica"]) .gm-foot b{font-size:22px}
 #games .gm-foot{gap:8px;padding:10px 12px 12px}
+#games .gm-q{flex:1;max-width:340px;margin-left:auto;min-width:0}
+#games .gm-tile[hidden]{display:none}
+#games .gm-none{padding:30px 0;font:700 16px/1.4 var(--font-ui);color:var(--fg2)}
 #games .gm-add{align-items:center;justify-content:center;color:var(--fg2);border-style:dotted!important;border-width:4px!important;border-color:var(--line-hi)!important;background:transparent}
 #games .gm-add:active{margin-bottom:0;transform:translateY(2px)}
 #games .gm-add svg{width:46%;height:46%;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round}
@@ -3092,7 +3097,6 @@ html.no-v-tools [data-v="tools"],html.no-v-tools #hm-tools{display:none!importan
     </button>
     <button id="menubtn" aria-label="Menu" title="Menu" aria-haspopup="true" aria-expanded="false" aria-controls="mmenu"><svg viewBox="0 0 24 24"><path d="M4 6.5h16M4 12h16M4 17.5h16"/></svg><i class="mb-dot" hidden></i></button>
     <div class="mmenu" id="mmenu" aria-hidden="true">
-      <a class="mm-row mm-math" href="https://script.google.com/macros/s/AKfycbwjN8KkUN7K-EDeWRi4MI8ygQXyACrWvDMps8uzcyuvPYVpsT_zToyOTRk71-V_Lmx_kg/exec?open=" target="_blank" rel="noopener"><i class="mi" data-art="calc"></i><span>Math</span><svg class="mm-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
       <div class="mm-pages">
         <button class="mtab" data-v="courses"><i class="mi" data-art="backpack"></i><span>Courses</span></button>
         <button class="mtab" data-v="calendar"><i class="mi" data-art="calendar"></i><span>Calendar</span></button>
@@ -3111,10 +3115,14 @@ html.no-v-tools [data-v="tools"],html.no-v-tools #hm-tools{display:none!importan
       <button class="mm-row" data-act-docs><i class="mi" data-art="guide"></i><span>Guide</span></button>
       <button class="mm-row" data-theme-toggle role="menuitemcheckbox"><i class="mi" data-art="moon"></i><span>Dark mode</span><i class="mm-sw" aria-hidden="true"></i></button>
       <div class="mm-sep"></div>
-      <a class="mm-row" data-site="profegpt" target="_blank" rel="noopener"><i class="mi" data-art="bubble"></i><span>ProfeGPT</span><svg class="mm-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
-      <a class="mm-row" data-site="interpres" target="_blank" rel="noopener"><i class="mi" data-art="scroll"></i><span>Interpres</span><svg class="mm-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
-        <a class="mm-row" data-site="ambicant" target="_blank" rel="noopener"><i class="mi" data-art="bulb"></i><span>Ambicant</span><svg class="mm-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
-      <a class="mm-row" data-site="planner" target="_blank" rel="noopener"><i class="mi" data-art="logo"></i><span>Planner</span><svg class="mm-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
+      <button class="mm-row" id="mother" aria-expanded="false" aria-controls="mother-l"><i class="mi" data-art="folder"></i><span>Other</span><svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
+      <div class="mm-other" id="mother-l" hidden>
+        <a class="mm-row mm-math mm-sub" href="https://script.google.com/macros/s/AKfycbwjN8KkUN7K-EDeWRi4MI8ygQXyACrWvDMps8uzcyuvPYVpsT_zToyOTRk71-V_Lmx_kg/exec?open=" target="_blank" rel="noopener"><i class="mi" data-art="calc"></i><span>Math</span><svg class="mm-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
+        <a class="mm-row mm-sub" data-site="profegpt" target="_blank" rel="noopener"><i class="mi" data-art="bubble"></i><span>ProfeGPT</span><svg class="mm-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
+        <a class="mm-row mm-sub" data-site="interpres" target="_blank" rel="noopener"><i class="mi" data-art="scroll"></i><span>Interpres</span><svg class="mm-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
+        <a class="mm-row mm-sub" data-site="ambicant" target="_blank" rel="noopener"><i class="mi" data-art="bulb"></i><span>Ambicant</span><svg class="mm-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
+        <a class="mm-row mm-sub" data-site="planner" target="_blank" rel="noopener"><i class="mi" data-art="logo"></i><span>Planner</span><svg class="mm-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
+      </div>
       <button class="mm-row" data-act-dash hidden><i class="mi" data-art="graph"></i><span>Dashboard</span><svg class="mm-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></button>
       <div class="mm-sep mm-acsep"></div>
       <div class="mm-acct" id="macct"><span class="mm-who" id="mwho"></span><button class="mm-out" data-act="logout">Log out</button></div>
@@ -7141,6 +7149,8 @@ menuBtn.addEventListener('click',e=>{e.stopPropagation();
   menuBtn.classList.toggle('dd-open',open);menuBtn.setAttribute('aria-expanded',String(open));
   if(open)renderMColors();
 });
+/* Other: the outside sites (Math, ProfeGPT, Interpres, Ambicant, Planner) fold under one row */
+document.getElementById('mother').addEventListener('click',e=>{e.stopPropagation();const l=document.getElementById('mother-l'),b=e.currentTarget;l.hidden=!l.hidden;b.setAttribute('aria-expanded',String(!l.hidden));b.classList.toggle('dd-open',!l.hidden);});
 mGear.addEventListener('click',e=>{e.stopPropagation();if(!state.user){mColors.hidden=true;return;}mColors.hidden=!mColors.hidden;
   mGear.setAttribute('aria-expanded',String(!mColors.hidden));mGear.classList.toggle('dd-open',!mColors.hidden);if(!mColors.hidden)renderMColors();});
 function renderMColors(){mColors.innerHTML=state.user?settingsHTML('m'):'';
@@ -9801,11 +9811,26 @@ let RL=null,RLS=null,rlSK='all';
 /* usage counts for the Dashboard: which buttons get clicked and which games get opened. Only totals are kept
    (no names); they go to the server in one small batch every 10 minutes, or when the tab is hidden */
 const TRK={c:{},g:{},n:0,last:Date.now()};
+/* a clear name for what was clicked: game tiles by game, and generic words (Close, Cancel...) with where they were */
+const TRK_PLAIN=/^(close|cancel|done|back|send|save|ok|yes|no|delete|remove|edit|add|menu|more|next|previous|discard|keep writing|retry|\u00d7)$/i;
 function trackLabel(el){
+  const gid=el.dataset&&(el.dataset.game||el.dataset.gameLocked||el.dataset.hmGame);
+  if(gid){const x=GAMES.find(g=>g.id===gid);return (el.dataset.gameLocked?'Locked game: ':'Open game: ')+(x?x.name:gid);}
+  if(el.dataset&&el.dataset.gmStar){const x=GAMES.find(g=>g.id===el.dataset.gmStar);return 'Star game: '+(x?x.name:el.dataset.gmStar);}
   let t=el.getAttribute('aria-label')||el.getAttribute('title')||'';
-  if(!t){const s=el.querySelector('span');t=(s&&s.textContent)||el.textContent||'';}
+  if(!t){const s=el.querySelector('span:not(.gm-tags):not(.mm-ext)');t=(s&&s.textContent)||el.textContent||'';}
   t=t.replace(/\s+/g,' ').trim();
-  return t&&t.length<=40&&!/^\d+$/.test(t)?t:'';
+  if(!t||t.length>40||/^\d+$/.test(t))return '';
+  if(el.classList.contains('mtab')||el.closest('.mm-pages'))return 'Menu: '+t;
+  if(el.closest('#mmenu'))return 'Menu: '+t;
+  if(TRK_PLAIN.test(t)){
+    const box=el.closest('[role="dialog"],[role="alertdialog"],#dash,#roles,#sugg,#docs,#games');
+    let w=box&&(box.getAttribute('aria-label')||(box.querySelector('.qhd,.rt,.gm-h')||{}).textContent||box.id)||state.view||'';
+    w=String(w).replace(/\s+/g,' ').trim();
+    if(t==='\u00d7')t='Close';
+    if(w)t+=' ('+w.charAt(0).toUpperCase()+w.slice(1)+')';
+  }
+  return t;
 }
 document.addEventListener('click',e=>{const el=e.target.closest&&e.target.closest('button,a,[role="button"],[role="menuitem"],[role="tab"]');if(!el)return;
   const l=trackLabel(el);if(!l)return;TRK.c[l]=(TRK.c[l]||0)+1;TRK.n++;},true);
@@ -9827,7 +9852,7 @@ async function openDash(){
 function closeDash(){const d=document.getElementById('dash');d.hidden=true;d.innerHTML='';}
 function dashPaint(){
   const d=document.getElementById('dash');if(d.hidden)return;
-  const head=`<button class="hbtn res-x" data-db-close title="Close">\u00d7</button><div class="res-head"><div class="rh-text"><span class="rt">Dashboard</span></div></div>`;
+  const head=`<button class="hbtn res-x" data-db-close title="Close">\u00d7</button><div class="res-head"><div class="rh-text"><span class="rt">dashboard</span></div></div>`;
   if(!DB){d.innerHTML=`<div class="docs-in">${head}<div class="res-load">${resRunHTML()}</div></div>`;return;}
   if(DB.error){d.innerHTML=`<div class="docs-in">${head}<div class="rl-none">Can't load the dashboard</div></div>`;return;}
   const st=(v,l,big)=>`<div class="db-st${big?' big':''}"><span class="db-v">${esc(String(v))}</span><span class="db-l">${esc(l)}</span></div>`;
@@ -9847,6 +9872,8 @@ function dashPaint(){
   const top=(m,n)=>Object.keys(m||{}).sort((a,b)=>m[b]-m[a]).slice(0,n);
   const gname=id=>{const x=GAMES.find(g=>g.id===id);return x?x.name:id;};
   const list=(m,keys,nm)=>{const mx=Math.max(1,...keys.map(k=>m[k]));return keys.length?`<div class="db-bars db-wide">${keys.map(k=>`<div class="db-row"><span class="db-d">${esc(nm?nm(k):k)}</span><span class="db-bar"><i style="width:${Math.round(m[k]/mx*100)}%"></i></span><span class="db-n">${m[k]}</span></div>`).join('')}</div>`:'<div class="db-note">Nothing yet</div>';};
+  /* older counts: game tiles were saved as the name run into its labels ("Torah RunnerSingleplayerEmbed") */
+  const UC={};Object.keys(U.c||{}).forEach(k=>{const m=k.match(/^(.+?)((Singleplayer|Multiplayer|Social|Online|Embed)+)$/),n=m?'Open game: '+m[1]:k;UC[n]=(UC[n]||0)+U.c[k];});U.c=UC;
   const tc=top(U.c,10),tg=top(U.g,10);
   const pct=T.timed?Math.round(T.onTime/T.timed*100)+'%':'-';
   d.innerHTML=`<div class="docs-in">${head}
@@ -10100,6 +10127,16 @@ document.addEventListener('keydown',e=>{const b=e.target.closest&&e.target.close
 document.addEventListener('click',e=>{const b=e.target.closest('[data-hm-game]');if(!b)return;
   const id=b.dataset.hmGame,x=GAMES.find(g=>g.id===id);
   openGames();if(x&&!(typeof gameLocked==='function'&&gameLocked(x)))playGame(id);});
+/* search: hides the games whose name doesn't match; the text stays while the list redraws */
+let gmQ='';
+function gmFilterQ(){
+  const g=document.getElementById('games'),q=gmQ.trim().toLowerCase();if(!g)return;let n=0;
+  g.querySelectorAll('.gm-pick .gm-tile').forEach(t=>{const id=t.dataset.game||t.dataset.gameLocked;
+    if(!id){t.hidden=!!q;return;}const x=GAMES.find(y=>y.id===id),hit=!q||(x?x.name:id).toLowerCase().includes(q);t.hidden=!hit;if(hit)n++;});
+  let e=g.querySelector('.gm-none');if(q&&!n){if(!e){e=document.createElement('div');e.className='gm-none';const gr=g.querySelector('.gm-pick .gm-grid');if(gr)gr.after(e);}if(e)e.textContent='No games match "'+gmQ.trim()+'"';}else if(e)e.remove();
+}
+document.addEventListener('input',e=>{if(e.target.id==='gm-q'){gmQ=e.target.value;gmFilterQ();}});
+document.addEventListener('keydown',e=>{if(e.target.id==='gm-q'&&e.key==='Escape'&&e.target.value){e.preventDefault();e.stopPropagation();e.target.value='';gmQ='';gmFilterQ();}},true);
 function gmRenderPick(){
   const g=document.getElementById('games'),pick=g.querySelector('.gm-pick');if(!pick)return;
   const tile=x=>{const tags=`<span class="gm-tags">${x.labels.map(l=>`<i data-l="${esc(l)}">${esc(l)}</i>`).join('')}</span>`;
@@ -10110,9 +10147,10 @@ function gmRenderPick(){
   /* one list under one heading; the lock panel sits above it while any game is locked */
   const unl=state.user&&!mpLocked()&&state.user.referred>0?'<span class="gm-unl">Unlocked</span>':'';
   const list=GAMES.filter(x=>!x.hide);
-  pick.innerHTML=`<div class="gm-head"><h1 class="gm-h"><span>games</span>${unl}</h1>
+  pick.innerHTML=`<div class="gm-head"><h1 class="gm-h"><span>games</span>${unl}</h1><input type="text" id="gm-q" class="gm-q" placeholder="Search games" aria-label="Search games" autocomplete="off" spellcheck="false" value="${esc(gmQ)}">
     <button class="gm-x" data-act-gclose aria-label="Close" title="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
     <section class="gm-sec" data-sec="all">${list.some(gameLocked)?gmLockPanel():''}<div class="gm-grid"><button class="gm-tile gm-add" data-gm-sugg aria-label="Suggest a game" title="Suggest a game"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>${gmSorted(list).map(x=>tile(x).replace(/^<button[^>]*>/,m=>m+gmStar(x))).join('')}</div></section>`;
+  gmFilterQ();
 }
 /* the + tile: a small popup for suggesting a game; it goes to the same review list as Suggestions */
 function gmSuggOpen(){
