@@ -1967,6 +1967,7 @@ nav.tabs .mmenu .mcolors button.kbtn:hover{background:var(--panel);color:var(--f
 button.hm-site{appearance:none;cursor:pointer}
 .hm-sites.hm-gsites{margin-top:10px}
 .hm-cards{gap:16px;max-width:880px}
+.hm-card.hm-wide{grid-column:1 / -1}
 .hm-card{display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:18px;min-height:0;padding:18px 20px;
   background:var(--panel);color:var(--fg);border:2px solid var(--line);border-bottom-width:4px;border-radius:var(--r);transition:none}
 .hm-card:hover{background:var(--panel2)}
@@ -7151,12 +7152,12 @@ function measureTabs(){
 }
 function scheduleMeasure(){if(measureQueued)return;measureQueued=true;
   requestAnimationFrame(()=>{measureQueued=false;measureTabs();fitTaskTags();fitPickers();fitHomeGuide();});}
-/* Home: with two cards per row the Guide card only shows when it evens out the rows (one per row: always) */
+/* Home: the Guide card always shows; with two cards per row it spans the whole last row when it would sit alone */
 function fitHomeGuide(){
   const grid=document.getElementById('hmcards'),gd=document.getElementById('hm-guide');if(!grid||!gd)return;
   const cols=getComputedStyle(grid).gridTemplateColumns.split(' ').filter(Boolean).length;
-  const others=[...grid.querySelectorAll('.hm-card')].filter(c=>c!==gd).length;
-  gd.hidden=cols>=2&&others%2===0;
+  const others=[...grid.querySelectorAll('.hm-card')].filter(c=>c!==gd&&!c.hidden).length;
+  gd.hidden=false;gd.classList.toggle('hm-wide',cols>=2&&others%2===0);
 }
 /* a task's label (Exam, In-Class, Parent Needed...) that doesn't fit after the class name moves to a second line */
 function fitTaskTags(){
