@@ -2562,16 +2562,6 @@ html.no-v-tools [data-v="tools"],html.no-v-tools #hm-tools{display:none!importan
 #games .gm-h{margin:0;display:flex;align-items:center;gap:14px;min-width:0;font-family:var(--display);font-weight:700;font-size:clamp(2.1rem,4.2vw,3rem);
   line-height:1;letter-spacing:-0.03em;text-transform:none;color:var(--pri)}
 #games .gm-h .gm-h-art{width:1.15em;height:1.15em}
-/* page headers centered: games and tools (search and close on the right), and the dashboard, administration, guide and suggestions pages */
-#games .gm-head{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;justify-content:normal}
-#games .gm-head .gm-h{grid-column:2;grid-row:1;justify-content:center}
-#games .gm-head .gm-x{grid-column:3;grid-row:1;justify-self:end}
-#games .gm-head .gm-q{grid-column:3;grid-row:1;justify-self:end;width:100%;max-width:300px;margin:0 62px 0 0}
-@media (max-width:760px){#games .gm-head .gm-q{grid-column:1 / -1;grid-row:2;max-width:none;margin:12px 0 0}}
-:is(#dash,#roles,#docs,#sugg) .res-head{grid-template-columns:minmax(0,1fr);grid-template-areas:"text" "ctl";justify-items:center;row-gap:14px}
-:is(#dash,#roles,#docs,#sugg) .res-head .rh-text{align-items:center;text-align:center;padding-left:56px;padding-right:56px}
-:is(#dash,#roles,#docs,#sugg) .res-head .rh-text:has(.rh-art){justify-content:center;text-align:left}
-:is(#dash,#roles,#docs,#sugg) .res-head .hgroup{margin:0}
 #games .gm-x,#games .gm-fwrap{position:static}
 #games .gm-x{flex:none;width:46px;height:46px;border:2px solid var(--line);border-bottom-width:4px;border-radius:var(--rs);background:var(--bg);color:var(--faint)}
 #games .gm-x:hover{background:var(--panel2);color:var(--fg2)}
@@ -9852,6 +9842,27 @@ document.addEventListener('keydown',e=>{const d=document.getElementById('gwarn')
 /* ---------- administration page: administrators (red) and moderators (green), recent sign-ups, game testing mode (game admins),
    and suggestions and bug reports (administrators; the server checks) ---------- */
 let RL=null,RLS=null,rlSK='all';
+/* page titles sit in the middle of their bar: each word's visible letters (not its text box) are centered on the close
+   button next to it, so "games", which has no tall letters and a hanging g, doesn't look low */
+const INK_C=document.createElement('canvas').getContext('2d');
+function inkAlign(){
+  [['#games','.gm-h > span','.gm-x'],['#dash','.res-head .rt','.res-x'],['#roles','.res-head .rt','.res-x'],['#docs','.res-head .rt','.res-x'],['#sugg','.res-head .rt','.res-x']].forEach(([c,t,x])=>{
+    const box=document.querySelector(c);if(!box||box.hidden)return;const el=box.querySelector(t),bt=box.querySelector(x);if(!el||!bt)return;
+    el.style.transform='';if(getComputedStyle(el).display==='inline')el.style.display='inline-block';
+    const r=el.getBoundingClientRect(),b=bt.getBoundingClientRect();if(!r.height||!b.height)return;
+    const cs=getComputedStyle(el),fs=parseFloat(cs.fontSize);INK_C.font=cs.fontWeight+' '+cs.fontSize+' '+cs.fontFamily;
+    const w=el.textContent.trim();if(!w)return;
+    const m=INK_C.measureText(cs.textTransform==='lowercase'?w.toLowerCase():cs.textTransform==='uppercase'?w.toUpperCase():w);
+    const lh=parseFloat(cs.lineHeight)||fs*1.2,base=r.top+(lh-(m.fontBoundingBoxAscent+m.fontBoundingBoxDescent))/2+m.fontBoundingBoxAscent;
+    const ink=base-(m.actualBoundingBoxAscent-m.actualBoundingBoxDescent)/2,want=b.top+b.height/2;
+    /* only titles on the same row as the button (not ones under a small heading) */
+    if(Math.abs(want-(r.top+r.height/2))>b.height)return;
+    el.style.transform='translateY('+(want-ink).toFixed(1)+'px)';
+  });
+}
+let inkT=0;const inkSoon=()=>{cancelAnimationFrame(inkT);inkT=requestAnimationFrame(inkAlign);};
+['games','dash','roles','docs','sugg'].forEach(id=>{const e=document.getElementById(id);if(e)new MutationObserver(inkSoon).observe(e,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden']});});
+addEventListener('resize',inkSoon);if(document.fonts)document.fonts.ready.then(inkSoon);
 /* usage counts for the Dashboard: which buttons get clicked and which games get opened. Only totals are kept
    (no names); they go to the server in one small batch every 10 minutes, or when the tab is hidden */
 const TRK={c:{},g:{},n:0,last:Date.now()};
