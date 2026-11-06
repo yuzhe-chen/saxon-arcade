@@ -3115,15 +3115,15 @@ html.no-v-tools [data-v="tools"],html.no-v-tools #hm-tools{display:none!importan
       <button class="mm-row" data-act-docs><i class="mi" data-art="guide"></i><span>Guide</span></button>
       <button class="mm-row" data-theme-toggle role="menuitemcheckbox"><i class="mi" data-art="moon"></i><span>Dark mode</span><i class="mm-sw" aria-hidden="true"></i></button>
       <div class="mm-sep"></div>
+      <a class="mm-row mm-math" href="https://script.google.com/macros/s/AKfycbwjN8KkUN7K-EDeWRi4MI8ygQXyACrWvDMps8uzcyuvPYVpsT_zToyOTRk71-V_Lmx_kg/exec?open=" target="_blank" rel="noopener"><i class="mi" data-art="calc"></i><span>Math</span><svg class="mm-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
+      <button class="mm-row" data-act-dash hidden><i class="mi" data-art="graph"></i><span>Dashboard</span><svg class="mm-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></button>
       <button class="mm-row" id="mother" aria-expanded="false" aria-controls="mother-l"><i class="mi" data-art="folder"></i><span>Other</span><svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
       <div class="mm-other" id="mother-l" hidden>
-        <a class="mm-row mm-math mm-sub" href="https://script.google.com/macros/s/AKfycbwjN8KkUN7K-EDeWRi4MI8ygQXyACrWvDMps8uzcyuvPYVpsT_zToyOTRk71-V_Lmx_kg/exec?open=" target="_blank" rel="noopener"><i class="mi" data-art="calc"></i><span>Math</span><svg class="mm-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
         <a class="mm-row mm-sub" data-site="profegpt" target="_blank" rel="noopener"><i class="mi" data-art="bubble"></i><span>ProfeGPT</span><svg class="mm-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
         <a class="mm-row mm-sub" data-site="interpres" target="_blank" rel="noopener"><i class="mi" data-art="scroll"></i><span>Interpres</span><svg class="mm-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
         <a class="mm-row mm-sub" data-site="ambicant" target="_blank" rel="noopener"><i class="mi" data-art="bulb"></i><span>Ambicant</span><svg class="mm-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
         <a class="mm-row mm-sub" data-site="planner" target="_blank" rel="noopener"><i class="mi" data-art="logo"></i><span>Planner</span><svg class="mm-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
       </div>
-      <button class="mm-row" data-act-dash hidden><i class="mi" data-art="graph"></i><span>Dashboard</span><svg class="mm-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></button>
       <div class="mm-sep mm-acsep"></div>
       <div class="mm-acct" id="macct"><span class="mm-who" id="mwho"></span><button class="mm-out" data-act="logout">Log out</button></div>
     </div>
@@ -7149,7 +7149,7 @@ menuBtn.addEventListener('click',e=>{e.stopPropagation();
   menuBtn.classList.toggle('dd-open',open);menuBtn.setAttribute('aria-expanded',String(open));
   if(open)renderMColors();
 });
-/* Other: the outside sites (Math, ProfeGPT, Interpres, Ambicant, Planner) fold under one row */
+/* Other: the sister sites (ProfeGPT, Interpres, Ambicant, Planner) fold under one row */
 document.getElementById('mother').addEventListener('click',e=>{e.stopPropagation();const l=document.getElementById('mother-l'),b=e.currentTarget;l.hidden=!l.hidden;b.setAttribute('aria-expanded',String(!l.hidden));b.classList.toggle('dd-open',!l.hidden);});
 mGear.addEventListener('click',e=>{e.stopPropagation();if(!state.user){mColors.hidden=true;return;}mColors.hidden=!mColors.hidden;
   mGear.setAttribute('aria-expanded',String(!mColors.hidden));mGear.classList.toggle('dd-open',!mColors.hidden);if(!mColors.hidden)renderMColors();});
@@ -8328,7 +8328,7 @@ const HM_I={
   games:'<path d="M6 11h4M8 9v4M15 12h.01M18 10h.01"/><path d="M17.3 5H6.7a4 4 0 0 0-4 3.6C2.6 9.4 2 14.5 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.4-1.4A2 2 0 0 1 9.8 16h4.4a2 2 0 0 1 1.4.6L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.5-.6-6.6-.7-7.4A4 4 0 0 0 17.3 5z"/>'};
 const HM_PAGES=[['courses','Courses','Every class with its period and what is coming up'],['calendar','Calendar','Assignments and tests by day, week or month'],
   ['advisory','To-Do','Sticky notes and school events'],['assignments','Assignments','Everything not done yet, oldest first'],
-  ['resources','Resources','Documents and links for each class'],['tools','Tools','Physics helper, GPA calculator, soundboard and Desmos'],['tasks','Tasks','Contests, grants and programs'],['chat','Chat','Messages with friends and groups'],
+  ['resources','Resources','Documents and links for each class'],['tools','Tools','Calculators and study helpers'],['tasks','Tasks','Contests, grants and programs'],['chat','Chat','Messages with friends and groups'],
   ['games','Games','Singleplayer, social and multiplayer games'],['guide','Guide','Every feature explained, step by step']];
 const HM_URL='saxonplanner.web.app';
 /* each Home card's drawing */
@@ -8360,7 +8360,7 @@ function renderHome(fly){
     el.innerHTML=`<div class="hm-cards" id="hmcards">${pages.map(([k,n,d],i)=>`<button type="button" class="hm-card" id="hm-${k}" data-home-go="${k}" style="--i:${i}">${art(HM_ART[k],'hm-art')}<span class="hm-tx"><span class="hm-n">${n}</span><span class="hm-d">${d}</span></span></button>`).join('')}</div>
       <div class="hm-side" id="hmside"><div class="hm-kicker"></div><h2 class="hm-title"><span class="l1">Saxon</span><br><span class="l2">Planner</span></h2><div class="hm-url"><a href="https:${SLASH2}${HM_URL}" target="_blank" rel="noopener">${HM_URL}</a><button type="button" data-hm-copy aria-label="Copy link" title="Copy link"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12"/><path d="M5 15H3V3h12v2"/></svg></button><span class="hm-ok" aria-live="polite"></span></div><div class="hm-rule"></div>
       <div class="hm-btns"><button type="button" class="hm-btn" id="hm-classes" data-act="classes">Edit classes</button><button type="button" class="hm-btn alt" id="hm-sugg" data-act-sugg>Suggestions</button><button type="button" class="hm-btn alt" id="hm-tut" data-act-tut>Tutorial</button></div>
-      <div class="hm-sites"><a class="hm-site" data-site="profegpt" target="_blank" rel="noopener">${art('bubble')}<span>ProfeGPT</span></a><a class="hm-site" data-site="interpres" target="_blank" rel="noopener">${art('scroll')}<span>Interpres</span></a><a class="hm-site" data-site="ambicant" target="_blank" rel="noopener">${art('bulb')}<span>Ambicant</span></a><a class="hm-site" data-site="planner" target="_blank" rel="noopener">${art('logo')}<span>Planner</span></a></div><div class="hm-sites hm-gsites g-games"><button type="button" class="hm-site" data-hm-game="lander">${art('rocket')}<span>Lander</span></button><button type="button" class="hm-site" data-hm-game="chess">${art('pawn')}<span>Chess</span></button></div></div>`;
+      <div class="hm-sites"><a class="hm-site" data-site="profegpt" target="_blank" rel="noopener">${art('bubble')}<span>ProfeGPT</span></a><a class="hm-site" data-site="interpres" target="_blank" rel="noopener">${art('scroll')}<span>Interpres</span></a></div><div class="hm-sites hm-gsites g-games"><button type="button" class="hm-site" data-hm-game="lander">${art('rocket')}<span>Lander</span></button><button type="button" class="hm-site" data-hm-game="chess">${art('pawn')}<span>Chess</span></button></div></div>`;
     siteLinks(el);
     fly=true;
   }
