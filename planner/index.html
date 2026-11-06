@@ -2562,6 +2562,16 @@ html.no-v-tools [data-v="tools"],html.no-v-tools #hm-tools{display:none!importan
 #games .gm-h{margin:0;display:flex;align-items:center;gap:14px;min-width:0;font-family:var(--display);font-weight:700;font-size:clamp(2.1rem,4.2vw,3rem);
   line-height:1;letter-spacing:-0.03em;text-transform:none;color:var(--pri)}
 #games .gm-h .gm-h-art{width:1.15em;height:1.15em}
+/* page headers centered: games and tools (search and close on the right), and the dashboard, administration, guide and suggestions pages */
+#games .gm-head{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;justify-content:normal}
+#games .gm-head .gm-h{grid-column:2;grid-row:1;justify-content:center}
+#games .gm-head .gm-x{grid-column:3;grid-row:1;justify-self:end}
+#games .gm-head .gm-q{grid-column:3;grid-row:1;justify-self:end;width:100%;max-width:300px;margin:0 62px 0 0}
+@media (max-width:760px){#games .gm-head .gm-q{grid-column:1 / -1;grid-row:2;max-width:none;margin:12px 0 0}}
+:is(#dash,#roles,#docs,#sugg) .res-head{grid-template-columns:minmax(0,1fr);grid-template-areas:"text" "ctl";justify-items:center;row-gap:14px}
+:is(#dash,#roles,#docs,#sugg) .res-head .rh-text{align-items:center;text-align:center;padding-left:56px;padding-right:56px}
+:is(#dash,#roles,#docs,#sugg) .res-head .rh-text:has(.rh-art){justify-content:center;text-align:left}
+:is(#dash,#roles,#docs,#sugg) .res-head .hgroup{margin:0}
 #games .gm-x,#games .gm-fwrap{position:static}
 #games .gm-x{flex:none;width:46px;height:46px;border:2px solid var(--line);border-bottom-width:4px;border-radius:var(--rs);background:var(--bg);color:var(--faint)}
 #games .gm-x:hover{background:var(--panel2);color:var(--fg2)}
@@ -2578,6 +2588,40 @@ html.no-v-tools [data-v="tools"],html.no-v-tools #hm-tools{display:none!importan
 #games .gm-q{flex:1;max-width:340px;margin-left:auto;min-width:0}
 #games .gm-tile[hidden]{display:none}
 #games .gm-none{padding:30px 0;font:700 16px/1.4 var(--font-ui);color:var(--fg2)}
+/* unlock animation */
+#games .gm-endbar{display:flex;justify-content:center;padding:34px 0 10px;margin-top:30px;border-top:2px solid var(--line)}
+#games .ul-ov{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;pointer-events:none;
+  background:rgba(10,12,20,0);animation:ulbg .45s ease forwards}
+#games .ul-ov.out{animation:ulout .6s ease forwards}
+@keyframes ulbg{to{background:rgba(10,12,20,.62)}}
+@keyframes ulout{from{background:rgba(10,12,20,.62);opacity:1}to{background:rgba(10,12,20,0);opacity:0}}
+#games .ul-lock{position:absolute;width:150px;height:150px;transform:scale(0);animation:ulin .55s cubic-bezier(.3,1.6,.5,1) .3s forwards,ulshake .55s ease-in-out .95s,ulpop .35s ease-in 1.5s forwards}
+#games .ul-lock svg{width:100%;height:100%;overflow:visible;filter:drop-shadow(0 10px 18px rgba(0,0,0,.35))}
+#games .ul-shackle{transform-origin:66px 44px;animation:ulopen .3s ease-out 1.25s forwards}
+@keyframes ulin{0%{transform:scale(0) rotate(-12deg)}100%{transform:scale(1) rotate(0)}}
+@keyframes ulshake{0%,100%{rotate:0deg}20%{rotate:-9deg}40%{rotate:8deg}60%{rotate:-6deg}80%{rotate:4deg}}
+@keyframes ulopen{to{transform:translate(0,-10px) rotate(-28deg)}}
+@keyframes ulpop{0%{transform:scale(1);opacity:1}100%{transform:scale(1.9);opacity:0}}
+#games .ul-rays{position:absolute;width:820px;height:820px;opacity:0;border-radius:50%;
+  background:repeating-conic-gradient(from 0deg,rgba(255,214,90,.55) 0deg 7deg,rgba(255,214,90,0) 7deg 22.5deg);
+  -webkit-mask:radial-gradient(circle,#000 18%,transparent 68%);mask:radial-gradient(circle,#000 18%,transparent 68%);
+  animation:ulrays 2.2s ease-out 1.6s forwards}
+@keyframes ulrays{0%{opacity:0;transform:scale(.2) rotate(0)}18%{opacity:1}100%{opacity:0;transform:scale(1.25) rotate(50deg)}}
+#games .ul-ring{position:absolute;width:160px;height:160px;border-radius:50%;border:10px solid #ffd84d;opacity:0;animation:ulring .7s ease-out 1.62s forwards}
+@keyframes ulring{0%{opacity:1;transform:scale(.4)}100%{opacity:0;transform:scale(2.6);border-width:2px}}
+#games .ul-bit{position:absolute;width:20px;height:14px;border-radius:4px;background:#ffc800;box-shadow:inset 0 -4px #e5a400;opacity:0;
+  animation:ulbit 1.1s cubic-bezier(.15,.7,.3,1) 1.62s forwards}
+#games .ul-bit:nth-of-type(3n){background:#afafaf;box-shadow:inset 0 -4px #8f8f8f;width:12px;height:22px}
+#games .ul-bit:nth-of-type(4n){background:#fff1a8;box-shadow:none;width:10px;height:10px;border-radius:50%}
+@keyframes ulbit{0%{opacity:1;transform:rotate(var(--a)) translateY(0) scale(var(--s))}75%{opacity:1}
+  100%{opacity:0;transform:rotate(var(--a)) translateY(calc(-1 * var(--d))) rotate(var(--r)) scale(var(--s))}}
+#games .ul-txt{position:absolute;top:calc(50% + 100px);font:700 clamp(22px,3vw,30px)/1 var(--display);color:#fff;letter-spacing:-.01em;opacity:0;
+  text-shadow:0 3px 14px rgba(0,0,0,.4);animation:ultxt .5s ease 1.9s forwards}
+@keyframes ultxt{0%{opacity:0;transform:translateY(12px)}100%{opacity:1;transform:none}}
+#games .gm-tile.ul-was img,#games .gm-tile.ul-was .gm-foot{transition:opacity .45s ease,filter .45s ease}
+#games .gm-tile.ul-free{animation:ultile .5s ease}
+#games .gm-tile.ul-free .ul-li{transition:transform .4s cubic-bezier(.5,-0.6,.7,1),opacity .4s;transform:scale(0) rotate(30deg);opacity:0}
+@keyframes ultile{40%{transform:scale(1.05)}}
 #games .gm-add{align-items:center;justify-content:center;color:var(--fg2);border-style:dotted!important;border-width:4px!important;border-color:var(--line-hi)!important;background:transparent}
 #games .gm-add:active{margin-bottom:0;transform:translateY(2px)}
 #games .gm-add svg{width:46%;height:46%;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round}
@@ -10127,6 +10171,32 @@ document.addEventListener('keydown',e=>{const b=e.target.closest&&e.target.close
 document.addEventListener('click',e=>{const b=e.target.closest('[data-hm-game]');if(!b)return;
   const id=b.dataset.hmGame,x=GAMES.find(g=>g.id===id);
   openGames();if(x&&!(typeof gameLocked==='function'&&gameLocked(x)))playGame(id);});
+/* ---------- unlock animation: the screen dims, a padlock drops in, shakes, bursts into pieces with rays behind it,
+   and the Multiplayer and Online tiles lose their locks. Plays once per account, and again from the button under the games ---------- */
+const gmUnlocked=()=>!!(state.user&&!mpLocked());
+const UL_LOCK='<svg viewBox="0 0 96 96" aria-hidden="true"><g class="ul-shackle"><path d="M30 44V30a18 18 0 0 1 36 0v14" fill="none" stroke="#afafaf" stroke-width="9" stroke-linecap="round"/></g>'+
+  '<g class="ul-body"><rect x="18" y="44" width="60" height="46" rx="12" fill="#e5a400"/><rect x="18" y="40" width="60" height="46" rx="12" fill="#ffc800"/>'+
+  '<circle cx="48" cy="58" r="7" fill="#4b4b4b"/><rect x="45" y="60" width="6" height="14" rx="3" fill="#4b4b4b"/></g></svg>';
+function gmUnlockAnim(){
+  const g=document.getElementById('games');if(!g||g.hidden||g.querySelector('.ul-ov'))return;
+  /* the tiles that unlock show their lock again until the burst */
+  const tiles=[...g.querySelectorAll('.gm-pick .gm-tile[data-game]')].filter(t=>{const x=GAMES.find(y=>y.id===t.dataset.game);
+    return x&&(x.labels.includes('Multiplayer')||x.labels.includes('Online'))&&!x.labels.includes('Social');});
+  tiles.forEach(t=>{t.classList.add('gm-locked','ul-was');if(!t.querySelector('.gm-li')){const l=document.createElement('span');l.className='gm-li ul-li';l.innerHTML=art('lock');t.appendChild(l);}});
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const ov=document.createElement('div');ov.className='ul-ov';ov.setAttribute('aria-hidden','true');
+  let bits='';for(let i=0;i<14;i++){const a=i/14*360+(i%2?9:-9),d=170+(i%3)*70;bits+=`<i class="ul-bit" style="--a:${a}deg;--d:${d}px;--r:${(i%2?1:-1)*(200+i*37)}deg;--s:${0.7+(i%4)*0.18}"></i>`;}
+  ov.innerHTML=`<div class="ul-rays"></div><div class="ul-ring"></div>${bits}<div class="ul-lock">${UL_LOCK}</div><div class="ul-txt">Multiplayer unlocked</div>`;
+  g.appendChild(ov);
+  const burst=()=>{tiles.forEach((t,i)=>setTimeout(()=>{t.classList.add('ul-free');t.classList.remove('gm-locked');
+    const l=t.querySelector('.ul-li');if(l)setTimeout(()=>l.remove(),450);},120+i*70));};
+  if(reduce){burst();setTimeout(()=>ov.remove(),1600);return;}
+  setTimeout(burst,1650);
+  setTimeout(()=>{ov.classList.add('out');},3600);
+  setTimeout(()=>{ov.remove();tiles.forEach(t=>t.classList.remove('ul-was','ul-free'));},4200);
+}
+document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('#games [data-gm-replay]')){g_scrollTop();gmUnlockAnim();}});
+function g_scrollTop(){const p=document.querySelector('#games .gm-pick');if(p)p.scrollIntoView({block:'start'});const g=document.getElementById('games');if(g)g.scrollTop=0;}
 /* search: hides the games whose name doesn't match; the text stays while the list redraws */
 let gmQ='';
 function gmFilterQ(){
@@ -10145,12 +10215,13 @@ function gmRenderPick(){
     return GAME_THUMB[x.id]?`<button class="gm-tile${cls}" ${dat}><img alt="" src="${thumbSrc(x.id)}">${li}<span class="gm-foot"><b>${esc(x.name)}</b>${tags}</span></button>`
       :`<button class="gm-tile gm-plain${cls}" ${dat}>${li}<span class="gm-big">${esc(x.name)}</span><span class="gm-foot">${tags}</span></button>`;};
   /* one list under one heading; the lock panel sits above it while any game is locked */
-  const unl=state.user&&!mpLocked()&&state.user.referred>0?'<span class="gm-unl">Unlocked</span>':'';
   const list=GAMES.filter(x=>!x.hide);
-  pick.innerHTML=`<div class="gm-head"><h1 class="gm-h"><span>games</span>${unl}</h1><input type="text" id="gm-q" class="gm-q" placeholder="Search games" aria-label="Search games" autocomplete="off" spellcheck="false" value="${esc(gmQ)}">
+  pick.innerHTML=`<div class="gm-head"><h1 class="gm-h"><span>games</span></h1><input type="text" id="gm-q" class="gm-q" placeholder="Search games" aria-label="Search games" autocomplete="off" spellcheck="false" value="${esc(gmQ)}">
     <button class="gm-x" data-act-gclose aria-label="Close" title="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
-    <section class="gm-sec" data-sec="all">${list.some(gameLocked)?gmLockPanel():''}<div class="gm-grid"><button class="gm-tile gm-add" data-gm-sugg aria-label="Suggest a game" title="Suggest a game"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>${gmSorted(list).map(x=>tile(x).replace(/^<button[^>]*>/,m=>m+gmStar(x))).join('')}</div></section>`;
+    <section class="gm-sec" data-sec="all">${list.some(gameLocked)?gmLockPanel():''}<div class="gm-grid"><button class="gm-tile gm-add" data-gm-sugg aria-label="Suggest a game" title="Suggest a game"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>${gmSorted(list).map(x=>tile(x).replace(/^<button[^>]*>/,m=>m+gmStar(x))).join('')}</div></section>${gmUnlocked()?'<div class="gm-endbar"><button class="kbtn" data-gm-replay>Play animation again</button></div>':''}`;
   gmFilterQ();
+  /* the first time an account sees its games unlocked by a referral, the lock bursts open */
+  if(gmUnlocked()&&state.user.referred>0&&!state.settings.unlockSeen){state.settings.unlockSeen=true;saveSettings();setTimeout(gmUnlockAnim,350);}
 }
 /* the + tile: a small popup for suggesting a game; it goes to the same review list as Suggestions */
 function gmSuggOpen(){
