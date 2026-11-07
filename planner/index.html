@@ -3014,6 +3014,15 @@ html.pg-open:not(.splash-on) header.topbar{z-index:1550}
 #games .gm-lsub{width:max-content}
 .hbtn.crs-print{background:var(--panel2);color:var(--fg2);padding:0 12px}
 .hbtn.crs-print:hover{background:var(--line)}
+/* Courses: Print is a white square like Resync; in focus mode Advisory's picker opens to the side */
+.hbtn.crs-print{background:var(--bg)!important;color:var(--fg2);width:44px;min-width:44px;padding:0!important;display:inline-flex;align-items:center;justify-content:center}
+.hbtn.crs-print:hover{background:var(--panel2)!important}
+.hbtn.crs-print svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.cf-adv .adv-wide .cdd{position:relative}
+.cf-adv .adv-wide .cdd-menu.open{top:50%!important;left:calc(100% + 10px)!important;right:auto!important;transform:translateY(-50%);display:flex!important;flex-direction:row;flex-wrap:wrap;gap:6px;
+  width:max-content;max-width:min(680px,calc(100vw - 520px));max-height:none!important;overflow:visible!important;padding:8px!important}
+.cf-adv .adv-wide .cdd-menu.open .cdd-item{width:auto;white-space:nowrap}
+@media (max-width:900px){.cf-adv .adv-wide .cdd-menu.open{left:0!important;top:calc(100% + 6px)!important;transform:none;max-width:calc(100vw - 48px)}}
 /* Jumpscare */
 #v-scare.on{position:relative;min-height:calc(100dvh - 140px);display:flex}
 .scare-pg{flex:1;position:relative;border-radius:var(--r);overflow:hidden;background:#050404;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:0 0 70px;min-height:calc(100dvh - 160px)}
@@ -6389,13 +6398,13 @@ function courseDefaultCells(){
   if(!COURSES.some(c=>periods[c.id]))return COURSES.map(c=>c.id);
   const p4=COURSES.some(x=>periods[x.id]==4);
   const cells=[1,3,5,7,2,4,6,8].map(p=>{const c=COURSES.find(x=>periods[x.id]==p);
-    return c?c.id:(p===4&&!p4?null:'P'+p);}).filter(Boolean);
+    return c?c.id:(p===4&&!p4?'adv':'P'+p);}).filter(Boolean);
   return cells.concat(COURSES.filter(c=>!periods[c.id]).map(c=>c.id));
 }
 /* the saved order (dragged by the user), with any class it does not know about added at the end */
 function courseOrderIds(){
   const o=state.settings.courseOrder;
-  if(!Array.isArray(o)||!o.length)return courseDefaultCells().concat('adv');
+  if(!Array.isArray(o)||!o.length){const d=courseDefaultCells();return d.includes('adv')?d:d.concat('adv');}
   const ids=o.filter(x=>x==='adv'||courseById(x));
   const seen=new Set(ids);
   courseDefaultCells().forEach(x=>{if(!seen.has(x)&&courseById(x)){ids.push(x);seen.add(x);}});
@@ -6434,7 +6443,7 @@ function advisoryCard(){
   const sel=state.settings.advisoryCourse||'';
   const cur=courseById(sel);
   const drag=state.settings.focusMode?'':' draggable="true" data-cdrag="adv"';
-  return `<div class="ccard adv-wide" data-cord="adv">
+  return `<div class="ccard${state.settings.focusMode?' adv-wide':''}" data-cord="adv">
     <div class="chd"${drag}><span class="nm">Advisory</span></div>
     <div class="cbody">
       <label class="fl">Course</label>
