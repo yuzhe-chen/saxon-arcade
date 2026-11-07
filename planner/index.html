@@ -3103,7 +3103,6 @@ html.pg2.pfade:not(.splash-on) :is(#games:not(:has(.gm-frame)),#sugg,#roles,#rew
    the Jump back in tiles and the Tools tiles, as on Lectern */
 html.deco :is(.hm-card,.hm-jt,#games .tl-tile){position:relative;overflow:hidden;isolation:isolate}
 html.deco :is(.hm-card,.hm-jt,#games .tl-tile)::after{content:'';position:absolute;right:-140px;bottom:-140px;width:340px;height:340px;border-radius:50%;background:radial-gradient(circle 170px at center,color-mix(in srgb,var(--pri) 14%,transparent) 0 100px,color-mix(in srgb,var(--pri) 7%,transparent) 100px 170px,transparent 170px);pointer-events:none;z-index:-1}
-html.pg2.deco :is(.hm-card,.hm-jt,#games .tl-tile)::after{background:var(--pgdeco)}
 #games .tl-sens{margin-top:30px;padding:26px 0 10px;border-top:2px solid var(--line);justify-content:center}#games .tl-sens h3{margin:0}
 #games .gm-endbar{gap:10px;flex-wrap:wrap}
 .rw-lock{appearance:none;display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border:2px solid var(--line);border-bottom-width:4px;border-radius:12px;background:var(--bg);color:var(--fg2);font:800 12px/1 var(--font-ui);text-transform:uppercase;letter-spacing:.04em;cursor:pointer}.rw-lock:hover{background:var(--panel2)}.rw-lock svg{width:16px;height:16px}.sec .sec-sw>h3{flex:1;margin:0}
@@ -9523,7 +9522,6 @@ function pcApply(v){const r=document.documentElement,on=!!(state.user&&state.set
   else if(r.classList.contains('pc')){r.classList.remove('pc');r.style.removeProperty('--pc');}
   if(st){const n=st.length-1,h=n>2?2:3,P={'--pc2':st[n],'--pgl':st.join(','),'--pgld':st.map(x=>pgShade(x,.82)).join(','),
       '--pglm':st.map((x,i)=>`${x} calc(50% - ${h}em + ${+(2*h*i/n).toFixed(3)}em)`).join(','),'--pgle':st.map((x,i)=>`${x} ${+(Math.min(1.75,6/n)*i).toFixed(3)}em`).join(',')};
-    P['--pgdeco']=`radial-gradient(circle 170px at center,${pgRings(st,[[0,100,.14],[100,170,.07]]).map(x=>x+'px').join(',')},transparent 170px)`;
     P['--pgfo']=pgRings(st,[[0,72,1]]).map(x=>x+'%').join(',')+',transparent 100%';
     P['--pgfa']=pgRings(st,[[0,55,.18]]).map(x=>x+'%').join(',')+',transparent 72%';
     Object.keys(P).forEach(x=>r.style.setProperty(x,P[x]));r.classList.add('pg2');}
