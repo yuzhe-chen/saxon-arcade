@@ -1609,12 +1609,13 @@ html.gm-play body>:not(#games):not(#gwarn):not(#gasmove),html.gm-play body>:not(
 .panel.ua-group{background:transparent;padding:0;margin-left:0;margin-right:0;margin-top:28px}
 .panel.ua-group>h2{margin:0 0 10px}
 /* Assignments: the list takes two thirds, the overdue ones sit in the right third (on phones they come first) */
-.asg-cols{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:24px;align-items:start}
+.asg-cols{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:36px;align-items:start}
 .asg-main{min-width:0}
-.panel.asg-od{margin:0}
-.panel.asg-od>h2{margin:0 0 2px}
-.asg-odnone{padding:14px 0;color:var(--faint);font-weight:700}
-@media (max-width:900px){.asg-cols{grid-template-columns:minmax(0,1fr);gap:18px}.panel.asg-od{order:-1}}
+.asg-odbox{background:var(--panel);border:2px solid var(--line);border-bottom-width:4px;border-radius:var(--r);padding:16px 18px 18px;min-width:0}
+.asg-odbox>h2{margin:0 0 8px;font:700 22px/1.2 var(--display);color:var(--red-dark,#ea2b2b)}
+.asg-odbox .task{margin-top:8px}
+.asg-odnone{padding:12px 0 4px;color:var(--fg2);font-weight:700}
+@media (max-width:900px){.asg-cols{grid-template-columns:minmax(0,1fr);gap:20px}.asg-odbox{order:-1}}
 .cdd-full,.cdd-full>.cdd-btn{width:100%}
 /* School Events: date, time, title and Add fill the panel's width; narrow, they stack into two full rows
    (date | time over title | Add, the right column one width so both rows end at the panel's edge) */
@@ -2993,6 +2994,18 @@ html.pg-open:not(.splash-on) header.topbar{z-index:1550}
 /* Tools and Games are regular pages: their title is a plain heading, with no close button or divider bar */
 #games .gm-pick>.gm-head{position:static!important;border-bottom:0!important;background:none!important;margin:0 0 14px!important;padding:6px 0 0!important}
 #games .gm-pick>.gm-head .gm-x{display:none!important}
+.note{position:relative;padding-bottom:40px!important}
+.note .ncols{position:absolute;right:12px;bottom:10px;display:flex;gap:6px}
+.note .ncol{appearance:none;width:18px;height:18px;border-radius:50%;border:2px solid var(--bg);background:var(--nc);padding:0;cursor:pointer;box-shadow:0 0 0 1px color-mix(in srgb,var(--nc) 60%,transparent);opacity:.55}
+.note .ncol:hover,.note .ncol.on{opacity:1;transform:scale(1.12)}
+.note.nc-blue{background:color-mix(in srgb,#2b8cff 16%,var(--bg))!important;border-color:#2b8cff!important}
+.note.nc-red{background:color-mix(in srgb,#ff3b30 14%,var(--bg))!important;border-color:#ff3b30!important}
+.note.nc-yellow{background:color-mix(in srgb,#ffcc00 22%,var(--bg))!important;border-color:#ffcc00!important}
+.note.nc-green{background:color-mix(in srgb,#34c759 16%,var(--bg))!important;border-color:#34c759!important}
+#dataload .dl-sub,#games .gm-lsub{white-space:normal!important;max-width:min(340px,86vw);text-align:center}
+#games .gm-lsub{width:max-content}
+.hbtn.crs-print{background:var(--panel2);color:var(--fg2);padding:0 12px}
+.hbtn.crs-print:hover{background:var(--line)}
 /* Jumpscare */
 #v-scare.on{position:relative;min-height:calc(100dvh - 140px);display:flex}
 .scare-pg{flex:1;position:relative;border-radius:var(--r);overflow:hidden;background:#050404;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:0 0 70px;min-height:calc(100dvh - 160px)}
@@ -6278,7 +6291,7 @@ function todayHTML(){
       ${eventsUserOn(ds).map(ev=>`<div class="evline uev" data-act="evgo" title="Open School Events">${esc(uevLabel(ev))}</div>`).join('')}
       ${evs.map(e=>`<div class="evline ${e[2]==='obs'?'obs':''}">${esc(e[1])}</div>`).join('')}
       </div><div class="dcbody">${scheduleHTML(ds)}
-      ${tks.length?tks.map(t=>taskHTML(t,false)).join(''):'<div class="muted" style="font-size:13px;margin-top:8px">Nothing due</div>'}
+      ${tks.length?tks.map(t=>taskHTML(t,false)).join(''):'<div class="muted" style="font-size:13px;margin-top:8px">'+cheer('day')+'</div>'}
       </div></div>`;};
   return headHTML(fmtLong(td),false)+
     (overdue.length?`<div class="panel asglist odlist"><h2>Overdue</h2>${overdue.map(t=>taskHTML(t,true)).join('')}</div>`:'')+
@@ -6373,9 +6386,9 @@ function courseOrderIds(){
   return [...new Set(ids)];
 }
 function courseHeadHTML(){
-  return `<div class="cal-head crs-head"><div class="hgroup"><button class="hbtn hb-box faq-btn${state.settings.ical?'':' blink'}" data-act="classes" ${state.settings.ical?'':'data-why="No Schoology link yet. Add it here so your assignments sync, and so you can reset your password with it if you forget it."'}>Edit classes</button></div>
+  return `<div class="cal-head crs-head"><div class="hgroup"><button class="hbtn crs-print" data-act="gdocs" data-k="courses" aria-label="Print" title="Print"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg></button><button class="hbtn hb-box faq-btn${state.settings.ical?'':' blink'}" data-act="classes" ${state.settings.ical?'':'data-why="No Schoology link yet. Add it here so your assignments sync, and so you can reset your password with it if you forget it."'}>Edit classes</button></div>
     <span class="mname">Courses</span>
-    <div class="rgrp crs-rgrp">${modeBtnHTML()}<button class="hbtn" data-act="gdocs" data-k="courses" aria-label="Print" title="Print"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg></button>${syncBtnHTML()}</div></div>`;
+    <div class="rgrp crs-rgrp">${modeBtnHTML()}${syncBtnHTML()}</div></div>`;
 }
 function courseFocusHTML(){
   const td=todayStr(),periods=state.settings.periods;
@@ -6481,14 +6494,14 @@ function renderAdvisory(){
     `<div class="twog" style="align-items:start;column-gap:clamp(18px,6vw,80px)">
     <div>
       <div class="display dnw">To‑Do<button class="plusbtn" data-act="nadd" aria-label="Add a to-do">+</button><button class="hbtn hb-box td-gd" data-act="gdocs" data-k="todo">Google Docs</button></div>
-      ${notes.length?'':`<div class="empty-card">${art('sticky')}Nothing at the moment!</div>`}
+      ${notes.length?'':`<div class="empty-card">${art('sticky')}${cheer('todo')}</div>`}
       <div class="ngrid">${notes.map(n=>{const nc=courseById(n.course);
-        return `<div class="note" data-aid="${esc(n.id)}">
+        return `<div class="note${NOTE_COLS[n.color]?' nc-'+n.color:''}" data-aid="${esc(n.id)}">
           <div class="nhead">${xddHTML({kind:'note',id:n.id,cls:'nsel-dd',value:nc?n.course:'',label:'Class',btnCls:'nc ncl nsel'+(nc?'':' none'),
             btn:`<span class="ncv">${esc(nc?cname(nc):'Class')}</span><svg class="ncar" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>`,
             options:[{v:'',t:'No class'}].concat(COURSES.map(o=>({v:o.id,t:cname(o)})))})}${n.date?`<span class="nd">${esc(fmtShort(n.date))}</span>`:''}
           <button class="del" data-act="ndel" data-id="${esc(n.id)}" title="delete">×</button></div>
-          <div class="nt">${noteHTML(n.text)}</div></div>`;}).join('')}</div>
+          <div class="nt">${noteHTML(n.text)}</div><div class="ncols">${Object.keys(NOTE_COLS).map(c=>`<button type="button" class="ncol${n.color===c?' on':''}" style="--nc:${NOTE_COLS[c]}" data-ncol="${c}" data-id="${esc(n.id)}" aria-label="${c}" title="${c[0].toUpperCase()+c.slice(1)}"></button>`).join('')}</div></div>`;}).join('')}</div>
     </div>
     <div>
       <div class="display">School Events</div>
@@ -6513,28 +6526,44 @@ function renderAdvisory(){
 }
 
 /* ---------- assignments view: every assignment not done yet, oldest first ---------- */
+/* kind words where there's nothing to do, and small tips while things load (each picked once a day, so a page doesn't flicker) */
+const CHEER={none:['All caught up. Nice work!','Nothing due. Go enjoy your day.','You’re on top of everything.','Clear skies ahead. Treat yourself.','Zero assignments. Legendary.','Free time unlocked. You earned it.'],
+  od:['Nothing overdue. You’re right on time!','No late work. Keep it up!','Everything’s on time. Love to see it.'],
+  day:['Nothing due. Enjoy it!','A free day. Nice.','Nothing due today. You’re ahead!'],
+  todo:['All clear. Add a note when something comes up.','Nothing on your list. Enjoy the calm.','Your to-do list is empty. Well done!']};
+const cheerDay=()=>{const d=new Date();return d.getFullYear()*400+d.getMonth()*32+d.getDate();};
+function cheer(k){const a=CHEER[k]||CHEER.none;return esc(a[(cheerDay()+(k||'').length*7)%a.length]);}
+const TIPS=['Tip: press H to hide a game instantly.','Tip: drag an assignment onto another day to move it.','Tip: press Ctrl+Z to bring back the last assignment you removed.',
+  'Tip: give each page its own color in Settings, Appearance.','Tip: Focus mode shows one class at a time on Courses.','Tip: pin up to five quick games on Home.',
+  'Tip: in-class assignments and old notes clear themselves after a week.','Tip: the Clock tool counts down to the end of class.','Tip: star games to keep them at the front.'];
+const loadTip=()=>Math.random()<0.6?TIPS[Math.floor(Math.random()*TIPS.length)]:'loading data';
+/* sticky note colours: four neon choices in each note's corner (saved with the note) */
+const NOTE_COLS={blue:'#2b8cff',red:'#ff3b30',yellow:'#ffcc00',green:'#34c759'};
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-ncol]');if(!b)return;e.preventDefault();e.stopPropagation();
+  const n=(state.advisory||[]).find(x=>x.id===b.dataset.id);if(!n)return;n.color=n.color===b.dataset.ncol?'':b.dataset.ncol;render();saveNote(n);},true);
 function renderAssignments(){
+  /* Assignments fills the page; Toggle overdue opens a boxed Overdue column (2/3 and 1/3) and the main list keeps only the rest */
   const td=todayStr(),od=state.asgFilter==='overdue';
-  const all=state.tasks.filter(t=>!t.done&&taskMode(t)==='hw'&&(!od||t.date<=td))
+  const isOd=t=>t.date&&t.date<=td;
+  const all=state.tasks.filter(t=>!t.done&&taskMode(t)==='hw'&&(!od||!isOd(t)))
     .sort((a,b)=>a.date===b.date?(a.course>b.course?1:-1):(a.date<b.date?-1:1));
   /* anything with no class (homework, tests, every kind) goes last, each with a class picker */
-  const ua=state.tasks.filter(t=>!t.done&&!courseById(t.course)&&(!od||t.date<=td))
+  const ua=state.tasks.filter(t=>!t.done&&!courseById(t.course)&&(!od||!isOd(t)))
     .sort((a,b)=>a.date<b.date?-1:a.date>b.date?1:0),list=all.filter(t=>!ua.includes(t));
-  /* the right column: every overdue assignment, whichever list is chosen */
-  const odl=state.tasks.filter(t=>!t.done&&taskMode(t)==='hw'&&t.date<=td)
+  const odl=state.tasks.filter(t=>!t.done&&taskMode(t)==='hw'&&isOd(t))
     .sort((a,b)=>a.date===b.date?(a.course>b.course?1:-1):(a.date<b.date?-1:1));
   const pick=t=>`<div class="cdd ua-pick"><button class="cdd-btn" data-act="uapick" data-id="${esc(t.id)}"><span class="cnm">Class</span><span class="car"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></span></button>
     <div class="cdd-menu ${state.uaOpen===t.id?'open':''}">${COURSES.map(c=>`<button class="cdd-item" data-act="uaset" data-id="${esc(t.id)}" data-c="${esc(c.id)}" ${pickItem(c)}</button>`).join('')}</div></div>`;
-  document.getElementById('v-assignments').innerHTML=
-    `<div class="cal-head" style="justify-content:flex-start">
+  const main=`<div class="asg-main"><div class="cal-head asg-bar" style="justify-content:flex-start">
       <div class="hgroup">
-        <button class="hbtn ${od?'':'on'}" data-act="asgf" data-f="all">All</button>
-        <button class="hbtn ${od?'on':''}" data-act="asgf" data-f="overdue">Overdue</button>
+        <button class="hbtn on" data-act="asgf" data-f="all">Assignments</button>
+        <button class="hbtn${od?' on':''}" data-act="asgf" data-f="${od?'all':'overdue'}" aria-pressed="${od}">Toggle overdue</button>
       </div></div>
-    <div class="asg-cols"><div class="asg-main">
-    <div class="panel asglist">${list.length?list.map(t=>taskHTML(t,true)).join(''):`<div class="empty-card">${od?'Nothing overdue':'Nothing at the moment!'}</div>`}</div>
-    ${ua.length?`<div class="panel ua-group"><h2>Unassigned</h2>${ua.map(t=>`<div class="ua-row">${taskHTML(t,true)}${COURSES.length?pick(t):''}</div>`).join('')}</div>`:''}</div>
-    <aside class="panel asglist odlist asg-od"><h2>Overdue</h2>${odl.length?odl.map(t=>taskHTML(t,true)).join(''):'<div class="asg-odnone">Nothing overdue</div>'}</aside></div>`;
+    <div class="panel asglist">${list.length?list.map(t=>taskHTML(t,true)).join(''):`<div class="empty-card">${cheer()}</div>`}</div>
+    ${ua.length?`<div class="panel ua-group"><h2>Unassigned</h2>${ua.map(t=>`<div class="ua-row">${taskHTML(t,true)}${COURSES.length?pick(t):''}</div>`).join('')}</div>`:''}</div>`;
+  document.getElementById('v-assignments').innerHTML=od
+    ?`<div class="asg-cols">${main}<aside class="asg-odbox"><h2>Overdue</h2>${odl.length?odl.map(t=>taskHTML(t,true)).join(''):`<div class="asg-odnone">${cheer('od')}</div>`}</aside></div>`
+    :main;
 }
 
 /* ---------- resources view: course cards, each opening reference subpages ---------- */
@@ -8818,7 +8847,7 @@ function hmResCard(it){const c=courseById(it.c),top=`<span class="hm-rc"><span c
 function hmMain(el,hv){
   const m=el.querySelector('#hm-main');if(!m)return;let h='';
   if(hv==='assignments'){const ts=state.tasks.filter(t=>!t.done&&taskMode(t)==='hw').sort((a,b)=>(a.date||'9')<(b.date||'9')?-1:1);
-    h=`<div class="hm-panel"><h2 class="hm-ph">Assignments</h2><div class="panel asglist">${ts.length?ts.map(t=>taskHTML(t,true)).join(''):'<div class="muted">Nothing due</div>'}</div></div>`;}
+    h=`<div class="hm-panel"><h2 class="hm-ph">Assignments</h2><div class="panel asglist">${ts.length?ts.map(t=>taskHTML(t,true)).join(''):'<div class="muted">'+cheer()+'</div>'}</div></div>`;}
   else if(hv==='chat'){const st=CH&&CH.state;
     if(!st)setTimeout(()=>{if(state.view==='home')renderHome();},1200);
     h=`<div class="hm-panel"><h2 class="hm-ph">Chats</h2><div class="hm-chl">${!st?ldHTML():st.convs.length?st.convs.map(c=>`<button type="button" class="hm-chr${c.unread?' unread':''}" data-hm-chat="${esc(c.id)}">${chAvId(c.id,c.group?'':chOther(c.id)||c.title,c.group)}<span class="ch-cv"><span class="nm">${esc(c.title)}</span><span class="pv">${esc(c.preview)}</span></span><span class="ch-tm">${c.last?esc(chTime(c.last)):''}</span></button>`).join(''):'<div class="muted">None yet</div>'}</div></div>`;}
@@ -9348,7 +9377,7 @@ document.addEventListener('click',e=>{
 /* ---------- render root ---------- */
 /* signed in but the account's data hasn't arrived yet (a reload): show the loading screen, never empty pages */
 function dataWait(){const on=!!(state.user&&!settingsLoaded);let d=document.getElementById('dataload');
-  if(on&&!d){d=document.createElement('div');d.id='dataload';d.setAttribute('role','status');d.innerHTML=resRunHTML()+'<div class="dl-sub">loading data</div>';document.body.appendChild(d);
+  if(on&&!d){d=document.createElement('div');d.id='dataload';d.setAttribute('role','status');d.innerHTML=resRunHTML()+'<div class="dl-sub">'+esc(loadTip())+'</div>';document.body.appendChild(d);
     d._t=setTimeout(()=>{const s=d.querySelector('.dl-sub');if(s&&document.body.contains(d))s.textContent='still loading, check your connection';},20000);}
   if(!on&&d){clearTimeout(d._t);d.remove();}}
 /* ---------- clock page: analog + digital time and the current class from the bell schedule ---------- */
@@ -11065,7 +11094,7 @@ function playGame(id){
   roomLeaveAll();
   /* a loading screen covers the frame until the game has started */
   /* Torah Runner opens on its own titles instead of the loading screen (trIntro) */
-  g.innerHTML=(id==='torahrunner'?TR_INTRO:`<div class="gm-load">${bookFlip('gm-llogo')}<div class="gm-lname">${esc((gm?gm.name:id).toLowerCase())}</div><div class="gm-barw"><div class="gm-bar"><i></i></div><div class="gm-lsub">loading data</div></div></div>`)+`
+  g.innerHTML=(id==='torahrunner'?TR_INTRO:`<div class="gm-load">${bookFlip('gm-llogo')}<div class="gm-lname">${esc((gm?gm.name:id).toLowerCase())}</div><div class="gm-barw"><div class="gm-bar"><i></i></div><div class="gm-lsub">${esc(loadTip())}</div></div></div>`)+`
     <iframe class="gm-frame" allow="fullscreen; gamepad; autoplay" title="${esc(id)}"></iframe>${gm&&!gm.labels.includes('Embed')?'<button class="gm-side" data-gm-side aria-label="Games" title="Games"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>':''}`;
   if(id==='torahrunner')trIntro(g);
   loadGame(id).then(src=>{const f=g.querySelector('.gm-frame');if(!f)return;
