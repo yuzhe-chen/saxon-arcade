@@ -2100,10 +2100,14 @@ button.hm-site{appearance:none;cursor:pointer}
 .res-run::after{display:none}
 .res-run .art{width:96px;height:96px;position:static;animation:none}
 svg.bk-flip{overflow:visible}
-svg.bk-flip .bk-pg{transform-origin:32px 45px;opacity:0;animation:bkflip 1.8s cubic-bezier(.5,0,.4,1) infinite}
-svg.bk-flip .bk-pg2{animation-delay:-.9s}
-@keyframes bkflip{0%{transform:scaleX(1);opacity:0}12%{transform:scaleX(.94) skewY(-3deg);opacity:1}50%{transform:scaleX(0) skewY(-8deg)}88%{transform:scaleX(-.94) skewY(-3deg);opacity:1}100%{transform:scaleX(-1);opacity:0}}
-@media (prefers-reduced-motion:reduce){svg.bk-flip .bk-pg{animation:none;display:none}}
+svg.bk-flip .bk-cover{transform-origin:20px 45px;animation:bkcover 3.6s cubic-bezier(.5,0,.4,1) infinite}
+svg.bk-flip .bk-pg{transform-origin:32px 45px;opacity:0;animation:bkpage 3.6s cubic-bezier(.5,0,.4,1) infinite}
+svg.bk-flip .bk-pg2{animation-delay:.45s}
+svg.bk-flip .bk-in{opacity:0;animation:bkin 3.6s steps(1) infinite}
+@keyframes bkin{0%{opacity:0}22%{opacity:1}86%{opacity:0}}
+@keyframes bkcover{0%,8%{transform:scaleX(1)}22%{transform:scaleX(.02) skewY(-6deg)}34%,72%{transform:scaleX(-1)}86%{transform:scaleX(.02) skewY(-6deg)}98%,100%{transform:scaleX(1)}}
+@keyframes bkpage{0%,34%{opacity:0;transform:scaleX(1)}36%{opacity:1;transform:scaleX(1)}48%{transform:scaleX(.02) skewY(-6deg)}60%{opacity:1;transform:scaleX(-1)}62%,100%{opacity:0;transform:scaleX(-1)}}
+@media (prefers-reduced-motion:reduce){svg.bk-flip .bk-pg{animation:none;display:none}svg.bk-flip .bk-cover,svg.bk-flip .bk-in{animation:none}}
 .res-run .dots{display:block;width:34px;height:8px;background:radial-gradient(circle at 4px 4px,var(--faint) 4px,transparent 4.5px) 0 0/13px 8px repeat-x}
 .res-load,#v-resources.res-fadein>*{animation:none}
 /* page heads: a small eyebrow, then the title in the display font */
@@ -5513,7 +5517,9 @@ logo:'<g transform="rotate(-10 48 50)"><rect x="26" y="18" width="54" height="70
 let artN=0;const artSrc=k=>{const n=++artN;return ART[k].replace(/(id="|url\(#)([a-z]+\d)/g,'$1$2_'+n);};
 /* the loading screens' book: the logo with its pages turning over and over, hinged at the spine */
 const BOOK_PG=i=>`<g class="bk-pg bk-pg${i}"><rect x="32" y="15" width="40" height="60" rx="4" fill="#FFFFFF" stroke="#E5E5E5" stroke-width="1.5"/><rect x="39" y="27" width="26" height="3" rx="1.5" fill="#E5E5E5"/><rect x="39" y="35" width="22" height="3" rx="1.5" fill="#E5E5E5"/><rect x="39" y="43" width="26" height="3" rx="1.5" fill="#E5E5E5"/><rect x="39" y="51" width="18" height="3" rx="1.5" fill="#E5E5E5"/><rect x="39" y="59" width="24" height="3" rx="1.5" fill="#E5E5E5"/></g>`;
-const bookFlip=c=>art('logo',(c?c+' ':'')+'bk-flip').replace(/<\/g><\/svg>$/,BOOK_PG(1)+BOOK_PG(2)+'</g></svg>');
+/* the loading book: its cover swings open on the spine, two pages turn, then the cover closes again */
+const bookFlip=c=>{const svg=art('logo',(c?c+' ':'')+'bk-flip'),k='<rect x="20" y="12" width="54" height="66" rx="8" fill="#1CB0F6"/>',i=svg.indexOf(k);
+  return i<0?svg:svg.slice(0,i)+'<g class="bk-cover">'+svg.slice(i).replace(/<\/g><\/svg>$/,'<rect class="bk-in" x="20" y="12" width="54" height="66" rx="8" fill="#A8DEFC"/></g>'+BOOK_PG(1)+BOOK_PG(2)+'</g></svg>');};
 const art=(k,c)=>ART[k]?`<svg class="art${c?' '+c:''}" viewBox="0 0 96 96" aria-hidden="true" focusable="false">${artSrc(k)}</svg>`:'';
 /* every [data-art] placeholder in static markup gets its drawing */
 function artFill(r){(r||document).querySelectorAll('[data-art]').forEach(e=>{if(!e.firstElementChild)e.innerHTML=art(e.dataset.art);});}
