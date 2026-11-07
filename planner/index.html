@@ -9471,7 +9471,7 @@ function pgHex(h,s,l){h=((h%360)+360)%360;const c=(1-Math.abs(2*l-1))*s,x=c*(1-M
   const [r,g,b]=[[c,x,0],[x,c,0],[0,c,x],[0,x,c],[x,0,c],[c,0,x]][i];
   return '#'+[r,g,b].map(v=>Math.round(Math.min(1,Math.max(0,v+m))*255).toString(16).padStart(2,'0')).join('');}
 function pgMid(a,b){const A=pgHsl(a),B=pgHsl(b);let h1=A[0],h2=B[0];if(A[1]<.08)h1=h2;if(B[1]<.08)h2=h1;
-  const d=((h2-h1+540)%360)-180;return pgHex(h1+d/2,(A[1]+B[1])/2,(A[2]+B[2])/2);}
+  const d=((h2-h1+540)%360)-180;return pgClean(pgHex(h1+d/2,(A[1]+B[1])/2,(A[2]+B[2])/2));}
 /* the gradient as rings from a centre outward (Fade and Decorations): stop colours with an alpha, at given radii */
 const pgRgb=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
 function pgAt(st,f){const n=st.length-1,x=Math.max(0,Math.min(1,f))*n,i=Math.min(n-1,Math.floor(x)),t=x-i,a=pgRgb(st[i]),b=pgRgb(st[i+1]||st[i]);return a.map((v,j)=>Math.round(v+(b[j]-v)*t));}
@@ -9479,6 +9479,13 @@ function pgRings(st,rings){/* rings: [[from,to,alpha],...] in one unit; colours 
   const end=rings[rings.length-1][1],out=[];
   rings.forEach(([a,b,al])=>{const n=Math.max(2,st.length);for(let i=0;i<n;i++){const r=a+(b-a)*i/(n-1),c=pgAt(st,r/end);out.push(`rgba(${c.join(',')},${al}) ${+r.toFixed(2)}`);}});
   return out;}
+/* no muddy colours: browns, olives and yellow-greens move to the nearest clean hue (yellow below 78 degrees, green
+   above), and nothing stays washed out or too dark */
+function pgClean(hex){let [h,s,l]=pgHsl(hex);
+  if(h>=62&&h<=95)h=h<78?48:115;
+  if(h>=15&&h<62&&l<.55){l=.55;}
+  s=Math.max(s,.72);l=Math.min(Math.max(l,.45),.68);
+  return pgHex(h,s,l);}
 const pgShade=(h,f)=>'#'+[1,3,5].map(i=>Math.round(parseInt(h.slice(i,i+2),16)*f).toString(16).padStart(2,'0')).join('');
 /* a page's gradient stops (none without a gradient) and its name */
 function pgStops(k){const g=pgOf(k);if(!g)return null;const p=pgPre(g);if(p)return p[2];const q=pgPair(g);if(q)return [q[0],pgMid(q[0],q[1]),q[1]];const c=pcOf(k);return [c,pgMid(c,g),g];}
@@ -9515,7 +9522,7 @@ function pcPage(v){const g=document.getElementById('games');
   const p=v||(state.setup?'setup':state.view);return p==='clock'||p==='scare'?'tools':p;}
 function pcApply(v){const r=document.documentElement,on=!!(state.user&&state.settings);
   const k=pcPage(v),st=on&&pgStops(k),pre=on&&(pgPre(pgOf(k))||pgPair(pgOf(k))),c0=pre?st[0]:on&&rwHas(2)&&((state.settings.pageColors||{})[k]),
-    c=st?'#'+pgAt(st,.5).map(x=>x.toString(16).padStart(2,'0')).join(''):c0;
+    c=st?pgClean('#'+pgAt(st,.5).map(x=>x.toString(16).padStart(2,'0')).join('')):c0;
   /* with a gradient the emphasis colour (text, Fade, Decorations) is the gradient's middle, and the book keeps the first colour */
   if(st&&/^#[0-9a-f]{6}$/i.test(st[0])){r.style.setProperty('--pcbook',st[0]);r.style.setProperty('--pcbookd',pgShade(st[0],.82));}else{r.style.removeProperty('--pcbook');r.style.removeProperty('--pcbookd');}
   if(c&&(st||c!==PC_SW[0])&&/^#[0-9a-f]{6}$/i.test(c)){r.style.setProperty('--pc',c);r.classList.add('pc');}
