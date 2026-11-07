@@ -3084,10 +3084,10 @@ html.pc header.topbar .brand-logo svg [fill="#1899D6"],html.pc header.topbar .br
 /* Fade on Games, Tools, Suggestions and Administration (they paint their own background over the page's glow) */
 html.pfade:not(.splash-on) :is(#games:not(:has(.gm-frame)),#sugg,#roles,#desmos,#rewards){background:radial-gradient(640px 480px at calc(100% + 40px) -80px,color-mix(in srgb,var(--pri) 18%,transparent),transparent 70%),var(--bg)!important}
 html.pg2.pfade:not(.splash-on) :is(#games:not(:has(.gm-frame)),#sugg,#roles,#rewards,#desmos){background:radial-gradient(640px 480px at calc(100% + 40px) -80px,color-mix(in srgb,var(--pri) 18%,transparent),transparent 70%),radial-gradient(560px 440px at calc(100% - 300px) 120px,color-mix(in srgb,var(--pc2) 16%,transparent),transparent 70%),var(--bg)!important}
-/* Decorations (Appearance, on by default): a soft circle of the page colour tucked into the corner of the Home cards,
+/* Decorations (Appearance, off by default): a soft circle of the page colour tucked into the corner of the Home cards,
    the Jump back in tiles and the Tools tiles, as on Lectern */
 html.deco :is(.hm-card,.hm-jt,#games .tl-tile){position:relative;overflow:hidden;isolation:isolate}
-html.deco :is(.hm-card,.hm-jt,#games .tl-tile)::after{content:'';position:absolute;right:-110px;bottom:-110px;width:280px;height:280px;border-radius:50%;background:radial-gradient(closest-side,color-mix(in srgb,var(--pri) 20%,transparent) 0,color-mix(in srgb,var(--pri) 12%,transparent) 45%,transparent 100%);pointer-events:none;z-index:-1}
+html.deco :is(.hm-card,.hm-jt,#games .tl-tile)::after{content:'';position:absolute;right:-140px;bottom:-140px;width:340px;height:340px;border-radius:50%;background:radial-gradient(circle 170px at center,color-mix(in srgb,var(--pri) 14%,transparent) 0 100px,color-mix(in srgb,var(--pri) 7%,transparent) 100px 170px,transparent 170px);pointer-events:none;z-index:-1}
 #games .tl-sens{margin-top:30px;padding:26px 0 10px;border-top:2px solid var(--line);justify-content:center}#games .tl-sens h3{margin:0}
 #games .gm-endbar{gap:10px;flex-wrap:wrap}
 .rw-lock{appearance:none;display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border:2px solid var(--line);border-bottom-width:4px;border-radius:12px;background:var(--bg);color:var(--fg2);font:800 12px/1 var(--font-ui);text-transform:uppercase;letter-spacing:.04em;cursor:pointer}.rw-lock:hover{background:var(--panel2)}.rw-lock svg{width:16px;height:16px}.sec .sec-sw>h3{flex:1;margin:0}
@@ -6164,7 +6164,7 @@ async function loadData(pre){
     state.settings.homePages=Array.isArray(st.homePages)?[...st.homePages]:[];state.settings.homeRes=Array.isArray(st.homeRes)?st.homeRes.slice(0,12):[];
     state.settings.focusMode=!!st.focusMode;state.settings.courseOrder=Array.isArray(st.courseOrder)?st.courseOrder.filter(x=>typeof x==='string'):[];
     state.calcmap=d.calcmap||{};
-    state.settings.pageColors={...(st.pageColors||{})};state.settings.pageFade=!!st.pageFade;['decoOff','sensPics','sensGames','sensTools','footerOff'].forEach(k=>state.settings[k]=!!st[k]);state.settings.pageGrads={...(st.pageGrads||{})};state.settings.noteCols=Array.isArray(st.noteCols)?st.noteCols.slice(0,12):[];
+    state.settings.pageColors={...(st.pageColors||{})};state.settings.pageFade=!!st.pageFade;['decoOn','sensPics','sensGames','sensTools','footerOff'].forEach(k=>state.settings[k]=!!st[k]);state.settings.pageGrads={...(st.pageGrads||{})};state.settings.noteCols=Array.isArray(st.noteCols)?st.noteCols.slice(0,12):[];
     state.settings.homeView=HV_OPTS.some(([k])=>k===st.homeView)?st.homeView:'pages';state.settings.homePages=Array.isArray(st.homePages)?[...st.homePages]:[];
     state.settings.quickGames=Array.isArray(st.quickGames)?[...st.quickGames]:[];state.settings.homeRes=Array.isArray(st.homeRes)?[...st.homeRes]:[];
     if(fresh.length)saveSettings();
@@ -6280,7 +6280,7 @@ function confetti(x,y){
 }
 async function removeTask(id){try{await api('/api/task/'+encodeURIComponent(id),{method:'DELETE'});}catch(e){console.warn('delete failed',e);}}
 async function saveSettings(){if(!settingsLoaded)return;try{await api('/api/settings',{method:'POST',body:JSON.stringify({colors:state.settings.colors,periods:state.settings.periods,
-  advisoryCourse:state.settings.advisoryCourse||'',courses:COURSES,ical:state.settings.ical||'',fullNames:!!state.settings.fullNames,quickGames:state.settings.quickGames||[],focusMode:!!state.settings.focusMode,pageFade:!!state.settings.pageFade,decoOff:!!state.settings.decoOff,sensPics:!!state.settings.sensPics,sensGames:!!state.settings.sensGames,sensTools:!!state.settings.sensTools,footerOff:!!state.settings.footerOff,pageGrads:state.settings.pageGrads||{},noteCols:state.settings.noteCols||[],pageColors:state.settings.pageColors||{},courseOrder:state.settings.courseOrder||[],homeView:state.settings.homeView||'pages',homePages:state.settings.homePages||[],homeRes:state.settings.homeRes||[],hideGames:!!state.settings.hideGames,hideChat:!!state.settings.hideChat,faqNew:!!state.settings.faqNew,oppStar:state.settings.oppStar||[],oppArch:state.settings.oppArch||[],gamesIntro:!!state.settings.gamesIntro,gameStar:state.settings.gameStar||[],hidePages:state.settings.hidePages||[],tutorialNew:!!state.settings.tutorialNew,rel:state.settings.rel||{},lunch:state.settings.lunch||{},gpa:SX.cleanGpa(state.settings.gpa),gpaYear:SX.cleanGpaYear(state.settings.gpaYear),gpaByYear:!!state.settings.gpaByYear})});}catch(e){console.warn('save failed',e);}}
+  advisoryCourse:state.settings.advisoryCourse||'',courses:COURSES,ical:state.settings.ical||'',fullNames:!!state.settings.fullNames,quickGames:state.settings.quickGames||[],focusMode:!!state.settings.focusMode,pageFade:!!state.settings.pageFade,decoOn:!!state.settings.decoOn,sensPics:!!state.settings.sensPics,sensGames:!!state.settings.sensGames,sensTools:!!state.settings.sensTools,footerOff:!!state.settings.footerOff,pageGrads:state.settings.pageGrads||{},noteCols:state.settings.noteCols||[],pageColors:state.settings.pageColors||{},courseOrder:state.settings.courseOrder||[],homeView:state.settings.homeView||'pages',homePages:state.settings.homePages||[],homeRes:state.settings.homeRes||[],hideGames:!!state.settings.hideGames,hideChat:!!state.settings.hideChat,faqNew:!!state.settings.faqNew,oppStar:state.settings.oppStar||[],oppArch:state.settings.oppArch||[],gamesIntro:!!state.settings.gamesIntro,gameStar:state.settings.gameStar||[],hidePages:state.settings.hidePages||[],tutorialNew:!!state.settings.tutorialNew,rel:state.settings.rel||{},lunch:state.settings.lunch||{},gpa:SX.cleanGpa(state.settings.gpa),gpaYear:SX.cleanGpaYear(state.settings.gpaYear),gpaByYear:!!state.settings.gpaByYear})});}catch(e){console.warn('save failed',e);}}
 async function saveNote(n){if(STALE.has(n))return;try{await api('/api/advisory',{method:'POST',body:JSON.stringify(n)});}catch(e){console.warn('save failed',e);}}
 /* in-class assignments a week past their date, and sticky notes a week old, are removed by themselves */
 let sweepBusy=false;
@@ -9394,7 +9394,7 @@ function apOpen(note){
     <section>${rwHas(2)?'<h3>Colors</h3>':`<div class="sec-sw ap-ch"><h3>Colors</h3>${rwLockHTML(2)}</div>`}<div class="ap-cols${rwHas(2)?'':' lk'}">${pcPages().map(([k,n])=>apPcRow(k,n)).join('')}
       ${rwHas(3)?'':`<div class="ap-col"><span>Gradients</span>${rwLockHTML(3)}</div>`}</div></section>
     <section><div class="sec-sw"><h3 class="ap-fh">Fade</h3><input type="checkbox" class="switch" id="ap-fade" ${state.settings.pageFade?'checked':''} aria-label="Fade"></div></section>
-    <section><div class="sec-sw"><h3 class="ap-fh">Decorations</h3><input type="checkbox" class="switch" id="ap-deco" ${state.settings.decoOff?'':'checked'} aria-label="Decorations"></div></section>
+    <section><div class="sec-sw"><h3 class="ap-fh">Decorations</h3><input type="checkbox" class="switch" id="ap-deco" ${state.settings.decoOn?'checked':''} aria-label="Decorations"></div></section>
     <section><div class="sec-sw"><h3 class="ap-fh">Footer</h3><input type="checkbox" class="switch" id="ap-foot" ${state.settings.footerOff?'':'checked'} aria-label="Footer"></div></section>
     <section><h3>Avatar</h3><p>Shown next to your name in Chat.</p>
       <h4 class="ap-crh">Crown${crown?'':rwLockHTML(10)}</h4><div class="ap-avs">${VO_AV.c.map((_,i)=>crown?tile('c'+i):`<button type="button" class="ap-av ap-lk" data-act-rewards aria-label="Locked"><span>?</span>${art('lock')}</button>`).join('')}</div>
@@ -9449,7 +9449,7 @@ function pcApply(v){const r=document.documentElement,on=!!(state.user&&state.set
   const g=on&&pgOf(k);
   if(g){r.style.setProperty('--pc2',g);r.classList.add('pg2');}
   else if(r.classList.contains('pg2')){r.classList.remove('pg2');r.style.removeProperty('--pc2');}
-  const f=on&&!!state.settings.pageFade;r.classList.toggle('pfade',f);r.classList.toggle('deco',!(on&&state.settings.decoOff));
+  const f=on&&!!state.settings.pageFade;r.classList.toggle('pfade',f);r.classList.toggle('deco',!!(on&&state.settings.decoOn));
   if(f&&!document.getElementById('pfade')){const d=document.createElement('div');d.id='pfade';d.setAttribute('aria-hidden','true');document.body.appendChild(d);}}
 document.addEventListener('click',e=>{
   const x=e.target.closest&&e.target.closest('#pwx [data-ap-pgx]');
@@ -9532,7 +9532,7 @@ document.addEventListener('change',e=>{
 });
 document.addEventListener('change',e=>{
   if(!state.user)return;const id=e.target.id;
-  if(id==='ap-deco'){state.settings.decoOff=!e.target.checked;pcApply();saveSettings();return;}
+  if(id==='ap-deco'){state.settings.decoOn=e.target.checked;pcApply();saveSettings();return;}
   if(id==='tl-sens'){state.settings.sensTools=e.target.checked;saveSettings();
     const y=document.querySelector('#games .gm-pick')?document.querySelector('#games .gm-pick').scrollTop:0;openTools();const p=document.querySelector('#games .gm-pick');if(p)p.scrollTop=y;return;}
   if(e.target.classList&&e.target.classList.contains('sens-sw')){state.settings.sensPics=e.target.checked;saveSettings();try{if(state.view==='home')render();}catch(_){}}
