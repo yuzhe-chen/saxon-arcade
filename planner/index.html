@@ -2046,6 +2046,25 @@ button.hm-site{appearance:none;cursor:pointer}
 .hm-go svg{width:18px;height:18px;fill:none;stroke:#fff;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
 @media (max-width:760px){.hm-sum{font-size:24px}.hm-jgrid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.hm-jt{min-height:170px;padding:16px}.hm-jt .hm-jart{width:56px;height:56px}.hm-jn{font-size:20px}.hm-jd{font-size:13.5px}.hm-go{width:30px;height:30px;top:12px;right:12px}.hm-go svg{width:15px;height:15px}}
 .hm-cards{gap:16px;max-width:880px}
+/* Home, below the cards: roomy sections; Today framed by the day's colour; Jump back in in a box */
+#hm-more .hm-sec{margin-top:72px}
+#hm-more .hm-sec:first-child{margin-top:56px}
+.hm-today .dayg{margin:0}
+.hm-today.dt-green .dayg>.daycard:first-child{border-color:var(--green)}
+.hm-today.dt-gold .dayg>.daycard:first-child{border-color:var(--gold)}
+.hm-today .dayg>.daycard:nth-child(2){opacity:.62}
+.hm-tgo{display:flex;justify-content:center;margin-top:18px}
+.hm-jbox{background:var(--panel);border:2px solid var(--line);border-bottom-width:4px;border-radius:var(--r);padding:22px 24px 24px}
+#hm-more .hm-jbox .hm-jh{margin:0 0 16px;font:700 24px/1.15 var(--display);letter-spacing:-0.02em;color:var(--fg)}
+.hm-jbox .hm-jgrid{grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+.hm-jbox .hm-jt{min-height:132px;padding:16px;background:var(--panel2)}
+.hm-jbox .hm-jt:hover{background:var(--panel)}
+.hm-jbox .hm-jt .hm-jart{width:46px;height:46px}
+.hm-jbox .hm-jn{font-size:19px;margin-top:10px}
+.hm-jbox .hm-jd{font-size:13.5px}
+.hm-jbox .hm-go{width:30px;height:30px;top:12px;right:12px}
+.hm-jbox .hm-go svg{width:15px;height:15px}
+@media (max-width:760px){#hm-more .hm-sec{margin-top:48px}.hm-jbox{padding:16px}.hm-jbox .hm-jgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .hm-card.hm-wide{grid-column:1 / -1}
 .hm-card{display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:18px;min-height:0;padding:18px 20px;
   background:var(--panel);color:var(--fg);border:2px solid var(--line);border-bottom-width:4px;border-radius:var(--r);transition:none}
@@ -2100,13 +2119,15 @@ button.hm-site{appearance:none;cursor:pointer}
 .res-run::after{display:none}
 .res-run .art{width:96px;height:96px;position:static;animation:none}
 svg.bk-flip{overflow:visible}
-svg.bk-flip .bk-cover{transform-origin:20px 45px;animation:bkcover 3.6s cubic-bezier(.5,0,.4,1) infinite}
-svg.bk-flip .bk-pg{transform-origin:32px 45px;opacity:0;animation:bkpage 3.6s cubic-bezier(.5,0,.4,1) infinite}
-svg.bk-flip .bk-pg2{animation-delay:.45s}
-svg.bk-flip .bk-in{opacity:0;animation:bkin 3.6s steps(1) infinite}
-@keyframes bkin{0%{opacity:0}22%{opacity:1}86%{opacity:0}}
-@keyframes bkcover{0%,8%{transform:scaleX(1)}22%{transform:scaleX(.02) skewY(-6deg)}34%,72%{transform:scaleX(-1)}86%{transform:scaleX(.02) skewY(-6deg)}98%,100%{transform:scaleX(1)}}
-@keyframes bkpage{0%,34%{opacity:0;transform:scaleX(1)}36%{opacity:1;transform:scaleX(1)}48%{transform:scaleX(.02) skewY(-6deg)}60%{opacity:1;transform:scaleX(-1)}62%,100%{opacity:0;transform:scaleX(-1)}}
+svg.bk-flip .bk-cover{transform-origin:20px 45px;animation:bkcover 5s cubic-bezier(.5,0,.4,1) infinite}
+svg.bk-flip .bk-pg{transform-origin:32px 45px;opacity:0;animation:bkp1 5s cubic-bezier(.5,0,.4,1) infinite}
+svg.bk-flip .bk-pg2{animation-name:bkp2}
+svg.bk-flip .bk-in{opacity:0;animation:bkin 5s steps(1) infinite}
+@keyframes bkcover{0%,6%{transform:scaleX(1)}12%{transform:scaleX(.02) skewY(-6deg)}18%,82%{transform:scaleX(-1)}88%{transform:scaleX(.02) skewY(-6deg)}94%,100%{transform:scaleX(1)}}
+@keyframes bkin{0%{opacity:0}12%{opacity:1}88%{opacity:0}}
+/* page one turns, then page two lands on top of it; they turn back the other way, two first, before the cover closes */
+@keyframes bkp1{0%,17%{opacity:0;transform:scaleX(1)}19%{opacity:1;transform:scaleX(1)}26%{transform:scaleX(.02) skewY(-6deg)}33%,62%{transform:scaleX(-1)}69%{transform:scaleX(.02) skewY(-6deg)}76%,92%{opacity:1;transform:scaleX(1)}94%,100%{opacity:0;transform:scaleX(1)}}
+@keyframes bkp2{0%,17%{opacity:0;transform:scaleX(1)}19%,30%{opacity:1;transform:scaleX(1)}37%{transform:scaleX(.02) skewY(-6deg)}44%,51%{transform:scaleX(-1)}58%{transform:scaleX(.02) skewY(-6deg)}65%,92%{opacity:1;transform:scaleX(1)}94%,100%{opacity:0;transform:scaleX(1)}}
 @media (prefers-reduced-motion:reduce){svg.bk-flip .bk-pg{animation:none;display:none}svg.bk-flip .bk-cover,svg.bk-flip .bk-in{animation:none}}
 .res-run .dots{display:block;width:34px;height:8px;background:radial-gradient(circle at 4px 4px,var(--faint) 4px,transparent 4.5px) 0 0/13px 8px repeat-x}
 .res-load,#v-resources.res-fadein>*{animation:none}
@@ -2946,20 +2967,32 @@ html.pg-open:not(.splash-on) header.topbar{z-index:1550}
 #games .gm-side:hover{opacity:1}
 #games .gm-side svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
 /* Settings page */
-.set-body{min-width:0}
-.set-card{background:var(--panel);border:2px solid var(--line);border-bottom-width:4px;border-radius:var(--r);padding:18px 20px;max-width:720px}
+.set-body{min-width:0;flex:1}
+.set-wrap .opp-main{flex:1;min-width:0}
+.set-card{background:var(--panel);border:2px solid var(--line);border-bottom-width:4px;border-radius:var(--r);padding:18px 20px}
+.set-card .set-h{margin:0 0 6px;font:800 24px/1.2 var(--display,var(--font-ui));color:var(--fg)}
 .set-card .row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 2px;border-bottom:1px solid var(--line);font-weight:700}
 .set-card .sx-ical{padding:14px 2px;border-bottom:1px solid var(--line)}
 .set-card .sx-ical input[type=text]{width:100%;box-sizing:border-box}
 .set-card .sx-ical,.set-card .sx-ical>*,.set-card .sx-redeem{max-width:none!important;width:auto!important}
 .set-card .sx-ical input[type=text]{width:100%!important}
 .pwx.pwx-inline{position:static;inset:auto;z-index:auto;display:block;padding:0;background:none;-webkit-backdrop-filter:none;backdrop-filter:none}
-.pwx.pwx-inline .pwx-card{width:100%;max-width:820px;max-height:none;overflow:visible;margin:0;box-shadow:none;border:2px solid var(--line);border-bottom-width:4px;border-radius:var(--r)}
+.pwx.pwx-inline .pwx-card,.pwx.pwx-inline .pwx-card.pwx-wide{width:100%!important;max-width:none!important;max-height:none;overflow:visible;margin:0;box-shadow:none;border:2px solid var(--line);border-bottom-width:4px;border-radius:var(--r)}
 .pwx.pwx-inline .pwx-x{display:none}
 .set-body #roles{position:static!important;inset:auto!important;z-index:auto!important;overflow:visible!important;background:none!important}
 .set-body #roles .docs-in{padding:0!important;max-width:none}
 .set-body #roles .res-x{display:none}
+.set-body #sugg{position:static!important;inset:auto!important;z-index:auto!important;overflow:visible!important;background:none!important}
+.set-body #sugg .docs-in{max-width:none!important;margin:0!important;background:var(--panel);border:2px solid var(--line);border-bottom-width:4px;border-radius:var(--r);padding:22px 26px 26px!important}
+.set-body #sugg .res-x{display:none}
+.set-body #roles .docs-in{max-width:none!important;margin:0!important;background:var(--panel);border:2px solid var(--line);border-bottom-width:4px;border-radius:var(--r);padding:24px 30px 30px!important}
+.set-body #roles .rl-grid,.set-body #roles .rl-grid.two{grid-template-columns:repeat(2,minmax(0,1fr));gap:40px 44px}
+.set-body #roles .rl-grid>.rl-col:nth-child(3){grid-column:1 / -1;border-top:2px solid var(--line);padding-top:28px}
+@media (max-width:900px){.set-body #roles .rl-grid,.set-body #roles .rl-grid.two{grid-template-columns:minmax(0,1fr);gap:32px}}
 @media (max-width:700px){.set-wrap .set-side{position:static!important;width:auto!important;max-height:none!important;flex-direction:row!important;display:flex;gap:6px;overflow-x:auto;border-radius:var(--r)!important;border-left:2px solid var(--line)!important;margin-bottom:12px}.set-wrap .set-side[hidden]{display:none}.set-wrap .set-side .opp-cat{flex:none;width:auto}.set-wrap .opp-body{flex-direction:column}}
+/* Tools and Games are regular pages: their title is a plain heading, with no close button or divider bar */
+#games .gm-pick>.gm-head{position:static!important;border-bottom:0!important;background:none!important;margin:0 0 14px!important;padding:6px 0 0!important}
+#games .gm-pick>.gm-head .gm-x{display:none!important}
 /* Jumpscare */
 #v-scare.on{position:relative;min-height:calc(100dvh - 140px);display:flex}
 .scare-pg{flex:1;position:relative;border-radius:var(--r);overflow:hidden;background:#050404;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:0 0 70px;min-height:calc(100dvh - 160px)}
@@ -2968,11 +3001,13 @@ html.pg-open:not(.splash-on) header.topbar{z-index:1550}
 .scare-q{position:relative;margin:0 0 18px;font:600 15px var(--font-ui);color:rgba(255,255,255,.35);letter-spacing:.06em}
 .scare-again{position:relative}
 .scare-again[hidden]{display:none}
-.scare-ov{position:fixed;inset:0;z-index:5000;background:#000;display:grid;place-items:center;animation:scarebg .12s steps(2) 6}
-.scare-ov img{width:100%;height:100%;object-fit:cover;animation:scarein .18s cubic-bezier(.2,1.8,.4,1) both,scareshake .09s linear .18s 14}
-.scare-ov.out{opacity:0;transition:opacity .5s}
-@keyframes scarein{from{transform:scale(2.4);filter:brightness(3)}to{transform:scale(1.08);filter:none}}
-@keyframes scareshake{0%{transform:scale(1.08) translate(0,0)}25%{transform:scale(1.1) translate(-14px,9px)}50%{transform:scale(1.07) translate(12px,-10px)}75%{transform:scale(1.1) translate(-9px,-12px)}100%{transform:scale(1.08) translate(0,0)}}
+.scare-ov{position:fixed;z-index:5000;background:#000;overflow:hidden;border-radius:var(--r);transition:top .16s cubic-bezier(.2,1.4,.4,1),left .16s cubic-bezier(.2,1.4,.4,1),width .16s cubic-bezier(.2,1.4,.4,1),height .16s cubic-bezier(.2,1.4,.4,1),border-radius .16s}
+.scare-ov.big{border-radius:0;animation:scarebg .12s steps(2) 6}
+.scare-ov.back{transition:top .45s cubic-bezier(.5,0,.3,1),left .45s cubic-bezier(.5,0,.3,1),width .45s cubic-bezier(.5,0,.3,1),height .45s cubic-bezier(.5,0,.3,1),border-radius .45s}
+.scare-ov img{width:100%;height:100%;object-fit:cover;display:block}
+.scare-ov.big img{animation:scareshake .09s linear .12s 14}
+.scare-ov.out{opacity:0;transition:opacity .45s}
+@keyframes scareshake{0%{transform:scale(1.06) translate(0,0)}25%{transform:scale(1.09) translate(-14px,9px)}50%{transform:scale(1.05) translate(12px,-10px)}75%{transform:scale(1.09) translate(-9px,-12px)}100%{transform:scale(1.06) translate(0,0)}}
 @keyframes scarebg{50%{background:#5a0000}}
 @media (prefers-reduced-motion:reduce){.scare-ov img{animation:none}.scare-hall{animation:none}}
 /* Courses page: centred title, box reordering, Advisory full width, focus mode */
@@ -3376,9 +3411,7 @@ html.pg-open:not(.splash-on) header.topbar{z-index:1550}
       </div>
       <div class="mm-sep mm-psep"></div>
       <button class="mm-row" data-act-games><i class="mi" data-art="controller"></i><span>Games</span></button>
-      <button class="mm-row" data-act-clock><i class="mi" data-art="clock"></i><span>Clock</span></button>
-      <button class="mm-row" data-act-scare><i class="mi" data-art="moon"></i><span>Jumpscare</span></button>
-      <button class="mm-row" id="mgear" aria-expanded="false"><i class="mi" data-art="gear"></i><span>Settings</span><svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
+      <button class="mm-row" id="mgear" aria-expanded="false"><i class="mi" data-art="gear"></i><span>Settings</span></button>
       <div class="mcolors" id="mcolors" hidden></div>
       <button class="mm-row" id="msugg" data-act-sugg><i class="mi" data-art="bulb"></i><span>Suggestions</span></button>
       <button class="mm-row" data-act-docs><i class="mi" data-art="guide"></i><span>Guide</span></button>
@@ -5519,7 +5552,7 @@ let artN=0;const artSrc=k=>{const n=++artN;return ART[k].replace(/(id="|url\(#)(
 const BOOK_PG=i=>`<g class="bk-pg bk-pg${i}"><rect x="32" y="15" width="40" height="60" rx="4" fill="#FFFFFF" stroke="#E5E5E5" stroke-width="1.5"/><rect x="39" y="27" width="26" height="3" rx="1.5" fill="#E5E5E5"/><rect x="39" y="35" width="22" height="3" rx="1.5" fill="#E5E5E5"/><rect x="39" y="43" width="26" height="3" rx="1.5" fill="#E5E5E5"/><rect x="39" y="51" width="18" height="3" rx="1.5" fill="#E5E5E5"/><rect x="39" y="59" width="24" height="3" rx="1.5" fill="#E5E5E5"/></g>`;
 /* the loading book: its cover swings open on the spine, two pages turn, then the cover closes again */
 const bookFlip=c=>{const svg=art('logo',(c?c+' ':'')+'bk-flip'),k='<rect x="20" y="12" width="54" height="66" rx="8" fill="#1CB0F6"/>',i=svg.indexOf(k);
-  return i<0?svg:svg.slice(0,i)+'<g class="bk-cover">'+svg.slice(i).replace(/<\/g><\/svg>$/,'<rect class="bk-in" x="20" y="12" width="54" height="66" rx="8" fill="#A8DEFC"/></g>'+BOOK_PG(1)+BOOK_PG(2)+'</g></svg>');};
+  return i<0?svg:svg.slice(0,i)+'<rect x="36" y="26" width="28" height="3" rx="1.5" fill="#E5E5E5"/><rect x="36" y="34" width="24" height="3" rx="1.5" fill="#E5E5E5"/><rect x="36" y="42" width="28" height="3" rx="1.5" fill="#E5E5E5"/><rect x="36" y="50" width="20" height="3" rx="1.5" fill="#E5E5E5"/><rect x="36" y="58" width="26" height="3" rx="1.5" fill="#E5E5E5"/><rect x="36" y="66" width="22" height="3" rx="1.5" fill="#E5E5E5"/><g class="bk-cover">'+svg.slice(i).replace(/<\/g><\/svg>$/,'<rect class="bk-in" x="20" y="12" width="54" height="66" rx="8" fill="#1688C2"/></g>'+BOOK_PG(1)+BOOK_PG(2)+'</g></svg>');};
 const art=(k,c)=>ART[k]?`<svg class="art${c?' '+c:''}" viewBox="0 0 96 96" aria-hidden="true" focusable="false">${artSrc(k)}</svg>`:'';
 /* every [data-art] placeholder in static markup gets its drawing */
 function artFill(r){(r||document).querySelectorAll('[data-art]').forEach(e=>{if(!e.firstElementChild)e.innerHTML=art(e.dataset.art);});}
@@ -8220,8 +8253,12 @@ document.addEventListener('click',e=>{
 const TOOLS=[['phys','Physics Helper','Paste cells from Google Sheets and get a Google Docs table with units'],
   ['gpa','GPA Calculator','Weighted and unweighted GPA from every class you have taken'],
   ['soundboard','Soundboard','Sound effects at the press of a button'],
-  ['desmos','Desmos','The Desmos graphing calculator']];
-const TOOL_ART={phys:'flask',gpa:'graph',soundboard:'speaker',desmos:'calc'};
+  ['desmos','Desmos','The Desmos graphing calculator'],
+  ['clock','Clock','The time, and how long until class ends'],
+  ['meditation','Meditation','Calm scenes, breathing and a session timer'],
+  ['crashout','Crashout','A squishy doll to knock around'],
+  ['scare','Jumpscare','Is someone there?']];
+const TOOL_ART={phys:'flask',gpa:'graph',soundboard:'speaker',desmos:'calc',clock:'clock',meditation:'star',crashout:'controller',scare:'moon'};
 var tlBack=false,tlDz=false;
 function openTools(){
   tlBack=false;if(typeof tlKbHide==='function')tlKbHide();
@@ -8235,9 +8272,12 @@ document.addEventListener('click',e=>{
   if(e.target.closest&&e.target.closest('[data-act-tools]')&&state.user){closeNavMenus();openTools();return;}
   const t=e.target.closest&&e.target.closest('#games [data-tool]');if(!t)return;
   const id=t.dataset.tool;
-  if(id==='soundboard'){tlBack=true;playGame('soundboard');return;}
+  if(id==='soundboard'||id==='meditation'||id==='crashout'){tlBack=true;playGame(id);return;}
   closeGames();
   if(id==='desmos'){tlDz=true;openDesmos();return;}
+  /* Clock and Jumpscare are pages of their own, opened from here */
+  if(id==='clock'||id==='scare'){if(id==='scare')try{const C=window.AudioContext||window.webkitAudioContext;if(C){scareAC=scareAC||new C();scareAC.resume();}}catch(_){}
+    state.view=id;if(id==='clock')try{localStorage.setItem('sx-tab','clock');}catch(_){}render();scrollTo(0,0);return;}
   state.toolTab=id;try{localStorage.setItem('sx-tooltab',id);localStorage.setItem('sx-tab','tools');}catch(_){}
   state.view='tools';render();scrollTo(0,0);
 });
@@ -8729,8 +8769,12 @@ function hmMore(el,own,noChat,noGames){
   const cv=state.calView;state.calView='today';let today='';try{today=todayHTML();}finally{state.calView=cv;}
   const jump=HM_JUMP.filter(([k])=>!(k==='chat'&&noChat)&&!(k==='games'&&noGames)&&!pageHidden(k)).map(([k,a])=>{const p=HM_PAGES.find(x=>x[0]===k);
     return `<button type="button" class="hm-jt" data-home-go="${k}">${art(a,'hm-jart')}<span class="hm-jn">${esc(p[1])}</span><span class="hm-jd">${esc(p[2])}</span><span class="hm-go" aria-hidden="true">${HM_ARROW}</span></button>`;}).join('');
-  m.innerHTML=`<h2 class="hm-sum"><span class="hm-dt ${dt||'none'}">${dt==='green'?'Green day':dt==='gold'?'Gold day':'No school'}</span>${esc(head)}</h2><div class="hm-today">${today}</div>${state.qaDay?qaHTML():''}`+
-    (jump?`<h2 class="hm-sum hm-jh">Jump back in</h2><div class="hm-jgrid">${jump}</div>`:'');
+  /* Today: just the two day cards (today framed in its Green or Gold, the next day quieter) and a way to the calendar */
+  const di=today.indexOf('<div class="twog dayg">');if(di>=0)today=today.slice(di);
+  const fd=isSchoolDay(td)?td:nextSchoolDay(td,true),ft=fd?dayType(fd):null;
+  m.innerHTML=`<section class="hm-sec hm-todaysec"><div class="hm-today${ft?' dt-'+ft:''}">${today}</div>
+      <div class="hm-tgo"><button type="button" class="hbtn" data-home-go="calendar">Go to calendar</button></div></section>${state.qaDay?qaHTML():''}`+
+    (jump?`<section class="hm-sec hm-jbox"><h2 class="hm-jh">Jump back in</h2><div class="hm-jgrid">${jump}</div></section>`:'');
 }
 function hmOther(on){const w=document.querySelector('#v-home .hm-ow');if(!w)return;const p=w.querySelector('.hm-opop'),b=w.querySelector('#hm-other');
   if(on===undefined)on=p.hidden;p.hidden=!on;b.setAttribute('aria-expanded',String(on));b.classList.toggle('dd-open',on);}
@@ -8978,10 +9022,16 @@ const secDate=t=>{const d=new Date(t);return d.toLocaleDateString(undefined,{mon
 async function secOpen(note){
   if(!state.user)return;
   pwx={mode:'sec',seq:[]};
-  if(!document.querySelector('#pwx .sec'))pwxShow('<h2>Security</h2><p>Loading</p>',true);
+  /* shows at once from the last answer on this device, then checks the server and redraws only if something changed */
+  const key='sx-sec-'+state.user.name;let c=null;try{c=JSON.parse(localStorage.getItem(key)||'null');}catch(_){}
+  if(c&&c.ok)secPaint(c,note);else if(!document.querySelector('#pwx .sec'))pwxShow('<h2>Security</h2><p>Loading</p>',true);
   let r=null;try{r=await pwRpc('rpcSecurity',passKey);}catch(_){}
   if(!pwx||pwx.mode!=='sec')return;
-  if(!r||!r.ok){pwxShow('<h2>Security</h2><div class="pwx-msg">'+esc(PWX_ERR.conn)+'</div>',true);return;}
+  if(!r||!r.ok){if(!(c&&c.ok))pwxShow('<h2>Security</h2><div class="pwx-msg">'+esc(PWX_ERR.conn)+'</div>',true);return;}
+  try{localStorage.setItem(key,JSON.stringify(r));}catch(_){}
+  if(!(c&&c.ok)||JSON.stringify(c)!==JSON.stringify(r)||note)secPaint(r,note);
+}
+function secPaint(r,note){
   state.user.pic=r.pic;
   const todo=[[r.ical,'Add your Schoology link','Your assignments sync, and you can reset your password with it.','<button type="button" class="pwx-alt" data-pwx="classes">Edit classes</button>'],
     [r.pic,'Set a picture password','Another way to reset your password, and needed for two-step login.','<button type="button" class="pwx-alt" data-pwx="picset">Set</button>'],
@@ -9373,9 +9423,16 @@ function scareSound(){try{const C=window.AudioContext||window.webkitAudioContext
     const lfo=ac.createOscillator(),lg=ac.createGain();lfo.frequency.value=18;lg.gain.value=f*0.04;lfo.connect(lg);lg.connect(o.frequency);og.gain.value=v*0.3;o.connect(og);og.connect(g);o.start(t);lfo.start(t);o.stop(t+1.6);lfo.stop(t+1.6);});
   const n=ac.createBuffer(1,ac.sampleRate*1.2,ac.sampleRate),d=n.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*(1-i/d.length);
   const ns=ac.createBufferSource(),ng=ac.createGain();ns.buffer=n;ng.gain.value=0.35;ns.connect(ng);ng.connect(g);ns.start(t);}catch(_){}}
+/* the face appears in the dark box, bursts out over the whole screen (menu bar too), then shrinks back into the box */
 function scareGo(){const el=document.getElementById('v-scare');if(!el||state.view!=='scare')return;
-  const o=document.createElement('div');o.className='scare-ov';o.innerHTML=`<img alt="" src="${SCARE_IMG}">`;document.body.appendChild(o);scareSound();
-  setTimeout(()=>{o.classList.add('out');setTimeout(()=>{o.remove();const a=document.querySelector('#v-scare .scare-again');if(a)a.hidden=false;},500);},1900);}
+  const box=el.querySelector('.scare-pg');if(!box)return;const r=box.getBoundingClientRect();
+  const o=document.createElement('div');o.className='scare-ov';
+  const at=q=>{o.style.top=q.top+'px';o.style.left=q.left+'px';o.style.width=q.width+'px';o.style.height=q.height+'px';};
+  at(r);o.innerHTML=`<img alt="" src="${SCARE_IMG}">`;document.body.appendChild(o);
+  scareSound();
+  setTimeout(()=>{o.classList.add('big');at({top:0,left:0,width:innerWidth,height:innerHeight});},260);
+  setTimeout(()=>{const q=box.isConnected?box.getBoundingClientRect():r;o.classList.remove('big');o.classList.add('back');at(q);},2300);
+  setTimeout(()=>{o.classList.add('out');setTimeout(()=>{o.remove();const a=document.querySelector('#v-scare .scare-again');if(a)a.hidden=false;},450);},3300);}
 function renderScare(){const el=document.getElementById('v-scare');if(!el)return;clearTimeout(scareT);
   el.innerHTML=`<div class="scare-pg"><div class="scare-hall" aria-hidden="true"></div><p class="scare-q">Is someone there?</p><button class="hbtn scare-again" data-act="scareagain" hidden>Again</button></div>`;
   scareT=setTimeout(scareGo,2600+Math.random()*2600);}
@@ -10313,7 +10370,9 @@ const GAMES=[
   {id:'imposter',name:'Imposter',labels:['Social']},
   {id:'poker',name:'Poker',labels:['Social']},
   {id:'voteout',name:'Votesout',labels:['Social','Online']},
-  {id:'soundboard',name:'Soundboard',labels:['Social']}];
+  {id:'soundboard',name:'Soundboard',labels:['Social']},
+  {id:'meditation',name:'Meditation',labels:['Singleplayer'],hide:true},
+  {id:'crashout',name:'Crashout',labels:['Singleplayer'],hide:true}];
 /* the picker is one list (no sections); the labels stay on each tile */
 const GAME_SECTIONS=[['Singleplayer','Singleplayer'],['Social','Social'],['Multiplayer','Multiplayer'],['Online','Online']];
 const gmInSec=(x,lab)=>lab==='Online'?x.labels.includes('Online'):x.labels.includes(lab)&&!x.labels.includes('Online');
@@ -10869,6 +10928,7 @@ function pgTabs(v){
   const open=pgOpenNow(),g=document.getElementById('games'),d=document.getElementById('desmos');
   document.documentElement.classList.toggle('pg-open',open);
   if(v===undefined)v=state.setup&&state.user?'setup':state.view;
+  if(v==='clock'||v==='scare')v='tools';
   if(open)v=(!g.hidden&&g.querySelector('.tl-pick'))||(!g.hidden&&tlBack)||(!d.hidden&&tlDz)?'tools':'';
   document.querySelectorAll('#tabs button[data-v]').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
 }
@@ -10887,7 +10947,7 @@ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest
 /* ---------- Settings: a page with a sidebar of categories (Classes, Appearance, Password, and Administration for the
    owner); the sidebar shows or hides like the one on Tasks. Appearance and Password draw their panels into the page,
    Administration's own page moves into it ---------- */
-const SET_CATS=()=>[['classes','Classes'],['appearance','Appearance'],['password','Password']].concat(state.user&&state.user.owner?[['admin','Administration']]:[]);
+const SET_CATS=()=>[['classes','Classes'],['appearance','Appearance'],['password','Password'],['sugg','Suggestions']].concat(state.user&&state.user.owner?[['admin','Administration']]:[]);
 let setSide=(()=>{try{return localStorage.getItem('sx-setside')!=='0';}catch(_){return true;}})();
 function goSettings(cat){if(!state.user)return;closeNavMenus();try{pgCloseAll('');}catch(_){}
   if(state.setup&&COURSES.length)state.setup=false;state.setCat=cat||state.setCat||'classes';
@@ -10897,36 +10957,43 @@ function setInline(host){let o=document.getElementById('pwx');if(o&&!o.classList
   host.innerHTML='';host.appendChild(o);}
 function setCleanup(){const o=document.getElementById('pwx');if(o&&o.classList.contains('pwx-inline')){o.remove();if(pwx&&(pwx.mode==='appear'||pwx.mode==='sec'))pwx=null;}
   const r=document.getElementById('roles');if(r&&r.parentElement!==document.body){document.body.appendChild(r);try{closeRoles();}catch(_){}}
+  const q=document.getElementById('sugg');if(q&&q.parentElement!==document.body){q.hidden=true;q.innerHTML='';document.body.appendChild(q);}
   const v=document.getElementById('v-settings');if(v)v.dataset.cat='';}
 function renderSettingsPage(){
   const el=document.getElementById('v-settings');if(!el||!state.user)return;
   const cats=SET_CATS();if(!cats.some(c=>c[0]===state.setCat))state.setCat='classes';
-  const cat=state.setCat,key=cat+'|'+setSide;
+  const cat=state.setCat,key=cat;
   /* already showing this category: leave it alone (its panel redraws itself, and typing isn't interrupted) */
   if(el.dataset.cat===key&&el.querySelector('#set-body')&&el.querySelector('#set-body').firstChild){
-    if(cat==='classes'&&!el.contains(document.activeElement)){const c=el.querySelector('.set-card');if(c)c.innerHTML=settingsHTML('s',true);}
+    if(cat==='classes'&&!el.contains(document.activeElement)){const c=el.querySelector('.set-card');if(c)c.innerHTML='<h2 class="set-h">Classes</h2>'+settingsHTML('s',true);}
     return;}
   if(cat!=='admin'){const r=document.getElementById('roles');if(r&&r.parentElement!==document.body){document.body.appendChild(r);try{closeRoles();}catch(_){}}}
+  if(cat!=='sugg'){const q=document.getElementById('sugg');if(q&&q.parentElement!==document.body){q.hidden=true;q.innerHTML='';document.body.appendChild(q);}}
   el.dataset.cat=key;
   el.innerHTML=`<div class="opp-wrap set-wrap${setSide?' side-on':''}"><div class="opp-hd"><button type="button" class="hbtn hb-box opp-sidebtn${setSide?' on':''}" data-act="setside" aria-expanded="${setSide}" aria-label="${setSide?'Hide categories':'Show categories'}" title="${setSide?'Hide categories':'Show categories'}"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16"/></svg></button><div class="display">Settings</div></div>
     <div class="opp-body"><nav class="opp-side set-side" aria-label="Settings"${setSide?'':' hidden'}>${cats.map(([k,n])=>`<button type="button" class="opp-cat${cat===k?' on':''}" data-act="setcat" data-k="${k}"${cat===k?' aria-current="true"':''}><span>${n}</span></button>`).join('')}</nav>
     <div class="opp-main"><div id="set-body" class="set-body"></div></div></div></div>`;
   const body=el.querySelector('#set-body');
-  if(cat==='classes')body.innerHTML=`<div class="set-card">${settingsHTML('s',true)}</div>`;
+  if(cat==='classes')body.innerHTML=`<div class="set-card"><h2 class="set-h">Classes</h2>${settingsHTML('s',true)}</div>`;
   else if(cat==='appearance'){setInline(body);apOpen();}
   else if(cat==='password'){setInline(body);secOpen();}
   else if(cat==='admin'){const r=document.getElementById('roles');body.innerHTML='';body.appendChild(r);openRoles();}
+  else if(cat==='sugg'){const d=document.getElementById('sugg');body.innerHTML='';body.appendChild(d);d.innerHTML=suggHTML(false);d.hidden=false;}
 }
 document.addEventListener('click',e=>{const t=e.target;if(!t.closest)return;
   const c=t.closest('[data-act="setcat"]');if(c){state.setCat=c.dataset.k;renderSettingsPage();return;}
-  if(t.closest('[data-act="setside"]')){setSide=!setSide;try{localStorage.setItem('sx-setside',setSide?'1':'0');}catch(_){}renderSettingsPage();}});
+  if(t.closest('[data-act="setside"]')){setSide=!setSide;try{localStorage.setItem('sx-setside',setSide?'1':'0');}catch(_){}
+    /* only the sidebar shows or hides; the open section stays as it is */
+    const el=document.getElementById('v-settings');if(!el)return;const w=el.querySelector('.set-wrap'),sd=el.querySelector('.set-side'),b=el.querySelector('[data-act="setside"]');
+    if(w)w.classList.toggle('side-on',setSide);if(sd)sd.hidden=!setSide;
+    if(b){b.classList.toggle('on',setSide);b.setAttribute('aria-expanded',String(setSide));b.setAttribute('aria-label',setSide?'Hide categories':'Show categories');b.title=setSide?'Hide categories':'Show categories';}}});
 /* the buttons that used to open Appearance, Passwords or Administration as pop-ups now open those sections here */
 document.addEventListener('click',e=>{if(!state.user||!e.target.closest)return;
   if(e.target.closest('#v-settings'))return;
-  const a=e.target.closest('[data-act-appear],[data-act-sec],[data-act-roles]');if(!a)return;
+  const a=e.target.closest('[data-act-appear],[data-act-sec],[data-act-roles],[data-act-sugg]');if(!a)return;
   if(a.matches('[data-act-roles]')&&!state.user.owner)return;
   e.preventDefault();e.stopImmediatePropagation();
-  goSettings(a.matches('[data-act-appear]')?'appearance':a.matches('[data-act-sec]')?'password':'admin');},true);
+  goSettings(a.matches('[data-act-appear]')?'appearance':a.matches('[data-act-sec]')?'password':a.matches('[data-act-sugg]')?'sugg':'admin');},true);
 function pgCloseAll(keep){
   const sh=id=>id!==keep&&!document.getElementById(id).hidden;
   if(sh('sugg'))closeSugg(true);
