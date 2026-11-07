@@ -3033,6 +3033,13 @@ html.pc header.topbar .brand-logo svg [fill="#1CB0F6"],html.pc header.topbar .br
 html.pc header.topbar .brand-logo svg [fill="#1899D6"],html.pc header.topbar .brand-logo svg [fill="#1899d6"]{fill:var(--pri-dark)}
 /* Fade on Games, Tools, Suggestions and Administration (they paint their own background over the page's glow) */
 html.pfade:not(.splash-on) :is(#games:not(:has(.gm-frame)),#sugg,#roles,#desmos){background:radial-gradient(640px 480px at calc(100% + 40px) -80px,color-mix(in srgb,var(--pri) 18%,transparent),transparent 70%),var(--bg)!important}
+/* Decorations (Appearance, on by default): a soft circle of the page colour tucked into the corner of the Home cards,
+   the Jump back in tiles and the Tools tiles, as on Lectern */
+html.deco :is(.hm-card,.hm-jt,#games .tl-tile){position:relative;overflow:hidden;isolation:isolate}
+html.deco :is(.hm-card,.hm-jt,#games .tl-tile)::after{content:'';position:absolute;right:-70px;bottom:-70px;width:200px;height:200px;border-radius:50%;background:var(--pri);opacity:.14;pointer-events:none;z-index:-1}
+#games .tl-sens{margin-top:30px;padding:26px 0 10px;border-top:2px solid var(--line);justify-content:center}#games .tl-sens h3{margin:0}
+#games .gm-endbar{gap:10px;flex-wrap:wrap}.sec .sec-sw>h3{flex:1;margin:0}
+html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
 /* Jumpscare */
 #v-scare.on{position:relative;min-height:calc(100dvh - 140px);display:flex}
 .scare-pg{flex:1;position:relative;border-radius:var(--r);overflow:hidden;background:#050404;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:0 0 70px;min-height:calc(100dvh - 160px)}
@@ -6027,7 +6034,7 @@ async function loadData(pre){
     state.settings.homePages=Array.isArray(st.homePages)?[...st.homePages]:[];state.settings.homeRes=Array.isArray(st.homeRes)?st.homeRes.slice(0,12):[];
     state.settings.focusMode=!!st.focusMode;state.settings.courseOrder=Array.isArray(st.courseOrder)?st.courseOrder.filter(x=>typeof x==='string'):[];
     state.calcmap=d.calcmap||{};
-    state.settings.pageColors={...(st.pageColors||{})};state.settings.pageFade=!!st.pageFade;
+    state.settings.pageColors={...(st.pageColors||{})};state.settings.pageFade=!!st.pageFade;['decoOff','sensPics','sensGames','sensTools'].forEach(k=>state.settings[k]=!!st[k]);
     state.settings.homeView=HV_OPTS.some(([k])=>k===st.homeView)?st.homeView:'pages';state.settings.homePages=Array.isArray(st.homePages)?[...st.homePages]:[];
     state.settings.quickGames=Array.isArray(st.quickGames)?[...st.quickGames]:[];state.settings.homeRes=Array.isArray(st.homeRes)?[...st.homeRes]:[];
     if(fresh.length)saveSettings();
@@ -6143,7 +6150,7 @@ function confetti(x,y){
 }
 async function removeTask(id){try{await api('/api/task/'+encodeURIComponent(id),{method:'DELETE'});}catch(e){console.warn('delete failed',e);}}
 async function saveSettings(){if(!settingsLoaded)return;try{await api('/api/settings',{method:'POST',body:JSON.stringify({colors:state.settings.colors,periods:state.settings.periods,
-  advisoryCourse:state.settings.advisoryCourse||'',courses:COURSES,ical:state.settings.ical||'',fullNames:!!state.settings.fullNames,quickGames:state.settings.quickGames||[],focusMode:!!state.settings.focusMode,pageFade:!!state.settings.pageFade,pageColors:state.settings.pageColors||{},courseOrder:state.settings.courseOrder||[],homeView:state.settings.homeView||'pages',homePages:state.settings.homePages||[],homeRes:state.settings.homeRes||[],hideGames:!!state.settings.hideGames,hideChat:!!state.settings.hideChat,faqNew:!!state.settings.faqNew,oppStar:state.settings.oppStar||[],oppArch:state.settings.oppArch||[],gamesIntro:!!state.settings.gamesIntro,gameStar:state.settings.gameStar||[],hidePages:state.settings.hidePages||[],tutorialNew:!!state.settings.tutorialNew,rel:state.settings.rel||{},lunch:state.settings.lunch||{},gpa:SX.cleanGpa(state.settings.gpa),gpaYear:SX.cleanGpaYear(state.settings.gpaYear),gpaByYear:!!state.settings.gpaByYear})});}catch(e){console.warn('save failed',e);}}
+  advisoryCourse:state.settings.advisoryCourse||'',courses:COURSES,ical:state.settings.ical||'',fullNames:!!state.settings.fullNames,quickGames:state.settings.quickGames||[],focusMode:!!state.settings.focusMode,pageFade:!!state.settings.pageFade,decoOff:!!state.settings.decoOff,sensPics:!!state.settings.sensPics,sensGames:!!state.settings.sensGames,sensTools:!!state.settings.sensTools,pageColors:state.settings.pageColors||{},courseOrder:state.settings.courseOrder||[],homeView:state.settings.homeView||'pages',homePages:state.settings.homePages||[],homeRes:state.settings.homeRes||[],hideGames:!!state.settings.hideGames,hideChat:!!state.settings.hideChat,faqNew:!!state.settings.faqNew,oppStar:state.settings.oppStar||[],oppArch:state.settings.oppArch||[],gamesIntro:!!state.settings.gamesIntro,gameStar:state.settings.gameStar||[],hidePages:state.settings.hidePages||[],tutorialNew:!!state.settings.tutorialNew,rel:state.settings.rel||{},lunch:state.settings.lunch||{},gpa:SX.cleanGpa(state.settings.gpa),gpaYear:SX.cleanGpaYear(state.settings.gpaYear),gpaByYear:!!state.settings.gpaByYear})});}catch(e){console.warn('save failed',e);}}
 async function saveNote(n){if(STALE.has(n))return;try{await api('/api/advisory',{method:'POST',body:JSON.stringify(n)});}catch(e){console.warn('save failed',e);}}
 /* in-class assignments a week past their date, and sticky notes a week old, are removed by themselves */
 let sweepBusy=false;
@@ -8332,12 +8339,18 @@ const TOOLS=[['phys','Physics Helper','Paste cells from Google Sheets and get a 
   ['scare','Jumpscare','Is someone there?']];
 const TOOL_ART={phys:'flask',gpa:'graph',soundboard:'speaker',desmos:'calc',clock:'clock',meditation:'star',crashout:'controller',scare:'moon'};
 var tlBack=false,tlDz=false;
+/* sensitive pictures: Crashout and Five Nights at Epstein's stay hidden until Security turns them on, and then the
+   Tools page and the Games menu each have their own switch to show them */
+const SENS_TOOLS=['crashout'],SENS_GAMES=['fnae'];
+function sensOn(){return !!(state.settings&&state.settings.sensPics);}
+function sensHidden(id){const s=state.settings||{};
+  if(SENS_TOOLS.includes(id))return !(s.sensPics&&s.sensTools);if(SENS_GAMES.includes(id))return !(s.sensPics&&s.sensGames);return false;}
 function openTools(){
   tlBack=false;if(typeof tlKbHide==='function')tlKbHide();
   const g=document.getElementById('games');roomLeaveAll();
   g.innerHTML=`<div class="gm-pick tl-pick"><div class="gm-head"><h1 class="gm-h"><span>tools</span></h1>
     <button class="gm-x" data-act-gclose aria-label="Close" title="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
-    <section class="gm-sec"><div class="gm-grid">${TOOLS.map(([id,n,d])=>`<button class="gm-tile gm-plain tl-tile" data-tool="${id}">${art(TOOL_ART[id],'tl-art')}<span class="gm-big">${esc(n)}</span><span class="tl-desc">${esc(d)}</span><span class="hm-go" aria-hidden="true">${HM_ARROW}</span></button>`).join('')}</div></section></div>`;
+    <section class="gm-sec"><div class="gm-grid">${TOOLS.filter(([id])=>!sensHidden(id)).map(([id,n,d])=>`<button class="gm-tile gm-plain tl-tile" data-tool="${id}">${art(TOOL_ART[id],'tl-art')}<span class="gm-big">${esc(n)}</span><span class="tl-desc">${esc(d)}</span><span class="hm-go" aria-hidden="true">${HM_ARROW}</span></button>`).join('')}</div></section>${sensOn()?`<div class="tl-sens sec-sw"><h3 class="ap-fh">Crashout</h3><input type="checkbox" class="switch" id="tl-sens" ${state.settings.sensTools?'checked':''} aria-label="Crashout"></div>`:''}</div>`;
   g.hidden=false;
 }
 document.addEventListener('click',e=>{
@@ -8825,7 +8838,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.getElemen
 const HM_SITES=[['profegpt','bubble','ProfeGPT'],['interpres','scroll','Interpres'],['ambicant','bulb','Ambicant'],['planner','logo','Planner']];
 const HM_JUMP=[['advisory','sticky'],['tools','calc'],['resources','books'],['chat','chat'],['games','controller']];
 const HM_ARROW='<svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
-const hmQgOk=x=>!!(x&&!x.hide&&!gameLocked(x));
+const hmQgOk=x=>!!(x&&!x.hide&&!gameLocked(x)&&!sensHidden(x.id));
 const hmQgList=()=>((state.settings&&state.settings.quickGames)||[]).filter(id=>hmQgOk(GAMES.find(g=>g.id===id))).slice(0,5);
 function hmQuick(el){
   const q=el.querySelector('#hm-qg');if(!q)return;
@@ -9122,6 +9135,7 @@ function secPaint(r,note){
       <div class="pwx-row">${r.pic?'<button type="button" class="pwx-alt" data-pwx="picset">Change</button><button type="button" class="pwx-alt" data-pwx="picoff">Turn off</button>':'<button type="button" class="pwx-alt" data-pwx="picset">Set picture password</button>'}</div></section>
     <section><h3>Two-step login</h3><div class="sec-sw"><p>Asks for your picture password every time you log in.${r.pic?'':' Set a picture password first.'}</p>
       <input type="checkbox" class="switch tfa-sw" ${r.tfa?'checked':''} ${r.pic?'':'disabled'} aria-label="Two-step login"></div></section>
+    <section><div class="sec-sw"><h3>Sensitive pictures</h3><input type="checkbox" class="switch sens-sw" ${state.settings&&state.settings.sensPics?'checked':''} aria-label="Sensitive pictures"></div></section>
     <section><h3>Security notices</h3>${r.notices.length?`<ul class="sec-notes">${r.notices.map(([t,m])=>`<li><span>${esc(secDate(t))}</span>${esc(m)}</li>`).join('')}</ul>`:'<p>No security notices yet.</p>'}</section></div>`,true);
 }
 document.addEventListener('click',e=>{const b=e.target.closest('[data-act-sec]');if(!b)return;e.preventDefault();e.stopPropagation();
@@ -9164,6 +9178,7 @@ function apOpen(note){
     <section><h3>Colors</h3><div class="ap-cols">${pcPages().map(([k,n])=>{const cur=pcOf(k);
       return `<div class="ap-col"><span>${esc(n)}</span><div class="ap-sws">${PC_SW.map(c=>`<button type="button" class="ap-sw${c===cur?' on':''}" style="--c:${c}" data-ap-pc="${esc(k)}" data-c="${c}" aria-pressed="${c===cur}" aria-label="${esc(n)} ${c}"></button>`).join('')}</div></div>`;}).join('')}</div></section>
     <section><div class="sec-sw"><h3 class="ap-fh">Fade</h3><input type="checkbox" class="switch" id="ap-fade" ${state.settings.pageFade?'checked':''} aria-label="Fade"></div></section>
+    <section><div class="sec-sw"><h3 class="ap-fh">Decorations</h3><input type="checkbox" class="switch" id="ap-deco" ${state.settings.decoOff?'':'checked'} aria-label="Decorations"></div></section>
     <section><h3>Avatar</h3><p>Shown next to your name in Chat.</p>
       <h4>Modern</h4><div class="ap-avs">${tile('')}${VO_AV.m.map((_,i)=>tile('m'+i)).join('')}</div>
       <h4>Antiques</h4><div class="ap-avs">${VO_AV.a.map((_,i)=>tile('a'+i)).join('')}</div></section>
@@ -9202,7 +9217,7 @@ function pcApply(v){const r=document.documentElement,on=!!(state.user&&state.set
   const k=pcPage(v),c=on&&((state.settings.pageColors||{})[k]);
   if(c&&c!==PC_SW[0]&&/^#[0-9a-f]{6}$/i.test(c)){r.style.setProperty('--pc',c);r.classList.add('pc');}
   else if(r.classList.contains('pc')){r.classList.remove('pc');r.style.removeProperty('--pc');}
-  const f=on&&!!state.settings.pageFade;r.classList.toggle('pfade',f);
+  const f=on&&!!state.settings.pageFade;r.classList.toggle('pfade',f);r.classList.toggle('deco',!(on&&state.settings.decoOff));
   if(f&&!document.getElementById('pfade')){const d=document.createElement('div');d.id='pfade';d.setAttribute('aria-hidden','true');document.body.appendChild(d);}}
 document.addEventListener('click',e=>{
   const b=e.target.closest&&e.target.closest('#pwx [data-ap-pc]');if(!b||!state.user)return;
@@ -9235,6 +9250,16 @@ document.addEventListener('change',e=>{
   if(e.target.id!=='ap-fade'||!state.user)return;
   state.settings.pageFade=e.target.checked;pcApply();saveSettings();
 });
+document.addEventListener('change',e=>{
+  if(!state.user)return;const id=e.target.id;
+  if(id==='ap-deco'){state.settings.decoOff=!e.target.checked;pcApply();saveSettings();return;}
+  if(id==='tl-sens'){state.settings.sensTools=e.target.checked;saveSettings();
+    const y=document.querySelector('#games .gm-pick')?document.querySelector('#games .gm-pick').scrollTop:0;openTools();const p=document.querySelector('#games .gm-pick');if(p)p.scrollTop=y;return;}
+  if(e.target.classList&&e.target.classList.contains('sens-sw')){state.settings.sensPics=e.target.checked;saveSettings();try{if(state.view==='home')render();}catch(_){}}
+});
+document.addEventListener('click',e=>{if(!e.target.closest||!e.target.closest('#games [data-gm-sens]')||!state.user)return;
+  state.settings.sensGames=!state.settings.sensGames;saveSettings();const p=document.querySelector('#games .gm-pick'),y=p?p.scrollTop:0;
+  gmRenderPick();const q=document.querySelector('#games .gm-pick');if(q)q.scrollTop=y;});
 {const g=document.getElementById('games');if(g)new MutationObserver(()=>pcApply()).observe(g,{attributes:true,attributeFilter:['hidden'],childList:true});}
 const MEME_BASE='https:'+SLASH2+'cdn.jsdelivr.net/gh/yuzhe-chen/saxon-arcade@main/memes/';
 let memeT=0,memeGot=null,memeMiss=0;
@@ -10339,7 +10364,7 @@ function closeSugg(force){
   const d=document.getElementById('sugg');if(d.hidden)return;
   const tx=document.getElementById('sugg-t');
   if(!force&&tx&&tx.value.trim()&&!document.querySelector('#sugg [data-sugg-sent]')){suggWarn(true);return;}
-  d.hidden=true;d.innerHTML='';
+  d.hidden=true;d.innerHTML='';pgBackTools();
   if(suggFocus&&suggFocus.isConnected&&suggFocus.focus)suggFocus.focus({preventScroll:true});suggFocus=null;
 }
 function suggWarn(on){
@@ -10666,7 +10691,7 @@ async function openRoles(){
   if(nl&&!nl.error)pcPut('roles',{RL:nl,RLS:ns});else if(pc)return;
   if(!pcSame(nl,RL)||!pcSame(ns,RLS)){RL=nl;RLS=ns;rolesPaint();}
 }
-function closeRoles(){const d=document.getElementById('roles');d.hidden=true;d.innerHTML='';RL=null;RLS=null;}
+function closeRoles(){const d=document.getElementById('roles');d.hidden=true;d.innerHTML='';RL=null;RLS=null;pgBackTools();}
 function rolesPaint(msg){
   const d=document.getElementById('roles');if(d.hidden)return;
   if(!RL||RL.error){d.innerHTML=`<div class="docs-in"><button class="hbtn res-x" data-rl-close title="Close">×</button><div class="rl-none">Can't load Administration</div></div>`;return;}
@@ -10931,10 +10956,10 @@ function gmRenderPick(){
     return GAME_THUMB[x.id]?`<button class="gm-tile${cls}" ${dat}><img alt="" src="${thumbSrc(x.id)}">${li}<span class="gm-foot"><b>${esc(x.name)}</b>${tags}</span></button>`
       :`<button class="gm-tile gm-plain${cls}" ${dat}>${li}<span class="gm-big">${esc(x.name)}</span><span class="gm-foot">${tags}</span></button>`;};
   /* one list under one heading; the lock panel sits above it while any game is locked */
-  const list=GAMES.filter(x=>!x.hide);
+  const list=GAMES.filter(x=>!x.hide&&!sensHidden(x.id));
   pick.innerHTML=`<div class="gm-head"><h1 class="gm-h"><span>games</span></h1>
     <button class="gm-x" data-act-gclose aria-label="Close" title="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
-    <section class="gm-sec" data-sec="all">${list.some(gameLocked)?gmLockPanel():''}<input type="text" id="gm-q" class="gm-q" placeholder="Search games" aria-label="Search games" autocomplete="off" spellcheck="false" value="${esc(gmQ)}"><div class="gm-grid"><button class="gm-tile gm-add" data-gm-sugg aria-label="Suggest a game" title="Suggest a game"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>${gmSorted(list).map(x=>tile(x).replace(/^<button[^>]*>/,m=>m+gmStar(x))).join('')}</div></section>${gmUnlocked()?'<div class="gm-endbar"><button class="kbtn" data-gm-replay>Play animation again</button></div>':''}`;
+    <section class="gm-sec" data-sec="all">${list.some(gameLocked)?gmLockPanel():''}<input type="text" id="gm-q" class="gm-q" placeholder="Search games" aria-label="Search games" autocomplete="off" spellcheck="false" value="${esc(gmQ)}"><div class="gm-grid"><button class="gm-tile gm-add" data-gm-sugg aria-label="Suggest a game" title="Suggest a game"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>${gmSorted(list).map(x=>tile(x).replace(/^<button[^>]*>/,m=>m+gmStar(x))).join('')}</div></section>${gmUnlocked()||sensOn()?`<div class="gm-endbar">${gmUnlocked()?'<button class="kbtn" data-gm-replay>Play animation again</button>':''}${sensOn()?`<button class="kbtn" data-gm-sens>${state.settings.sensGames?'Hide sensitive games':'Show sensitive games'}</button>`:''}</div>`:''}`;
   gmFilterQ();
   /* the first time an account sees its games unlocked by a referral, the lock bursts open */
   if(gmUnlocked()&&state.user.referred>0&&!state.settings.unlockSeen){state.settings.unlockSeen=true;saveSettings();setTimeout(gmUnlockAnim,350);}
@@ -11074,11 +11099,16 @@ window.addEventListener('message',e=>{const m=e.data;if(!m||m.type!=='sx-idle')r
 {const g=document.getElementById('games');if(g)new MutationObserver(()=>{if(g.hidden||!g.querySelector('.gm-frame'))document.documentElement.classList.remove('gm-idle');}).observe(g,{attributes:true,attributeFilter:['hidden'],childList:true});}
 function pgCloseAll(keep){
   const sh=id=>id!==keep&&!document.getElementById(id).hidden;
+  pgToTools=false;
   if(sh('sugg'))closeSugg(true);
   if(sh('roles'))closeRoles();
   if(sh('desmos')){tlDz=false;closeDesmos();}
-  if(sh('games'))closeGames();
+  /* a tool opened from Tools (Crashout, Meditation, Soundboard) goes back to Tools when Suggestions or
+     Administration, opened over it, closes */
+  if(sh('games')){pgToTools=(keep==='sugg'||keep==='roles')&&(tlBack||!!document.querySelector('#games .tl-pick'));closeGames();}
 }
+var pgToTools=false;
+function pgBackTools(){if(!pgToTools)return;pgToTools=false;if(pgOpenNow())return;openTools();}
 document.addEventListener('click',e=>{
   const t=e.target.closest&&e.target.closest('header.topbar :is([data-v],.brand,[data-act-games],[data-act-sugg],[data-act-docs],[data-act-dash],[data-act-roles],[data-act-tut],[data-act-tools],[data-act-clock],[data-act-scare],#mgear,[data-act="classes"])');
   if(!t)return;
