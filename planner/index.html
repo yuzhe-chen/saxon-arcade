@@ -2941,6 +2941,21 @@ html.pg-open:not(.splash-on) header.topbar{z-index:1550}
   background:rgba(0,0,0,.45);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:.7}
 #games .gm-side:hover{opacity:1}
 #games .gm-side svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+/* Settings page */
+.set-body{min-width:0}
+.set-card{background:var(--panel);border:2px solid var(--line);border-bottom-width:4px;border-radius:var(--r);padding:18px 20px;max-width:720px}
+.set-card .row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 2px;border-bottom:1px solid var(--line);font-weight:700}
+.set-card .sx-ical{padding:14px 2px;border-bottom:1px solid var(--line)}
+.set-card .sx-ical input[type=text]{width:100%;box-sizing:border-box}
+.set-card .sx-ical,.set-card .sx-ical>*,.set-card .sx-redeem{max-width:none!important;width:auto!important}
+.set-card .sx-ical input[type=text]{width:100%!important}
+.pwx.pwx-inline{position:static;inset:auto;z-index:auto;display:block;padding:0;background:none;-webkit-backdrop-filter:none;backdrop-filter:none}
+.pwx.pwx-inline .pwx-card{width:100%;max-width:820px;max-height:none;overflow:visible;margin:0;box-shadow:none;border:2px solid var(--line);border-bottom-width:4px;border-radius:var(--r)}
+.pwx.pwx-inline .pwx-x{display:none}
+.set-body #roles{position:static!important;inset:auto!important;z-index:auto!important;overflow:visible!important;background:none!important}
+.set-body #roles .docs-in{padding:0!important;max-width:none}
+.set-body #roles .res-x{display:none}
+@media (max-width:700px){.set-wrap .set-side{position:static!important;width:auto!important;max-height:none!important;flex-direction:row!important;display:flex;gap:6px;overflow-x:auto;border-radius:var(--r)!important;border-left:2px solid var(--line)!important;margin-bottom:12px}.set-wrap .set-side[hidden]{display:none}.set-wrap .set-side .opp-cat{flex:none;width:auto}.set-wrap .opp-body{flex-direction:column}}
 /* Jumpscare */
 #v-scare.on{position:relative;min-height:calc(100dvh - 140px);display:flex}
 .scare-pg{flex:1;position:relative;border-radius:var(--r);overflow:hidden;background:#050404;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:0 0 70px;min-height:calc(100dvh - 160px)}
@@ -3392,6 +3407,7 @@ html.pg-open:not(.splash-on) header.topbar{z-index:1550}
 <section class="view" id="v-tools"></section>
 <section class="view" id="v-clock"></section>
 <section class="view" id="v-scare"></section>
+<section class="view" id="v-settings"></section>
 <section class="view" id="v-setup"></section>
 </div>
 
@@ -7303,7 +7319,7 @@ function hideHTML(){
   return `<div class="row"><span>Hidden</span><button class="kbtn wide hide-tog" data-act-hide aria-expanded="${state.hideOpen?'true':'false'}"><span class="hide-lb">Open</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button></div>
     <div class="hide-list" ${state.hideOpen?'':'hidden'}>${HIDE_ITEMS.map(x=>`<label class="hide-it"><span>${x[1]}</span><input type="checkbox" class="hide-cb" data-hide="${x[0]}" ${state.settings[x[0]]?'checked':''}><span class="hide-box" aria-hidden="true"></span></label>`).join('')}</div>`;
 }
-function settingsHTML(m){
+function settingsHTML(m,page){
   return `<div class="row"><span>Extended view</span>
     <input type="checkbox" class="switch" id="${m}extview" ${state.extended?'checked':''} aria-label="extended view"></div>`+
     `<div class="row"><span>Full course names</span>
@@ -7318,9 +7334,9 @@ function settingsHTML(m){
     `<div class="sx-ical g-games"><label class="fl" for="${m}redeem">Guest code</label>
       <div class="sx-redeem"><input type="text" id="${m}redeem" placeholder="Paste a guest code" autocomplete="off" spellcheck="false"><button class="kbtn" data-act-redeem="${m}">Move</button></div>
       <div class="sx-redeem-msg" id="${m}redeem-msg" role="status"></div></div>`+
-    (state.user?`<div class="row"><span>Appearance</span><button class="kbtn wide hide-tog" data-act-appear>Open<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button></div>`:hideHTML())+
-    (state.user?`<div class="row"><span>Passwords</span><button class="kbtn wide hide-tog" data-act-sec>Open<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button></div>`:'')+
-    (isModerator()?`<div class="row"><span>Administration</span><button class="kbtn wide hide-tog" data-act-roles>Open<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button></div>`:'');
+    (page?'':state.user?`<div class="row"><span>Appearance</span><button class="kbtn wide hide-tog" data-act-appear>Open<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button></div>`:hideHTML())+
+    (page?'':state.user?`<div class="row"><span>Passwords</span><button class="kbtn wide hide-tog" data-act-sec>Open<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button></div>`:'')+
+    (!page&&isModerator()?`<div class="row"><span>Administration</span><button class="kbtn wide hide-tog" data-act-roles>Open<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button></div>`:'');
 }
 /* ---------- FAQ: a pop-up from the Courses page; new accounts see the button blink until "I Can Read" ---------- */
 const FAQ=[
@@ -7465,7 +7481,7 @@ menuBtn.addEventListener('click',e=>{e.stopPropagation();
 });
 /* Other: the sister sites (ProfeGPT, Interpres, Ambicant, Planner) fold under one row */
 document.getElementById('mother').addEventListener('click',e=>{e.stopPropagation();const l=document.getElementById('mother-l'),b=e.currentTarget;l.hidden=!l.hidden;b.setAttribute('aria-expanded',String(!l.hidden));b.classList.toggle('dd-open',!l.hidden);});
-mGear.addEventListener('click',e=>{e.stopPropagation();if(!state.user){mColors.hidden=true;return;}mColors.hidden=!mColors.hidden;
+mGear.addEventListener('click',e=>{e.stopPropagation();if(!state.user){mColors.hidden=true;return;}goSettings('classes');return;mColors.hidden=!mColors.hidden;
   mGear.setAttribute('aria-expanded',String(!mColors.hidden));mGear.classList.toggle('dd-open',!mColors.hidden);if(!mColors.hidden)renderMColors();});
 function renderMColors(){mColors.innerHTML=state.user?settingsHTML('m'):'';
   const w=document.getElementById('mwho'),a=document.getElementById('macct');if(w)w.textContent=state.user?state.user.name:'';if(a)a.hidden=!state.user;}
@@ -7718,12 +7734,12 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-act-hide]'
   state.hideOpen=l.hidden;document.querySelectorAll('.hide-list').forEach(x=>x.hidden=!state.hideOpen);
   document.querySelectorAll('[data-act-hide]').forEach(x=>x.setAttribute('aria-expanded',state.hideOpen?'true':'false'));});
 document.addEventListener('change',async e=>{
-  if(e.target.id==='ical'||e.target.id==='mical'){
+  if(e.target.id==='ical'||e.target.id==='mical'||e.target.id==='sical'){
     state.settings.ical=e.target.value.trim();await saveSettings();return;}
-  if(e.target.id==='fullnames'||e.target.id==='mfullnames'){
+  if(e.target.id==='fullnames'||e.target.id==='mfullnames'||e.target.id==='sfullnames'){
     state.settings.fullNames=e.target.checked;render();await saveSettings();return;}
-  if(e.target.id==='focusmode'||e.target.id==='mfocusmode'){
-    state.settings.focusMode=e.target.checked;document.querySelectorAll('#focusmode,#mfocusmode').forEach(x=>x.checked=e.target.checked);render();await saveSettings();return;}
+  if(e.target.id==='focusmode'||e.target.id==='mfocusmode'||e.target.id==='sfocusmode'){
+    state.settings.focusMode=e.target.checked;document.querySelectorAll('#focusmode,#mfocusmode,#sfocusmode').forEach(x=>x.checked=e.target.checked);render();await saveSettings();return;}
   if(e.target.dataset&&e.target.dataset.hide&&HIDE_ITEMS.some(x=>x[0]===e.target.dataset.hide)){
     state.settings[e.target.dataset.hide]=e.target.checked;
     document.querySelectorAll('[data-hide="'+e.target.dataset.hide+'"]').forEach(x=>x.checked=e.target.checked);
@@ -7732,7 +7748,7 @@ document.addEventListener('change',async e=>{
   if(e.target.id==='rl-gtest'){
     try{localStorage.setItem('sx-gtest',e.target.checked?'1':'0');}catch(_){}
     render();return;}
-  if(e.target.id==='extview'||e.target.id==='mextview'){
+  if(e.target.id==='extview'||e.target.id==='mextview'||e.target.id==='sextview'){
     state.extended=e.target.checked;
     try{localStorage.setItem('sx-extended',state.extended?'1':'0');}catch(_){}
     render();return;}
@@ -8853,7 +8869,7 @@ function pwxShow(html,wide){
   c.innerHTML='<button type="button" class="pwx-x" data-pwx="close" aria-label="Close" title="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>'+html;
   c.scrollTop=0;setTimeout(()=>{const f=c.querySelector('input,.pwx-way,.pwx-pic');if(f)f.focus({preventScroll:true});},30);
 }
-function pwxClose(){const o=document.getElementById('pwx');if(o){o.hidden=true;o.firstChild.innerHTML='';}pwx=null;}
+function pwxClose(){const o=document.getElementById('pwx');if(o&&o.classList.contains('pwx-inline')){pwx=null;setTimeout(()=>{const v=document.getElementById('v-settings');if(v)v.dataset.cat='';renderSettingsPage();},0);return;}if(o){o.hidden=true;o.firstChild.innerHTML='';}pwx=null;}
 const pwxMsg=t=>{const m=document.querySelector('#pwx .pwx-msg');if(m)m.textContent=t||'';};
 const pwxBusy=on=>{const b=document.querySelector('#pwx .pwx-go');if(b){b.classList.toggle('busy',on);b.disabled=!!on;}};
 function pwxStart(name){pwx={mode:'reset',name:name||'',seq:[]};pwxWho();}
@@ -9395,7 +9411,8 @@ function render(){
   document.documentElement.classList.toggle('no-chat',!!(state.user&&state.settings.hideChat));
   AP_PAGES.forEach(([k])=>document.documentElement.classList.toggle('no-v-'+k,k!=='games'&&k!=='chat'&&pageHidden(k)));
   /* a view that throws falls back to the calendar instead of leaving the page stuck */
-  const views={home:renderHome,calendar:renderCalendar,courses:renderCourses,advisory:renderAdvisory,assignments:renderAssignments,resources:renderResources,chat:renderChat,tools:renderTools,tasks:renderTasks,clock:renderClock,scare:renderScare,setup:renderSetup};
+  if(state.view!=='settings')setCleanup();
+  const views={home:renderHome,calendar:renderCalendar,courses:renderCourses,advisory:renderAdvisory,assignments:renderAssignments,resources:renderResources,chat:renderChat,tools:renderTools,tasks:renderTasks,clock:renderClock,scare:renderScare,settings:renderSettingsPage,setup:renderSetup};
   try{if(v==='home')renderHome(!wasHome);else views[v]();}catch(err){
     console.error(err);
     if(v==='calendar'||v==='setup'){const s=document.getElementById('v-'+v);if(s)s.innerHTML='<div class="empty">Something went wrong showing this page. Reload to try again.</div>';return;}
@@ -10859,6 +10876,49 @@ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest
   const el=d&&(d.querySelector('#brand')||d.querySelector('.brand .title')||d.querySelector('.brand'));
   if(el){el.click();return;}
   try{new w.Function("parent.postMessage({type:'games-menu'},'*')")();}catch(_){try{openGames();}catch(__){}}});
+/* ---------- Settings: a page with a sidebar of categories (Classes, Appearance, Password, and Administration for the
+   owner); the sidebar shows or hides like the one on Tasks. Appearance and Password draw their panels into the page,
+   Administration's own page moves into it ---------- */
+const SET_CATS=()=>[['classes','Classes'],['appearance','Appearance'],['password','Password']].concat(state.user&&state.user.owner?[['admin','Administration']]:[]);
+let setSide=(()=>{try{return localStorage.getItem('sx-setside')!=='0';}catch(_){return true;}})();
+function goSettings(cat){if(!state.user)return;closeNavMenus();try{pgCloseAll('');}catch(_){}
+  if(state.setup&&COURSES.length)state.setup=false;state.setCat=cat||state.setCat||'classes';
+  const v=document.getElementById('v-settings');if(v)v.dataset.cat='';state.view='settings';render();}
+function setInline(host){let o=document.getElementById('pwx');if(o&&!o.classList.contains('pwx-inline')){o.remove();o=null;}
+  if(!o){o=document.createElement('div');o.id='pwx';o.className='pwx pwx-inline';o.innerHTML='<div class="pwx-card"></div>';}
+  host.innerHTML='';host.appendChild(o);}
+function setCleanup(){const o=document.getElementById('pwx');if(o&&o.classList.contains('pwx-inline')){o.remove();if(pwx&&(pwx.mode==='appear'||pwx.mode==='sec'))pwx=null;}
+  const r=document.getElementById('roles');if(r&&r.parentElement!==document.body){document.body.appendChild(r);try{closeRoles();}catch(_){}}
+  const v=document.getElementById('v-settings');if(v)v.dataset.cat='';}
+function renderSettingsPage(){
+  const el=document.getElementById('v-settings');if(!el||!state.user)return;
+  const cats=SET_CATS();if(!cats.some(c=>c[0]===state.setCat))state.setCat='classes';
+  const cat=state.setCat,key=cat+'|'+setSide;
+  /* already showing this category: leave it alone (its panel redraws itself, and typing isn't interrupted) */
+  if(el.dataset.cat===key&&el.querySelector('#set-body')&&el.querySelector('#set-body').firstChild){
+    if(cat==='classes'&&!el.contains(document.activeElement)){const c=el.querySelector('.set-card');if(c)c.innerHTML=settingsHTML('s',true);}
+    return;}
+  if(cat!=='admin'){const r=document.getElementById('roles');if(r&&r.parentElement!==document.body){document.body.appendChild(r);try{closeRoles();}catch(_){}}}
+  el.dataset.cat=key;
+  el.innerHTML=`<div class="opp-wrap set-wrap${setSide?' side-on':''}"><div class="opp-hd"><button type="button" class="hbtn hb-box opp-sidebtn${setSide?' on':''}" data-act="setside" aria-expanded="${setSide}" aria-label="${setSide?'Hide categories':'Show categories'}" title="${setSide?'Hide categories':'Show categories'}"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16"/></svg></button><div class="display">Settings</div></div>
+    <div class="opp-body"><nav class="opp-side set-side" aria-label="Settings"${setSide?'':' hidden'}>${cats.map(([k,n])=>`<button type="button" class="opp-cat${cat===k?' on':''}" data-act="setcat" data-k="${k}"${cat===k?' aria-current="true"':''}><span>${n}</span></button>`).join('')}</nav>
+    <div class="opp-main"><div id="set-body" class="set-body"></div></div></div></div>`;
+  const body=el.querySelector('#set-body');
+  if(cat==='classes')body.innerHTML=`<div class="set-card">${settingsHTML('s',true)}</div>`;
+  else if(cat==='appearance'){setInline(body);apOpen();}
+  else if(cat==='password'){setInline(body);secOpen();}
+  else if(cat==='admin'){const r=document.getElementById('roles');body.innerHTML='';body.appendChild(r);openRoles();}
+}
+document.addEventListener('click',e=>{const t=e.target;if(!t.closest)return;
+  const c=t.closest('[data-act="setcat"]');if(c){state.setCat=c.dataset.k;renderSettingsPage();return;}
+  if(t.closest('[data-act="setside"]')){setSide=!setSide;try{localStorage.setItem('sx-setside',setSide?'1':'0');}catch(_){}renderSettingsPage();}});
+/* the buttons that used to open Appearance, Passwords or Administration as pop-ups now open those sections here */
+document.addEventListener('click',e=>{if(!state.user||!e.target.closest)return;
+  if(e.target.closest('#v-settings'))return;
+  const a=e.target.closest('[data-act-appear],[data-act-sec],[data-act-roles]');if(!a)return;
+  if(a.matches('[data-act-roles]')&&!state.user.owner)return;
+  e.preventDefault();e.stopImmediatePropagation();
+  goSettings(a.matches('[data-act-appear]')?'appearance':a.matches('[data-act-sec]')?'password':'admin');},true);
 function pgCloseAll(keep){
   const sh=id=>id!==keep&&!document.getElementById(id).hidden;
   if(sh('sugg'))closeSugg(true);
@@ -10867,7 +10927,7 @@ function pgCloseAll(keep){
   if(sh('games'))closeGames();
 }
 document.addEventListener('click',e=>{
-  const t=e.target.closest&&e.target.closest('header.topbar :is([data-v],.brand,[data-act-games],[data-act-sugg],[data-act-docs],[data-act-dash],[data-act-roles],[data-act-tut],[data-act-tools],[data-act-clock],[data-act-scare],[data-act="classes"])');
+  const t=e.target.closest&&e.target.closest('header.topbar :is([data-v],.brand,[data-act-games],[data-act-sugg],[data-act-docs],[data-act-dash],[data-act-roles],[data-act-tut],[data-act-tools],[data-act-clock],[data-act-scare],#mgear,[data-act="classes"])');
   if(!t)return;
   /* a menu row leaves the menu closed (the page it opens sits under the bar, where the open menu would cover it) */
   if(t.closest('#mmenu,#moredd,#setdd'))closeNavMenus();
