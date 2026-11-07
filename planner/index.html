@@ -9649,7 +9649,8 @@ if(window.SX_REF)sxRefArrived(window.SX_REF);
       state.user=boot.u;state.settings.hideChat=!!boot.hc;state.settings.hideGames=!!boot.hg;
       sp.classList.add('gone');document.documentElement.classList.remove('splash-on');
       try{localStorage.setItem('sx-tab','home');}catch(_){}
-      render();
+      /* a drawing error must never stop the data from loading */
+      try{render();}catch(e){console.warn('first render failed',e);}
     }
     loadData().then(ok=>{
       if(ok){state.view=quick&&state.view!=='home'?state.view:'home';try{localStorage.setItem('sx-tab',state.view);}catch(_){}
@@ -10856,7 +10857,8 @@ function closeGames(){
    While one is open the bar's tabs show it (Tools lights the Tools tab, the others none), and the bar's tabs, brand and
    menu rows close it before going to their own page */
 const PG_IDS=['games','sugg','roles','desmos'];
-const pgOpenNow=()=>PG_IDS.some(id=>{const e=document.getElementById(id);return e&&!e.hidden;});
+/* a function declaration (not a const): render() runs during startup, before this line has been reached */
+function pgOpenNow(){return ['games','sugg','roles','desmos'].some(id=>{const e=document.getElementById(id);return e&&!e.hidden;});}
 function pgTabs(v){
   const open=pgOpenNow(),g=document.getElementById('games'),d=document.getElementById('desmos');
   document.documentElement.classList.toggle('pg-open',open);
