@@ -19,6 +19,9 @@ window.google={script:{run:runner(null,null)}};})();</script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 96 96'%3E%3Cg transform='rotate%28-10 48 50%29'%3E%3Crect x='26' y='18' width='54' height='70' rx='8' fill='%23AFAFAF'/%3E%3Crect x='24' y='15' width='54' height='69' rx='8' fill='%23FFFFFF'/%3E%3Crect x='71' y='26' width='6' height='2.2' rx='1.1' fill='%23E5E5E5'/%3E%3Crect x='71' y='39' width='6' height='2.2' rx='1.1' fill='%23E5E5E5'/%3E%3Crect x='71' y='52' width='6' height='2.2' rx='1.1' fill='%23E5E5E5'/%3E%3Crect x='71' y='65' width='6' height='2.2' rx='1.1' fill='%23E5E5E5'/%3E%3Crect x='30' y='81.5' width='38' height='2.2' rx='1.1' fill='%23E5E5E5'/%3E%3Crect x='20' y='12' width='54' height='66' rx='8' fill='%231CB0F6'/%3E%3Crect x='20' y='12' width='12' height='66' rx='6' fill='%231899D6'/%3E%3Crect x='28' y='12' width='4' height='66' fill='%231899D6'/%3E%3Crect x='39' y='26' width='28' height='18' rx='5' fill='%23FFFFFF'/%3E%3Crect x='44' y='31' width='18' height='3.4' rx='1.7' fill='%231CB0F6'/%3E%3Crect x='44' y='37' width='12' height='3.4' rx='1.7' fill='%231CB0F6'/%3E%3Cpath d='M56 76L64 76L64 91Q64 92 63.3 91.3L60.7 88.7Q60 88 59.3 88.7L56.7 91.3Q56 92 56 91Z' fill='%23FF4B4B'/%3E%3C/g%3E%3C/svg%3E">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@500;600;700;800;900&display=swap">
 <style>
+/* HOUSE RULE (the owner has asked many times): anything with a darker 3D ledge along its bottom (a thick bottom border,
+   or an inset bottom shadow) centers its text and icons in the LIGHT face only, never across the face plus the ledge.
+   Inset shadow ledges need padding-bottom equal to the ledge; border ledges already sit outside the content box. */
 /* Full-width working surface under a black product bar. Boxes are white with crisp dark edges,
    content is regular-weight text; class names carry no color squares. */
 :root{
@@ -2712,7 +2715,7 @@ html.no-v-tools [data-v="tools"],html.no-v-tools #hm-tools{display:none!importan
 .tl-chip{appearance:none;min-height:44px;padding:0 14px;border:2px solid var(--line);border-bottom-width:4px;border-radius:var(--rs);background:var(--bg);color:var(--fg2);
   font:700 14px/1 var(--font-ui);cursor:pointer;white-space:nowrap}
 .tl-chip:active{transform:translateY(2px);border-bottom-width:2px}
-.tl-chip.on{background:var(--blue);border-color:var(--blue);color:#fff;box-shadow:inset 0 -4px 0 rgba(0,0,0,.18);border-bottom-width:2px}
+.tl-chip.on{background:var(--blue);border-color:var(--blue);color:#fff;box-shadow:inset 0 -4px 0 rgba(0,0,0,.18);border-bottom-width:2px;padding-bottom:4px}
 .tl-out{overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:none;padding-bottom:4px}
 .tl-units{position:relative;height:44px;margin-bottom:8px;min-width:100%}
 .tl-u{position:absolute;top:0;box-sizing:border-box;height:40px;padding:0 4px;text-align:center;border:2px solid var(--line);border-radius:10px;background:var(--input);color:var(--fg);font:600 14px var(--font-ui)}
@@ -3207,7 +3210,7 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
   border:2px solid transparent;border-radius:var(--rs);padding:8px 10px;font-family:var(--font-ui)}
 .cf-row:hover{background:var(--panel2)}
 .cf-row.sel{background:var(--blue-wash);border-color:var(--blue)}
-.cf-p{flex:none;width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font:700 17px var(--display);box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)}
+.cf-p{flex:none;width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:#fff;font:700 17px var(--display);box-shadow:inset 0 -3px 0 rgba(0,0,0,.18);padding-bottom:3px;box-sizing:border-box}
 .cf-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
 .cf-n{font:600 16px/1.25 var(--display);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cf-s{font-size:12.5px;font-weight:700;color:var(--faint)}
