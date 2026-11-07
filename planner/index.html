@@ -1506,6 +1506,7 @@ html.gm-play body>:not(#games):not(#gwarn):not(#gasmove),html.gm-play body>:not(
 .rdoc .cols li{break-inside:avoid}
 .rdoc a{color:var(--accent)}
 .rdoc .katex{font-size:1.08em}
+.rd-tabs{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 18px}.rd-tabs .hbtn{min-height:40px;padding:0 14px}.rd-tabs .hbtn.on{background:var(--pri-wash,var(--blue-wash));border-color:var(--pri);color:var(--pri)}
 .rdoc .katex-display{margin:8px 0 12px;overflow-x:auto;overflow-y:hidden}
 .vocab-filter{margin:22px 0 4px calc(-1 * var(--reach));max-width:calc(320px + var(--rin));padding-left:var(--rin)!important;background:var(--input)}
 .vocab-filter+h3{margin-top:22px}
@@ -2069,8 +2070,8 @@ button.hm-site{appearance:none;cursor:pointer}
 .hm-jbox{background:var(--panel);border:2px solid var(--line);border-bottom-width:4px;border-radius:var(--r);padding:22px 24px 24px}
 #hm-more .hm-jbox .hm-jh{margin:0 0 16px;font:700 24px/1.15 var(--display);letter-spacing:-0.02em;color:var(--fg)}
 .hm-jbox .hm-jgrid{grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
-.hm-jbox .hm-jt{min-height:132px;padding:16px;background:var(--panel2)}
-.hm-jbox .hm-jt:hover{background:var(--panel)}
+.hm-jbox .hm-jt{min-height:132px;padding:16px;background:var(--bg)}
+.hm-jbox .hm-jt:hover{background:var(--panel2)}
 .hm-jbox .hm-jt .hm-jart{width:46px;height:46px}
 .hm-jbox .hm-jn{font-size:19px;margin-top:10px}
 .hm-jbox .hm-jd{font-size:13.5px}
@@ -6873,6 +6874,9 @@ function resItemHTML(it){
       </div>`).join('')}</div>`;}
   if(it.type==='readings')return `<div class="rdoc">${(it.readings||[]).map(r=>`<div class="rd-card"><div class="rdt">${esc(r.title)}</div>
       <div class="rdm">${esc(r.meta||'')}</div><div>${esc(r.summary)}</div></div>`).join('')}</div>`;
+  /* a guide in tabs: one row of tabs, one page each (state.resTab remembers the tab while the guide stays open) */
+  if(it.type==='tabs'){const tabs=it.tabs||[];if(state.resTabOf!==it.id){state.resTabOf=it.id;state.resTab=0;}const i=Math.min(state.resTab|0,tabs.length-1);
+    return `<div class="rdoc"><div class="rd-tabs" role="tablist">${tabs.map((t,j)=>`<button type="button" class="hbtn${j===i?' on':''}" role="tab" aria-selected="${j===i}" data-act="restab" data-i="${j}">${esc(t.title)}</button>`).join('')}</div>${tabs[i]?tabs[i].html:''}</div>`;}
   return `<div class="rdoc">${it.html||''}</div>`;
 }
 const vrow=v=>`<div class="vrow"><span class="vw">${esc(v.term)}</span><span>${esc(v.def)}${v.ex?`<span class="vex">${esc(v.ex)}</span>`:''}</span></div>`;
@@ -7956,6 +7960,7 @@ document.addEventListener('click',async e=>{
     if(h)h.scrollIntoView({block:'start',behavior:'smooth'});return;}
   if(act==='faqclose'){closeFaq();return;}
   if(act==='faqguide'){closeFaq();openDocs();return;}
+  if(act==='restab'){state.resTab=Number(el.dataset.i)||0;render();return;}
   if(act==='faqread'){state.settings.faqNew=false;closeFaq();render();saveSettings();return;}
   if(act==='sucancel'){state.setup=false;render();return;}
   if(act==='logout'){pending('logout','[data-act="logout"]',logOut);return;}
@@ -8479,7 +8484,7 @@ const TOOLS=[['phys','Physics Helper','Paste cells from Google Sheets and get a 
   ['meditation','Meditation','Calm scenes, breathing and a session timer'],
   ['crashout','Crashout','A squishy doll to knock around'],
   ['scare','Jumpscare','Is someone there?']];
-const TOOL_ART={phys:'flask',gpa:'graph',soundboard:'speaker',desmos:'calc',clock:'clock',meditation:'star',crashout:'controller',scare:'moon'};
+const TOOL_ART={phys:'graph',gpa:'clipboard',soundboard:'speaker',desmos:'calc',clock:'clock',meditation:'star',crashout:'controller',scare:'moon'};
 var tlBack=false,tlDz=false;
 /* rewards: the referral tree count (everyone who signed up with your code, and everyone they referred, and so on);
    the owner has every reward */
