@@ -10227,10 +10227,12 @@ const tutFind=s=>!s?null:typeof s==='function'?s():[...document.querySelectorAll
 const tutUp=s=>()=>{const b=tutFind(s);return b&&b.parentElement;};
 const TUT_STEPS=[
   {v:'home',t:'Welcome',p:'Here’s a quick tour of Saxon Planner. It takes about a minute.'},
+  {v:'home',s:'#hm-edit',alt:'#v-home .hm-btns',t:'Home',
+    p:'Home has your day at a glance, quick games and Jump back in. Edit home picks what it shows.'},
   {v:'home',games:1,s:'#gamesbtn',m:'#mmenu [data-act-games]',click:1,t:'Games',
     p:'Games live here, for when you need a break. Press <kbd>H</kbd> at any time to hide them and jump straight back to the planner.'},
   {v:'home',games:2,s:'#games #gm-lock',alt:'#games .gm-h',live:1,t:'Unlock Multiplayer',
-    p:'Multiplayer and Online games start locked. Share your referral link, and once one other person signs up with it, they unlock. Singleplayer and Social are always open. A link can’t be used on a device that already has an account.',
+    p:'Multiplayer and Online games start locked. Share your referral link, and once one person signs up with it, they unlock. Singleplayer and Social are always open.',
     pa:'Multiplayer and Online games are unlocked on your account. Singleplayer and Social are always open.'},
   {v:'courses',s:'#v-courses [data-act="classes"]',click:1,t:'Your classes',p:'Start with your classes. Edit classes is where you add them, and where you change them later.'},
   {v:'setup',s:'#v-setup .su-list',live:1,t:'Add your classes',p:'Type each class and its period. They save as you type.'},
@@ -10243,15 +10245,25 @@ const TUT_STEPS=[
   {v:'courses',s:'#v-courses .ccard .qadd',live:1,t:'Add coursework',
     p:'Or type into a class’s box, one assignment per line, and press the button for its type.',
     pa:'Once your classes are in, each one gets a card here with a box for adding assignments.'},
+  {v:'courses',s:'#v-courses .crs-print',t:'Your courses',
+    p:'Print this page from here. Drag a class card to put your classes in any order.'},
+  {v:'assignments',s:'#v-assignments [data-act="asgf"][aria-pressed]',t:'Assignments',
+    p:'Everything not done yet, oldest first. Toggle overdue shows what’s past due beside it.',
+    pa:'Assignments lists everything not done yet, oldest first.'},
   {v:'advisory',s:'#v-advisory .ev-add',live:1,t:'School events',p:'Add school events like games, dances, or days off. They show on your calendar too.'},
   {v:'advisory',s:'#v-advisory [data-act="nadd"]',t:'To-Dos',p:'Sticky notes for everything else. Press + to add one, and its first line becomes the title.'},
-  {v:'courses',s:'#v-courses [data-act="faq"]',t:'FAQ',p:'Stuck? The FAQ answers the common questions. It blinks until you’ve read it.'},
-  {v:'courses',s:'#docsbtn',m:'#mmenu [data-act-docs]',t:'Guide',p:'The Guide in this menu explains every feature.'},
-  {v:'courses',s:'#gearbtn',m:'#mgear',t:'Settings',
-    p:'Settings has Extended view, full course names, Edit classes, your Schoology link, a guest code for moving game progress, Appearance (hide any page, and pick your Chat avatar) and Security.'},
-  {v:'courses',set:1,s:tutUp('#setdd [data-act-sec]'),m:tutUp('#mcolors [data-act-sec]'),t:'Security',
-    p:'Set a picture password in Security: pick 3 of the 12 pictures, in order, press Save and write them down. If you ever forget your password, press Forgot my password on the login page and pick the same 3. Security also changes your password, turns on two-step login and lists security notices.'},
-  {v:'courses',s:'#suggbtn',m:'#msugg',t:'Suggestions',p:'Have an idea or found a bug? Send it here. That’s the tour!',pl:'Have an idea or found a bug? Send it here.'},
+  {v:'advisory',s:'#trow [data-v="tools"]',m:'#mmenu .mtab[data-v="tools"]',click:1,t:'Tools',
+    p:'Physics Helper, GPA Calculator, Desmos, a clock, a soundboard and more.'},
+  {v:'advisory',m:'#mrewards',t:'Rewards',
+    p:'Every person who signs up with your code moves you up a rank and unlocks something new. Your code is your username.'},
+  {v:'advisory',m:'#mgear',click:1,t:'Settings',p:'Settings lives in this menu.'},
+  {v:'settings',sc:'classes',s:'#v-settings .set-side',alt:'#v-settings .opp-sidebtn',t:'Your settings',
+    p:'Classes has Focus mode and your Schoology link. Appearance hides pages and sets colors, Home, the footer and your avatar.'},
+  {v:'settings',sc:'password',s:'#v-settings .sec-todo',alt:tutUp('#v-settings .tfa-sw'),t:'Security',
+    p:'Set a picture password: 3 of 12 pictures, in order. If you forget your password, Forgot my password on the login page takes the same 3. Two-step login is here too.'},
+  {v:'courses',s:'#sxfoot',t:'Help',p:'Suggestions, this tutorial, the FAQ and the Guide are at the bottom of every page. That’s the tour!',
+    pl:'Suggestions, this tutorial, the FAQ and the Guide are at the bottom of every page.',
+    pa:'Suggestions and the Guide are in the menu, and the FAQ is on Home.'},
   {v:'courses',s:'#v-courses [data-act="classes"]',noIcal:1,t:'Your Schoology link',p:'Don’t forget your Schoology link. Without it nothing syncs. You can add it any time from Edit classes.'}];
 /* the steps for this tour; the Schoology reminder only while the account has no link */
 const tutSteps=()=>TUT_STEPS.filter(s=>!(document.documentElement.classList.contains('no-games')&&s.games)&&!(s.noIcal&&state.settings.ical));
@@ -10279,19 +10291,23 @@ function tutStart(){
     const sc=!g.hidden?g.querySelector('.gm-pick'):document.querySelector('.wrap');if(sc)sc.scrollTop+=e.deltaY;},{passive:true});
   void o.offsetWidth;o.classList.add('on');
   tutGo(0);
-  const loop=()=>{if(!TUT)return;if(!gmPlaying())tutPlace();TUT.raf=requestAnimationFrame(loop);};loop();
+  /* the meme of the day waits until the tour is over (it would cover the spotlight) */
+  const loop=()=>{if(!TUT)return;try{if(memeT){clearTimeout(memeT);memeT=0;}if(document.getElementById('meme'))memeKill();}catch(_){}
+    if(!gmPlaying())tutPlace();TUT.raf=requestAnimationFrame(loop);};loop();
 }
 /* puts the page in the state a step needs: its view, the games open or closed, the phone menu open for top bar buttons */
 function tutScene(s){
   const T=TUT,g=document.getElementById('games');
   if(s.games)state.settings.gamesIntro=true;
-  if(s.games===2){if(g.hidden||!g.querySelector('.gm-pick')){closeNavMenus();openGames();}}
+  try{closeRewards();}catch(_){}
+  if(s.games===2){if(g.hidden||!g.querySelector('.gm-pick:not(.tl-pick)')){closeNavMenus();openGames();}}
   else if(!g.hidden)closeGames();
   document.documentElement.classList.toggle('tut-cadd',!!s.cadd);
   const su=s.v==='setup';let ch=false;
   if(su!==!!state.setup){state.setup=su;ch=true;}
   if(!su&&state.view!==s.v){state.view=s.v;ch=true;}
   if(s.cal&&state.calView!==s.cal){state.calView=s.cal;ch=true;}
+  if(s.sc&&state.setCat!==s.sc){state.setCat=s.sc;const sv=document.getElementById('v-settings');if(sv)sv.dataset.cat='';ch=true;}
   if(state.qaDay||state.modeOpen||state.advOpen||state.dpOpen){state.qaDay=null;state.modeOpen=false;state.advOpen=false;state.dpOpen=false;ch=true;}
   if(ch){render();const w=document.querySelector('.wrap');if(w)w.scrollTop=0;}
   /* the Settings steps: the picture password step opens Settings (on phones, inside the menu) */
@@ -10369,6 +10385,7 @@ function tutEnd(){
   closeNavMenus();if(state.setOpen){state.setOpen=false;renderSetdd();}
   if(!mColors.hidden){mColors.hidden=true;mGear.setAttribute('aria-expanded','false');mGear.classList.remove('dd-open');}
   const g=document.getElementById('games');if(!g.hidden)closeGames();
+  try{closeRewards();}catch(_){}
   T.o.classList.remove('on');setTimeout(()=>T.o.remove(),400);
   if(!state.user)return;
   state.settings.tutorialNew=false;
@@ -12026,7 +12043,7 @@ document.addEventListener('click',e=>{if(!ON_GAS)return;const a=e.target.closest
 const MENUS=[
   {open:()=>!!document.querySelector('.site-pick'),keep:['.site-pick','a[data-site]'],close:()=>sitePickClose()},
   {open:()=>moreDD.classList.contains('open'),keep:['.morewrap'],close:()=>{moreDD.classList.remove('open');moreBtn.classList.remove('dd-open');}},
-  {open:()=>mMenu.classList.contains('open'),keep:['.mmenu','#menubtn'],close:()=>{mMenu.classList.remove('open');mMenu.setAttribute('aria-hidden','true');menuBtn.classList.remove('dd-open');}},
+  {open:()=>mMenu.classList.contains('open'),keep:['.mmenu','#menubtn','#tut'],close:()=>{mMenu.classList.remove('open');mMenu.setAttribute('aria-hidden','true');menuBtn.classList.remove('dd-open');}},
   {open:()=>!!document.querySelector('.tk-cls.open'),keep:['.tk-cls','.cn-pick'],close:()=>document.querySelectorAll('.tk-cls.open').forEach(m=>m.classList.remove('open'))},
   {open:()=>!!document.querySelector('.docs-toc.open'),keep:['.docs-toc'],close:()=>document.querySelectorAll('.docs-toc.open').forEach(n=>{n.classList.remove('open');const g=n.querySelector('.dt-tog');if(g)g.setAttribute('aria-expanded','false');})},
   {open:()=>{const m=document.querySelector('#games .gm-fmenu');return !!(m&&!m.hidden);},keep:['.gm-fmenu','[data-act-gfilter]'],close:()=>gmMenu(false)},
