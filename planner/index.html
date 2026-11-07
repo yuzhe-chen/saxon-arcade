@@ -2026,6 +2026,17 @@ button.hm-site{appearance:none;cursor:pointer}
 .hm-rcard.hm-radd{border-style:dashed;border-bottom-width:2px;background:transparent;color:var(--faint);flex-direction:row;align-items:center;justify-content:center;font-weight:800;font-size:15px;letter-spacing:.8px;text-transform:uppercase}
 .hm-rcard.hm-radd:active{transform:none;margin-bottom:0}
 .hm-resbox{width:560px}
+.sx-foot{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:4px 6px;margin:56px 0 -28px;padding-top:16px;border-top:2px solid var(--line)}
+.sx-foot[hidden]{display:none}
+.sx-ov{margin:48px 0 0}
+.sx-fl{appearance:none;border:0;background:none;margin:0;padding:8px 12px;border-radius:10px;font:800 12.5px/1 var(--font-ui);letter-spacing:.06em;text-transform:uppercase;color:var(--faint);cursor:pointer}
+.sx-fl:hover{background:var(--panel2);color:var(--fg2)}
+.sx-copy{font:700 13px/1 var(--font-ui);color:var(--faint);padding:8px 0}
+@media (max-width:700px){.sx-foot{margin-bottom:-16px}.sx-fl{padding:8px 9px}}
+.hm-edbox{width:460px}
+.hm-btn.alt.hm-gray,.hm-btn.alt.hm-gray:hover{color:var(--fg2)}
+.hm-btn.alt.hm-gray{background:var(--panel2)}
+.hm-btn.alt.hm-gray:hover{background:var(--line)}
 .hm-rgh{display:flex;align-items:center;gap:8px;font-weight:800;font-size:13px;letter-spacing:.5px;text-transform:uppercase;color:var(--fg2);margin:14px 0 8px}
 @media (min-width:761px){#v-home .hm-side{max-width:470px}}
 @media (min-width:761px){html #v-home.on{grid-template-areas:"side cards" "more more";grid-template-rows:minmax(calc(100dvh - 170px),auto) auto}}
@@ -2335,7 +2346,7 @@ html.no-v-tasks [data-v="tasks"],html.no-v-tasks #hm-tasks,
 html.no-v-guide [data-v="guide"],html.no-v-guide #hm-guide,
 html.no-v-guide [data-act-docs]{display:none!important}
 .ap-hide{display:grid;grid-template-columns:1fr 1fr;column-gap:24px;margin-top:4px}
-.pwx .ap-hide label.hide-it{display:flex;align-items:center;justify-content:space-between;margin:0;padding:10px 2px;font-size:14.5px;font-weight:700;min-height:0;border-bottom:1px solid var(--line)}
+.pwx .ap-hide label.hide-it,.hm-edbox .ap-hide label.hide-it{display:flex;align-items:center;justify-content:space-between;margin:0;padding:10px 2px;font-size:14.5px;font-weight:700;min-height:0;border-bottom:1px solid var(--line)}
 .pwx h4{margin:16px 0 8px;font:800 12.5px var(--font-ui);text-transform:uppercase;letter-spacing:.07em;color:var(--fg2)}
 .ap-avs{display:grid;grid-template-columns:repeat(auto-fill,minmax(66px,1fr));gap:12px}
 .ap-av{appearance:none;cursor:pointer;padding:0;aspect-ratio:1;border-radius:50%;overflow:hidden;border:3px solid transparent;background:var(--panel2);
@@ -2343,6 +2354,9 @@ html.no-v-guide [data-act-docs]{display:none!important}
 .ap-av svg{width:100%;height:100%;display:block}
 .ap-av:hover{filter:brightness(1.05)}
 .ap-av.on{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 35%,transparent)}
+.pwx h4.ap-crh{display:flex;align-items:center;gap:10px}
+.ap-av.ap-lk{position:relative;cursor:pointer;display:flex;align-items:center;justify-content:center;background:var(--panel2);color:var(--faint);font:700 30px/1 var(--display)}
+.ap-av.ap-lk .art{position:absolute;right:6%;bottom:6%;width:34%;height:34%}
 .ap-none{display:flex;width:100%;height:100%;align-items:center;justify-content:center;font:800 26px var(--font-ui);color:var(--fg2);text-transform:uppercase}
 /* Appearance, Colors: one row per page, a few swatches each (the first is the default blue) */
 .ap-cols{margin-top:4px}
@@ -2356,6 +2370,20 @@ html.no-v-guide [data-act-docs]{display:none!important}
 .ap-hp[hidden]{display:none}
 .ap-sw.on{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--c)}
 @media (max-width:560px){.ap-col{flex-direction:column;align-items:flex-start;gap:8px}.ap-sws{gap:9px}}
+/* Colors rewards: locked rows, the custom colour swatch and the gradient swatch */
+.pwx .sec .ap-ch{margin-bottom:8px}
+.ap-cols.lk .ap-sw{opacity:.4;cursor:default}.ap-cols.lk .ap-sw:hover{filter:none}
+.ap-sws{align-items:center}
+#pwx .ap-cus,#pwx .ap-gsw{position:relative;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;margin:0}
+.ap-cus input,.ap-gsw input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;border:0;padding:0}
+.ap-cus:not(.on){box-shadow:inset 0 0 0 2px var(--line)}
+.ap-cus:not(.on)::before{content:'+';font:800 18px/1 var(--font-ui);color:var(--fg2)}
+.ap-g2{display:inline-flex;align-items:center;gap:6px;margin-left:6px;padding-left:12px;border-left:2px solid var(--line)}
+.ap-g2 .ap-gsw{background:linear-gradient(135deg,var(--c) 50%,var(--c2) 50%);box-shadow:inset 0 0 0 2px var(--line)}
+.ap-g2.on .ap-gsw{background:linear-gradient(135deg,var(--c),var(--c2));box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--c2)}
+.ap-gx{appearance:none;flex:none;width:26px;height:26px;border:0;padding:0;border-radius:50%;background:transparent;color:var(--faint);cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
+#pwx .ap-gx{min-height:0;min-width:0}.ap-gx:hover{background:var(--panel2);color:var(--fg2)}.ap-gx[hidden]{display:inline-flex;visibility:hidden}
+.ap-gx svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round}
 /* a page's own colour (html.pc, --pc set from Appearance) replaces the blue everywhere on that page */
 :root.pc{--pri:var(--pc);--blue:var(--pc);--accent:var(--pc);
   --pri-dark:color-mix(in srgb,var(--pc) 82%,#000);--blue-dark:color-mix(in srgb,var(--pc) 82%,#000);--pri-hi:color-mix(in srgb,var(--pc) 88%,#fff);
@@ -2375,6 +2403,21 @@ html.pfade #pfade{display:block}
   50%{border-radius:58% 42% 38% 62%/55% 62% 38% 45%;transform:translate(-40px,30px) rotate(14deg)}
   100%{border-radius:36% 64% 52% 48%/62% 38% 62% 38%;transform:translate(20px,-10px) rotate(-10deg)}}
 @media (prefers-reduced-motion:reduce){#pfade{animation:none}}
+/* a page's gradient (html.pg2, --pc2 from Appearance): titles as gradient text, primary buttons as a gradient fill,
+   and the Fade glow in both colours */
+html.pg2 :is(.brand-w,.hm-title,.cal-head .mname,.display,.res-head .rt,#games .gm-h>span){background:linear-gradient(90deg,var(--pri),var(--pc2));
+  -webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+html.pg2 .cal-head .mname{background-image:linear-gradient(90deg,var(--pri) calc(50% - 3em),var(--pc2) calc(50% + 3em))}
+html.pg2 .display{background-image:linear-gradient(90deg,var(--pri),var(--pc2) 3.5em)}
+html.pg2 .display>*{-webkit-text-fill-color:currentcolor}
+html.pg2 :is(button.btn,.hm-btn:not(.alt),#sugg [data-sugg-send],#games .gm-ref-copy){border-color:transparent;
+  background:linear-gradient(90deg,var(--pri),var(--pc2)) padding-box,linear-gradient(90deg,var(--pri-dark),color-mix(in srgb,var(--pc2) 82%,#000)) border-box}
+html.pg2 :is(button.btn,.hm-btn:not(.alt),#sugg [data-sugg-send],#games .gm-ref-copy):hover{filter:brightness(1.07)}
+html.pg2 .hm-go{background:linear-gradient(135deg,var(--pri),var(--pc2))}
+html.pg2 #pfade{opacity:.2;border-radius:0;animation:pfDrift 22s ease-in-out infinite alternate;
+  background:radial-gradient(closest-side at 68% 38%,var(--pri),transparent),radial-gradient(closest-side at 30% 66%,var(--pc2),transparent)}
+@keyframes pfDrift{0%{transform:translate(0,0) rotate(0)}50%{transform:translate(-40px,30px) rotate(14deg)}100%{transform:translate(20px,-10px) rotate(-10deg)}}
+@media (prefers-reduced-motion:reduce){html.pg2 #pfade{animation:none}}
 .ch-av.ch-pic{background:none!important;overflow:hidden}
 .ch-av.ch-pic svg{width:100%;height:100%;display:block}
 /* ---------- Guide, Suggestions, Administration ---------- */
@@ -2715,7 +2758,7 @@ html.no-v-tools [data-v="tools"],html.no-v-tools #hm-tools{display:none!importan
 /* ---------- games: one list under one heading, every game a rounded tile with its real screenshot ---------- */
 #games{background:var(--bg);color:var(--fg)}
 /* Games, Tools, Suggestions, Administration and Desmos are pages under the top bar (it stays in front and usable) */
-html:not(.splash-on) :is(#games,#desmos,#sugg,#roles){top:var(--pgtop,0px)}
+html:not(.splash-on) :is(#games,#desmos,#sugg,#roles,#rewards){top:var(--pgtop,0px)}
 html.pg-open:not(.splash-on) header.topbar{z-index:1550}
 #games .gm-pick{overscroll-behavior:none}
 #games .gm-pick{padding:0 var(--gut) 56px;background:var(--bg)}
@@ -3010,6 +3053,12 @@ html.pg-open:not(.splash-on) header.topbar{z-index:1550}
 .note.nc-red{background:color-mix(in srgb,#ff3b30 14%,var(--bg))!important;border-color:#ff3b30!important}
 .note.nc-yellow{background:color-mix(in srgb,#ffcc00 22%,var(--bg))!important;border-color:#ffcc00!important}
 .note.nc-green{background:color-mix(in srgb,#34c759 16%,var(--bg))!important;border-color:#34c759!important}
+.note.nc-x{background:color-mix(in srgb,var(--ncx) 16%,var(--bg))!important;border-color:var(--ncx)!important}
+.note .ncadd{position:relative;display:inline-flex;align-items:center;justify-content:center;overflow:hidden;--nc:var(--faint);background:var(--panel2);color:var(--fg2);font:800 13px/1 var(--font-ui);opacity:.8}
+.note .ncadd input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;border:0;padding:0}
+.note .nclock svg{width:12px;height:12px}
+.note.ncw{padding-bottom:10px!important}
+.note.ncw .ncols{position:static;flex-wrap:wrap;justify-content:flex-end;margin-top:auto;padding-top:6px}
 #dataload .dl-sub,#games .gm-lsub{white-space:normal!important;max-width:min(340px,86vw);text-align:center}
 #games .gm-lsub{width:max-content}
 .hbtn.crs-print{background:var(--panel2);color:var(--fg2);padding:0 12px}
@@ -3032,7 +3081,8 @@ html.gm-idle #games .gm-side{opacity:0;pointer-events:none;transition:opacity 1s
 html.pc header.topbar .brand-logo svg [fill="#1CB0F6"],html.pc header.topbar .brand-logo svg [fill="#1cb0f6"]{fill:var(--pri)}
 html.pc header.topbar .brand-logo svg [fill="#1899D6"],html.pc header.topbar .brand-logo svg [fill="#1899d6"]{fill:var(--pri-dark)}
 /* Fade on Games, Tools, Suggestions and Administration (they paint their own background over the page's glow) */
-html.pfade:not(.splash-on) :is(#games:not(:has(.gm-frame)),#sugg,#roles,#desmos){background:radial-gradient(640px 480px at calc(100% + 40px) -80px,color-mix(in srgb,var(--pri) 18%,transparent),transparent 70%),var(--bg)!important}
+html.pfade:not(.splash-on) :is(#games:not(:has(.gm-frame)),#sugg,#roles,#desmos,#rewards){background:radial-gradient(640px 480px at calc(100% + 40px) -80px,color-mix(in srgb,var(--pri) 18%,transparent),transparent 70%),var(--bg)!important}
+html.pg2.pfade:not(.splash-on) :is(#games:not(:has(.gm-frame)),#sugg,#roles,#rewards,#desmos){background:radial-gradient(640px 480px at calc(100% + 40px) -80px,color-mix(in srgb,var(--pri) 18%,transparent),transparent 70%),radial-gradient(560px 440px at calc(100% - 300px) 120px,color-mix(in srgb,var(--pc2) 16%,transparent),transparent 70%),var(--bg)!important}
 /* Decorations (Appearance, on by default): a soft circle of the page colour tucked into the corner of the Home cards,
    the Jump back in tiles and the Tools tiles, as on Lectern */
 html.deco :is(.hm-card,.hm-jt,#games .tl-tile){position:relative;overflow:hidden;isolation:isolate}
@@ -3041,6 +3091,67 @@ html.deco :is(.hm-card,.hm-jt,#games .tl-tile)::after{content:'';position:absolu
 #games .gm-endbar{gap:10px;flex-wrap:wrap}
 .rw-lock{appearance:none;display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border:2px solid var(--line);border-bottom-width:4px;border-radius:12px;background:var(--bg);color:var(--fg2);font:800 12px/1 var(--font-ui);text-transform:uppercase;letter-spacing:.04em;cursor:pointer}.rw-lock:hover{background:var(--panel2)}.rw-lock svg{width:16px;height:16px}.sec .sec-sw>h3{flex:1;margin:0}
 html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
+/* Rewards: a page under the top bar; a hero with the rank, the path of ranks, the link and the people referred */
+#rewards{position:fixed;inset:0;z-index:1300;background:var(--bg);overflow-y:auto;overscroll-behavior:none;color:var(--fg)}
+#rewards[hidden]{display:none}#rewards:focus{outline:none}
+#rewards .docs-in{max-width:720px;margin:0 auto;padding:28px 30px 60px;position:relative}
+#rewards .docs-in>.res-x{top:10px}
+#rewards .res-head{margin-bottom:22px}
+.rw-hero{display:flex;align-items:center;gap:20px;padding:22px 24px;border-radius:var(--r);background:var(--pri);border-bottom:6px solid var(--pri-dark);color:#fff;position:relative;overflow:hidden;isolation:isolate}
+.rw-hero::after{content:'';position:absolute;right:-60px;top:-80px;width:220px;height:220px;border-radius:50%;background:#fff;opacity:.1;z-index:-1}
+.rw-hart{flex:none;width:92px;height:92px;border-radius:50%;background:#fff;display:grid;place-items:center;box-shadow:0 5px 0 rgba(0,0,0,.14)}
+.rw-hart .art{width:62px;height:62px}
+.rw-htx{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.rw-hk{font:800 12px/1 var(--font-ui);text-transform:uppercase;letter-spacing:.08em;opacity:.85}
+.rw-hname{font:700 clamp(30px,6vw,40px)/1.05 var(--display);letter-spacing:-.01em}
+.rw-bar{height:14px;border-radius:99px;background:rgba(0,0,0,.18);margin-top:8px;overflow:hidden}
+.rw-bar i{display:block;height:100%;min-width:14px;border-radius:99px;background:#ffc800;box-shadow:inset 0 -4px 0 rgba(0,0,0,.1)}.rw-bar i[style="width:0%"]{min-width:0}
+.rw-hsub{font:700 14px/1.3 var(--font-ui);opacity:.95;margin-top:2px}
+.rw-hn{flex:none;display:flex;flex-direction:column;align-items:center;min-width:76px}
+.rw-hn b{font:700 52px/1 var(--display)}
+.rw-hn span{font:800 11px/1 var(--font-ui);text-transform:uppercase;letter-spacing:.08em;opacity:.85;margin-top:4px}
+.rw-path{position:relative;margin:34px 0 26px}
+.rw-track{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.rw-track path{fill:none;stroke-width:16px;stroke-linecap:round;vector-effect:non-scaling-stroke}
+.rw-track .bg{stroke:var(--line)}.rw-track .fg{stroke:var(--pri)}
+.rw-node{position:absolute;width:84px;height:84px;margin:-42px 0 0 -42px;border-radius:50%;display:grid;place-items:center;background:var(--line);box-shadow:0 7px 0 var(--line-hi);animation:rwpop .45s cubic-bezier(.3,1.5,.6,1) both;animation-delay:var(--d)}
+.rw-node.start{width:68px;height:68px;margin:-34px 0 0 -34px}
+.rw-in{width:64px;height:64px;border-radius:50%;background:var(--bg);display:grid;place-items:center}
+.rw-node.start .rw-in{width:52px;height:52px}
+.rw-in .art{width:44px;height:44px}.rw-node.start .rw-in .art{width:36px;height:36px}
+.rw-node.got{background:var(--pri);box-shadow:0 7px 0 var(--pri-dark)}
+.rw-node.next{background:conic-gradient(var(--pri) var(--p),var(--line) 0);box-shadow:0 7px 0 var(--line-hi)}
+.rw-node.next::before{content:'';position:absolute;inset:-10px;border-radius:50%;border:4px solid var(--pri);opacity:.35;animation:rwring 1.8s ease-in-out infinite}
+.rw-node.lock .rw-in{background:var(--panel2)}.rw-node.lock .art{width:34px;height:34px;filter:grayscale(1);opacity:.45}
+.rw-ok{position:absolute;right:-4px;bottom:-4px;width:28px;height:28px;border-radius:50%;background:var(--green);border:3px solid var(--bg);display:grid;place-items:center}
+.rw-ok svg{width:16px;height:16px;fill:none;stroke:#fff;stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round}
+.rw-lbl{position:absolute;transform:translateY(-50%);display:flex;flex-direction:column;gap:3px;min-width:0}
+.rw-lbl.l{left:calc(28% + 62px);right:0;text-align:left;align-items:flex-start}
+.rw-lbl.r{right:calc(28% + 62px);left:0;text-align:right;align-items:flex-end}
+.rw-lbl b{font:700 22px/1.1 var(--display);color:var(--fg)}
+.rw-need{font:800 12px/1.2 var(--font-ui);text-transform:uppercase;letter-spacing:.05em;color:var(--fg2)}
+.rw-lbl.next .rw-need{color:var(--pri)}.rw-lbl.got .rw-need{color:var(--pri)}
+.rw-rew{font:600 14.5px/1.3 var(--font-ui);color:var(--fg)}
+.rw-lbl.lock b,.rw-lbl.lock .rw-rew{color:var(--fg2)}
+.rw-card{border:2px solid var(--line);border-bottom-width:4px;border-radius:var(--r);padding:18px 20px;margin-top:16px;background:var(--bg)}
+.rw-h{display:flex;align-items:center;gap:10px;margin:0 0 12px;font:700 21px/1.1 var(--display);color:var(--fg)}
+.rw-cnt{font:800 14px/1 var(--font-ui);color:var(--fg2)}
+.rw-ref{display:flex;gap:8px}
+.rw-ref input{flex:1;min-width:0;height:44px;padding:0 12px;border:2px solid var(--line);border-radius:var(--rs);background:var(--bg);color:var(--fg);font:700 14px var(--font-ui)}
+.rw-ref .btn{flex:none;min-height:44px;padding:0 20px}
+.rw-code{margin:12px 0 0;font:600 14.5px/1.4 var(--font-ui);color:var(--fg2)}.rw-code b{color:var(--fg);font-weight:800}
+.rw-ppl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.rw-ppl li{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:2px solid var(--line)}.rw-ppl li:first-child{border-top:0;padding-top:2px}
+.rw-av{flex:none;width:38px;height:38px;border-radius:50%;background:var(--pri-wash);color:var(--pri-dark);display:grid;place-items:center;font:700 18px/1 var(--display)}
+.rw-pn{font:700 15px/1.2 var(--font-ui);color:var(--fg);overflow-wrap:anywhere}
+.rw-none{margin:0;font:600 14.5px/1.4 var(--font-ui);color:var(--fg2)}
+@keyframes rwpop{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes rwring{0%,100%{transform:scale(.94);opacity:.4}50%{transform:scale(1.04);opacity:.15}}
+@media (prefers-reduced-motion:reduce){.rw-node,.rw-node.next::before{animation:none}}
+@media (max-width:700px){#rewards .docs-in{padding:16px 16px 40px}
+  .rw-hero{gap:14px;padding:18px 16px}.rw-hart{width:68px;height:68px}.rw-hart .art{width:46px;height:46px}.rw-hn{min-width:0}.rw-hn b{font-size:38px}
+  .rw-node{width:72px;height:72px;margin:-36px 0 0 -36px}.rw-in{width:54px;height:54px}.rw-in .art{width:38px;height:38px}
+  .rw-lbl.l{left:calc(28% + 50px)}.rw-lbl.r{right:calc(28% + 50px)}.rw-lbl b{font-size:19px}.rw-rew{font-size:13.5px}}
 /* Jumpscare */
 #v-scare.on{position:relative;min-height:calc(100dvh - 140px);display:flex}
 .scare-pg{flex:1;position:relative;border-radius:var(--r);overflow:hidden;background:#050404;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:0 0 70px;min-height:calc(100dvh - 160px)}
@@ -3132,6 +3243,7 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
 <div id="docs" hidden role="dialog" aria-label="Guide"></div>
 <div id="sugg" hidden role="dialog" aria-label="Suggestions"></div>
 <div id="roles" hidden role="dialog" aria-label="Administration"></div>
+<div id="rewards" hidden role="dialog" aria-label="Rewards"></div>
 <div id="dash" hidden role="dialog" aria-label="Dashboard"></div>
 <div id="gwarn" hidden role="dialog" aria-modal="true" aria-label="Playing as a guest"></div>
 
@@ -3141,8 +3253,9 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
 <p><b>Set up your classes.</b> A new account starts on Your Classes. Until you add classes, the other tabs only remind you to add them first.</p>
 <p>Everything you change saves to your account right away. The planner also reloads your data every 5 minutes and whenever you come back to its tab, so it stays the same across computers.</p>
 <ul>
-<li><b>Top bar</b>: Courses, Calendar, To-Do, Assignments, Resources<span class="g-chat"> and Chat</span>, then the three lines at the top right. Their menu holds every page that doesn't fit in the bar, then <span class="g-games">Games, </span>Settings, Suggestions, this Guide, Dark mode, and links to ProfeGPT, Interpres and Planner. On a phone every page is in that menu.</li>
-<li><b>Home</b>: logging in opens it, and clicking Saxon Planner in the top bar returns to it. It has a card for every page, plus Edit classes and Suggestions. Only Log out returns to the login page.</li>
+<li><b>Top bar</b>: Courses, Calendar, To-Do, Assignments, Resources, Tools<span class="g-chat"> and Chat</span>, then the three lines at the top right. Their menu holds every page that doesn't fit in the bar, then <span class="g-games">Games, </span>Settings, Rewards, Suggestions, this Guide, Dark mode, and links to other sites. On a phone every page is in that menu.</li>
+<li><b>Home</b>: logging in opens it, and clicking Saxon Planner in the top bar returns to it. It shows the date, a card for every page (or the view you chose), See assignments, Suggestions, Tutorial, FAQ, Meme and <b>Edit home</b>, Other websites, your quick games, today at a glance and Jump back in. <b>Edit home</b> opens the Home settings in a pop-up: which view Home shows (Pages, Resources, Chat, Assignments or Notepad) and what it lists. Only Log out returns to the login page.</li>
+<li><b>Footer</b>: every page except Home ends with links to Suggestions, Tutorial, FAQ and this Guide. Settings, Appearance, Footer turns it off.</li>
 <li><b>Login page</b>: the three lines at the top right open Games, Desmos, soundboard, a dark mode switch that only applies to the login page, and links to ProfeGPT, Interpres and Planner. Scroll down, or press the arrow, for this documentation.</li>
 </ul>
 
@@ -3205,8 +3318,9 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
 <li>Drag a task to another day to move it.</li>
 <li>Delete a task with its ×, a double click, or by pressing and holding it.</li>
 <li><kbd>Ctrl</kbd>+<kbd>Z</kbd> (<kbd>Cmd</kbd>+<kbd>Z</kbd> on a Mac) brings back the last task you deleted or crossed off. An <b>Undo</b> button also pops up at the bottom of the screen for a few seconds after you delete or cross something off.</li>
-<li>The <b>Assignments</b> page lists every assignment not done yet, oldest first. <b>Overdue</b> narrows it to ones due today or earlier.</li>
-<li><b>Tools</b>, in the top bar, opens a screen of tools: Physics Helper, GPA Calculator, Soundboard and Desmos. In the GPA Calculator, <b>Add by year</b> sorts classes by grade; classes after your current year are prospective (enter the grade you expect), and the Standard and Advanced Studies diploma credits show below. <b>Physics Helper</b>: paste cells copied from Google Sheets, type a unit over any column and it is added after every number in that column, pick the font, size, borders and alignment (Times New Roman 12 with black borders to start), then press <b>Copy table</b> and paste into Google Docs. <b>GPA Calculator</b>: list every class you have taken with its level, credit and letter grade; Honors adds 0.5 and AP, AV, DE and IB add 1, as FCPS does. The options button next to the grade holds the credit, <b>Expunge</b> (leaves a class out) and <b>Pass/Fail</b> (leaves it out unless the grade is F, which counts as 0).</li>
+<li>The <b>Assignments</b> page lists every assignment not done yet, oldest first. <b>Toggle overdue</b> opens a column beside it with the ones due today or earlier.</li>
+<li>In-Class items more than a week past, and To-Do notes more than a week old, clear themselves.</li>
+<li><b>Tools</b>, in the top bar, opens a screen of tools: Physics Helper, GPA Calculator, Soundboard, Desmos, Clock (the time, and how long until class ends), Meditation (calm scenes, breathing and a session timer), Jumpscare, and Crashout (a doll to knock around, shown once Sensitive pictures is on in Settings, Password, and its switch at the bottom of Tools is on). In the GPA Calculator, <b>Add by year</b> sorts classes by grade; classes after your current year are prospective (enter the grade you expect), and the Standard and Advanced Studies diploma credits show below. <b>Physics Helper</b>: paste cells copied from Google Sheets, type a unit over any column and it is added after every number in that column, pick the font, size, borders and alignment (Times New Roman 12 with black borders to start), then press <b>Copy table</b> and paste into Google Docs. <b>GPA Calculator</b>: list every class you have taken with its level, credit and letter grade; Honors adds 0.5 and AP, AV, DE and IB add 1, as FCPS does. The options button next to the grade holds the credit, <b>Expunge</b> (leaves a class out) and <b>Pass/Fail</b> (leaves it out unless the grade is F, which counts as 0).</li>
 <li><b>Unassigned</b> on the Assignments page lists items of any kind with no class, each with a Class picker.</li>
 </ul>
 
@@ -3217,6 +3331,7 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
 <li>Click a class name to cross off all of its assignments.</li>
 <li>The <b>Advisory</b> card sets which class you attend during Advisory.</li>
 <li><b>Edit classes</b> opens Your Classes. <b>FAQ</b> answers common questions and <b>Tutorial</b> replays the first-run tour. Mode and Resync work here too.</li>
+<li><b>Focus mode</b> shows one class at a time; drag the cards to put your classes in any order. The <b>print</b> button prints the page.</li>
 </ul>
 
 <h3>To-Do</h3>
@@ -3224,6 +3339,7 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
 <li><b>+</b> adds a sticky note. Click a note to edit it. The first line is the bold title and the lines under it are the body.</li>
 <li>A note shows its class and date when it has them (from Send assignment or the calendar's +).</li>
 <li>Delete a note with its × or a double click; clearing its text also removes it.</li>
+<li>The dots on a note color it blue, red, yellow or green. With 4 referrals (see Rewards) the <b>+</b> dot picks any color, and colors you pick are kept as extra dots for every note.</li>
 <li><b>School Events</b>: pick a date, add an optional time and a title, then press Add. Times are read between 7 AM and 6 PM, so 8:10 means 8:10 AM and 3 means 3:00 PM. Upcoming events are listed here and show on the calendar.</li>
 </ul>
 
@@ -3280,15 +3396,12 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
 </ul></div>
 
 <h3>Settings</h3>
-<p>Settings, in the menu under the three lines at the top right:</p>
+<p>Settings, in the menu under the three lines at the top right, is a page with a sidebar (the button beside its title shows or hides the sidebar):</p>
 <ul>
-<li><b>Extended view</b> shows dates and details on tasks. This computer remembers it.</li>
-<li><b>Full course names</b> shows full names everywhere instead of short ones (AP Calc BC, AP US History).</li>
-<li><b>Classes and colors</b>: Edit opens Your Classes, where you change classes, periods, lunches and colors, and can paste or replace your Schoology link.</li>
-<li><b>Schoology calendar</b>: your iCal link. A change saves when you leave the box.</li>
-<li class="g-games"><b>Guest code</b>: paste a code from playing games as a guest and press Move to bring that progress into your account. Each code works once.</li>
-<li><b>Hidden</b>: opens a list of parts of the planner to turn off: Chat and Games. A hidden part disappears everywhere, including its section of this Guide.</li>
-<li><b>Administration</b> (administrators and moderators): opens the Administration page.</li>
+<li><b>Classes</b>: Edit opens Your Classes, where you change classes, periods, lunches and colors, and can paste or replace your Schoology link.</li>
+<li><b>Appearance</b>: <b>Hide pages</b> takes any page out of the top bar, the menu and Home. <b>Home</b> picks what Home shows (the same settings as Edit home). <b>Colors</b> gives each page its own color (2 referrals), and a second color makes it a gradient (3 referrals). <b>Fade</b> adds a soft glow of the page color in the corner. <b>Decorations</b> shows the soft circles on cards. <b>Footer</b> shows the links at the bottom of each page. <b>Avatar</b> picks the picture next to your name in Chat; the Crown avatars unlock with 10 referrals.</li>
+<li><b>Password</b>: change your password, set a picture password (3 of 12 pictures that let you reset a forgotten password), turn on two-step login, and turn on <b>Sensitive pictures</b>. Security notices list recent changes to your account.</li>
+<li><b>Administration</b> (the owner): the Administration page.</li>
 </ul>
 <p>Dark mode, in the same menu, switches between light and dark themes. Your username and Log out are at the bottom of the menu.</p>
 <p>Each account can store up to 512 KB of planner data.</p>
@@ -3302,15 +3415,28 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
 <li>Moderators and administrators review public resources from the <b>Review</b> button in the public library, which shows how many are waiting. <b>Open</b> shows the document or link, <b>Approve</b> publishes it, and <b>Turn down</b> marks it Not approved.</li>
 </ul>
 
+<h3>Rewards</h3>
+<p>Rewards, in the menu at the top right, shows your rank and what each referral unlocks. Your referral code is your username: share your link, or have friends type your username into Referral code when they sign up. Everyone they bring in counts for you too (if you refer someone and they refer someone, you have 2). Rewards lists the people who used your code.</p>
+<ul>
+<li><b>1</b> (Scout): Multiplayer and Online games.</li>
+<li><b>2</b> (Artisan): custom colors for pages.</li>
+<li><b>3</b> (Alchemist): gradient colors for pages, which the Fade uses too.</li>
+<li><b>4</b> (Curator): custom colors for To-Do notes.</li>
+<li><b>6</b> (Herald): the games you suggest go first in line.</li>
+<li><b>8</b> (Envoy): every suggestion you send goes first in line.</li>
+<li><b>10</b> (Monarch): the Crown avatars.</li>
+</ul>
+<p>Class colors are always yours to pick.</p>
+
 <h3>Suggestions</h3>
-<p>Suggestions in the menu at the top right, or on Home, opens Suggestions. Choose <b>Suggestion</b> or <b>Bug</b>, write up to 2000 characters, and press Send (or <kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>Enter</kbd>). It goes to the site's administrators with your username.</p>
+<p>Suggestions in the menu at the top right, on Home, or in the footer opens Suggestions. Choose <b>Suggestion</b> or <b>Bug</b>, write up to 2000 characters, and press Send (or <kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>Enter</kbd>). It goes to the site's administrators with your username.</p>
 
 <div class="g-games"><h3>Games</h3>
-<p>Games in the menu at the top right, or the Games card on Home, opens the games. Press <kbd>H</kbd> at any time to hide them and go straight back to the planner. The back arrow in a game's top-left corner, or clicking its title, returns to the games menu.</p>
-<p>Every game is in one list, each marked Singleplayer, Social, Multiplayer or Online.</p>
+<p>Games in the menu at the top right, or the Games card on Home, opens the games. Press <kbd>H</kbd> at any time to hide them and go straight back to the planner. The arrow on the left edge, or clicking a game's title, returns to the games menu.</p>
+<p>Every game is in one list, each marked Singleplayer, Social, Multiplayer or Online, with a search bar above it. The <b>+</b> tile suggests a game. <b>Show sensitive games</b>, at the bottom, adds five nights at epstein's to the list. A star keeps a game at the top, and Add quick games on Home puts up to 5 there.</p>
 <p>Signed in, your progress saves to your account. On the login page (the three lines at the top right, then Games) you can play as a guest: progress is kept under a guest code instead, which you can move into an account once from Settings.</p>
 <p>Games marked Embed are outside games running inside the planner. Online ones play on live servers with real people.</p>
-<p>Multiplayer and Online games start locked on a new account (Social games never lock). The lock panel at the top of the games has your referral link: copy it and share it, and once one other person signs up with it, both sections unlock for you. They can also type your username into Referral code when they sign up. A referral only works on a device that hasn't been used for an account before. Guests need to sign up first.</p>
+<p>Multiplayer and Online games start locked on a new account (Social games never lock). The lock panel at the top of the games has your referral link: copy it and share it, and once one other person signs up with it, both sections unlock for you (the first reward in Rewards). They can also type your username into Referral code when they sign up. A referral only works on a device that hasn't been used for an account before. Guests need to sign up first.</p>
 <ul>
 <li><b>lander</b>: fly a rocket from planet to planet and land softly. Coins buy upgrades, towers and bases.</li>
 <li><b>solitaire</b>: classic Klondike. Build the four suits up from Ace to King.</li>
@@ -3463,6 +3589,7 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
       <button class="mm-row" id="mgear" aria-expanded="false"><i class="mi" data-art="gear"></i><span>Settings</span></button>
       <div class="mcolors" id="mcolors" hidden></div>
       <button class="mm-row" id="msugg" data-act-sugg><i class="mi" data-art="bulb"></i><span>Suggestions</span></button>
+      <button class="mm-row" id="mrewards" data-act-rewards><i class="mi" data-art="trophy"></i><span>Rewards</span></button>
       <button class="mm-row" data-act-docs><i class="mi" data-art="guide"></i><span>Guide</span></button>
       <button class="mm-row" data-theme-toggle role="menuitemcheckbox"><i class="mi" data-art="moon"></i><span>Dark mode</span><i class="mm-sw" aria-hidden="true"></i></button>
       <div class="mm-sep"></div>
@@ -3495,6 +3622,7 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
 <section class="view" id="v-scare"></section>
 <section class="view" id="v-settings"></section>
 <section class="view" id="v-setup"></section>
+<footer class="sx-foot" id="sxfoot" hidden></footer>
 </div>
 
 <script>
@@ -6547,12 +6675,12 @@ function renderAdvisory(){
       <div class="display dnw">To‑Do<button class="plusbtn" data-act="nadd" aria-label="Add a to-do">+</button><button class="hbtn hb-box td-gd" data-act="gdocs" data-k="todo">Google Docs</button></div>
       ${notes.length?'':`<div class="empty-card">${art('sticky')}${cheer('todo')}</div>`}
       <div class="ngrid">${notes.map(n=>{const nc=courseById(n.course);
-        return `<div class="note${NOTE_COLS[n.color]?' nc-'+n.color:''}" data-aid="${esc(n.id)}">
+        return `<div class="note${NOTE_COLS[n.color]?' nc-'+n.color:ncHex(n.color)?' nc-x':''}${ncSaved(n).length?' ncw':''}" data-aid="${esc(n.id)}"${ncHex(n.color)?` style="--ncx:${n.color}"`:''}>
           <div class="nhead">${xddHTML({kind:'note',id:n.id,cls:'nsel-dd',value:nc?n.course:'',label:'Class',btnCls:'nc ncl nsel'+(nc?'':' none'),
             btn:`<span class="ncv">${esc(nc?cname(nc):'Class')}</span><svg class="ncar" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>`,
             options:[{v:'',t:'No class'}].concat(COURSES.map(o=>({v:o.id,t:cname(o)})))})}${n.date?`<span class="nd">${esc(fmtShort(n.date))}</span>`:''}
           <button class="del" data-act="ndel" data-id="${esc(n.id)}" title="delete">×</button></div>
-          <div class="nt">${noteHTML(n.text)}</div><div class="ncols">${Object.keys(NOTE_COLS).map(c=>`<button type="button" class="ncol${n.color===c?' on':''}" style="--nc:${NOTE_COLS[c]}" data-ncol="${c}" data-id="${esc(n.id)}" aria-label="${c}" title="${c[0].toUpperCase()+c.slice(1)}"></button>`).join('')}</div></div>`;}).join('')}</div>
+          <div class="nt">${noteHTML(n.text)}</div><div class="ncols">${Object.keys(NOTE_COLS).map(c=>`<button type="button" class="ncol${n.color===c?' on':''}" style="--nc:${NOTE_COLS[c]}" data-ncol="${c}" data-id="${esc(n.id)}" aria-label="${c}" title="${c[0].toUpperCase()+c.slice(1)}"></button>`).join('')}${ncExtra(n)}</div></div>`;}).join('')}</div>
     </div>
     <div>
       <div class="display">School Events</div>
@@ -6590,6 +6718,19 @@ const TIPS=['Tip: press H to hide a game instantly.','Tip: drag an assignment on
 const loadTip=()=>Math.random()<0.6?TIPS[Math.floor(Math.random()*TIPS.length)]:'loading data';
 /* sticky note colours: four neon choices in each note's corner (saved with the note) */
 const NOTE_COLS={blue:'#2b8cff',red:'#ff3b30',yellow:'#ffcc00',green:'#34c759'};
+/* Curator (4 referrals): any colour for a note (n.color is then '#rrggbb'); picked colours are kept in noteCols (newest
+   first, up to 12) and show on every note. Below 4 referrals the + carries a lock and opens Rewards */
+const ncHex=c=>typeof c==='string'&&/^#[0-9a-f]{6}$/i.test(c);
+function ncSaved(n){if(!rwHas(4))return [];const a=((state.settings&&state.settings.noteCols)||[]).filter(ncHex).map(c=>c.toLowerCase());
+  if(ncHex(n.color)&&!a.includes(n.color.toLowerCase()))a.push(n.color.toLowerCase());return a;}
+function ncExtra(n){const id=esc(n.id),cur=ncHex(n.color)?n.color.toLowerCase():'';
+  if(!rwHas(4))return `<button type="button" class="ncol ncadd nclock" data-act-rewards aria-label="Custom color, 4 referrals" title="Custom color">${art('lock')}</button>`;
+  return ncSaved(n).map(c=>`<button type="button" class="ncol${cur===c?' on':''}" style="--nc:${c}" data-ncol="${c}" data-id="${id}" aria-label="${c}" title="${c}"></button>`).join('')+
+    `<label class="ncol ncadd" title="Custom color" aria-label="Custom color">+<input type="color" data-ncadd="${id}" value="${cur||'#a259ff'}"></label>`;}
+document.addEventListener('change',e=>{const i=e.target;if(!i.dataset||!i.dataset.ncadd||!rwHas(4))return;
+  const n=(state.advisory||[]).find(x=>x.id===i.dataset.ncadd),c=(i.value||'').toLowerCase();if(!n||!ncHex(c))return;
+  n.color=c;state.settings.noteCols=[c,...((state.settings.noteCols)||[]).filter(x=>x.toLowerCase()!==c)].slice(0,12);
+  saveSettings();render();saveNote(n);});
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-ncol]');if(!b)return;e.preventDefault();e.stopPropagation();
   const n=(state.advisory||[]).find(x=>x.id===b.dataset.id);if(!n)return;n.color=n.color===b.dataset.ncol?'':b.dataset.ncol;render();saveNote(n);},true);
 function renderAssignments(){
@@ -8350,7 +8491,62 @@ const RW_RANKS=[[1,'Scout','Multiplayer games'],[2,'Artisan','Custom colors for 
   [10,'Monarch','The crown avatars']];
 /* a locked reward shows this small chip; it opens Rewards */
 function rwLockHTML(n){return `<button type="button" class="rw-lock" data-act-rewards>${art('lock')}<span>${n} referral${n>1?'s':''}</span></button>`;}
-function openRewards(){/* REWARDS PAGE */}
+/* ---------- Rewards: a page under the top bar (like Suggestions). The ranks sit on a winding path that fills up to the
+   account's referral count; then the referral link and the people who used it ---------- */
+const RW_ART=['controller','pencil','flask','sticky','bulb','scroll','crown'];
+const RW_CROWN='<path d="M14 34l18 18 16-28 16 28 18-18-6 38H20z" fill="#ffc800"/><path d="M20 62h56l-2 10H22z" fill="#e5a400"/><rect x="18" y="70" width="60" height="12" rx="5" fill="#e5a400"/><rect x="18" y="68" width="60" height="11" rx="5" fill="#ffc800"/><circle cx="14" cy="32" r="7" fill="#ffc800"/><circle cx="48" cy="20" r="8" fill="#ffc800"/><circle cx="82" cy="32" r="7" fill="#ffc800"/><circle cx="48" cy="52" r="7" fill="#ff4b4b"/><circle cx="31" cy="58" r="4.5" fill="#1cb0f6"/><circle cx="65" cy="58" r="4.5" fill="#58cc02"/><path d="M28 50l3 12" stroke="#ffe680" stroke-width="5" stroke-linecap="round"/>';
+function rwArt(i){return i<0?art('pawn'):i===6?`<svg class="art" viewBox="0 0 96 96" aria-hidden="true" focusable="false">${RW_CROWN}</svg>`:art(RW_ART[i]);}
+const rwRefs=n=>n+' referral'+(n===1?'':'s');
+function rewardsHTML(){
+  const u=state.user,n=rwN(),own=!!u.owner,R=RW_RANKS,cur=R.reduce((a,r,i)=>n>=r[0]?i:a,-1),nx=cur+1<R.length?cur+1:-1;
+  /* the path: a start node (Newcomer) and the seven ranks, zigzagging; the coloured track fills up to the count */
+  const T=[0].concat(R.map(r=>r[0])),ROW=128,H=T.length*ROW,X=i=>i%2?72:28,Y=i=>ROW/2+i*ROW;
+  const seg=(i,t)=>{const x1=X(i),y1=Y(i),x2=X(i+1),y2=Y(i+1),c1y=y1+ROW/2,c2y=y2-ROW/2;
+    if(t>=1)return `M${x1} ${y1}C${x1} ${c1y} ${x2} ${c2y} ${x2} ${y2}`;
+    /* the first part of the curve (de Casteljau) */
+    const L=(a,b)=>a+(b-a)*t,ax=L(x1,x1),ay=L(y1,c1y),bx=L(x1,x2),by=L(c1y,c2y),cx=L(x2,x2),cy=L(c2y,y2),dx=L(ax,bx),dy=L(ay,by),ex=L(bx,cx),ey=L(by,cy);
+    return `M${x1} ${y1}C${ax} ${ay} ${dx} ${dy} ${L(dx,ex)} ${L(dy,ey)}`;};
+  let track='',fill='';
+  for(let i=0;i<T.length-1;i++){const f=Math.max(0,Math.min(1,(n-T[i])/(T[i+1]-T[i])));track+=seg(i,1);if(f>0)fill+=seg(i,f);}
+  const node=(i)=>{const r=i?R[i-1]:[0,'Newcomer',''],ri=i-1,got=n>=r[0],isNx=i>0&&ri===nx,side=i%2?'r':'l';
+    const st=got?'got':isNx?'next':'lock',pct=isNx?Math.round(100*n/r[0]):0;
+    const need=isNx?`${n} of ${rwRefs(r[0])}`:rwRefs(r[0]);
+    return `<div class="rw-node ${st}${i?'':' start'}" style="left:${X(i)}%;top:${Y(i)}px;--p:${pct}%;--d:${i*60}ms"><span class="rw-in">${st==='lock'?art('lock'):rwArt(ri)}</span>${got&&i?'<i class="rw-ok" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></i>':''}</div>
+      <div class="rw-lbl ${side} ${st}" style="top:${Y(i)}px"><b>${r[1]}</b><span class="rw-need">${need}</span>${r[2]?`<span class="rw-rew">${esc(r[2])}</span>`:''}</div>`;};
+  const nodes=T.map((_,i)=>node(i)).join('');
+  const nr=nx>=0?R[nx]:null;
+  const heroSub=own||!nr?'All ranks reached':`${n} of ${rwRefs(nr[0])} to ${nr[1]}`;
+  const heroBar=own||!nr?100:Math.round(100*n/nr[0]);
+  const refs=Array.isArray(u.refs)?u.refs:[],code=u.refCode||u.name||'';
+  return `<div class="docs-in"><button class="hbtn res-x" data-rw-close title="Close">×</button>
+    <div class="res-head"><div class="rh-text"><span class="rh-art">${art('trophy')}</span><span class="rc">Saxon Planner</span><span class="rt lc">rewards</span></div></div>
+    <div class="rw-hero"><span class="rw-hart">${rwArt(own?6:cur)}</span>
+      <div class="rw-htx"><span class="rw-hk">Your rank</span><span class="rw-hname">${own?'Monarch':cur>=0?R[cur][1]:'Newcomer'}</span>
+        <div class="rw-bar"><i style="width:${heroBar}%"></i></div><span class="rw-hsub">${heroSub}</span></div>
+      ${own?'':`<div class="rw-hn"><b>${n}</b><span>${n===1?'referral':'referrals'}</span></div>`}</div>
+    <div class="rw-path" style="height:${H}px"><svg class="rw-track" viewBox="0 0 100 ${H}" preserveAspectRatio="none" aria-hidden="true"><path class="bg" d="${track}"/>${fill?`<path class="fg" d="${fill}"/>`:''}</svg>${nodes}</div>
+    <div class="rw-card"><h3 class="rw-h">Your link</h3>
+      <div class="rw-ref"><input type="text" id="rw-ref-link" readonly value="${esc(refLink())}" aria-label="Referral link"><button class="btn" data-rw-copy>Copy</button></div>
+      <p class="rw-code">Your referral code is your username: <b>${esc(code)}</b></p></div>
+    <div class="rw-card"><h3 class="rw-h">People you referred${refs.length?` <span class="rw-cnt">${refs.length}</span>`:''}</h3>
+      ${refs.length?`<ul class="rw-ppl">${refs.map(p=>`<li><span class="rw-av">${esc(String(p).charAt(0).toUpperCase())}</span><span class="rw-pn">${esc(p)}</span></li>`).join('')}</ul>`:'<p class="rw-none">No one yet</p>'}</div>
+  </div>`;
+}
+var rwFocus=null;
+function openRewards(){
+  if(!state.user)return;const d=document.getElementById('rewards');if(!d)return;
+  closeNavMenus();try{pgCloseAll('rewards');}catch(_){}
+  if(d.hidden)rwFocus=document.activeElement;
+  d.innerHTML=rewardsHTML();d.hidden=false;d.tabIndex=-1;d.scrollTop=0;d.focus({preventScroll:true});
+}
+function closeRewards(){const d=document.getElementById('rewards');if(!d||d.hidden)return;d.hidden=true;d.innerHTML='';pgBackTools();
+  if(rwFocus&&rwFocus.isConnected&&rwFocus.focus)rwFocus.focus({preventScroll:true});rwFocus=null;}
+document.addEventListener('click',e=>{const d=document.getElementById('rewards');if(!d||d.hidden||!e.target.closest||!d.contains(e.target))return;
+  if(e.target.closest('[data-rw-close]')){closeRewards();return;}
+  const cp=e.target.closest('[data-rw-copy]');
+  if(cp){const i=document.getElementById('rw-ref-link');
+    (navigator.clipboard?navigator.clipboard.writeText(i.value):Promise.reject()).catch(()=>{i.select();document.execCommand('copy');}).finally(()=>{cp.textContent='Copied';setTimeout(()=>{if(cp.isConnected)cp.textContent='Copy';},1500);});}});
+document.addEventListener('keydown',e=>{const d=document.getElementById('rewards');if(d&&!d.hidden&&e.key==='Escape'){e.stopPropagation();closeRewards();}},true);
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-act-rewards]');if(!b||!state.user)return;e.preventDefault();e.stopPropagation();closeNavMenus();openRewards();},true);
 /* sensitive pictures: Crashout stays hidden until Security turns on Sensitive pictures and then the switch at the
    bottom of Tools; Five Nights at Epstein's only needs the button at the bottom of the Games menu */
@@ -8963,7 +9159,7 @@ function renderHome(fly){
     el.dataset.sig=sig;
     el.innerHTML=(hv!=='pages'?`<div class="hm-main hm-v-${hv}" id="hm-main"></div>`:`<div class="hm-cards" id="hmcards">${pages.map(([k,n,d],i)=>`<button type="button" class="hm-card" id="hm-${k}" data-home-go="${k}" style="--i:${i}">${art(HM_ART[k],'hm-art')}<span class="hm-tx"><span class="hm-n">${n}</span><span class="hm-d">${d}</span></span></button>`).join('')}</div>`)+`
       <div class="hm-side" id="hmside"><div class="hm-kicker"></div><h2 class="hm-title"><span class="l1">Saxon</span><br><span class="l2">Planner</span></h2><div class="hm-url"><a href="https:${SLASH2}${HM_URL}" target="_blank" rel="noopener">${HM_URL}</a><button type="button" data-hm-copy aria-label="Copy link" title="Copy link"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12"/><path d="M5 15H3V3h12v2"/></svg></button><span class="hm-ok" aria-live="polite"></span></div><div class="hm-rule"></div>
-      <div class="hm-btns"><button type="button" class="hm-btn" id="hm-asg" data-home-go="assignments">See assignments</button><button type="button" class="hm-btn alt" id="hm-sugg" data-act-sugg>Suggestions</button><button type="button" class="hm-btn alt" id="hm-tut" data-act-tut>Tutorial</button><button type="button" class="hm-btn alt" id="hm-faq" data-act="faq">FAQ</button><button type="button" class="hm-btn alt" id="hm-meme" data-act-meme>Meme</button></div>
+      <div class="hm-btns"><button type="button" class="hm-btn" id="hm-asg" data-home-go="assignments">See assignments</button><button type="button" class="hm-btn alt" id="hm-sugg" data-act-sugg>Suggestions</button><button type="button" class="hm-btn alt" id="hm-tut" data-act-tut>Tutorial</button><button type="button" class="hm-btn alt" id="hm-faq" data-act="faq">FAQ</button><button type="button" class="hm-btn alt" id="hm-meme" data-act-meme>Meme</button><button type="button" class="hm-btn alt hm-gray" id="hm-edit" data-act-hmedit>Edit home</button></div>
       <div class="hm-sites" id="hm-row"><div class="hm-ow"><button type="button" class="hm-site" id="hm-other" data-act-hmother aria-expanded="false">${art('folder')}<span>Other websites</span><svg class="hm-chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button><div class="hm-opop" hidden>${HM_SITES.map(([k,a,n])=>`<a class="hm-oi" data-site="${k}" target="_blank" rel="noopener">${art(a)}<span>${n}</span></a>`).join('')}</div></div><span class="hm-qg g-games" id="hm-qg"></span></div></div>
       <div class="hm-more" id="hm-more"></div>`;
     siteLinks(el);
@@ -8995,7 +9191,7 @@ function picArt(id){
   return '<svg viewBox="0 0 96 96" aria-hidden="true">'+g+'</svg>';
 }
 const pwRpc=(fn,...a)=>GS?gsCall(fn,...a):fetch('/api/rpc',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({fn,args:a})}).then(r=>r.json());
-const PWX_ERR={nouser:'No account with that username',empty:'Fill in both boxes',nolink:'This account has no Schoology link saved, so it can’t use this way',
+const PWX_ERR={locked:'Unlocks with 10 referrals',nouser:'No account with that username',empty:'Fill in both boxes',nolink:'This account has no Schoology link saved, so it can’t use this way',
   nomatch:'That link and assignment don’t match this account. Assignment names are case sensitive, so check the capitals and spelling.',nopic:'This account has no picture password',
   piclocked:'The picture password is locked after 6 wrong tries. Log in with your password to unlock it, or use Schoology.',
   short:'Password must be at least 6 characters',long:'Password is too long',mismatch:'Passwords don’t match',expired:'That took too long. Start again.',
@@ -9170,8 +9366,11 @@ function secWarnHTML(){
 const VO_AV={"m":["<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#ddf4ff\"/><g transform=\"rotate(-18 50 54)\"><g fill=\"#e5a400\" transform=\"translate(0 5)\"><path d=\"M14 54Q16 50 21 49Q28 32 50 32Q72 32 79 49Q84 50 86 54Q84 58 79 59Q72 76 50 76Q28 76 21 59Q16 58 14 54Z\"/></g><path d=\"M14 54Q16 50 21 49Q28 32 50 32Q72 32 79 49Q84 50 86 54Q84 58 79 59Q72 76 50 76Q28 76 21 59Q16 58 14 54Z\" fill=\"#ffc800\"/><path d=\"M79 59Q72 76 50 76Q34 76 26 66Q48 72 66 62Q76 56 79 59Z\" fill=\"#f5b800\"/><ellipse cx=\"38\" cy=\"44\" rx=\"9\" ry=\"3.5\" fill=\"#ffe680\" transform=\"rotate(-8 38 44)\"/><ellipse cx=\"27\" cy=\"50\" rx=\"2.5\" ry=\"2.5\" fill=\"#ffe680\"/></g><rect x=\"47\" y=\"18\" width=\"5\" height=\"12\" rx=\"2.5\" fill=\"#8b5a2b\" transform=\"rotate(20 49 24)\"/><path d=\"M52 22Q60 10 74 14Q68 28 52 22Z\" fill=\"#58cc02\"/><path d=\"M52 22Q64 18 74 14Q68 28 52 22Z\" fill=\"#46a302\"/></svg>","<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#f3dfff\"/><g transform=\"translate(50 50) rotate(40) scale(1.02) translate(0 3)\"><path d=\"M-10 4L-19 15V22H-10z\" fill=\"#ea2b2b\"/><path d=\"M10 4L19 15V22H10z\" fill=\"#c81e1e\"/><path d=\"M-6 21Q0 37 6 21z\" fill=\"#ff9600\"/><path d=\"M-3 21Q0 30 3 21z\" fill=\"#ffc800\"/><path d=\"M-10 -16Q-10 -30 0 -42Q10 -30 10 -16V20H-10z\" fill=\"#ffffff\"/><path d=\"M0 -42Q10 -30 10 -16V20H0z\" fill=\"#d3dde3\"/><path d=\"M-6.6 -31Q-4 -37 0 -42V-31z\" fill=\"#ff4b4b\"/><path d=\"M0 -42Q4 -37 6.6 -31H0z\" fill=\"#ea2b2b\"/><rect x=\"-10\" y=\"14\" width=\"20\" height=\"7\" rx=\"2\" fill=\"#8a9aa5\"/><rect x=\"0\" y=\"14\" width=\"10\" height=\"7\" rx=\"2\" fill=\"#6f7f8a\"/><circle cx=\"0\" cy=\"-10\" r=\"6.6\" fill=\"#8a9aa5\"/><circle cx=\"0\" cy=\"-10\" r=\"5\" fill=\"#1cb0f6\"/><path d=\"M0 -15a5 5 0 0 1 0 10z\" fill=\"#1899d6\"/><ellipse cx=\"-2\" cy=\"-12\" rx=\"1.4\" ry=\"2\" fill=\"#bfeaff\"/></g></svg>","<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#ffdfe0\"/><g fill=\"#1477a8\" transform=\"translate(0 3)\"><path d=\"M27 56H73L67 84Q66 88 62 88H38Q34 88 33 84Z\"/></g><path d=\"M27 56H73L67 84Q66 88 62 88H38Q34 88 33 84Z\" fill=\"#1cb0f6\"/><path d=\"M50 56H73L67 84Q66 88 62 88H50Z\" fill=\"#1899d6\"/><rect x=\"38.5\" y=\"58\" width=\"4\" height=\"28\" rx=\"2\" fill=\"#1899d6\" transform=\"rotate(-6 40 72)\"/><rect x=\"57.5\" y=\"58\" width=\"4\" height=\"28\" rx=\"2\" fill=\"#1477a8\" transform=\"rotate(6 60 72)\"/><g fill=\"#e5e5e5\" transform=\"translate(0 4)\"><path d=\"M22 54a8 8 0 0 1 6-12a10 10 0 0 1 10-12a12 12 0 0 1 24 0a10 10 0 0 1 10 12a8 8 0 0 1 6 12a6 6 0 0 1-6 6H28a6 6 0 0 1-6-6z\"/></g><path d=\"M22 54a8 8 0 0 1 6-12a10 10 0 0 1 10-12a12 12 0 0 1 24 0a10 10 0 0 1 10 12a8 8 0 0 1 6 12a6 6 0 0 1-6 6H28a6 6 0 0 1-6-6z\" fill=\"#ffffff\"/><rect x=\"32\" y=\"36\" width=\"7\" height=\"4\" rx=\"2\" fill=\"#ffffff\"/><ellipse cx=\"36\" cy=\"40\" rx=\"5\" ry=\"2.5\" fill=\"#f7f7f7\"/><rect x=\"33\" y=\"46\" width=\"6\" height=\"3\" rx=\"1.5\" fill=\"#ce82ff\" transform=\"rotate(-30 36 47)\"/><rect x=\"54\" y=\"40\" width=\"6\" height=\"3\" rx=\"1.5\" fill=\"#58cc02\" transform=\"rotate(25 57 41)\"/><rect x=\"62\" y=\"50\" width=\"6\" height=\"3\" rx=\"1.5\" fill=\"#ffc800\" transform=\"rotate(-20 65 51)\"/><rect x=\"44\" y=\"50\" width=\"6\" height=\"3\" rx=\"1.5\" fill=\"#1cb0f6\" transform=\"rotate(15 47 51)\"/><path d=\"M50 22Q50 14 56 10\" fill=\"none\" stroke=\"#8b5a2b\" stroke-width=\"3\" stroke-linecap=\"round\"/><circle cx=\"50\" cy=\"25\" r=\"7\" fill=\"#ff4b4b\"/><path d=\"M50 18a7 7 0 0 1 0 14z\" fill=\"#ea2b2b\"/><ellipse cx=\"47.5\" cy=\"22.5\" rx=\"1.8\" ry=\"2.6\" fill=\"#ff9a9a\" transform=\"rotate(30 47.5 22.5)\"/></svg>","<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#fff5d3\"/><g transform=\"translate(0 4)\"><g transform=\"rotate(32 50 50)\" fill=\"#c47300\"><circle cx=\"50\" cy=\"58\" r=\"13\"/><circle cx=\"50\" cy=\"74\" r=\"17\"/></g></g><g transform=\"rotate(32 50 50)\"><rect x=\"45\" y=\"10\" width=\"10\" height=\"50\" rx=\"3\" fill=\"#8b5a2b\"/><rect x=\"50\" y=\"10\" width=\"5\" height=\"50\" rx=\"0\" fill=\"#6e4522\"/><rect x=\"41\" y=\"2\" width=\"18\" height=\"14\" rx=\"5\" fill=\"#4b4b4b\"/><circle cx=\"44\" cy=\"8\" r=\"2\" fill=\"#afafaf\"/><circle cx=\"56\" cy=\"8\" r=\"2\" fill=\"#afafaf\"/><circle cx=\"50\" cy=\"58\" r=\"13\" fill=\"#ff9600\"/><circle cx=\"50\" cy=\"74\" r=\"17\" fill=\"#ff9600\"/><path d=\"M50 45a13 13 0 0 1 0 26z\" fill=\"#e08600\"/><path d=\"M50 57a17 17 0 0 1 0 34z\" fill=\"#e08600\"/><rect x=\"45\" y=\"26\" width=\"10\" height=\"34\" rx=\"3\" fill=\"#8b5a2b\"/><rect x=\"50\" y=\"26\" width=\"5\" height=\"34\" rx=\"0\" fill=\"#6e4522\"/><rect x=\"45\" y=\"30\" width=\"10\" height=\"2\" rx=\"1\" fill=\"#d9b680\"/><rect x=\"45\" y=\"38\" width=\"10\" height=\"2\" rx=\"1\" fill=\"#d9b680\"/><rect x=\"45\" y=\"46\" width=\"10\" height=\"2\" rx=\"1\" fill=\"#d9b680\"/><circle cx=\"50\" cy=\"64\" r=\"6.5\" fill=\"#4b4b4b\"/><rect x=\"41\" y=\"79\" width=\"18\" height=\"5\" rx=\"2.5\" fill=\"#4b4b4b\"/><ellipse cx=\"40\" cy=\"70\" rx=\"3\" ry=\"6\" fill=\"#ffc06b\" transform=\"rotate(0 40 70)\"/></g></svg>","<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#ffe7c2\"/><g fill=\"#3a8a02\" transform=\"translate(0 3)\"><path d=\"M40 52H32a8 8 0 0 1-8-8V34a5 5 0 0 1 10 0v8h6z\"/><path d=\"M60 44h6V30a5 5 0 0 1 10 0v12a8 8 0 0 1-8 8h-8z\"/></g><rect x=\"40\" y=\"14\" width=\"20\" height=\"60\" rx=\"10\" fill=\"#58cc02\"/><path d=\"M50 14a10 10 0 0 1 10 10V74H50z\" fill=\"#46a302\"/><path d=\"M40 52H32a8 8 0 0 1-8-8V34a5 5 0 0 1 10 0v8h6z\" fill=\"#58cc02\"/><path d=\"M60 44h6V30a5 5 0 0 1 10 0v12a8 8 0 0 1-8 8h-8z\" fill=\"#46a302\"/><rect x=\"44\" y=\"22\" width=\"4\" height=\"16\" rx=\"2\" fill=\"#a5ed6e\"/><rect x=\"27\" y=\"34\" width=\"3\" height=\"6\" rx=\"1.5\" fill=\"#a5ed6e\"/><circle cx=\"54\" cy=\"30\" r=\"1.5\" fill=\"#d7ffb8\"/><circle cx=\"54\" cy=\"44\" r=\"1.5\" fill=\"#d7ffb8\"/><circle cx=\"45\" cy=\"50\" r=\"1.5\" fill=\"#d7ffb8\"/><circle cx=\"54\" cy=\"58\" r=\"1.5\" fill=\"#d7ffb8\"/><path d=\"M32 74H68L64 88Q63 91 59 91H41Q37 91 36 88Z\" fill=\"#ea2b2b\"/><path d=\"M50 74H68L64 88Q63 91 59 91H50Z\" fill=\"#c81e1e\"/><rect x=\"27\" y=\"68\" width=\"46\" height=\"10\" rx=\"5\" fill=\"#c81e1e\" transform=\"translate(0 3)\"/><rect x=\"27\" y=\"68\" width=\"46\" height=\"10\" rx=\"5\" fill=\"#ff4b4b\"/><rect x=\"31\" y=\"70\" width=\"10\" height=\"3\" rx=\"1.5\" fill=\"#ff8f8f\"/></svg>","<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#d7ffb8\"/><g stroke-linejoin=\"round\" stroke-width=\"6\"><path d=\"M22 40L37 52L50 31L63 52L78 40L72 74H28Z\" fill=\"#e5a400\" stroke=\"#e5a400\" transform=\"translate(0 4)\"/><path d=\"M22 40L37 52L50 31L63 52L78 40L72 74H28Z\" fill=\"#ffc800\" stroke=\"#ffc800\"/></g><path d=\"M50 31L63 52L78 40L72 74H50Z\" fill=\"#f5b800\"/><circle cx=\"21\" cy=\"37\" r=\"5.5\" fill=\"#ffc800\"/><circle cx=\"79\" cy=\"37\" r=\"5.5\" fill=\"#e5a400\"/><circle cx=\"50\" cy=\"26\" r=\"5.5\" fill=\"#ffc800\"/><path d=\"M50 20.5a5.5 5.5 0 0 1 0 11z\" fill=\"#e5a400\"/><rect x=\"25\" y=\"62\" width=\"50\" height=\"6\" rx=\"3\" fill=\"#e5a400\"/><circle cx=\"36\" cy=\"72\" r=\"4\" fill=\"#1cb0f6\"/><circle cx=\"50\" cy=\"72\" r=\"5\" fill=\"#ff4b4b\"/><circle cx=\"64\" cy=\"72\" r=\"4\" fill=\"#58cc02\"/><circle cx=\"48.5\" cy=\"70.5\" r=\"1.5\" fill=\"#ff9a9a\"/><rect x=\"31\" y=\"52\" width=\"4\" height=\"6\" rx=\"2\" fill=\"#ffe680\"/><ellipse cx=\"47.5\" cy=\"24\" rx=\"1.5\" ry=\"2\" fill=\"#ffe680\"/></svg>","<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#ddf4ff\"/><path d=\"M50 50V78a7 7 0 0 1-14 0\" fill=\"none\" stroke=\"#4b4b4b\" stroke-width=\"6\" stroke-linecap=\"round\"/><g fill=\"#8a49c9\" transform=\"translate(0 4)\"><path d=\"M14 52Q14 18 50 18Q86 18 86 52Q80 46 74 46Q68 46 62 52Q56 46 50 46Q44 46 38 52Q32 46 26 46Q20 46 14 52Z\"/></g><path d=\"M14 52Q14 18 50 18Q86 18 86 52Q80 46 74 46Q68 46 62 52Q56 46 50 46Q44 46 38 52Q32 46 26 46Q20 46 14 52Z\" fill=\"#ce82ff\"/><path d=\"M38 52Q38 22 50 18Q62 22 62 52Q56 46 50 46Q44 46 38 52Z\" fill=\"#a560e8\"/><path d=\"M62 52Q62 22 50 18Q86 18 86 52Q80 46 74 46Q68 46 62 52Z\" fill=\"#b872f5\"/><ellipse cx=\"26\" cy=\"34\" rx=\"3\" ry=\"7\" fill=\"#e3bbff\" transform=\"rotate(35 26 34)\"/><rect x=\"47\" y=\"11\" width=\"6\" height=\"9\" rx=\"3\" fill=\"#4b4b4b\"/></svg>","<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#d7ffb8\"/><path d=\"M50 72Q44 80 52 84T50 96\" fill=\"none\" stroke=\"#4b4b4b\" stroke-width=\"3\" stroke-linecap=\"round\"/><path d=\"M44 80l-7-4v8z\" fill=\"#1cb0f6\"/><path d=\"M44 80l7-4v8z\" fill=\"#1899d6\"/><g stroke-linejoin=\"round\" stroke-width=\"6\"><path d=\"M50 14L74 40L50 70L26 40Z\" fill=\"#c81e1e\" stroke=\"#c81e1e\" transform=\"translate(0 4)\"/><path d=\"M50 14L74 40L50 70L26 40Z\" fill=\"#ff4b4b\" stroke=\"#ff4b4b\"/><path d=\"M50 14L74 40L50 70Z\" fill=\"#ea2b2b\" stroke=\"#ea2b2b\"/></g><path d=\"M26 40H74\" fill=\"none\" stroke=\"#ffc800\" stroke-width=\"4\"/><path d=\"M50 12V72\" fill=\"none\" stroke=\"#ffc800\" stroke-width=\"4\"/><ellipse cx=\"38\" cy=\"32\" rx=\"2.5\" ry=\"6\" fill=\"#ff9a9a\" transform=\"rotate(45 38 32)\"/></svg>","<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#f3dfff\"/><ellipse cx=\"50\" cy=\"57\" rx=\"34\" ry=\"26\" fill=\"#d9912f\"/><ellipse cx=\"50\" cy=\"52\" rx=\"34\" ry=\"26\" fill=\"#f7b451\"/><path d=\"M22 50Q22 32 50 30Q78 32 78 50Q76 56 70 54Q66 62 60 58Q54 66 48 60Q40 66 36 58Q28 62 26 56Q22 56 22 50Z\" fill=\"#ff86d0\"/><path d=\"M50 30Q78 32 78 50Q76 56 70 54Q66 62 60 58Q54 66 50 61Z\" fill=\"#f56cc0\"/><ellipse cx=\"50\" cy=\"49\" rx=\"10\" ry=\"7\" fill=\"#f3dfff\"/><path d=\"M40 49a10 7 0 0 1 20 0a10 4 0 0 0-20 0z\" fill=\"#d9912f\"/><rect x=\"32\" y=\"40\" width=\"6\" height=\"3\" rx=\"1.5\" fill=\"#ffffff\" transform=\"rotate(-30 35 41)\"/><rect x=\"58\" y=\"36\" width=\"6\" height=\"3\" rx=\"1.5\" fill=\"#ffc800\" transform=\"rotate(20 61 37)\"/><rect x=\"64\" y=\"46\" width=\"6\" height=\"3\" rx=\"1.5\" fill=\"#1cb0f6\" transform=\"rotate(-50 67 47)\"/><rect x=\"42\" y=\"34\" width=\"6\" height=\"3\" rx=\"1.5\" fill=\"#58cc02\" transform=\"rotate(10 45 35)\"/><rect x=\"46\" y=\"58\" width=\"6\" height=\"3\" rx=\"1.5\" fill=\"#ffffff\" transform=\"rotate(-10 49 59)\"/><rect x=\"30\" y=\"50\" width=\"6\" height=\"3\" rx=\"1.5\" fill=\"#1cb0f6\" transform=\"rotate(40 33 51)\"/><ellipse cx=\"30\" cy=\"40\" rx=\"2\" ry=\"4\" fill=\"#ffc2e8\" transform=\"rotate(50 30 40)\"/></svg>","<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#fff5d3\"/><path d=\"M50 74q-6 5 0 10t0 10\" fill=\"none\" stroke=\"#8b8b8b\" stroke-width=\"2.5\" stroke-linecap=\"round\"/><path d=\"M44 76L50 68L56 76Q50 79 44 76Z\" fill=\"#c81e1e\"/><path d=\"M50 12C66 12 76 25 76 40C76 58 62 70 50 70C38 70 24 58 24 40C24 25 34 12 50 12Z\" fill=\"#ff4b4b\"/><path d=\"M50 12C66 12 76 25 76 40C76 58 62 70 50 70C60 62 64 52 64 40C64 26 58 16 50 12Z\" fill=\"#ea2b2b\"/><ellipse cx=\"37\" cy=\"30\" rx=\"4.5\" ry=\"9\" fill=\"#ff9a9a\" transform=\"rotate(25 37 30)\"/><circle cx=\"41\" cy=\"45\" r=\"2.2\" fill=\"#ff9a9a\"/></svg>","<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#ffdfe0\"/><path d=\"M33 52H67L53 86Q50 92 47 86Z\" fill=\"#ffc800\"/><path d=\"M50 52H67L53 86Q51.5 89 50 89Z\" fill=\"#e5a400\"/><path d=\"M38 58l20 12M44 54l18 10M62 58l-20 12M56 54l-18 10\" fill=\"none\" stroke=\"#cc8f00\" stroke-width=\"2.5\" stroke-linecap=\"round\" opacity=\".6\"/><g fill=\"#46a302\" transform=\"translate(0 3)\"><path d=\"M31 38a19 19 0 1 0 38 0a19 19 0 1 0 -38 0z\"/><path d=\"M30 46h40v4a5 5 0 0 1-10 0a5 5 0 0 1-10 0a5 5 0 0 1-10 0a5 5 0 0 1-10 0z\"/></g><circle cx=\"50\" cy=\"38\" r=\"19\" fill=\"#58cc02\"/><path d=\"M30 46h40v4a5 5 0 0 1-10 0a5 5 0 0 1-10 0a5 5 0 0 1-10 0a5 5 0 0 1-10 0z\" fill=\"#58cc02\"/><path d=\"M50 19a19 19 0 0 1 0 38z\" fill=\"#4fb802\"/><ellipse cx=\"40\" cy=\"30\" rx=\"3.5\" ry=\"6\" fill=\"#a5ed6e\" transform=\"rotate(35 40 30)\"/><circle cx=\"50\" cy=\"19\" r=\"6\" fill=\"#ff4b4b\"/><path d=\"M50 13a6 6 0 0 1 0 12z\" fill=\"#ea2b2b\"/><ellipse cx=\"48\" cy=\"17\" rx=\"1.5\" ry=\"2.2\" fill=\"#ff9a9a\" transform=\"rotate(30 48 17)\"/></svg>","<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#d7ffb8\"/><g transform=\"translate(50 49) scale(0.92) translate(-48 -48)\"><path d=\"M48 8a28 28 0 0 1 17 50c-3 2-5 6-5 10v2H36v-2c0-4-2-8-5-10A28 28 0 0 1 48 8z\" fill=\"#e5a400\" transform=\"translate(0 4)\"/><path d=\"M48 8a28 28 0 0 1 17 50c-3 2-5 6-5 10v2H36v-2c0-4-2-8-5-10A28 28 0 0 1 48 8z\" fill=\"#ffc800\"/><rect x=\"30\" y=\"20\" width=\"8\" height=\"18\" rx=\"4\" fill=\"#ffe680\"/><rect x=\"34\" y=\"73\" width=\"28\" height=\"8\" rx=\"4\" fill=\"#8b8b8b\"/><rect x=\"34\" y=\"70\" width=\"28\" height=\"8\" rx=\"4\" fill=\"#afafaf\"/><rect x=\"36\" y=\"82\" width=\"24\" height=\"7\" rx=\"3.5\" fill=\"#8b8b8b\"/><rect x=\"36\" y=\"80\" width=\"24\" height=\"7\" rx=\"3.5\" fill=\"#afafaf\"/><rect x=\"41\" y=\"88\" width=\"14\" height=\"5\" rx=\"2.5\" fill=\"#777\"/></g></svg>","<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#ddf4ff\"/><g transform=\"rotate(-10 50 50)\"><g fill=\"#3a8a02\" transform=\"translate(0 4)\"><path d=\"M12 42H88A38 38 0 0 1 12 42Z\"/></g><path d=\"M12 42H88A38 38 0 0 1 12 42Z\" fill=\"#58cc02\"/><path d=\"M50 42H88A38 38 0 0 1 50 80Z\" fill=\"#46a302\"/><path d=\"M18 42H82A32 32 0 0 1 18 42Z\" fill=\"#d7ffb8\"/><path d=\"M22 42H78A28 28 0 0 1 22 42Z\" fill=\"#ff4b4b\"/><path d=\"M50 42H78A28 28 0 0 1 50 70Z\" fill=\"#ea2b2b\"/><ellipse cx=\"36\" cy=\"50\" rx=\"2\" ry=\"3.2\" fill=\"#4b4b4b\" transform=\"rotate(-20 36 50)\"/><ellipse cx=\"50\" cy=\"54\" rx=\"2\" ry=\"3.2\" fill=\"#4b4b4b\"/><ellipse cx=\"64\" cy=\"50\" rx=\"2\" ry=\"3.2\" fill=\"#4b4b4b\" transform=\"rotate(20 64 50)\"/><ellipse cx=\"43\" cy=\"61\" rx=\"2\" ry=\"3.2\" fill=\"#4b4b4b\" transform=\"rotate(-10 43 61)\"/><ellipse cx=\"57\" cy=\"61\" rx=\"2\" ry=\"3.2\" fill=\"#4b4b4b\" transform=\"rotate(10 57 61)\"/></g></svg>","<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#ffe7c2\"/><path d=\"M64 44h6a10 10 0 0 1 0 20h-6\" fill=\"none\" stroke=\"#8a49c9\" stroke-width=\"7\" transform=\"translate(0 4)\"/><path d=\"M64 44h6a10 10 0 0 1 0 20h-6\" fill=\"none\" stroke=\"#a560e8\" stroke-width=\"7\"/><rect x=\"20\" y=\"36\" width=\"46\" height=\"48\" rx=\"10\" fill=\"#8a49c9\" transform=\"translate(0 4)\"/><rect x=\"20\" y=\"36\" width=\"46\" height=\"48\" rx=\"10\" fill=\"#ce82ff\"/><path d=\"M43 36h13a10 10 0 0 1 10 10v28a10 10 0 0 1-10 10H43z\" fill=\"#b872f5\"/><rect x=\"20\" y=\"32\" width=\"46\" height=\"10\" rx=\"5\" fill=\"#a560e8\"/><rect x=\"24\" y=\"34\" width=\"38\" height=\"6\" rx=\"3\" fill=\"#7a3b13\"/><rect x=\"25\" y=\"46\" width=\"5\" height=\"18\" rx=\"2.5\" fill=\"#e3bbff\"/><path d=\"M35 58a5 5 0 0 1 8-4a5 5 0 0 1 8 4q0 5-8 10q-8-5-8-10z\" fill=\"#ffffff\"/><path d=\"M36 26q-4-5 0-9t0-9M50 26q-4-5 0-9t0-9\" fill=\"none\" stroke=\"#ffffff\" stroke-width=\"4\" stroke-linecap=\"round\"/></svg>","<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#f3dfff\"/><g transform=\"translate(50 50) scale(0.86) translate(-48 -48)\"><g transform=\"rotate(-40 48 48)\"><path d=\"M18 40L4 48l14 8z\" fill=\"#ffd9a8\"/><path d=\"M8.5 45.4L4 48l4.5 2.6z\" fill=\"#4b4b4b\"/><rect x=\"18\" y=\"40\" width=\"54\" height=\"16\" fill=\"#ffc800\"/><rect x=\"18\" y=\"48\" width=\"54\" height=\"8\" fill=\"#e5a400\"/><rect x=\"18\" y=\"44\" width=\"54\" height=\"3\" fill=\"#ffe680\"/><rect x=\"72\" y=\"40\" width=\"8\" height=\"16\" fill=\"#afafaf\"/><rect x=\"72\" y=\"48\" width=\"8\" height=\"8\" fill=\"#8b8b8b\"/><path d=\"M80 40h6a6 6 0 0 1 6 6v4a6 6 0 0 1-6 6h-6z\" fill=\"#ff8f8f\"/><path d=\"M80 48h12v2a6 6 0 0 1-6 6h-6z\" fill=\"#ff6b6b\"/></g></g></svg>","<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#fff5d3\"/><g transform=\"translate(49 52) scale(0.8) translate(-48 -48)\"><g stroke-linejoin=\"round\" stroke-width=\"6\"><path d=\"M86 14L14 44L38 54Z\" fill=\"#1899d6\" stroke=\"#1899d6\" transform=\"translate(0 4)\"/><path d=\"M86 14L42 58L50 82Z\" fill=\"#1477a8\" stroke=\"#1477a8\"/><path d=\"M86 14L42 58L70 74Z\" fill=\"#1899d6\" stroke=\"#1899d6\" transform=\"translate(0 4)\"/><path d=\"M86 14L42 58L70 74Z\" fill=\"#84d8ff\" stroke=\"#84d8ff\"/><path d=\"M86 14L14 44L38 54Z\" fill=\"#1cb0f6\" stroke=\"#1cb0f6\"/><path d=\"M86 14L38 54L42 58Z\" fill=\"#1cb0f6\" stroke=\"#1cb0f6\"/></g></g></svg>"],"a":["<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#ffd166\"/><path d=\"M24 44L27 16 46 32z\" fill=\"#f4a261\"/><path d=\"M76 44L73 16 54 32z\" fill=\"#f4a261\"/><path d=\"M28 38L29 23 39 31z\" fill=\"#ffb4a2\"/><path d=\"M72 38L71 23 61 31z\" fill=\"#ffb4a2\"/><circle cx=\"50\" cy=\"56\" r=\"28\" fill=\"#f4a261\"/><circle cx=\"40\" cy=\"52\" r=\"3.6\" fill=\"#2b2b33\"/><circle cx=\"60\" cy=\"52\" r=\"3.6\" fill=\"#2b2b33\"/><circle cx=\"41.5\" cy=\"50.5\" r=\"1.3\" fill=\"#fff\"/><circle cx=\"61.5\" cy=\"50.5\" r=\"1.3\" fill=\"#fff\"/><path d=\"M47 60h6l-3 3z\" fill=\"#e76f51\"/><path d=\"M43 63q7 6 14 0\" fill=\"none\" stroke=\"#2b2b33\" stroke-width=\"2.6\" stroke-linecap=\"round\"/><path d=\"M18 58h14M18 64l14-2M82 58H68M82 64l-14-2\" stroke=\"#2b2b33\" stroke-width=\"1.4\" stroke-linecap=\"round\"/></svg>","<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#a8dadc\"/><circle cx=\"50\" cy=\"56\" r=\"28\" fill=\"#d4a373\"/><ellipse cx=\"25\" cy=\"54\" rx=\"9\" ry=\"18\" fill=\"#7f5539\" transform=\"rotate(14 25 54)\"/><ellipse cx=\"75\" cy=\"54\" rx=\"9\" ry=\"18\" fill=\"#7f5539\" transform=\"rotate(-14 75 54)\"/><ellipse cx=\"50\" cy=\"67\" rx=\"14\" ry=\"10\" fill=\"#faedcd\"/><circle cx=\"40\" cy=\"51\" r=\"3.6\" fill=\"#2b2b33\"/><circle cx=\"60\" cy=\"51\" r=\"3.6\" fill=\"#2b2b33\"/><circle cx=\"41.5\" cy=\"49.5\" r=\"1.3\" fill=\"#fff\"/><circle cx=\"61.5\" cy=\"49.5\" r=\"1.3\" fill=\"#fff\"/><ellipse cx=\"50\" cy=\"62\" rx=\"5\" ry=\"3.6\" fill=\"#2b2b33\"/><path d=\"M50 65v4\" stroke=\"#2b2b33\" stroke-width=\"2\"/><path d=\"M43 68q7 6 14 0\" fill=\"none\" stroke=\"#2b2b33\" stroke-width=\"2.6\" stroke-linecap=\"round\"/></svg>","<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#bde0fe\"/><circle cx=\"28\" cy=\"33\" r=\"10\" fill=\"#8d5a3b\"/><circle cx=\"72\" cy=\"33\" r=\"10\" fill=\"#8d5a3b\"/><circle cx=\"28\" cy=\"33\" r=\"5\" fill=\"#d4a373\"/><circle cx=\"72\" cy=\"33\" r=\"5\" fill=\"#d4a373\"/><circle cx=\"50\" cy=\"56\" r=\"28\" fill=\"#8d5a3b\"/><ellipse cx=\"50\" cy=\"66\" rx=\"13\" ry=\"10\" fill=\"#d4a373\"/><circle cx=\"40\" cy=\"51\" r=\"3.4\" fill=\"#2b2b33\"/><circle cx=\"60\" cy=\"51\" r=\"3.4\" fill=\"#2b2b33\"/><circle cx=\"41.5\" cy=\"49.5\" r=\"1.3\" fill=\"#fff\"/><circle cx=\"61.5\" cy=\"49.5\" r=\"1.3\" fill=\"#fff\"/><ellipse cx=\"50\" cy=\"61\" rx=\"5\" ry=\"3.4\" fill=\"#2b2b33\"/><path d=\"M43 67q7 6 14 0\" fill=\"none\" stroke=\"#2b2b33\" stroke-width=\"2.6\" stroke-linecap=\"round\"/></svg>","<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#cdb4db\"/><path d=\"M24 46L24 14 48 32z\" fill=\"#f77f00\"/><path d=\"M76 46L76 14 52 32z\" fill=\"#f77f00\"/><path d=\"M28 38L28 22 40 31z\" fill=\"#fff\"/><path d=\"M72 38L72 22 60 31z\" fill=\"#fff\"/><circle cx=\"50\" cy=\"56\" r=\"28\" fill=\"#f77f00\"/><path d=\"M22 56q14 2 28 22q14-20 28-22q-6 26-28 28q-22-2-28-28z\" fill=\"#fff\"/><circle cx=\"40\" cy=\"52\" r=\"3.4\" fill=\"#2b2b33\"/><circle cx=\"60\" cy=\"52\" r=\"3.4\" fill=\"#2b2b33\"/><circle cx=\"41.5\" cy=\"50.5\" r=\"1.3\" fill=\"#fff\"/><circle cx=\"61.5\" cy=\"50.5\" r=\"1.3\" fill=\"#fff\"/><ellipse cx=\"50\" cy=\"68\" rx=\"4\" ry=\"3\" fill=\"#2b2b33\"/></svg>","<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#ffc8dd\"/><circle cx=\"35\" cy=\"34\" r=\"11\" fill=\"#52b788\"/><circle cx=\"65\" cy=\"34\" r=\"11\" fill=\"#52b788\"/><ellipse cx=\"50\" cy=\"60\" rx=\"31\" ry=\"25\" fill=\"#52b788\"/><circle cx=\"35\" cy=\"34\" r=\"6.5\" fill=\"#fff\"/><circle cx=\"65\" cy=\"34\" r=\"6.5\" fill=\"#fff\"/><circle cx=\"35\" cy=\"35\" r=\"3.6\" fill=\"#2b2b33\"/><circle cx=\"65\" cy=\"35\" r=\"3.6\" fill=\"#2b2b33\"/><path d=\"M33 62q17 14 34 0\" fill=\"none\" stroke=\"#1b4332\" stroke-width=\"2.8\" stroke-linecap=\"round\"/><circle cx=\"31\" cy=\"58\" r=\"4.5\" fill=\"#ff8fa3\" opacity=\".55\"/><circle cx=\"69\" cy=\"58\" r=\"4.5\" fill=\"#ff8fa3\" opacity=\".55\"/></svg>","<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#caffbf\"/><circle cx=\"28\" cy=\"32\" r=\"10\" fill=\"#2b2b33\"/><circle cx=\"72\" cy=\"32\" r=\"10\" fill=\"#2b2b33\"/><circle cx=\"50\" cy=\"56\" r=\"28\" fill=\"#fff\"/><ellipse cx=\"39\" cy=\"53\" rx=\"7\" ry=\"9\" fill=\"#2b2b33\" transform=\"rotate(25 39 53)\"/><ellipse cx=\"61\" cy=\"53\" rx=\"7\" ry=\"9\" fill=\"#2b2b33\" transform=\"rotate(-25 61 53)\"/><circle cx=\"40\" cy=\"52\" r=\"2.6\" fill=\"#fff\"/><circle cx=\"60\" cy=\"52\" r=\"2.6\" fill=\"#fff\"/><ellipse cx=\"50\" cy=\"63\" rx=\"4.5\" ry=\"3\" fill=\"#2b2b33\"/><path d=\"M43 67q7 6 14 0\" fill=\"none\" stroke=\"#2b2b33\" stroke-width=\"2.6\" stroke-linecap=\"round\"/></svg>","<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#9bf6ff\"/><path d=\"M27 40L26 20 43 31z\" fill=\"#f4978e\"/><path d=\"M73 40L74 20 57 31z\" fill=\"#f4978e\"/><circle cx=\"50\" cy=\"56\" r=\"28\" fill=\"#ffb5a7\"/><circle cx=\"40\" cy=\"48\" r=\"3.2\" fill=\"#2b2b33\"/><circle cx=\"60\" cy=\"48\" r=\"3.2\" fill=\"#2b2b33\"/><circle cx=\"41.5\" cy=\"46.5\" r=\"1.3\" fill=\"#fff\"/><circle cx=\"61.5\" cy=\"46.5\" r=\"1.3\" fill=\"#fff\"/><ellipse cx=\"50\" cy=\"63\" rx=\"11\" ry=\"8\" fill=\"#f4978e\"/><ellipse cx=\"46\" cy=\"63\" rx=\"2\" ry=\"3\" fill=\"#9d4b45\"/><ellipse cx=\"54\" cy=\"63\" rx=\"2\" ry=\"3\" fill=\"#9d4b45\"/><circle cx=\"31\" cy=\"57\" r=\"4.5\" fill=\"#f08080\" opacity=\".55\"/><circle cx=\"69\" cy=\"57\" r=\"4.5\" fill=\"#f08080\" opacity=\".55\"/></svg>","<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#fdffb6\"/><ellipse cx=\"38\" cy=\"22\" rx=\"7\" ry=\"20\" fill=\"#e9ecef\"/><ellipse cx=\"62\" cy=\"22\" rx=\"7\" ry=\"20\" fill=\"#e9ecef\"/><ellipse cx=\"38\" cy=\"22\" rx=\"3.5\" ry=\"14\" fill=\"#ffafcc\"/><ellipse cx=\"62\" cy=\"22\" rx=\"3.5\" ry=\"14\" fill=\"#ffafcc\"/><circle cx=\"50\" cy=\"56\" r=\"27\" fill=\"#e9ecef\"/><circle cx=\"40\" cy=\"54\" r=\"3.4\" fill=\"#2b2b33\"/><circle cx=\"60\" cy=\"54\" r=\"3.4\" fill=\"#2b2b33\"/><circle cx=\"41.5\" cy=\"52.5\" r=\"1.3\" fill=\"#fff\"/><circle cx=\"61.5\" cy=\"52.5\" r=\"1.3\" fill=\"#fff\"/><path d=\"M47 61h6l-3 3z\" fill=\"#ff8fa3\"/><path d=\"M50 64v3M46 69q4 2 4-2q0 4 4 2\" fill=\"none\" stroke=\"#2b2b33\" stroke-width=\"2\" stroke-linecap=\"round\"/><circle cx=\"31\" cy=\"62\" r=\"4.5\" fill=\"#ff8fa3\" opacity=\".55\"/><circle cx=\"69\" cy=\"62\" r=\"4.5\" fill=\"#ff8fa3\" opacity=\".55\"/></svg>","<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#ffadad\"/><circle cx=\"50\" cy=\"54\" r=\"38\" fill=\"#bc6c25\"/><circle cx=\"50\" cy=\"56\" r=\"26\" fill=\"#e9c46a\"/><circle cx=\"31\" cy=\"35\" r=\"6\" fill=\"#e9c46a\"/><circle cx=\"69\" cy=\"35\" r=\"6\" fill=\"#e9c46a\"/><ellipse cx=\"50\" cy=\"65\" rx=\"11\" ry=\"8\" fill=\"#fefae0\"/><circle cx=\"40\" cy=\"51\" r=\"3.2\" fill=\"#2b2b33\"/><circle cx=\"60\" cy=\"51\" r=\"3.2\" fill=\"#2b2b33\"/><circle cx=\"41.5\" cy=\"49.5\" r=\"1.3\" fill=\"#fff\"/><circle cx=\"61.5\" cy=\"49.5\" r=\"1.3\" fill=\"#fff\"/><path d=\"M45 60h10l-5 4z\" fill=\"#6f4518\"/><path d=\"M43 66q7 6 14 0\" fill=\"none\" stroke=\"#6f4518\" stroke-width=\"2.6\" stroke-linecap=\"round\"/></svg>","<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#a0c4ff\"/><ellipse cx=\"50\" cy=\"56\" rx=\"31\" ry=\"30\" fill=\"#264653\"/><path d=\"M50 40q-8-8-18 2q-6 10 0 22q8 14 18 14q10 0 18-14q6-12 0-22q-10-10-18-2z\" fill=\"#fff\"/><circle cx=\"40\" cy=\"52\" r=\"3.4\" fill=\"#2b2b33\"/><circle cx=\"60\" cy=\"52\" r=\"3.4\" fill=\"#2b2b33\"/><circle cx=\"41.5\" cy=\"50.5\" r=\"1.3\" fill=\"#fff\"/><circle cx=\"61.5\" cy=\"50.5\" r=\"1.3\" fill=\"#fff\"/><path d=\"M44 59h12l-6 6z\" fill=\"#f4a261\"/><circle cx=\"31\" cy=\"62\" r=\"4.5\" fill=\"#ff8fa3\" opacity=\".55\"/><circle cx=\"69\" cy=\"62\" r=\"4.5\" fill=\"#ff8fa3\" opacity=\".55\"/></svg>","<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#ffd6a5\"/><path d=\"M24 34L32 22 40 36zM76 34L68 22 60 36z\" fill=\"#6c584c\"/><ellipse cx=\"50\" cy=\"58\" rx=\"30\" ry=\"28\" fill=\"#a98467\"/><circle cx=\"38\" cy=\"50\" r=\"11\" fill=\"#fff\"/><circle cx=\"62\" cy=\"50\" r=\"11\" fill=\"#fff\"/><circle cx=\"38\" cy=\"50\" r=\"5.5\" fill=\"#2b2b33\"/><circle cx=\"62\" cy=\"50\" r=\"5.5\" fill=\"#2b2b33\"/><circle cx=\"39.5\" cy=\"48.5\" r=\"1.8\" fill=\"#fff\"/><circle cx=\"63.5\" cy=\"48.5\" r=\"1.8\" fill=\"#fff\"/><path d=\"M46 60h8l-4 7z\" fill=\"#ffb703\"/><path d=\"M38 74q4-3 8 0q4-3 8 0q4-3 8 0\" fill=\"none\" stroke=\"#6c584c\" stroke-width=\"2\"/></svg>","<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#b9fbc0\"/><circle cx=\"24\" cy=\"40\" r=\"14\" fill=\"#adb5bd\"/><circle cx=\"76\" cy=\"40\" r=\"14\" fill=\"#adb5bd\"/><circle cx=\"24\" cy=\"40\" r=\"8\" fill=\"#ffc8dd\"/><circle cx=\"76\" cy=\"40\" r=\"8\" fill=\"#ffc8dd\"/><circle cx=\"50\" cy=\"56\" r=\"28\" fill=\"#adb5bd\"/><circle cx=\"40\" cy=\"52\" r=\"3\" fill=\"#2b2b33\"/><circle cx=\"60\" cy=\"52\" r=\"3\" fill=\"#2b2b33\"/><circle cx=\"41.5\" cy=\"50.5\" r=\"1.3\" fill=\"#fff\"/><circle cx=\"61.5\" cy=\"50.5\" r=\"1.3\" fill=\"#fff\"/><ellipse cx=\"50\" cy=\"62\" rx=\"7\" ry=\"9\" fill=\"#495057\"/><path d=\"M43 72q7 6 14 0\" fill=\"none\" stroke=\"#2b2b33\" stroke-width=\"2.6\" stroke-linecap=\"round\"/></svg>","<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#fbc4ab\"/><circle cx=\"22\" cy=\"54\" r=\"10\" fill=\"#9c6644\"/><circle cx=\"78\" cy=\"54\" r=\"10\" fill=\"#9c6644\"/><circle cx=\"22\" cy=\"54\" r=\"5\" fill=\"#ede0d4\"/><circle cx=\"78\" cy=\"54\" r=\"5\" fill=\"#ede0d4\"/><circle cx=\"50\" cy=\"56\" r=\"28\" fill=\"#9c6644\"/><path d=\"M50 42q-6-6-14-3q-8 4-6 14q-6 6-2 14q6 12 22 12q16 0 22-12q4-8-2-14q2-10-6-14q-8-3-14 3z\" fill=\"#ede0d4\"/><circle cx=\"40\" cy=\"52\" r=\"3.2\" fill=\"#2b2b33\"/><circle cx=\"60\" cy=\"52\" r=\"3.2\" fill=\"#2b2b33\"/><circle cx=\"41.5\" cy=\"50.5\" r=\"1.3\" fill=\"#fff\"/><circle cx=\"61.5\" cy=\"50.5\" r=\"1.3\" fill=\"#fff\"/><path d=\"M47 60v1M53 60v1\" stroke=\"#2b2b33\" stroke-width=\"2\" stroke-linecap=\"round\"/><path d=\"M43 66q7 6 14 0\" fill=\"none\" stroke=\"#2b2b33\" stroke-width=\"2.6\" stroke-linecap=\"round\"/></svg>","<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#90dbf4\"/><path d=\"M46 26q4-10 8 0M50 26q6-8 8 2\" fill=\"none\" stroke=\"#f4a261\" stroke-width=\"3\" stroke-linecap=\"round\"/><circle cx=\"50\" cy=\"56\" r=\"29\" fill=\"#ffd60a\"/><circle cx=\"40\" cy=\"52\" r=\"3.4\" fill=\"#2b2b33\"/><circle cx=\"60\" cy=\"52\" r=\"3.4\" fill=\"#2b2b33\"/><circle cx=\"41.5\" cy=\"50.5\" r=\"1.3\" fill=\"#fff\"/><circle cx=\"61.5\" cy=\"50.5\" r=\"1.3\" fill=\"#fff\"/><path d=\"M43 59h14l-7 7z\" fill=\"#f77f00\"/><circle cx=\"31\" cy=\"61\" r=\"4.5\" fill=\"#ff8fa3\" opacity=\".55\"/><circle cx=\"69\" cy=\"61\" r=\"4.5\" fill=\"#ff8fa3\" opacity=\".55\"/></svg>","<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#e2ece9\"/><path d=\"M24 42L26 18 44 32z\" fill=\"#6c757d\"/><path d=\"M76 42L74 18 56 32z\" fill=\"#6c757d\"/><circle cx=\"50\" cy=\"56\" r=\"28\" fill=\"#adb5bd\"/><path d=\"M24 52q12-12 26-2q14-10 26 2q-6 10-14 6q-6-4-12 0q-6 4-12 0q-8 4-14-6z\" fill=\"#343a40\"/><path d=\"M38 66q12 14 24 0q-4 10-12 10q-8 0-12-10z\" fill=\"#f8f9fa\"/><circle cx=\"40\" cy=\"52\" r=\"3\" fill=\"#fff\"/><circle cx=\"60\" cy=\"52\" r=\"3\" fill=\"#fff\"/><circle cx=\"40\" cy=\"52\" r=\"1.6\" fill=\"#2b2b33\"/><circle cx=\"60\" cy=\"52\" r=\"1.6\" fill=\"#2b2b33\"/><ellipse cx=\"50\" cy=\"65\" rx=\"4\" ry=\"3\" fill=\"#2b2b33\"/></svg>","<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#d0f4de\"/><circle cx=\"28\" cy=\"34\" r=\"9\" fill=\"#f8961e\"/><circle cx=\"72\" cy=\"34\" r=\"9\" fill=\"#f8961e\"/><circle cx=\"28\" cy=\"34\" r=\"4.5\" fill=\"#fff\"/><circle cx=\"72\" cy=\"34\" r=\"4.5\" fill=\"#fff\"/><circle cx=\"50\" cy=\"56\" r=\"28\" fill=\"#f8961e\"/><path d=\"M50 29v8M44 30l2 6M56 30l-2 6M22 52h8M22 60h7M78 52h-8M78 60h-7\" stroke=\"#2b2b33\" stroke-width=\"2.6\" stroke-linecap=\"round\"/><ellipse cx=\"50\" cy=\"67\" rx=\"13\" ry=\"9\" fill=\"#fff\"/><circle cx=\"40\" cy=\"51\" r=\"3.2\" fill=\"#2b2b33\"/><circle cx=\"60\" cy=\"51\" r=\"3.2\" fill=\"#2b2b33\"/><circle cx=\"41.5\" cy=\"49.5\" r=\"1.3\" fill=\"#fff\"/><circle cx=\"61.5\" cy=\"49.5\" r=\"1.3\" fill=\"#fff\"/><path d=\"M46 61h8l-4 3z\" fill=\"#e5383b\"/><path d=\"M43 66q7 6 14 0\" fill=\"none\" stroke=\"#2b2b33\" stroke-width=\"2.6\" stroke-linecap=\"round\"/></svg>"]};
 const VO_AV_N={m:['Lemon','Rocket','Cupcake','Guitar','Cactus','Crown','Umbrella','Kite','Donut','Balloon','Ice cream','Lightbulb','Watermelon','Mug','Pencil','Paper plane'],
   a:['Cat','Dog','Bear','Fox','Frog','Panda','Pig','Bunny','Lion','Penguin','Owl','Koala','Monkey','Chick','Raccoon','Tiger']};
-const avSvg=id=>{const m=/^([ma])(\d{1,2})$/.exec(id||'');return m&&VO_AV[m[1]][+m[2]]||'';};
-const avName=id=>{const m=/^([ma])(\d{1,2})$/.exec(id||'');return m&&VO_AV_N[m[1]][+m[2]]||'';};
+/* the crown series (Monarch reward, 10 referrals) */
+VO_AV.c=["<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#ddf4ff\"/><g transform=\"translate(0 5)\">\n<path d=\"M29 56Q29 28 50 25Q71 28 71 56Z\" fill=\"#ce82ff\"/><path d=\"M50 25Q71 28 71 56H50Z\" fill=\"#b872f5\"/>\n<path d=\"M31 54Q32 32 50 27\" fill=\"none\" stroke=\"#ffc800\" stroke-width=\"5\" stroke-linecap=\"round\"/><path d=\"M50 27Q68 32 69 54\" fill=\"none\" stroke=\"#f5b800\" stroke-width=\"5\" stroke-linecap=\"round\"/>\n<path d=\"M50 27V54\" stroke=\"#ffc800\" stroke-width=\"5\"/><circle cx=\"50\" cy=\"36\" r=\"1.6\" fill=\"#fff\"/><circle cx=\"50\" cy=\"44\" r=\"1.6\" fill=\"#fff\"/>\n<rect x=\"47.5\" y=\"6\" width=\"5\" height=\"14\" rx=\"2\" fill=\"#ffc800\"/><rect x=\"43.5\" y=\"9.5\" width=\"13\" height=\"5\" rx=\"2\" fill=\"#ffc800\"/>\n<circle cx=\"50\" cy=\"22\" r=\"6\" fill=\"#ffc800\"/><path d=\"M50 16a6 6 0 0 1 0 12z\" fill=\"#f5b800\"/><ellipse cx=\"48\" cy=\"20\" rx=\"1.5\" ry=\"2\" fill=\"#ffe680\"/>\n<rect x=\"22\" y=\"49\" width=\"56\" height=\"12\" rx=\"6\" fill=\"#d3dde3\" transform=\"translate(0 3)\"/><rect x=\"22\" y=\"49\" width=\"56\" height=\"12\" rx=\"6\" fill=\"#ffffff\"/>\n<rect x=\"29\" y=\"51\" width=\"2.6\" height=\"6\" rx=\"1.3\" fill=\"#4b4b4b\"/><rect x=\"41\" y=\"51\" width=\"2.6\" height=\"6\" rx=\"1.3\" fill=\"#4b4b4b\"/><rect x=\"56.4\" y=\"51\" width=\"2.6\" height=\"6\" rx=\"1.3\" fill=\"#4b4b4b\"/><rect x=\"68.4\" y=\"51\" width=\"2.6\" height=\"6\" rx=\"1.3\" fill=\"#4b4b4b\"/>\n<rect x=\"25\" y=\"60\" width=\"50\" height=\"16\" rx=\"4\" fill=\"#e5a400\" transform=\"translate(0 4)\"/><rect x=\"25\" y=\"60\" width=\"50\" height=\"16\" rx=\"4\" fill=\"#ffc800\"/><path d=\"M50 60H71a4 4 0 0 1 4 4V72a4 4 0 0 1-4 4H50Z\" fill=\"#f5b800\"/>\n<circle cx=\"36\" cy=\"68\" r=\"3.6\" fill=\"#1cb0f6\"/><circle cx=\"50\" cy=\"68\" r=\"4.6\" fill=\"#ff4b4b\"/><circle cx=\"64\" cy=\"68\" r=\"3.6\" fill=\"#58cc02\"/><circle cx=\"48.6\" cy=\"66.6\" r=\"1.4\" fill=\"#ff9a9a\"/>\n<rect x=\"28\" y=\"62.5\" width=\"6\" height=\"2.6\" rx=\"1.3\" fill=\"#ffe680\"/></g></svg>", "<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#f3dfff\"/><g transform=\"translate(50 50) rotate(35) scale(.88) translate(-50 -46)\">\n<rect x=\"45.5\" y=\"30\" width=\"9\" height=\"56\" rx=\"4.5\" fill=\"#ffc800\"/><rect x=\"50\" y=\"30\" width=\"4.5\" height=\"56\" fill=\"#f5b800\"/>\n<rect x=\"43\" y=\"48\" width=\"14\" height=\"5\" rx=\"2.5\" fill=\"#e5a400\"/><rect x=\"43\" y=\"66\" width=\"14\" height=\"5\" rx=\"2.5\" fill=\"#e5a400\"/>\n<circle cx=\"50\" cy=\"89\" r=\"6.5\" fill=\"#ffc800\"/><path d=\"M50 82.5a6.5 6.5 0 0 1 0 13z\" fill=\"#f5b800\"/>\n<path d=\"M36 22Q36 36 50 36Q64 36 64 22Z\" fill=\"#ffc800\"/><path d=\"M50 22H64Q64 36 50 36Z\" fill=\"#f5b800\"/>\n<circle cx=\"50\" cy=\"18\" r=\"12\" fill=\"#ff4b4b\"/><path d=\"M50 6a12 12 0 0 1 0 24z\" fill=\"#ea2b2b\"/><ellipse cx=\"46\" cy=\"15\" rx=\"2.4\" ry=\"3.4\" fill=\"#ff9a9a\" transform=\"rotate(30 46 15)\"/>\n<rect x=\"47.5\" y=\"-6\" width=\"5\" height=\"13\" rx=\"2\" fill=\"#ffc800\"/><rect x=\"43.5\" y=\"-3\" width=\"13\" height=\"4.6\" rx=\"2\" fill=\"#ffc800\"/>\n<rect x=\"47\" y=\"34\" width=\"2.5\" height=\"10\" rx=\"1.25\" fill=\"#ffe680\"/></g></svg>", "<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#fff5d3\"/><circle cx=\"50\" cy=\"62\" r=\"24\" fill=\"#e5a400\" transform=\"translate(0 4)\"/><circle cx=\"50\" cy=\"62\" r=\"24\" fill=\"#ffc800\"/><path d=\"M50 38a24 24 0 0 1 0 48z\" fill=\"#f5b800\"/>\n<path d=\"M26.5 57H73.5Q74.6 62 73.5 67H26.5Q25.4 62 26.5 57Z\" fill=\"#e5a400\"/><path d=\"M45 38.6Q50 37.6 55 38.6V57H45Z\" fill=\"#e5a400\"/>\n<circle cx=\"35\" cy=\"62\" r=\"3\" fill=\"#1cb0f6\"/><circle cx=\"50\" cy=\"62\" r=\"4.2\" fill=\"#ff4b4b\"/><circle cx=\"65\" cy=\"62\" r=\"3\" fill=\"#58cc02\"/><circle cx=\"50\" cy=\"47.5\" r=\"3\" fill=\"#ce82ff\"/>\n<ellipse cx=\"35\" cy=\"73\" rx=\"3\" ry=\"6\" fill=\"#ffe680\" transform=\"rotate(-40 35 73)\"/>\n<rect x=\"45.5\" y=\"12\" width=\"9\" height=\"28\" rx=\"3\" fill=\"#ffc800\"/><rect x=\"50\" y=\"12\" width=\"4.5\" height=\"28\" fill=\"#f5b800\"/><rect x=\"37\" y=\"19\" width=\"26\" height=\"8.5\" rx=\"3\" fill=\"#ffc800\"/><path d=\"M50 19H60a3 3 0 0 1 3 3v2.5a3 3 0 0 1-3 3H50Z\" fill=\"#f5b800\"/>\n<circle cx=\"50\" cy=\"23.25\" r=\"2.8\" fill=\"#ff4b4b\"/><rect x=\"47.5\" y=\"29\" width=\"2.4\" height=\"7\" rx=\"1.2\" fill=\"#ffe680\"/></svg>", "<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#ffdfe0\"/><path d=\"M27 78V34Q27 16 50 12Q73 16 73 34V78Z\" fill=\"#e5a400\" transform=\"translate(0 4)\"/>\n<path d=\"M27 78V34Q27 16 50 12Q73 16 73 34V78Z\" fill=\"#ffc800\"/><path d=\"M50 12Q73 16 73 34V78H50Z\" fill=\"#f5b800\"/>\n<path d=\"M34 62V36Q34 24 50 20Q66 24 66 36V62Z\" fill=\"#ff4b4b\"/><path d=\"M50 20Q66 24 66 36V62H50Z\" fill=\"#ea2b2b\"/>\n<path d=\"M50 30L56 38L50 46L44 38Z\" fill=\"#ffc800\"/><path d=\"M50 30L56 38L50 46Z\" fill=\"#f5b800\"/>\n<circle cx=\"50\" cy=\"10\" r=\"5\" fill=\"#ffc800\"/><path d=\"M50 5a5 5 0 0 1 0 10z\" fill=\"#f5b800\"/>\n<ellipse cx=\"39\" cy=\"34\" rx=\"2\" ry=\"5\" fill=\"#ff9a9a\" transform=\"rotate(25 39 34)\"/>\n<rect x=\"21\" y=\"60\" width=\"8\" height=\"28\" rx=\"3\" fill=\"#e5a400\"/><rect x=\"71\" y=\"60\" width=\"8\" height=\"28\" rx=\"3\" fill=\"#e5a400\"/>\n<rect x=\"16\" y=\"54\" width=\"18\" height=\"9\" rx=\"4.5\" fill=\"#ffc800\"/><rect x=\"66\" y=\"54\" width=\"18\" height=\"9\" rx=\"4.5\" fill=\"#f5b800\"/>\n<rect x=\"28\" y=\"64\" width=\"44\" height=\"12\" rx=\"3\" fill=\"#e5a400\" transform=\"translate(0 4)\"/><rect x=\"28\" y=\"64\" width=\"44\" height=\"12\" rx=\"3\" fill=\"#ffc800\"/><path d=\"M50 64H69a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3H50Z\" fill=\"#f5b800\"/>\n<rect x=\"27\" y=\"56\" width=\"46\" height=\"11\" rx=\"5.5\" fill=\"#ff4b4b\"/><path d=\"M50 56H67.5a5.5 5.5 0 0 1 0 11H50Z\" fill=\"#ea2b2b\"/><rect x=\"31\" y=\"58\" width=\"8\" height=\"3\" rx=\"1.5\" fill=\"#ff9a9a\"/>\n<circle cx=\"50\" cy=\"71\" r=\"2.6\" fill=\"#1cb0f6\"/></svg>", "<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#f3dfff\"/><g transform=\"translate(0 4)\" stroke-linejoin=\"round\"><path d=\"M18 70L25 52L33 60L39 40L45 54L50 22L55 54L61 40L67 60L75 52L82 70Q50 56 18 70Z\" fill=\"#c3ced6\" stroke=\"#c3ced6\" stroke-width=\"5\"/><path d=\"M50 22L55 54L61 40L67 60L75 52L82 70Q66 62 50 61Z\" fill=\"#aebbc5\" stroke=\"#aebbc5\" stroke-width=\"5\"/>\n<path d=\"M14 72Q50 52 86 72Q86 80 80 80Q50 64 20 80Q14 80 14 72Z\" fill=\"#8a9aa5\" transform=\"translate(0 4)\"/>\n<path d=\"M14 72Q50 52 86 72Q86 80 80 80Q50 64 20 80Q14 80 14 72Z\" fill=\"#e9eef2\"/><path d=\"M50 62Q68 63 86 72Q86 80 80 80Q66 70 50 69Z\" fill=\"#d3dde3\"/>\n<path d=\"M50 30Q57 40 50 50Q43 40 50 30Z\" fill=\"#ff86d0\"/><path d=\"M50 30Q57 40 50 50Z\" fill=\"#f56cc0\"/><ellipse cx=\"48\" cy=\"38\" rx=\"1.3\" ry=\"3\" fill=\"#ffd0ee\"/>\n<circle cx=\"39\" cy=\"44\" r=\"3.4\" fill=\"#1cb0f6\"/><circle cx=\"61\" cy=\"44\" r=\"3.4\" fill=\"#1899d6\"/><circle cx=\"25\" cy=\"55\" r=\"2.8\" fill=\"#ff86d0\"/><circle cx=\"75\" cy=\"55\" r=\"2.8\" fill=\"#f56cc0\"/>\n<circle cx=\"27\" cy=\"72\" r=\"2.2\" fill=\"#1cb0f6\"/><circle cx=\"38.5\" cy=\"67.5\" r=\"2.4\" fill=\"#ff86d0\"/><circle cx=\"50\" cy=\"66\" r=\"2.8\" fill=\"#1cb0f6\"/><circle cx=\"61.5\" cy=\"67.5\" r=\"2.4\" fill=\"#ff86d0\"/><circle cx=\"73\" cy=\"72\" r=\"2.2\" fill=\"#1cb0f6\"/>\n<rect x=\"22\" y=\"70\" width=\"8\" height=\"2.4\" rx=\"1.2\" fill=\"#ffffff\" transform=\"rotate(-22 26 71)\"/></g></svg>", "<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#ddf4ff\"/><circle cx=\"50\" cy=\"64\" r=\"20\" fill=\"none\" stroke=\"#e5a400\" stroke-width=\"9\" transform=\"translate(0 4)\"/>\n<circle cx=\"50\" cy=\"64\" r=\"20\" fill=\"none\" stroke=\"#ffc800\" stroke-width=\"9\"/><path d=\"M50 44a20 20 0 0 1 0 40\" fill=\"none\" stroke=\"#f5b800\" stroke-width=\"9\"/>\n<path d=\"M33.5 58a18 18 0 0 1 4-8\" fill=\"none\" stroke=\"#ffe680\" stroke-width=\"3\" stroke-linecap=\"round\"/>\n<path d=\"M38 40H62L58 48H42Z\" fill=\"#ffc800\"/><path d=\"M50 40H62L58 48H50Z\" fill=\"#f5b800\"/>\n<path d=\"M33 26L41 16H59L67 26L50 46Z\" fill=\"#1cb0f6\"/><path d=\"M41 16H59L67 26H33Z\" fill=\"#84d8ff\"/><path d=\"M45 16H55L57 26H43Z\" fill=\"#bfeaff\"/><path d=\"M50 46L67 26H57Z\" fill=\"#1899d6\"/><path d=\"M50 46L43 26H33Z\" fill=\"#49c0f8\"/>\n<path d=\"M76 14l1.6 4.4 4.4 1.6-4.4 1.6-1.6 4.4-1.6-4.4-4.4-1.6 4.4-1.6z\" fill=\"#ffffff\"/></svg>", "<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#d7ffb8\"/><g transform=\"translate(0 2)\"><path d=\"M33 86Q33 74 50 74Q67 74 67 86Z\" fill=\"#e5a400\" transform=\"translate(0 4)\"/><path d=\"M33 86Q33 74 50 74Q67 74 67 86Z\" fill=\"#ffc800\"/><path d=\"M50 74Q67 74 67 86H50Z\" fill=\"#f5b800\"/>\n<rect x=\"45.5\" y=\"50\" width=\"9\" height=\"26\" fill=\"#e5a400\"/><ellipse cx=\"50\" cy=\"63\" rx=\"8\" ry=\"4.5\" fill=\"#ffc800\"/><path d=\"M50 58.5a8 4.5 0 0 1 0 9z\" fill=\"#f5b800\"/>\n<path d=\"M27 20H73Q73 52 50 54Q27 52 27 20Z\" fill=\"#ffc800\"/><path d=\"M50 20H73Q73 52 50 54Z\" fill=\"#f5b800\"/>\n<rect x=\"25\" y=\"16\" width=\"50\" height=\"8\" rx=\"4\" fill=\"#e5a400\" transform=\"translate(0 3)\"/><rect x=\"25\" y=\"16\" width=\"50\" height=\"8\" rx=\"4\" fill=\"#ffc800\"/><path d=\"M50 16H71a4 4 0 0 1 0 8H50Z\" fill=\"#f5b800\"/>\n<circle cx=\"38\" cy=\"35\" r=\"3.6\" fill=\"#ff4b4b\"/><circle cx=\"50\" cy=\"39\" r=\"4.8\" fill=\"#1cb0f6\"/><circle cx=\"62\" cy=\"35\" r=\"3.6\" fill=\"#ea2b2b\"/><circle cx=\"48.5\" cy=\"37.5\" r=\"1.5\" fill=\"#bfeaff\"/>\n<ellipse cx=\"33\" cy=\"32\" rx=\"2\" ry=\"5\" fill=\"#ffe680\" transform=\"rotate(-8 33 32)\"/></g></svg>", "<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#fff5d3\"/><path d=\"M22 18H78V46Q78 74 50 88Q22 74 22 46Z\" fill=\"#e5a400\" transform=\"translate(0 4)\"/><path d=\"M22 18H78V46Q78 74 50 88Q22 74 22 46Z\" fill=\"#ffc800\"/><path d=\"M50 18H78V46Q78 74 50 88Z\" fill=\"#f5b800\"/>\n<path d=\"M29 25H71V46Q71 68 50 80Q29 68 29 46Z\" fill=\"#1cb0f6\"/><path d=\"M50 25H71V46Q71 68 50 80Z\" fill=\"#1899d6\"/>\n<path d=\"M50 30Q59 41 50 56Q41 41 50 30Z\" fill=\"#ffc800\"/><path d=\"M50 30Q59 41 50 56Z\" fill=\"#f5b800\"/>\n<path d=\"M48 54Q37 56 34 47Q32 39 38 39Q42 40 41 45Q41 50 48 50Z\" fill=\"#ffc800\"/><path d=\"M52 54Q63 56 66 47Q68 39 62 39Q58 40 59 45Q59 50 52 50Z\" fill=\"#f5b800\"/>\n<rect x=\"39\" y=\"52\" width=\"22\" height=\"5\" rx=\"2.5\" fill=\"#ffc800\"/><path d=\"M50 52H58.5a2.5 2.5 0 0 1 0 5H50Z\" fill=\"#f5b800\"/>\n<path d=\"M46 57H54L52 66H48Z\" fill=\"#ffc800\"/><path d=\"M50 57H54L52 66H50Z\" fill=\"#f5b800\"/>\n<ellipse cx=\"35\" cy=\"34\" rx=\"2\" ry=\"5\" fill=\"#bfeaff\" transform=\"rotate(20 35 34)\"/></svg>", "<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#ddf4ff\"/><rect x=\"49\" y=\"4\" width=\"3\" height=\"20\" rx=\"1.5\" fill=\"#4b4b4b\"/><path d=\"M52 6L70 10.5L52 15Z\" fill=\"#ff4b4b\"/><path d=\"M52 10.5H70L52 15Z\" fill=\"#ea2b2b\"/>\n<rect x=\"31\" y=\"38\" width=\"38\" height=\"50\" rx=\"2\" fill=\"#8a9aa5\" transform=\"translate(0 0)\"/><rect x=\"31\" y=\"38\" width=\"38\" height=\"48\" fill=\"#bfcad2\"/><rect x=\"50\" y=\"38\" width=\"19\" height=\"48\" fill=\"#a6b4bd\"/>\n<path d=\"M26 22H36V30H45V22H55V30H64V22H74V40H26Z\" fill=\"#8a9aa5\" transform=\"translate(0 3)\"/><path d=\"M26 22H36V30H45V22H55V30H64V22H74V40H26Z\" fill=\"#bfcad2\"/><path d=\"M50 22H55V30H64V22H74V40H50Z\" fill=\"#a6b4bd\"/>\n<rect x=\"35\" y=\"50\" width=\"8\" height=\"4\" rx=\"2\" fill=\"#d9e1e6\"/><rect x=\"58\" y=\"60\" width=\"8\" height=\"4\" rx=\"2\" fill=\"#bfcad2\"/><rect x=\"36\" y=\"66\" width=\"7\" height=\"4\" rx=\"2\" fill=\"#d9e1e6\"/>\n<rect x=\"45.5\" y=\"46\" width=\"9\" height=\"13\" rx=\"4.5\" fill=\"#4b4b4b\"/>\n<path d=\"M41 86V76Q41 67 50 67Q59 67 59 76V86Z\" fill=\"#8b5a2b\"/><path d=\"M50 67Q59 67 59 76V86H50Z\" fill=\"#6e4522\"/><circle cx=\"54\" cy=\"78\" r=\"1.4\" fill=\"#ffc800\"/>\n<rect x=\"28\" y=\"86\" width=\"44\" height=\"5\" rx=\"2.5\" fill=\"#8a9aa5\"/><rect x=\"29\" y=\"25\" width=\"4\" height=\"8\" rx=\"2\" fill=\"#d9e1e6\"/></svg>", "<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#f3dfff\"/><rect x=\"26\" y=\"22\" width=\"48\" height=\"56\" fill=\"#f7dfa8\"/><rect x=\"26\" y=\"22\" width=\"24\" height=\"56\" fill=\"#fff5d3\"/>\n<rect x=\"34\" y=\"34\" width=\"32\" height=\"3.5\" rx=\"1.75\" fill=\"#e8c37e\"/><rect x=\"34\" y=\"42\" width=\"32\" height=\"3.5\" rx=\"1.75\" fill=\"#e8c37e\"/><rect x=\"34\" y=\"50\" width=\"22\" height=\"3.5\" rx=\"1.75\" fill=\"#e8c37e\"/>\n<rect x=\"20\" y=\"14\" width=\"60\" height=\"12\" rx=\"6\" fill=\"#d9a54f\" transform=\"translate(0 3)\"/><rect x=\"20\" y=\"14\" width=\"60\" height=\"12\" rx=\"6\" fill=\"#f7dfa8\"/><path d=\"M50 14H74a6 6 0 0 1 0 12H50Z\" fill=\"#e8c37e\"/>\n<rect x=\"20\" y=\"74\" width=\"60\" height=\"12\" rx=\"6\" fill=\"#d9a54f\" transform=\"translate(0 3)\"/><rect x=\"20\" y=\"74\" width=\"60\" height=\"12\" rx=\"6\" fill=\"#f7dfa8\"/><path d=\"M50 74H74a6 6 0 0 1 0 12H50Z\" fill=\"#e8c37e\"/>\n<rect x=\"24\" y=\"17\" width=\"10\" height=\"3\" rx=\"1.5\" fill=\"#fff5d3\"/>\n<path d=\"M58 70L54 90L60 86L63 92L66 72Z\" fill=\"#c81e1e\"/><path d=\"M66 70L72 88L66 86L64 92L60 72Z\" fill=\"#ea2b2b\"/>\n<circle cx=\"63\" cy=\"66\" r=\"11\" fill=\"#ff4b4b\"/><path d=\"M63 55a11 11 0 0 1 0 22z\" fill=\"#ea2b2b\"/><circle cx=\"63\" cy=\"66\" r=\"6.5\" fill=\"none\" stroke=\"#c81e1e\" stroke-width=\"2\"/>\n<path d=\"M58.5 69V63L61 65.5L63 61.5L65 65.5L67.5 63V69Z\" fill=\"#c81e1e\"/></svg>", "<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#d7ffb8\"/><path d=\"M24 38L37 20H63L76 38L50 82Z\" fill=\"#c81e1e\" transform=\"translate(0 4)\"/>\n<path d=\"M24 38L37 20H63L76 38L50 82Z\" fill=\"#ff4b4b\"/><path d=\"M37 20H63L57 38H43Z\" fill=\"#ff7878\"/><path d=\"M24 38L37 20L43 38Z\" fill=\"#ff6161\"/><path d=\"M63 20L76 38H57Z\" fill=\"#ea2b2b\"/>\n<path d=\"M43 38H57L50 82Z\" fill=\"#ff6161\"/><path d=\"M57 38H76L50 82Z\" fill=\"#ea2b2b\"/>\n<path d=\"M42 24H52L49 30H40Z\" fill=\"#ff9a9a\"/>\n<path d=\"M78 18l2 5.5 5.5 2-5.5 2-2 5.5-2-5.5-5.5-2 5.5-2z\" fill=\"#ffffff\"/><path d=\"M22 62l1.4 3.6 3.6 1.4-3.6 1.4-1.4 3.6-1.4-3.6-3.6-1.4 3.6-1.4z\" fill=\"#ffffff\"/></svg>", "<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#ffe7c2\"/><g transform=\"translate(50 50) scale(.86) rotate(-12) translate(-51 -46)\">\n<path d=\"M28 38H62V72L45 63L28 72Z\" fill=\"#8a49c9\" transform=\"translate(0 4)\"/><path d=\"M28 38H62V72L45 63L28 72Z\" fill=\"#ce82ff\"/><path d=\"M45 38H62V72L45 63Z\" fill=\"#b872f5\"/>\n<path d=\"M37 56V47L40.5 51L45 44L49.5 51L53 47V56Z\" fill=\"#ffc800\"/><path d=\"M45 44L49.5 51L53 47V56H45Z\" fill=\"#f5b800\"/>\n<rect x=\"14\" y=\"30\" width=\"60\" height=\"7\" rx=\"3.5\" fill=\"#e5a400\" transform=\"translate(0 3)\"/><rect x=\"14\" y=\"30\" width=\"60\" height=\"7\" rx=\"3.5\" fill=\"#ffc800\"/>\n<rect x=\"9\" y=\"28\" width=\"7\" height=\"11\" rx=\"2.5\" fill=\"#e5a400\"/>\n<path d=\"M66 33.5L88 18Q93 33.5 88 49Z\" fill=\"#ffc800\"/><path d=\"M66 33.5H90.5Q90.5 42 88 49Z\" fill=\"#f5b800\"/><ellipse cx=\"88\" cy=\"33.5\" rx=\"4\" ry=\"15.5\" fill=\"#e5a400\"/>\n<rect x=\"28\" y=\"38\" width=\"34\" height=\"4\" fill=\"#e5a400\"/><rect x=\"20\" y=\"31.5\" width=\"14\" height=\"2.2\" rx=\"1.1\" fill=\"#ffe680\"/></g></svg>"];
+VO_AV_N.c=['Crown','Sceptre','Orb','Throne','Tiara','Ring','Goblet','Shield','Tower','Seal','Gem','Trumpet'];
+const avSvg=id=>{const m=/^([mac])(\d{1,2})$/.exec(id||'');return m&&VO_AV[m[1]][+m[2]]||'';};
+const avName=id=>{const m=/^([mac])(\d{1,2})$/.exec(id||'');return m&&VO_AV_N[m[1]][+m[2]]||'';};
 let chAvs={};
 const AP_PAGES=[['courses','Courses'],['calendar','Calendar'],['advisory','To-Do'],['assignments','Assignments'],['resources','Resources'],['tools','Tools'],
   ['tasks','Tasks'],['chat','Chat'],['games','Games'],['guide','Guide']];
@@ -9180,19 +9379,20 @@ const pageHidden=k=>!!state.user&&hiddenPages().has(k);
 function apOpen(note){
   if(!state.user)return;
   pwx={mode:'appear',seq:[]};
-  const h=hiddenPages(),own=!!state.user.owner,mine=state.user.av||'',hv=state.settings.homeView||'pages';
+  const h=hiddenPages(),own=!!state.user.owner,mine=state.user.av||'',hv=state.settings.homeView||'pages',crown=rwHas(10);
   const pages=AP_PAGES.filter(([k])=>k!=='tasks'||(own&&document.querySelector('[data-v="tasks"]')));
   const tile=id=>`<button type="button" class="ap-av${mine===id?' on':''}" data-ap-av="${id}" aria-pressed="${mine===id}" aria-label="${id?esc(avName(id)):'No avatar, just your first letter'}" title="${id?esc(avName(id)):'No avatar'}">${id?avSvg(id):`<span class="ap-none">${esc(state.user.name.slice(0,1))}</span>`}</button>`;
   pwxShow(`<div class="sec"><h2>Appearance</h2>
     <section><h3>Hide pages</h3><p>Hidden pages leave the top bar, the menu and Home. You can bring them back here any time.</p>
       <div class="ap-hide">${pages.map(([k,n])=>`<label class="hide-it"><span>${n}</span><input type="checkbox" class="hide-cb" data-ap-hide="${k}" ${h.has(k)?'checked':''}><span class="hide-box" aria-hidden="true"></span></label>`).join('')}</div></section>
-    <section><h3>Home</h3><div class="ap-hv">${HV_OPTS.map(([k,n])=>`<button type="button" class="hbtn${hv===k?' on':''}" data-ap-hv="${k}" aria-pressed="${hv===k}">${n}</button>`).join('')}</div>
-      <div class="ap-hide ap-hp"${hv==='pages'?'':' hidden'}>${hpPages().map(([k,n])=>`<label class="hide-it"><span>${n}</span><input type="checkbox" class="hide-cb" data-ap-hp="${k}" ${hpOn(k)?'checked':''}><span class="hide-box" aria-hidden="true"></span></label>`).join('')}</div></section>
-    <section><h3>Colors</h3><div class="ap-cols">${pcPages().map(([k,n])=>{const cur=pcOf(k);
-      return `<div class="ap-col"><span>${esc(n)}</span><div class="ap-sws">${PC_SW.map(c=>`<button type="button" class="ap-sw${c===cur?' on':''}" style="--c:${c}" data-ap-pc="${esc(k)}" data-c="${c}" aria-pressed="${c===cur}" aria-label="${esc(n)} ${c}"></button>`).join('')}</div></div>`;}).join('')}</div></section>
+    <section><h3>Home</h3>${apHomeHTML(hv)}</section>
+    <section>${rwHas(2)?'<h3>Colors</h3>':`<div class="sec-sw ap-ch"><h3>Colors</h3>${rwLockHTML(2)}</div>`}<div class="ap-cols${rwHas(2)?'':' lk'}">${pcPages().map(([k,n])=>apPcRow(k,n)).join('')}
+      ${rwHas(3)?'':`<div class="ap-col"><span>Gradients</span>${rwLockHTML(3)}</div>`}</div></section>
     <section><div class="sec-sw"><h3 class="ap-fh">Fade</h3><input type="checkbox" class="switch" id="ap-fade" ${state.settings.pageFade?'checked':''} aria-label="Fade"></div></section>
     <section><div class="sec-sw"><h3 class="ap-fh">Decorations</h3><input type="checkbox" class="switch" id="ap-deco" ${state.settings.decoOff?'':'checked'} aria-label="Decorations"></div></section>
+    <section><div class="sec-sw"><h3 class="ap-fh">Footer</h3><input type="checkbox" class="switch" id="ap-foot" ${state.settings.footerOff?'':'checked'} aria-label="Footer"></div></section>
     <section><h3>Avatar</h3><p>Shown next to your name in Chat.</p>
+      <h4 class="ap-crh">Crown${crown?'':rwLockHTML(10)}</h4><div class="ap-avs">${VO_AV.c.map((_,i)=>crown?tile('c'+i):`<button type="button" class="ap-av ap-lk" data-act-rewards aria-label="Locked"><span>?</span>${art('lock')}</button>`).join('')}</div>
       <h4>Modern</h4><div class="ap-avs">${tile('')}${VO_AV.m.map((_,i)=>tile('m'+i)).join('')}</div>
       <h4>Antiques</h4><div class="ap-avs">${VO_AV.a.map((_,i)=>tile('a'+i)).join('')}</div></section>
     <div class="pwx-msg" role="alert">${note?esc(note):''}</div></div>`,true);
@@ -9221,40 +9421,102 @@ document.addEventListener('change',e=>{
 const PC_SW=['#4b9af3','#ff4b4b','#ff9600','#e5a400','#58cc02','#00b8a9','#5b6cff','#a560f0','#ff5fa2'];
 const pcPages=()=>{const a=[['home','Home'],...AP_PAGES.filter(([k])=>k!=='guide'&&(k!=='tasks'||(state.user&&state.user.owner)))];
   return a;};
-const pcOf=k=>{const c=((state.settings&&state.settings.pageColors)||{})[k];return typeof c==='string'&&/^#[0-9a-f]{6}$/i.test(c)?c.toLowerCase():PC_SW[0];};
+const pcOf=k=>{const c=rwHas(2)&&((state.settings&&state.settings.pageColors)||{})[k];return typeof c==='string'&&/^#[0-9a-f]{6}$/i.test(c)?c.toLowerCase():PC_SW[0];};
+/* rewards: custom page colours at 2 referrals, and at 3 a second colour per page (pageGrads: page -> '#rrggbb') */
+const pgOf=k=>{const c=rwHas(3)&&((state.settings&&state.settings.pageGrads)||{})[k];return typeof c==='string'&&/^#[0-9a-f]{6}$/i.test(c)?c.toLowerCase():'';};
+function apPcRow(k,n){const cur=pcOf(k),g=pgOf(k),lk=!rwHas(2),cus=!PC_SW.includes(cur);
+  return `<div class="ap-col" data-ap-row="${esc(k)}"><span>${esc(n)}</span><div class="ap-sws">${PC_SW.map(c=>`<button type="button" class="ap-sw${c===cur?' on':''}" style="--c:${c}" data-ap-pc="${esc(k)}" data-c="${c}" aria-pressed="${c===cur}" aria-label="${esc(n)} ${c}"${lk?' disabled':''}></button>`).join('')}${lk?'':
+    `<label class="ap-sw ap-cus${cus?' on':''}" style="--c:${cus?cur:'var(--panel2)'}" title="Custom color"><input type="color" data-ap-pcc="${esc(k)}" value="${cur}" aria-label="${esc(n)} custom color"></label>`}${rwHas(3)?
+    `<span class="ap-g2${g?' on':''}" style="--c:${cur};--c2:${g||'var(--panel2)'}"><label class="ap-sw ap-gsw" title="Gradient"><input type="color" data-ap-pg="${esc(k)}" value="${g||cur}" aria-label="${esc(n)} gradient"></label><button type="button" class="ap-gx" data-ap-pgx="${esc(k)}" aria-label="${esc(n)} no gradient" title="No gradient"${g?'':' hidden'}><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></span>`:''}</div></div>`;}
+/* redraw one Colors row's chosen state in place (keeps an open colour picker alive) */
+function apPcSync(k){const w=document.querySelector(`#pwx [data-ap-row="${k}"]`);if(!w)return;const cur=pcOf(k),g=pgOf(k),cus=!PC_SW.includes(cur);
+  w.querySelectorAll('[data-ap-pc]').forEach(x=>{const on=x.dataset.c===cur;x.classList.toggle('on',on);x.setAttribute('aria-pressed',String(on));});
+  const c=w.querySelector('.ap-cus');if(c){c.classList.toggle('on',cus);c.style.setProperty('--c',cus?cur:'var(--panel2)');const i=c.querySelector('input');if(cus&&i.value!==cur)i.value=cur;}
+  const s=w.querySelector('.ap-g2');if(s){s.classList.toggle('on',!!g);s.style.setProperty('--c',cur);s.style.setProperty('--c2',g||'var(--panel2)');const x=s.querySelector('.ap-gx');if(x)x.hidden=!g;}}
 /* the page on screen: Games and Tools open over the planner in #games */
 function pcPage(v){const g=document.getElementById('games');
   if(g&&!g.hidden&&g.firstChild)return g.querySelector('.tl-pick')||tlBack?'tools':'games';
   const p=v||(state.setup?'setup':state.view);return p==='clock'||p==='scare'?'tools':p;}
 function pcApply(v){const r=document.documentElement,on=!!(state.user&&state.settings);
-  const k=pcPage(v),c=on&&((state.settings.pageColors||{})[k]);
+  const k=pcPage(v),c=on&&rwHas(2)&&((state.settings.pageColors||{})[k]);
   if(c&&c!==PC_SW[0]&&/^#[0-9a-f]{6}$/i.test(c)){r.style.setProperty('--pc',c);r.classList.add('pc');}
   else if(r.classList.contains('pc')){r.classList.remove('pc');r.style.removeProperty('--pc');}
+  const g=on&&pgOf(k);
+  if(g){r.style.setProperty('--pc2',g);r.classList.add('pg2');}
+  else if(r.classList.contains('pg2')){r.classList.remove('pg2');r.style.removeProperty('--pc2');}
   const f=on&&!!state.settings.pageFade;r.classList.toggle('pfade',f);r.classList.toggle('deco',!(on&&state.settings.decoOff));
   if(f&&!document.getElementById('pfade')){const d=document.createElement('div');d.id='pfade';d.setAttribute('aria-hidden','true');document.body.appendChild(d);}}
 document.addEventListener('click',e=>{
-  const b=e.target.closest&&e.target.closest('#pwx [data-ap-pc]');if(!b||!state.user)return;
+  const x=e.target.closest&&e.target.closest('#pwx [data-ap-pgx]');
+  if(x&&state.user){const k=x.dataset.apPgx,m={...(state.settings.pageGrads||{})};delete m[k];state.settings.pageGrads=m;apPcSync(k);pcApply();saveSettings();return;}
+  const b=e.target.closest&&e.target.closest('#pwx [data-ap-pc]');if(!b||!state.user||!rwHas(2))return;
   const k=b.dataset.apPc,c=b.dataset.c,m={...(state.settings.pageColors||{})};
   if(c===PC_SW[0])delete m[k];else m[k]=c;state.settings.pageColors=m;
-  b.parentNode.querySelectorAll('.ap-sw').forEach(x=>{const on=x===b;x.classList.toggle('on',on);x.setAttribute('aria-pressed',String(on));});
-  pcApply();saveSettings();
+  apPcSync(k);pcApply();saveSettings();
 });
+/* the custom colour and the gradient pickers: follow the picker live, save when it closes */
+['input','change'].forEach(t=>document.addEventListener(t,e=>{const i=e.target;if(!state.user||!i.closest||!i.closest('#pwx'))return;
+  const v=String(i.value||'').toLowerCase();if(!/^#[0-9a-f]{6}$/.test(v))return;let k;
+  if(i.dataset.apPcc&&rwHas(2)){k=i.dataset.apPcc;const m={...(state.settings.pageColors||{})};if(v===PC_SW[0])delete m[k];else m[k]=v;state.settings.pageColors=m;}
+  else if(i.dataset.apPg&&rwHas(3)){k=i.dataset.apPg;state.settings.pageGrads={...(state.settings.pageGrads||{}),[k]:v};}
+  else return;
+  apPcSync(k);pcApply();if(t==='change')saveSettings();}));
+/* the footer: Suggestions, Tutorial, FAQ and Guide under every page and on the Games, Tools, Suggestions and Guide
+   pages (Appearance: footerOff hides it); Home always shows the copyright. Chat, Jumpscare and Your Classes fill the
+   screen or stand apart, so they get none */
+function footHTML(skip){return [['data-act-sugg','Suggestions','sugg'],['data-act-tut','Tutorial','tut'],['data-act="faq"','FAQ','faq'],['data-act-docs','Guide','docs']]
+  .filter(x=>x[2]!==skip).map(([a,n])=>`<button type="button" class="sx-fl" ${a}>${n}</button>`).join('');}
+function footSync(v){
+  const f=document.getElementById('sxfoot');if(!f)return;
+  v=v||(state.setup&&state.user?'setup':state.view);
+  const want=!state.user||v==='setup'||v==='chat'||v==='scare'?'':v==='home'?'c':state.settings.footerOff?'':'l';
+  if(f.dataset.k!==want){f.dataset.k=want;f.innerHTML=want==='c'?'<span class="sx-copy">© 2026 YC</span>':want==='l'?footHTML(''):'';}
+  if(f.hidden!==!want)f.hidden=!want;
+  footOv();
+}
+function footOv(){
+  const on=!!(state.user&&!state.settings.footerOff);
+  [['#games>.gm-pick',''],['#sugg>.docs-in','sugg'],['#docs>.docs-in','docs']].forEach(([q,skip])=>{const h=document.querySelector(q);if(!h)return;
+    const f=h.querySelector(':scope>.sx-foot'),ok=on&&!h.closest('.wrap');
+    if(!ok){if(f)f.remove();return;}
+    if(!f||f!==h.lastElementChild){if(f)f.remove();h.insertAdjacentHTML('beforeend',`<footer class="sx-foot sx-ov">${footHTML(skip)}</footer>`);}});
+}
+['games','sugg','docs'].forEach(id=>{const e=document.getElementById(id);if(e)new MutationObserver(footOv).observe(e,{childList:true,subtree:id==='games'});});
+/* a footer link on Games, Tools, Suggestions or the Guide closes that page first, as the top bar's buttons do */
+window.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('.sx-ov .sx-fl');if(!t)return;
+  if(!t.matches('[data-act-docs]'))closeDocs();
+  if(pgOpenNow())pgCloseAll(t.matches('[data-act-sugg]')?'sugg':'');},true);
+document.addEventListener('change',e=>{if(e.target.id!=='ap-foot'||!state.user)return;
+  state.settings.footerOff=!e.target.checked;footSync();saveSettings();});
 /* Appearance, Home: what Home shows (homeView), and with Pages, which page cards (homePages; empty means every page
    that isn't hidden) */
 const HV_OPTS=[['pages','Pages'],['resources','Resources'],['chat','Chat'],['assignments','Assignments'],['notepad','Notepad']];
 const hpPages=()=>{const a=AP_PAGES.filter(([k])=>k!=='tasks'||(state.user&&state.user.owner));
   return a;};
 const hpOn=k=>{const a=state.settings.homePages||[];return a.length?a.includes(k):!pageHidden(k);};
+/* the Home section's controls, shown in Appearance and in the Edit home popup on Home */
+function apHomeHTML(hv){return `<div class="ap-hv">${HV_OPTS.map(([k,n])=>`<button type="button" class="hbtn${hv===k?' on':''}" data-ap-hv="${k}" aria-pressed="${hv===k}">${n}</button>`).join('')}</div>
+      <div class="ap-hide ap-hp"${hv==='pages'?'':' hidden'}>${hpPages().map(([k,n])=>`<label class="hide-it"><span>${n}</span><input type="checkbox" class="hide-cb" data-ap-hp="${k}" ${hpOn(k)?'checked':''}><span class="hide-box" aria-hidden="true"></span></label>`).join('')}</div>`;}
+function hmEditOpen(){
+  if(!state.user)return;hmQgClose();
+  const o=document.createElement('div');o.className='qov hm-qgov';o.id='hm-qgp';
+  o.innerHTML=`<div class="qbox hm-qgbox hm-edbox" role="dialog" aria-modal="true" aria-labelledby="hm-qgh"><div class="faq-top"><div class="qhd" id="hm-qgh">Home</div><button class="hbtn faq-x" data-act-qgclose title="Close">×</button></div>
+    ${apHomeHTML(state.settings.homeView||'pages')}</div>`;
+  document.body.appendChild(o);
+  o.addEventListener('mousedown',e=>{if(e.target===o)hmQgClose();});
+}
+document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('[data-act-hmedit]'))hmEditOpen();});
 document.addEventListener('click',e=>{
-  const b=e.target.closest&&e.target.closest('#pwx [data-ap-hv]');if(!b||!state.user)return;
-  const k=b.dataset.apHv;state.settings.homeView=k;
-  document.querySelectorAll('#pwx [data-ap-hv]').forEach(x=>{const on=x===b;x.classList.toggle('on',on);x.setAttribute('aria-pressed',String(on));});
-  const g=document.querySelector('#pwx .ap-hp');if(g)g.hidden=k!=='pages';
+  const b=e.target.closest&&e.target.closest(':is(#pwx,#hm-qgp) [data-ap-hv]');if(!b||!state.user)return;
+  const k=b.dataset.apHv,box=b.closest('#pwx,#hm-qgp');state.settings.homeView=k;
+  box.querySelectorAll('[data-ap-hv]').forEach(x=>{const on=x===b;x.classList.toggle('on',on);x.setAttribute('aria-pressed',String(on));});
+  const g=box.querySelector('.ap-hp');if(g)g.hidden=k!=='pages';
   render();saveSettings();
 });
 document.addEventListener('change',e=>{
   if(!e.target.dataset||!e.target.dataset.apHp||!state.user)return;
-  const on=[...document.querySelectorAll('#pwx [data-ap-hp]')].filter(x=>x.checked).map(x=>x.dataset.apHp);
+  const box=e.target.closest('#pwx,#hm-qgp');if(!box)return;
+  const on=[...box.querySelectorAll('[data-ap-hp]')].filter(x=>x.checked).map(x=>x.dataset.apHp);
   const def=hpPages().map(([k])=>k).filter(k=>!pageHidden(k));
   state.settings.homePages=on.length===def.length&&on.every(k=>def.includes(k))?[]:on;
   render();saveSettings();
@@ -9595,6 +9857,7 @@ function render(){
     return render();
   }
   suLastView=v;
+  footSync(v);
   renderSetdd();
   if(typeof scheduleMeasure==='function')scheduleMeasure();
   /* typed text survives a redraw; a box the user emptied stays empty (an untouched empty box takes the new value) */
@@ -11037,9 +11300,9 @@ function closeGames(){
 /* Games, Tools, Suggestions, Administration and Desmos open as pages under the top bar: --pgtop is the bar's bottom edge.
    While one is open the bar's tabs show it (Tools lights the Tools tab, the others none), and the bar's tabs, brand and
    menu rows close it before going to their own page */
-const PG_IDS=['games','sugg','roles','desmos'];
+const PG_IDS=['games','sugg','roles','desmos','rewards'];
 /* a function declaration (not a const): render() runs during startup, before this line has been reached */
-function pgOpenNow(){return ['games','sugg','roles','desmos'].some(id=>{const e=document.getElementById(id);return e&&!e.hidden;});}
+function pgOpenNow(){return ['games','sugg','roles','desmos','rewards'].some(id=>{const e=document.getElementById(id);return e&&!e.hidden;});}
 function pgTabs(v){
   const open=pgOpenNow(),g=document.getElementById('games'),d=document.getElementById('desmos');
   document.documentElement.classList.toggle('pg-open',open);
@@ -11119,6 +11382,7 @@ function pgCloseAll(keep){
   pgToTools=false;
   if(sh('sugg'))closeSugg(true);
   if(sh('roles'))closeRoles();
+  if(sh('rewards'))closeRewards();
   if(sh('desmos')){tlDz=false;closeDesmos();}
   /* a tool opened from Tools (Crashout, Meditation, Soundboard) goes back to Tools when Suggestions or
      Administration, opened over it, closes */
@@ -11127,13 +11391,13 @@ function pgCloseAll(keep){
 var pgToTools=false;
 function pgBackTools(){if(!pgToTools)return;pgToTools=false;if(pgOpenNow())return;openTools();}
 document.addEventListener('click',e=>{
-  const t=e.target.closest&&e.target.closest('header.topbar :is([data-v],.brand,[data-act-games],[data-act-sugg],[data-act-docs],[data-act-dash],[data-act-roles],[data-act-tut],[data-act-tools],[data-act-clock],[data-act-scare],#mgear,[data-act="classes"])');
+  const t=e.target.closest&&e.target.closest('header.topbar :is([data-v],.brand,[data-act-games],[data-act-sugg],[data-act-docs],[data-act-dash],[data-act-roles],[data-act-rewards],[data-act-tut],[data-act-tools],[data-act-clock],[data-act-scare],#mgear,[data-act="classes"])');
   if(!t)return;
   /* a menu row leaves the menu closed (the page it opens sits under the bar, where the open menu would cover it) */
   if(t.closest('#mmenu,#moredd,#setdd'))closeNavMenus();
   if(!pgOpenNow())return;
   if(t.matches('[data-v]')&&t.dataset.v!=='courses'&&t.dataset.v!=='tools'&&state.user&&!COURSES.length)return;
-  pgCloseAll(t.matches('[data-act-sugg]')?'sugg':t.matches('[data-act-roles]')?'roles':'');
+  pgCloseAll(t.matches('[data-act-sugg]')?'sugg':t.matches('[data-act-roles]')?'roles':t.matches('[data-act-rewards]')?'rewards':'');
 },true);
 /* while a game frame is on screen the planner behind it does nothing: html.gm-play skips drawing it and stops its
    animations, and its timers (data reload, chat, meme, renders) wait. Only the game's own bridge (saves, rooms) runs.
