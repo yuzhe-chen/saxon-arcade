@@ -3038,7 +3038,8 @@ html.pfade:not(.splash-on) :is(#games:not(:has(.gm-frame)),#sugg,#roles,#desmos)
 html.deco :is(.hm-card,.hm-jt,#games .tl-tile){position:relative;overflow:hidden;isolation:isolate}
 html.deco :is(.hm-card,.hm-jt,#games .tl-tile)::after{content:'';position:absolute;right:-70px;bottom:-70px;width:200px;height:200px;border-radius:50%;background:var(--pri);opacity:.14;pointer-events:none;z-index:-1}
 #games .tl-sens{margin-top:30px;padding:26px 0 10px;border-top:2px solid var(--line);justify-content:center}#games .tl-sens h3{margin:0}
-#games .gm-endbar{gap:10px;flex-wrap:wrap}.sec .sec-sw>h3{flex:1;margin:0}
+#games .gm-endbar{gap:10px;flex-wrap:wrap}
+.rw-lock{appearance:none;display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border:2px solid var(--line);border-bottom-width:4px;border-radius:12px;background:var(--bg);color:var(--fg2);font:800 12px/1 var(--font-ui);text-transform:uppercase;letter-spacing:.04em;cursor:pointer}.rw-lock:hover{background:var(--panel2)}.rw-lock svg{width:16px;height:16px}.sec .sec-sw>h3{flex:1;margin:0}
 html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
 /* Jumpscare */
 #v-scare.on{position:relative;min-height:calc(100dvh - 140px);display:flex}
@@ -6034,7 +6035,7 @@ async function loadData(pre){
     state.settings.homePages=Array.isArray(st.homePages)?[...st.homePages]:[];state.settings.homeRes=Array.isArray(st.homeRes)?st.homeRes.slice(0,12):[];
     state.settings.focusMode=!!st.focusMode;state.settings.courseOrder=Array.isArray(st.courseOrder)?st.courseOrder.filter(x=>typeof x==='string'):[];
     state.calcmap=d.calcmap||{};
-    state.settings.pageColors={...(st.pageColors||{})};state.settings.pageFade=!!st.pageFade;['decoOff','sensPics','sensGames','sensTools'].forEach(k=>state.settings[k]=!!st[k]);
+    state.settings.pageColors={...(st.pageColors||{})};state.settings.pageFade=!!st.pageFade;['decoOff','sensPics','sensGames','sensTools','footerOff'].forEach(k=>state.settings[k]=!!st[k]);state.settings.pageGrads={...(st.pageGrads||{})};state.settings.noteCols=Array.isArray(st.noteCols)?st.noteCols.slice(0,12):[];
     state.settings.homeView=HV_OPTS.some(([k])=>k===st.homeView)?st.homeView:'pages';state.settings.homePages=Array.isArray(st.homePages)?[...st.homePages]:[];
     state.settings.quickGames=Array.isArray(st.quickGames)?[...st.quickGames]:[];state.settings.homeRes=Array.isArray(st.homeRes)?[...st.homeRes]:[];
     if(fresh.length)saveSettings();
@@ -6150,7 +6151,7 @@ function confetti(x,y){
 }
 async function removeTask(id){try{await api('/api/task/'+encodeURIComponent(id),{method:'DELETE'});}catch(e){console.warn('delete failed',e);}}
 async function saveSettings(){if(!settingsLoaded)return;try{await api('/api/settings',{method:'POST',body:JSON.stringify({colors:state.settings.colors,periods:state.settings.periods,
-  advisoryCourse:state.settings.advisoryCourse||'',courses:COURSES,ical:state.settings.ical||'',fullNames:!!state.settings.fullNames,quickGames:state.settings.quickGames||[],focusMode:!!state.settings.focusMode,pageFade:!!state.settings.pageFade,decoOff:!!state.settings.decoOff,sensPics:!!state.settings.sensPics,sensGames:!!state.settings.sensGames,sensTools:!!state.settings.sensTools,pageColors:state.settings.pageColors||{},courseOrder:state.settings.courseOrder||[],homeView:state.settings.homeView||'pages',homePages:state.settings.homePages||[],homeRes:state.settings.homeRes||[],hideGames:!!state.settings.hideGames,hideChat:!!state.settings.hideChat,faqNew:!!state.settings.faqNew,oppStar:state.settings.oppStar||[],oppArch:state.settings.oppArch||[],gamesIntro:!!state.settings.gamesIntro,gameStar:state.settings.gameStar||[],hidePages:state.settings.hidePages||[],tutorialNew:!!state.settings.tutorialNew,rel:state.settings.rel||{},lunch:state.settings.lunch||{},gpa:SX.cleanGpa(state.settings.gpa),gpaYear:SX.cleanGpaYear(state.settings.gpaYear),gpaByYear:!!state.settings.gpaByYear})});}catch(e){console.warn('save failed',e);}}
+  advisoryCourse:state.settings.advisoryCourse||'',courses:COURSES,ical:state.settings.ical||'',fullNames:!!state.settings.fullNames,quickGames:state.settings.quickGames||[],focusMode:!!state.settings.focusMode,pageFade:!!state.settings.pageFade,decoOff:!!state.settings.decoOff,sensPics:!!state.settings.sensPics,sensGames:!!state.settings.sensGames,sensTools:!!state.settings.sensTools,footerOff:!!state.settings.footerOff,pageGrads:state.settings.pageGrads||{},noteCols:state.settings.noteCols||[],pageColors:state.settings.pageColors||{},courseOrder:state.settings.courseOrder||[],homeView:state.settings.homeView||'pages',homePages:state.settings.homePages||[],homeRes:state.settings.homeRes||[],hideGames:!!state.settings.hideGames,hideChat:!!state.settings.hideChat,faqNew:!!state.settings.faqNew,oppStar:state.settings.oppStar||[],oppArch:state.settings.oppArch||[],gamesIntro:!!state.settings.gamesIntro,gameStar:state.settings.gameStar||[],hidePages:state.settings.hidePages||[],tutorialNew:!!state.settings.tutorialNew,rel:state.settings.rel||{},lunch:state.settings.lunch||{},gpa:SX.cleanGpa(state.settings.gpa),gpaYear:SX.cleanGpaYear(state.settings.gpaYear),gpaByYear:!!state.settings.gpaByYear})});}catch(e){console.warn('save failed',e);}}
 async function saveNote(n){if(STALE.has(n))return;try{await api('/api/advisory',{method:'POST',body:JSON.stringify(n)});}catch(e){console.warn('save failed',e);}}
 /* in-class assignments a week past their date, and sticky notes a week old, are removed by themselves */
 let sweepBusy=false;
@@ -6684,7 +6685,7 @@ function resItemHTML(it){
     /* the search ignores macrons and case (postea finds posteā) and looks at the word, its meaning and its note */
     const plain=t=>String(t||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase(),q=plain(state.resQ).trim();
     const rows=(it.terms||[]).filter(v=>!q||plain(v.term+' '+v.def+' '+(v.ex||'')).includes(q));
-    return `<div class="rdoc"><input type="text" id="res-q" class="vocab-filter" placeholder="Search" value="${esc(state.resQ||'')}" autocomplete="off">
+    return `<div class="rdoc"><input type="text" id="res-q" readonly data-noauto class="vocab-filter" placeholder="Search" value="${esc(state.resQ||'')}" autocomplete="off">
       ${it.groups?it.groups.map(g=>{const gr=rows.filter(v=>v.group===g);return gr.length?`<h3>${esc(g)}</h3>`+gr.map(vrow).join(''):'';}).join(''):rows.map(vrow).join('')}</div>`;}
   if(it.type==='timeline'){
     /* a search keeps the events whose date, text or tag match (a group whose title matches keeps all of its events),
@@ -6758,7 +6759,7 @@ function renderResources(){
       <div class="rh-text"><span class="rc">${esc(item!==parent?parent.title:(c?cname(c):''))}</span><span class="rt">${esc(item.title)}</span></div>
       ${timeish?`<div class="hgroup"><button class="hbtn ${resView()==='timeline'?'on':''}" data-act="resview" data-v="timeline">Timeline</button>
         <button class="hbtn ${resView()==='table'?'on':''}" data-act="resview" data-v="table">Table</button></div>`:''}
-      </div>${timeish?`<input type="text" id="tl-q" class="lib-q" placeholder="Search" value="${esc(state.tlQ||'')}" autocomplete="off">`:''}${resItemHTML(item)}</div>`;
+      </div>${timeish?`<input type="text" id="tl-q" readonly data-noauto class="lib-q" placeholder="Search" value="${esc(state.tlQ||'')}" autocomplete="off">`:''}${resItemHTML(item)}</div>`;
     const doc=el.querySelector('.rdoc');
     if(prevScroll!=null)wrap.scrollTop=prevScroll;
     /* column labels for the stacked phone layout */
@@ -6854,7 +6855,7 @@ function docPageHTML(r,label,editable,back){
     <div class="rh-text"><span class="rc">${esc(label)}</span><span class="rt">${esc(r.title)}${starOf(r)}</span></div>
     ${ctl?`<div class="hgroup">${ctl}</div>`:''}</div>
     ${author&&PUBMSG[r.id]?`<div class="pub-msg">${esc(PUBMSG[r.id])}</div>`:''}
-    ${r.search&&r.type==='doc'?`<input type="text" id="doc-q" class="lib-q" placeholder="Search" value="${esc(state.docQ||'')}" autocomplete="off">`:''}
+    ${r.search&&r.type==='doc'?`<input type="text" id="doc-q" readonly data-noauto class="lib-q" placeholder="Search" value="${esc(state.docQ||'')}" autocomplete="off">`:''}
     ${r.type==='builtin'&&r.item?builtinBody(r.item):`<div class="rdoc udoc">${SX.sanitizeDoc(r.html)||''}</div>`}</div>`;
 }
 /* a published built-in page (the owner's material, never user input) drawn like on the Resources page */
@@ -6862,7 +6863,7 @@ function builtinBody(it){
   const timeish=it.type==='timeline'||it.type==='years';
   return (timeish?`<div class="hgroup bi-view"><button class="hbtn ${resView()==='timeline'?'on':''}" data-act="resview" data-v="timeline">Timeline</button>
     <button class="hbtn ${resView()==='table'?'on':''}" data-act="resview" data-v="table">Table</button></div>
-    <input type="text" id="tl-q" class="lib-q" placeholder="Search" value="${esc(state.tlQ||'')}" autocomplete="off">`:'')+resItemHTML(it);
+    <input type="text" id="tl-q" readonly data-noauto class="lib-q" placeholder="Search" value="${esc(state.tlQ||'')}" autocomplete="off">`:'')+resItemHTML(it);
 }
 function builtinPost(el){
   const doc=el.querySelector('.rdoc');if(!doc)return;
@@ -6963,7 +6964,7 @@ function libraryHTML(){
         :LIB.wait>0?`<button class="kbtn res-lib locked" aria-disabled="true" data-tip="Publish 2 resources to skip the wait">${LOCK_ICON}${waitText(LIB.wait)}</button>`
         :`<button class="kbtn" data-act="libimp" data-id="${esc(r.id)}">Import</button>${state.libPick===r.id?`<div class="cdd-menu open">${COURSES.map(c=>
           `<button class="cdd-item" data-act="libimpto" data-id="${esc(r.id)}" data-c="${esc(c.id)}" ${pickItem(c)}</button>`).join('')}</div>`:''}`}</div></div>`;};
-  return `<div class="res-detail">${head}<div class="lib-bar"><input type="text" id="lib-q" class="lib-q" placeholder="Search" value="${esc(state.libQ||'')}" autocomplete="off">
+  return `<div class="res-detail">${head}<div class="lib-bar"><input type="text" id="lib-q" readonly data-noauto class="lib-q" placeholder="Search" value="${esc(state.libQ||'')}" autocomplete="off">
     <div class="lib-fw"><button class="lib-f${fOn?' on':''}${state.libFOpen?' open':''}" data-act="libfopen" aria-label="Filter" title="Filter" aria-haspopup="true" aria-expanded="${!!state.libFOpen}"><svg viewBox="0 0 24 24"><path d="M3 5h18l-7 8.5V19l-4 2v-7.5z"/></svg>${fOn?fOn:''}</button>${fmenu}</div>${rvb}${lbb}</div>${chips}
     ${!groups.length&&(fOn||q)?'<div class="lib-none">No classes match</div>':''}${groups.length?`<div class="lib-grid">${groups.map(g=>`<div class="lib-cls"><div class="lib-ch"><span class="nm" title="${esc(g.c.name)}">${esc(g.c.name)}</span>
       <span class="lib-n">${g.c.count} ${g.c.count===1?'student':'students'}</span></div>${g.rs.map(row).join('')}</div>`).join('')}</div>`:''}</div>`;
@@ -8339,12 +8340,24 @@ const TOOLS=[['phys','Physics Helper','Paste cells from Google Sheets and get a 
   ['scare','Jumpscare','Is someone there?']];
 const TOOL_ART={phys:'flask',gpa:'graph',soundboard:'speaker',desmos:'calc',clock:'clock',meditation:'star',crashout:'controller',scare:'moon'};
 var tlBack=false,tlDz=false;
-/* sensitive pictures: Crashout and Five Nights at Epstein's stay hidden until Security turns them on, and then the
-   Tools page and the Games menu each have their own switch to show them */
+/* rewards: the referral tree count (everyone who signed up with your code, and everyone they referred, and so on);
+   the owner has every reward */
+function rwN(){return state.user?(state.user.owner?99:(state.user.refTree|0)):0;}
+function rwHas(n){return rwN()>=n;}
+/* the rank ladder: referrals needed, rank name, reward */
+const RW_RANKS=[[1,'Scout','Multiplayer games'],[2,'Artisan','Custom colors for pages'],[3,'Alchemist','Gradient colors for pages'],
+  [4,'Curator','Custom colors for to-do items'],[6,'Herald','Priority for the games you suggest'],[8,'Envoy','Priority for every suggestion'],
+  [10,'Monarch','The crown avatars']];
+/* a locked reward shows this small chip; it opens Rewards */
+function rwLockHTML(n){return `<button type="button" class="rw-lock" data-act-rewards>${art('lock')}<span>${n} referral${n>1?'s':''}</span></button>`;}
+function openRewards(){/* REWARDS PAGE */}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-act-rewards]');if(!b||!state.user)return;e.preventDefault();e.stopPropagation();closeNavMenus();openRewards();},true);
+/* sensitive pictures: Crashout stays hidden until Security turns on Sensitive pictures and then the switch at the
+   bottom of Tools; Five Nights at Epstein's only needs the button at the bottom of the Games menu */
 const SENS_TOOLS=['crashout'],SENS_GAMES=['fnae'];
 function sensOn(){return !!(state.settings&&state.settings.sensPics);}
 function sensHidden(id){const s=state.settings||{};
-  if(SENS_TOOLS.includes(id))return !(s.sensPics&&s.sensTools);if(SENS_GAMES.includes(id))return !(s.sensPics&&s.sensGames);return false;}
+  if(SENS_TOOLS.includes(id))return !(s.sensPics&&s.sensTools);if(SENS_GAMES.includes(id))return !s.sensGames;return false;}
 function openTools(){
   tlBack=false;if(typeof tlKbHide==='function')tlKbHide();
   const g=document.getElementById('games');roomLeaveAll();
@@ -8943,7 +8956,7 @@ function renderHome(fly){
   const own=!!(state.user&&state.user.owner),noChat=!!(state.user&&state.settings&&state.settings.hideChat);
   const noGames=!!(state.user&&state.settings&&state.settings.hideGames);
   const hv=hmView(noChat),pick=(state.settings&&state.settings.homePages)||[];
-  const pages=HM_PAGES.concat([HM_CLOCK]).filter(([k])=>!(k==='tasks'&&!own)&&!(k==='chat'&&noChat)&&!(k==='games'&&noGames)&&!pageHidden(k)&&(pick.length?pick.includes(k):k!=='clock'));
+  const pages=HM_PAGES.filter(([k])=>!(k==='tasks'&&!own)&&!(k==='chat'&&noChat)&&!(k==='games'&&noGames)&&!pageHidden(k)&&(pick.length?pick.includes(k):k!=='clock'));
   const sig=(hv==='pages'?pages.map(p=>p[0]).join():'')+'|'+hv;
   const held=homeHold||document.documentElement.classList.contains('splash-on');
   if(el.dataset.sig!==sig){
@@ -9207,12 +9220,12 @@ document.addEventListener('change',e=>{
    no key for the default); Fade puts a soft glow of that colour in the top right corner */
 const PC_SW=['#4b9af3','#ff4b4b','#ff9600','#e5a400','#58cc02','#00b8a9','#5b6cff','#a560f0','#ff5fa2'];
 const pcPages=()=>{const a=[['home','Home'],...AP_PAGES.filter(([k])=>k!=='guide'&&(k!=='tasks'||(state.user&&state.user.owner)))];
-  if(document.getElementById('v-clock')&&!a.some(([k])=>k==='clock'))a.push(['clock','Clock']);return a;};
+  return a;};
 const pcOf=k=>{const c=((state.settings&&state.settings.pageColors)||{})[k];return typeof c==='string'&&/^#[0-9a-f]{6}$/i.test(c)?c.toLowerCase():PC_SW[0];};
 /* the page on screen: Games and Tools open over the planner in #games */
 function pcPage(v){const g=document.getElementById('games');
   if(g&&!g.hidden&&g.firstChild)return g.querySelector('.tl-pick')||tlBack?'tools':'games';
-  return v||(state.setup?'setup':state.view);}
+  const p=v||(state.setup?'setup':state.view);return p==='clock'||p==='scare'?'tools':p;}
 function pcApply(v){const r=document.documentElement,on=!!(state.user&&state.settings);
   const k=pcPage(v),c=on&&((state.settings.pageColors||{})[k]);
   if(c&&c!==PC_SW[0]&&/^#[0-9a-f]{6}$/i.test(c)){r.style.setProperty('--pc',c);r.classList.add('pc');}
@@ -9230,7 +9243,7 @@ document.addEventListener('click',e=>{
    that isn't hidden) */
 const HV_OPTS=[['pages','Pages'],['resources','Resources'],['chat','Chat'],['assignments','Assignments'],['notepad','Notepad']];
 const hpPages=()=>{const a=AP_PAGES.filter(([k])=>k!=='tasks'||(state.user&&state.user.owner));
-  if(!a.some(([k])=>k==='clock'))a.push(['clock','Clock']);return a;};
+  return a;};
 const hpOn=k=>{const a=state.settings.homePages||[];return a.length?a.includes(k):!pageHidden(k);};
 document.addEventListener('click',e=>{
   const b=e.target.closest&&e.target.closest('#pwx [data-ap-hv]');if(!b||!state.user)return;
@@ -9624,6 +9637,10 @@ function scrollOb(e){for(let el=e.target;el&&el.nodeType===1;el=el.parentElement
 ['pointerover','wheel','touchstart'].forEach(t=>addEventListener(t,scrollOb,{capture:true,passive:true}));
 /* ---------- opening splash: log in or sign up; a saved session goes straight in ---------- */
 let splashShow=null,splashLeave=null;
+/* search boxes stay read-only until touched: browsers never autofill a read-only box, and Chrome ignores
+   autocomplete="off" and put the saved username in them */
+{const wake=e=>{const t=e.target;if(t&&t.matches&&t.matches('input[data-noauto][readonly]'))t.removeAttribute('readonly');};
+  document.addEventListener('pointerdown',wake,true);document.addEventListener('focusin',wake,true);}
 /* referral links: ?ref=username (hosted, the server hands it over as window.SX_REF since the sandbox can't read the
    top URL); kept on this device until an account is made or logged into here */
 let splashRef=null;
@@ -10230,7 +10247,7 @@ function renderTasks(){
     <div class="opp-sdiv" role="separator"></div>${cat('star','Starred',open.filter(o=>oppHas('oppStar',o.id)).length)}${cat('arch','Archived',nArch)}</nav>`;
   el.innerHTML=`<div class="opp-wrap${side?' side-on':''}"><div class="opp-hd"><button type="button" class="hbtn hb-box opp-sidebtn${side?' on':''}" data-act="oppside" aria-controls="opp-side" aria-expanded="${side}" aria-label="${side?'Hide categories':'Show categories'}" title="${side?'Hide categories':'Show categories'}"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16"/></svg></button><div class="display">Tasks</div></div>
     <div class="opp-body">${sideHTML}${side?'<div class="opp-scrim" data-act="oppside" aria-hidden="true"></div>':''}<div class="opp-main">
-    <input type="text" id="opp-q" class="lib-q opp-q" placeholder="Search" value="${esc(state.oppQ||'')}" autocomplete="off" spellcheck="false" aria-label="Search tasks">
+    <input type="text" id="opp-q" readonly data-noauto class="lib-q opp-q" placeholder="Search" value="${esc(state.oppQ||'')}" autocomplete="off" spellcheck="false" aria-label="Search tasks">
     <div class="opp-bar"><div class="opp-cur">${esc(curLab)}<span>${list.length}</span></div>
       <div class="opp-right"><div class="opp-sw"><button class="hbtn hb-box opp-sortbtn ${state.oppSortOpen?'open':''}" data-act="oppsortopen" aria-haspopup="true" aria-expanded="${!!state.oppSortOpen}">Sort: ${sortLab}<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>${menu}</div></div></div>
     ${list.length?`<div class="opp-list">${list.map(oppCard).join('')}</div>`:`<div class="empty">${qw.length?'No matches':arch?'Nothing archived':starOnly?'Nothing starred':'Nothing here'}</div>`}</div></div></div>`;
@@ -10959,7 +10976,7 @@ function gmRenderPick(){
   const list=GAMES.filter(x=>!x.hide&&!sensHidden(x.id));
   pick.innerHTML=`<div class="gm-head"><h1 class="gm-h"><span>games</span></h1>
     <button class="gm-x" data-act-gclose aria-label="Close" title="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
-    <section class="gm-sec" data-sec="all">${list.some(gameLocked)?gmLockPanel():''}<input type="text" id="gm-q" class="gm-q" placeholder="Search games" aria-label="Search games" autocomplete="off" spellcheck="false" value="${esc(gmQ)}"><div class="gm-grid"><button class="gm-tile gm-add" data-gm-sugg aria-label="Suggest a game" title="Suggest a game"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>${gmSorted(list).map(x=>tile(x).replace(/^<button[^>]*>/,m=>m+gmStar(x))).join('')}</div></section>${gmUnlocked()||sensOn()?`<div class="gm-endbar">${gmUnlocked()?'<button class="kbtn" data-gm-replay>Play animation again</button>':''}${sensOn()?`<button class="kbtn" data-gm-sens>${state.settings.sensGames?'Hide sensitive games':'Show sensitive games'}</button>`:''}</div>`:''}`;
+    <section class="gm-sec" data-sec="all">${list.some(gameLocked)?gmLockPanel():''}<input type="text" id="gm-q" readonly data-noauto class="gm-q" placeholder="Search games" aria-label="Search games" autocomplete="off" spellcheck="false" value="${esc(gmQ)}"><div class="gm-grid"><button class="gm-tile gm-add" data-gm-sugg aria-label="Suggest a game" title="Suggest a game"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>${gmSorted(list).map(x=>tile(x).replace(/^<button[^>]*>/,m=>m+gmStar(x))).join('')}</div></section>${gmUnlocked()||SENS_GAMES.length?`<div class="gm-endbar">${gmUnlocked()?'<button class="kbtn" data-gm-replay>Play animation again</button>':''}${SENS_GAMES.length?`<button class="kbtn" data-gm-sens>${state.settings.sensGames?'Hide sensitive games':'Show sensitive games'}</button>`:''}</div>`:''}`;
   gmFilterQ();
   /* the first time an account sees its games unlocked by a referral, the lock bursts open */
   if(gmUnlocked()&&state.user.referred>0&&!state.settings.unlockSeen){state.settings.unlockSeen=true;saveSettings();setTimeout(gmUnlockAnim,350);}
