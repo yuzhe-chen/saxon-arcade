@@ -2388,6 +2388,11 @@ html.no-v-guide [data-act-docs]{display:none!important}
   background:var(--bg);border:2px solid var(--line);border-bottom-width:4px;border-radius:var(--r)}
 #pwx .ap-gpop .ap-gcus{position:relative;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;margin:0}
 .ap-gcus input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;border:0;padding:0}
+#pwx .ap-gpop .ap-gtwo{grid-column:1/-1;display:flex;align-items:center;gap:8px;padding:8px;border-radius:12px;border:2px solid var(--line)}
+#pwx .ap-gpop .ap-gtwo.on{border-color:var(--fg)}
+#pwx .ap-gpop .ap-gc{position:relative;overflow:hidden;flex:none;margin:0;background:var(--c)}
+.ap-gc input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;border:0;padding:0}
+.ap-gto{flex:1;height:10px;border-radius:99px;background:var(--gs)}
 .ap-gpop .ap-gcus:not(.on){background:var(--panel2);box-shadow:inset 0 0 0 2px var(--line)}
 .ap-gcus:not(.on)::before{content:'+';font:800 18px/1 var(--font-ui);color:var(--fg2)}
 .ap-gx{appearance:none;flex:none;width:26px;height:26px;border:0;padding:0;border-radius:50%;background:transparent;color:var(--faint);cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
@@ -2426,7 +2431,7 @@ html.pg2 :is(button.btn,.hm-btn:not(.alt),#sugg [data-sugg-send],#games .gm-ref-
 html.pg2 :is(button.btn,.hm-btn:not(.alt),#sugg [data-sugg-send],#games .gm-ref-copy):hover{filter:brightness(1.07)}
 html.pg2 .hm-go{background:linear-gradient(135deg,var(--pgl))}
 html.pg2 #pfade{opacity:.2;border-radius:0;animation:pfDrift 22s ease-in-out infinite alternate;
-  background:radial-gradient(closest-side at 68% 38%,var(--pri),transparent),radial-gradient(closest-side at 30% 66%,var(--pc2),transparent)}
+  background:radial-gradient(closest-side at 62% 42%,var(--pgfo))}
 @keyframes pfDrift{0%{transform:translate(0,0) rotate(0)}50%{transform:translate(-40px,30px) rotate(14deg)}100%{transform:translate(20px,-10px) rotate(-10deg)}}
 @media (prefers-reduced-motion:reduce){html.pg2 #pfade{animation:none}}
 .ch-av.ch-pic{background:none!important;overflow:hidden}
@@ -3093,11 +3098,12 @@ html.pc header.topbar .brand-logo svg [fill="#1CB0F6"],html.pc header.topbar .br
 html.pc header.topbar .brand-logo svg [fill="#1899D6"],html.pc header.topbar .brand-logo svg [fill="#1899d6"]{fill:var(--pri-dark)}
 /* Fade on Games, Tools, Suggestions and Administration (they paint their own background over the page's glow) */
 html.pfade:not(.splash-on) :is(#games:not(:has(.gm-frame)),#sugg,#roles,#desmos,#rewards){background:radial-gradient(640px 480px at calc(100% + 40px) -80px,color-mix(in srgb,var(--pri) 18%,transparent),transparent 70%),var(--bg)!important}
-html.pg2.pfade:not(.splash-on) :is(#games:not(:has(.gm-frame)),#sugg,#roles,#rewards,#desmos){background:radial-gradient(640px 480px at calc(100% + 40px) -80px,color-mix(in srgb,var(--pri) 18%,transparent),transparent 70%),radial-gradient(560px 440px at calc(100% - 300px) 120px,color-mix(in srgb,var(--pc2) 16%,transparent),transparent 70%),var(--bg)!important}
+html.pg2.pfade:not(.splash-on) :is(#games:not(:has(.gm-frame)),#sugg,#roles,#rewards,#desmos){background:radial-gradient(640px 480px at calc(100% + 40px) -80px,var(--pgfa)),var(--bg)!important}
 /* Decorations (Appearance, off by default): a soft circle of the page colour tucked into the corner of the Home cards,
    the Jump back in tiles and the Tools tiles, as on Lectern */
 html.deco :is(.hm-card,.hm-jt,#games .tl-tile){position:relative;overflow:hidden;isolation:isolate}
 html.deco :is(.hm-card,.hm-jt,#games .tl-tile)::after{content:'';position:absolute;right:-140px;bottom:-140px;width:340px;height:340px;border-radius:50%;background:radial-gradient(circle 170px at center,color-mix(in srgb,var(--pri) 14%,transparent) 0 100px,color-mix(in srgb,var(--pri) 7%,transparent) 100px 170px,transparent 170px);pointer-events:none;z-index:-1}
+html.pg2.deco :is(.hm-card,.hm-jt,#games .tl-tile)::after{background:var(--pgdeco)}
 #games .tl-sens{margin-top:30px;padding:26px 0 10px;border-top:2px solid var(--line);justify-content:center}#games .tl-sens h3{margin:0}
 #games .gm-endbar{gap:10px;flex-wrap:wrap}
 .rw-lock{appearance:none;display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border:2px solid var(--line);border-bottom-width:4px;border-radius:12px;background:var(--bg);color:var(--fg2);font:800 12px/1 var(--font-ui);text-transform:uppercase;letter-spacing:.04em;cursor:pointer}.rw-lock:hover{background:var(--panel2)}.rw-lock svg{width:16px;height:16px}.sec .sec-sw>h3{flex:1;margin:0}
@@ -9457,7 +9463,9 @@ const pcPages=()=>{const a=[['home','Home'],...AP_PAGES.filter(([k])=>k!=='guide
 const pcOf=k=>{const c=rwHas(2)&&((state.settings&&state.settings.pageColors)||{})[k];return typeof c==='string'&&/^#[0-9a-f]{6}$/i.test(c)?c.toLowerCase():PC_SW[0];};
 /* rewards: custom page colours at 2 referrals, and at 3 a gradient per page (pageGrads: page -> '#rrggbb', the second
    colour, or '~id', a preset from PG_PRE) */
-const pgOf=k=>{const c=rwHas(3)&&((state.settings&&state.settings.pageGrads)||{})[k];return typeof c==='string'&&(/^#[0-9a-f]{6}$/i.test(c)||pgPre(c))?c.toLowerCase():'';};
+const pgOf=k=>{const c=rwHas(3)&&((state.settings&&state.settings.pageGrads)||{})[k];return typeof c==='string'&&(/^#[0-9a-f]{6}(,#[0-9a-f]{6})?$/i.test(c)||pgPre(c))?c.toLowerCase():'';};
+/* a custom gradient of its own two colours ('#aaaaaa,#bbbbbb'), separate from the page's single colour */
+const pgPair=g=>typeof g==='string'&&/^#[0-9a-f]{6},#[0-9a-f]{6}$/i.test(g)?g.toLowerCase().split(','):null;
 /* colour maths for gradients: two far apart colours meet at the hue halfway round the shorter way (green to pink passes
    through orange, not brown) */
 function pgHsl(h){const [r,g,b]=[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)/255),M=Math.max(r,g,b),m=Math.min(r,g,b),l=(M+m)/2,d=M-m;
@@ -9468,9 +9476,16 @@ function pgHex(h,s,l){const c=(1-Math.abs(2*l-1))*s,x=c*(1-Math.abs((h/60)%2-1))
   return '#'+[r,g,b].map(v=>Math.round(Math.min(1,Math.max(0,v+m))*255).toString(16).padStart(2,'0')).join('');}
 function pgMid(a,b){const A=pgHsl(a),B=pgHsl(b);let h1=A[0],h2=B[0];if(A[1]<.08)h1=h2;if(B[1]<.08)h2=h1;
   const d=((h2-h1+540)%360)-180;return pgHex(h1+d/2,(A[1]+B[1])/2,(A[2]+B[2])/2);}
+/* the gradient as rings from a centre outward (Fade and Decorations): stop colours with an alpha, at given radii */
+const pgRgb=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
+function pgAt(st,f){const n=st.length-1,x=Math.max(0,Math.min(1,f))*n,i=Math.min(n-1,Math.floor(x)),t=x-i,a=pgRgb(st[i]),b=pgRgb(st[i+1]||st[i]);return a.map((v,j)=>Math.round(v+(b[j]-v)*t));}
+function pgRings(st,rings){/* rings: [[from,to,alpha],...] in one unit; colours run through the stops across the whole span */
+  const end=rings[rings.length-1][1],out=[];
+  rings.forEach(([a,b,al])=>{const n=Math.max(2,st.length);for(let i=0;i<n;i++){const r=a+(b-a)*i/(n-1),c=pgAt(st,r/end);out.push(`rgba(${c.join(',')},${al}) ${+r.toFixed(2)}`);}});
+  return out;}
 const pgShade=(h,f)=>'#'+[1,3,5].map(i=>Math.round(parseInt(h.slice(i,i+2),16)*f).toString(16).padStart(2,'0')).join('');
 /* a page's gradient stops (none without a gradient) and its name */
-function pgStops(k){const g=pgOf(k);if(!g)return null;const p=pgPre(g);if(p)return p[2];const c=pcOf(k);return [c,pgMid(c,g),g];}
+function pgStops(k){const g=pgOf(k);if(!g)return null;const p=pgPre(g);if(p)return p[2];const q=pgPair(g);if(q)return [q[0],pgMid(q[0],q[1]),q[1]];const c=pcOf(k);return [c,pgMid(c,g),g];}
 const pgName=g=>{const p=pgPre(g);return p?p[1]:g?'Custom gradient':'Gradient';};
 function apG2Sty(k){const cur=pcOf(k),st=pgStops(k);
   return `--c:${cur};--c2:${st?st[st.length-1]:'var(--panel2)'};--gs:linear-gradient(135deg,${st?st.join(','):cur+' 50%,var(--panel2) 50%'})`;}
@@ -9485,13 +9500,16 @@ function apPcSync(k){const w=document.querySelector(`#pwx [data-ap-row="${k}"]`)
   const s=w.querySelector('.ap-g2');if(s){s.classList.toggle('on',!!g);s.style.cssText=apG2Sty(k);const x=s.querySelector('.ap-gx');if(x)x.hidden=!g;
     const b=s.querySelector('.ap-gsw');if(b)b.title=pgName(g);
     s.querySelectorAll('[data-ap-gpre]').forEach(p=>{const on=p.dataset.apGpre===g;p.classList.toggle('on',on);p.setAttribute('aria-pressed',String(on));});
-    const q=s.querySelector('.ap-gcus');if(q){const hx=!!g&&g[0]==='#';q.classList.toggle('on',hx);q.style.cssText=hx?apG2Sty(k):'';const i=q.querySelector('input');if(hx&&i.value!==g)i.value=g;}}}
-/* the gradient swatch opens the presets and a custom second colour */
+    const q=s.querySelector('.ap-gtwo');if(q){const two=pgTwo(k);q.classList.toggle('on',!!g&&g[0]==='#');
+      q.querySelectorAll('.ap-gc').forEach((l,j)=>{l.style.setProperty('--c',two[j]);const i=l.querySelector('input');if(i.value!==two[j])i.value=two[j];});
+      const t=q.querySelector('.ap-gto');if(t)t.style.setProperty('--gs',`linear-gradient(90deg,${two.join(',')})`);}}}
+/* the gradient swatch opens the presets and a custom gradient of two colours of its own */
+function pgTwo(k){const g=pgOf(k),q=pgPair(g);if(q)return q;const c=pcOf(k);return [c,g&&g[0]==='#'?g:c];}
 function apGpClose(){document.querySelectorAll('.ap-gpop').forEach(p=>{const b=p.parentNode.querySelector('[data-ap-gp]');if(b)b.setAttribute('aria-expanded','false');p.remove();});}
 function apGpOpen(b){const k=b.dataset.apGp,s=b.closest('.ap-g2'),g=pgOf(k),hx=!!g&&g[0]==='#',cur=pcOf(k);apGpClose();
   const p=document.createElement('div');p.className='ap-gpop';p.setAttribute('role','dialog');p.setAttribute('aria-label','Gradients');
   p.innerHTML=PG_PRE.map(([id,nm,st])=>`<button type="button" class="ap-sw${g==='~'+id?' on':''}" style="--gs:linear-gradient(135deg,${st.join(',')});--c2:${st[st.length-1]}" data-ap-gpre="~${id}" data-k="${esc(k)}" title="${nm}" aria-label="${nm}" aria-pressed="${g==='~'+id}"></button>`).join('')+
-    `<label class="ap-sw ap-gcus${hx?' on':''}" style="${hx?apG2Sty(k):''}" title="Custom gradient"><input type="color" data-ap-pg="${esc(k)}" value="${hx?g:cur}" aria-label="Custom gradient"></label>`;
+    `<div class="ap-gtwo${hx?' on':''}" title="Custom gradient"><label class="ap-sw ap-gc" style="--c:${pgTwo(k)[0]}"><input type="color" data-ap-pga="${esc(k)}" value="${pgTwo(k)[0]}" aria-label="Gradient start"></label><span class="ap-gto" style="--gs:linear-gradient(90deg,${pgTwo(k).join(',')})"></span><label class="ap-sw ap-gc" style="--c:${pgTwo(k)[1]}"><input type="color" data-ap-pgb="${esc(k)}" value="${pgTwo(k)[1]}" aria-label="Gradient end"></label></div>`;
   s.appendChild(p);b.setAttribute('aria-expanded','true');
   const r=p.getBoundingClientRect();if(r.left<8){p.style.right='auto';p.style.left='0';}}
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.querySelector('.ap-gpop')){e.stopPropagation();apGpClose();}},true);
@@ -9500,13 +9518,16 @@ function pcPage(v){const g=document.getElementById('games');
   if(g&&!g.hidden&&g.firstChild)return g.querySelector('.tl-pick')||tlBack?'tools':'games';
   const p=v||(state.setup?'setup':state.view);return p==='clock'||p==='scare'?'tools':p;}
 function pcApply(v){const r=document.documentElement,on=!!(state.user&&state.settings);
-  const k=pcPage(v),st=on&&pgStops(k),pre=on&&pgPre(pgOf(k)),c=pre?st[0]:on&&rwHas(2)&&((state.settings.pageColors||{})[k]);
+  const k=pcPage(v),st=on&&pgStops(k),pre=on&&(pgPre(pgOf(k))||pgPair(pgOf(k))),c=pre?st[0]:on&&rwHas(2)&&((state.settings.pageColors||{})[k]);
   if(c&&(pre||c!==PC_SW[0])&&/^#[0-9a-f]{6}$/i.test(c)){r.style.setProperty('--pc',c);r.classList.add('pc');}
   else if(r.classList.contains('pc')){r.classList.remove('pc');r.style.removeProperty('--pc');}
   if(st){const n=st.length-1,h=n>2?2:3,P={'--pc2':st[n],'--pgl':st.join(','),'--pgld':st.map(x=>pgShade(x,.82)).join(','),
       '--pglm':st.map((x,i)=>`${x} calc(50% - ${h}em + ${+(2*h*i/n).toFixed(3)}em)`).join(','),'--pgle':st.map((x,i)=>`${x} ${+(Math.min(1.75,6/n)*i).toFixed(3)}em`).join(',')};
+    P['--pgdeco']=`radial-gradient(circle 170px at center,${pgRings(st,[[0,100,.14],[100,170,.07]]).map(x=>x+'px').join(',')},transparent 170px)`;
+    P['--pgfo']=pgRings(st,[[0,72,1]]).map(x=>x+'%').join(',')+',transparent 100%';
+    P['--pgfa']=pgRings(st,[[0,55,.18]]).map(x=>x+'%').join(',')+',transparent 72%';
     Object.keys(P).forEach(x=>r.style.setProperty(x,P[x]));r.classList.add('pg2');}
-  else if(r.classList.contains('pg2')){r.classList.remove('pg2');['--pc2','--pgl','--pgld','--pglm','--pgle'].forEach(x=>r.style.removeProperty(x));}
+  else if(r.classList.contains('pg2')){r.classList.remove('pg2');['--pc2','--pgl','--pgld','--pglm','--pgle','--pgdeco','--pgfo','--pgfa'].forEach(x=>r.style.removeProperty(x));}
   const f=on&&!!state.settings.pageFade;r.classList.toggle('pfade',f);r.classList.toggle('deco',!!(on&&state.settings.decoOn));
   if(f&&!document.getElementById('pfade')){const d=document.createElement('div');d.id='pfade';d.setAttribute('aria-hidden','true');document.body.appendChild(d);}}
 document.addEventListener('click',e=>{
@@ -9525,7 +9546,9 @@ document.addEventListener('click',e=>{
 ['input','change'].forEach(t=>document.addEventListener(t,e=>{const i=e.target;if(!state.user||!i.closest||!i.closest('#pwx'))return;
   const v=String(i.value||'').toLowerCase();if(!/^#[0-9a-f]{6}$/.test(v))return;let k;
   if(i.dataset.apPcc&&rwHas(2)){k=i.dataset.apPcc;const m={...(state.settings.pageColors||{})};if(v===PC_SW[0])delete m[k];else m[k]=v;state.settings.pageColors=m;}
-  else if(i.dataset.apPg&&rwHas(3)){k=i.dataset.apPg;state.settings.pageGrads={...(state.settings.pageGrads||{}),[k]:v};}
+  else if((i.dataset.apPga||i.dataset.apPgb)&&rwHas(3)){k=i.dataset.apPga||i.dataset.apPgb;const w=i.closest('.ap-gtwo');
+    const a=String(w.querySelector('[data-ap-pga]').value).toLowerCase(),b=String(w.querySelector('[data-ap-pgb]').value).toLowerCase();
+    state.settings.pageGrads={...(state.settings.pageGrads||{}),[k]:a+','+b};}
   else return;
   apPcSync(k);pcApply();if(t==='change')saveSettings();}));
 /* the footer: Suggestions, Tutorial, FAQ and Guide under every page and on the Games, Tools, Suggestions and Guide
