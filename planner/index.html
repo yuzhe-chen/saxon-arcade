@@ -3086,7 +3086,7 @@ html.pg2.pfade:not(.splash-on) :is(#games:not(:has(.gm-frame)),#sugg,#roles,#rew
 /* Decorations (Appearance, on by default): a soft circle of the page colour tucked into the corner of the Home cards,
    the Jump back in tiles and the Tools tiles, as on Lectern */
 html.deco :is(.hm-card,.hm-jt,#games .tl-tile){position:relative;overflow:hidden;isolation:isolate}
-html.deco :is(.hm-card,.hm-jt,#games .tl-tile)::after{content:'';position:absolute;right:-70px;bottom:-70px;width:200px;height:200px;border-radius:50%;background:var(--pri);opacity:.14;pointer-events:none;z-index:-1}
+html.deco :is(.hm-card,.hm-jt,#games .tl-tile)::after{content:'';position:absolute;right:-110px;bottom:-110px;width:280px;height:280px;border-radius:50%;background:radial-gradient(closest-side,color-mix(in srgb,var(--pri) 20%,transparent) 0,color-mix(in srgb,var(--pri) 12%,transparent) 45%,transparent 100%);pointer-events:none;z-index:-1}
 #games .tl-sens{margin-top:30px;padding:26px 0 10px;border-top:2px solid var(--line);justify-content:center}#games .tl-sens h3{margin:0}
 #games .gm-endbar{gap:10px;flex-wrap:wrap}
 .rw-lock{appearance:none;display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border:2px solid var(--line);border-bottom-width:4px;border-radius:12px;background:var(--bg);color:var(--fg2);font:800 12px/1 var(--font-ui);text-transform:uppercase;letter-spacing:.04em;cursor:pointer}.rw-lock:hover{background:var(--panel2)}.rw-lock svg{width:16px;height:16px}.sec .sec-sw>h3{flex:1;margin:0}
