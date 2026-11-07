@@ -3023,6 +3023,11 @@ html.pg-open:not(.splash-on) header.topbar{z-index:1550}
   width:max-content;max-width:min(680px,calc(100vw - 520px));max-height:none!important;overflow:visible!important;padding:8px!important}
 .cf-adv .adv-wide .cdd-menu.open .cdd-item{width:auto;white-space:nowrap}
 @media (max-width:900px){.cf-adv .adv-wide .cdd-menu.open{left:0!important;top:calc(100% + 6px)!important;transform:none;max-width:calc(100vw - 48px)}}
+header.topbar{transition:opacity .5s ease}
+html.gm-idle header.topbar{opacity:0;pointer-events:none;transition:opacity 1s ease}
+html.gm-idle:not(.splash-on) #games{top:0!important}
+#games .gm-side{transition:opacity .5s}
+html.gm-idle #games .gm-side{opacity:0;pointer-events:none;transition:opacity 1s}
 /* Jumpscare */
 #v-scare.on{position:relative;min-height:calc(100dvh - 140px);display:flex}
 .scare-pg{flex:1;position:relative;border-radius:var(--r);overflow:hidden;background:#050404;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:0 0 70px;min-height:calc(100dvh - 160px)}
@@ -11049,6 +11054,10 @@ document.addEventListener('click',e=>{if(!state.user||!e.target.closest)return;
   if(a.matches('[data-act-roles]')&&!state.user.owner)return;
   e.preventDefault();e.stopImmediatePropagation();
   goSettings(a.matches('[data-act-appear]')?'appearance':a.matches('[data-act-sec]')?'password':a.matches('[data-act-sugg]')?'sugg':'admin');},true);
+/* a game or tool that goes idle (Meditation) can fade the top bar and the side arrow too, so only its screen is left */
+window.addEventListener('message',e=>{const m=e.data;if(!m||m.type!=='sx-idle')return;const f=document.querySelector('#games .gm-frame');
+  if(f&&e.source===f.contentWindow)document.documentElement.classList.toggle('gm-idle',!!m.on);});
+{const g=document.getElementById('games');if(g)new MutationObserver(()=>{if(g.hidden||!g.querySelector('.gm-frame'))document.documentElement.classList.remove('gm-idle');}).observe(g,{attributes:true,attributeFilter:['hidden'],childList:true});}
 function pgCloseAll(keep){
   const sh=id=>id!==keep&&!document.getElementById(id).hidden;
   if(sh('sugg'))closeSugg(true);
