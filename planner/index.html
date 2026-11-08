@@ -2791,7 +2791,8 @@ html.pg-open:not(.splash-on) header.topbar{z-index:1550}
 #games .gm-x:active{transform:translateY(2px);border-bottom-width:2px;margin-bottom:-2px}
 #games .gm-x svg{width:22px;height:22px;stroke-width:2.8;stroke-linecap:round}
 #games .gm-sec+.gm-sec{margin-top:28px}
-#games .gm-grid{grid-template-columns:repeat(5,minmax(0,1fr));gap:16px;max-width:none}
+/* as many columns as fit (six on a laptop), stretched so the space on both sides is the same */
+#games .gm-grid{grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:16px;max-width:none}
 @media (max-width:1000px){#games .gm-grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media (max-width:840px){#games .gm-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 #games .gm-tile{border:2px solid var(--line);border-bottom-width:4px;border-radius:var(--r);background:var(--panel);color:var(--fg);transition:none}
@@ -3092,6 +3093,14 @@ html.pg-open:not(.splash-on) header.topbar{z-index:1550}
 @media (max-width:900px){.cf-adv .adv-wide .cdd-menu.open{left:0!important;top:calc(100% + 6px)!important;transform:none;max-width:calc(100vw - 48px)}}
 header.topbar{transition:opacity .5s ease}
 html.gm-idle header.topbar{opacity:0;pointer-events:none;transition:opacity 1s ease}
+/* the menu bar steps aside while a game or tool is on screen (and its loading screen), and for Desmos and the Clock */
+html.nobar:not(.splash-on) header.topbar{display:none}
+html.nobar:not(.splash-on) :is(#games,#desmos){top:0!important}
+.ck-back{position:fixed;left:0;top:50%;transform:translateY(-50%);z-index:40;width:24px;height:46px;border:0;border-radius:0 6px 6px 0;padding:0;
+  background:rgba(0,0,0,.45);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:.7}
+.ck-back:hover{opacity:1}
+.ck-back svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.scare-btns{position:relative;display:flex;gap:10px}.scare-btns[hidden]{display:none}
 html.gm-idle:not(.splash-on) #games{top:0!important}
 #games .gm-side{transition:opacity .5s}
 html.gm-idle #games .gm-side{opacity:0;pointer-events:none;transition:opacity 1s}
@@ -8749,7 +8758,7 @@ document.addEventListener('click',e=>{
   closeGames();
   if(id==='desmos'){tlDz=true;openDesmos();return;}
   /* Clock and Jumpscare are pages of their own, opened from here */
-  if(id==='clock'||id==='scare'){if(id==='scare')try{const C=window.AudioContext||window.webkitAudioContext;if(C){scareAC=scareAC||new C();scareAC.resume();}}catch(_){}
+  if(id==='clock'||id==='scare'){if(id==='scare')scareFromTools=true;if(id==='scare')try{const C=window.AudioContext||window.webkitAudioContext;if(C){scareAC=scareAC||new C();scareAC.resume();}}catch(_){}
     state.view=id;if(id==='clock')try{localStorage.setItem('sx-tab','clock');}catch(_){}render();scrollTo(0,0);return;}
   state.toolTab=id;try{localStorage.setItem('sx-tooltab',id);localStorage.setItem('sx-tab','tools');}catch(_){}
   state.view='tools';render();scrollTo(0,0);
@@ -9965,6 +9974,13 @@ document.addEventListener('click',e=>{if(e.target.closest('[data-nonet]')&&windo
         const n=el.querySelector('.gm-lname'),label=n?n.textContent.replace(/\b\w/g,m=>m.toUpperCase()):el.id==='dataload'?'your planner':'this page';
         mine=true;BookRun.open({mode:'loading',label,expect:n?10:8,onClose:()=>{mine=false;skip=true;const f=document.querySelector('#games .gm-frame');if(f)try{f.focus();}catch(_){}}});}}
     else{since=0;if(mine&&BookRun.isOpen())BookRun.loaded();skip=false;}},400);})();
+/* the Clock's side arrow goes back to Tools, like Meditation's */
+document.addEventListener('click',e=>{if(!e.target.closest('[data-ck-back]'))return;state.view='home';try{localStorage.setItem('sx-tab','home');}catch(_){}render();openTools();});
+/* html.nobar hides the menu bar: a game or tool frame (or its loading screen) on screen, Desmos, or the Clock with nothing over it */
+function nobarSync(){const g=document.getElementById('games'),d=document.getElementById('desmos'),ck=document.getElementById('v-clock');if(!g||!d)return;
+  const on=(!g.hidden&&!!g.querySelector('.gm-frame,.gm-load'))||!d.hidden||(!!ck&&ck.classList.contains('on')&&g.hidden);
+  document.documentElement.classList.toggle('nobar',on);}
+{const mo=new MutationObserver(nobarSync);['games','desmos','v-clock'].forEach(id=>{const e=document.getElementById(id);if(e)mo.observe(e,{attributes:true,attributeFilter:['hidden','class'],childList:true});});}
 /* ---------- render root ---------- */
 /* signed in but the account's data hasn't arrived yet (a reload): show the loading screen, never empty pages */
 function dataWait(){const on=!!(state.user&&!settingsLoaded);let d=document.getElementById('dataload');
@@ -10010,7 +10026,7 @@ function ckFace(){
     <line class="ck-s" id="ck-s" x1="100" y1="122" x2="100" y2="22"/><circle class="ck-dot" cx="100" cy="100" r="6"/></svg>`;}
 function renderClock(){
   const el=document.getElementById('v-clock');
-  el.innerHTML=`<div class="ck-card"><div class="ck-face">${ckFace()}</div>
+  el.innerHTML=`<button class="ck-back" data-ck-back aria-label="Tools" title="Tools"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button><div class="ck-card"><div class="ck-face">${ckFace()}</div>
     <div class="ck-side"><div class="ck-time" id="ck-time"></div><div class="ck-date" id="ck-date"></div><div class="ck-now" id="ck-now"></div></div></div>`;
   ckLastSec=-1;cancelAnimationFrame(ckRaf);ckRaf=requestAnimationFrame(ckTick);}
 function ckTick(){
@@ -10067,17 +10083,19 @@ function scareGo(){const el=document.getElementById('v-scare');if(!el||state.vie
   if(SCARES[pick][1])scareScreech();else scareSound();
   setTimeout(()=>{o.classList.add('big');at({top:0,left:0,width:innerWidth,height:innerHeight});},260);
   setTimeout(()=>{const q=box.isConnected?box.getBoundingClientRect():r;o.classList.remove('big');o.classList.add('back');at(q);},2300);
-  setTimeout(()=>{o.classList.add('out');setTimeout(()=>{o.remove();const a=document.querySelector('#v-scare .scare-again');if(a)a.hidden=false;},450);},3300);}
+  setTimeout(()=>{o.classList.add('out');setTimeout(()=>{o.remove();const a=document.querySelector('#v-scare .scare-btns');if(a)a.hidden=false;},450);},3300);}
 function renderScare(){const el=document.getElementById('v-scare');if(!el)return;clearTimeout(scareT);
-  el.innerHTML=`<div class="scare-pg"><div class="scare-hall" aria-hidden="true"></div><p class="scare-q">Is someone there?</p><button class="hbtn scare-again" data-act="scareagain" hidden>Again</button></div>`;
+  el.innerHTML=`<div class="scare-pg"><div class="scare-hall" aria-hidden="true"></div><p class="scare-q">Is someone there?</p><div class="scare-btns" hidden><button class="hbtn scare-again" data-act="scareagain">Again</button><button class="hbtn scare-again" data-act="scareleave">Leave</button></div></div>`;
   /* the dark hallway flickers, then rushes in during the last second before the face appears */
   const wait=2600+Math.random()*2600,h=el.querySelector('.scare-hall');if(h)h.style.animation=`scareflick 4s steps(1) infinite,scarezoom 1000ms cubic-bezier(.5,0,.9,.4) ${wait-1000}ms forwards`;
   scareT=setTimeout(scareGo,wait);}
 document.addEventListener('click',e=>{
-  if(e.target.closest('[data-act-scare]')&&state.user){closeNavMenus();if(state.setup&&COURSES.length)state.setup=false;
+  if(e.target.closest('[data-act-scare]')&&state.user){closeNavMenus();scareFromTools=false;if(state.setup&&COURSES.length)state.setup=false;
     try{const C=window.AudioContext||window.webkitAudioContext;if(C){scareAC=scareAC||new C();scareAC.resume();}}catch(_){}
     state.view='scare';render();return;}
-  if(e.target.closest('[data-act="scareagain"]')){renderScare();}});
+  if(e.target.closest('[data-act="scareagain"]')){renderScare();}
+  if(e.target.closest('[data-act="scareleave"]')){clearTimeout(scareT);state.view='home';try{localStorage.setItem('sx-tab','home');}catch(_){}render();if(scareFromTools)openTools();}});
+var scareFromTools=false;
 function render(){
   if(state.user&&!memeGot&&!memeP&&Date.now()-memeMiss>600000)setTimeout(memeGet,0);
   if(gmPlaying()){gmMissed.render=true;return;}
