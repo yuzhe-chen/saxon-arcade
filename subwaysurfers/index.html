@@ -11,6 +11,8 @@
       #og-game-holder { position: fixed; overflow: hidden; width: 100%; height: 100vh; background-position: center; background-repeat: no-repeat; margin: 0; }
     </style>
     <script type="bridge/defer" src="pokistub.js"></script>
+    <!-- main.js logs screens to these (they came from the removed ad adapter); without them the title screen never opens -->
+    <script type="bridge/defer">window.dataLayer=[];window.productTitle='Subway Surfers';</script>
   </head>
   <body>
     <div id="og-game-holder"></div>
