@@ -1237,6 +1237,10 @@ html.home-on body::before{opacity:1}
 /* Desmos: the graphing calculator full screen, closed with × or Esc */
 #desmos{position:fixed;inset:0;z-index:1500;background:#171716;display:flex;flex-direction:column;animation:hmfade .25s ease both}
 #desmos[hidden]{display:none}
+/* no bar: the same left-edge arrow as the other tools goes back (Escape too) */
+#desmos .dz-side{position:absolute;left:0;top:50%;transform:translateY(-50%);z-index:2;width:24px;height:46px;border:0;border-radius:0 6px 6px 0;padding:0;background:rgba(0,0,0,.45);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:.7}
+#desmos .dz-side:hover{opacity:1}
+#desmos .dz-side svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
 /* the same bar as a game being played: the games' always-dark colors, the name on the left goes back, a square close button */
 #desmos .dz-bar{height:56px;display:flex;align-items:center;gap:8px;padding:0 16px;flex:none;background:#171716;color:#ebeae5;
   border-bottom:1px solid rgba(255,255,255,.14);color-scheme:dark;-webkit-user-select:none;user-select:none}
@@ -3664,7 +3668,9 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
    Needs nothing from the network: it draws itself, so the planner's No Internet button works offline.
    The same code sits inline in planner/index.html: after editing this file run node tools/sync-bookrun.js.
 
-   BookRun.open({mode:'loading', label:'Subway Surfers'})  a loading screen is taking a while:
+   BookRun.offer({mode:'loading', label:'Subway Surfers', note:'...'})  a loading screen is taking a while: a small
+     popup asks whether to play; Play grows it into the game screen, No thanks (or Escape) puts it away.
+   BookRun.open({mode:'loading', label:'Subway Surfers'})  the game straight away:
      a pixel loading bar sits on top; once loading is done the game stays until the player loses, then
      "Loading complete" takes them on. If they never started a run it closes as soon as loading is done.
    BookRun.open({mode:'free'})   the No Internet game: closes with × or Escape at any time.
@@ -3674,7 +3680,10 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
 if(window.BookRun)return;
 /* around the game it looks like the rest of Saxon Planner (its colors, font and buttons; the fallbacks are its light theme
    for pages without them, like a game frame); the game itself is gray and white, flipped to light-on-dark on a dark page */
-var CSS='.br-ov{position:fixed;inset:0;z-index:2147483000;background:var(--bg,#fff);color:var(--fg,#4b4b4b);display:flex;align-items:flex-start;justify-content:center;font:700 14px/1.45 var(--font-ui,"Nunito",ui-rounded,system-ui,-apple-system,"Segoe UI",sans-serif);transition:filter .7s,opacity .3s;outline:none}'+
+var CSS='.br-pop{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2147483001;width:min(360px,calc(100vw - 32px));box-sizing:border-box;background:var(--bg,#fff);color:var(--fg,#4b4b4b);border:2px solid var(--line,#e5e5e5);border-bottom-width:4px;border-radius:var(--r,16px);padding:20px 22px;box-shadow:0 14px 44px rgba(0,0,0,.18);font:700 14px/1.45 var(--font-ui,"Nunito",ui-rounded,system-ui,-apple-system,"Segoe UI",sans-serif);animation:brpop .28s cubic-bezier(.2,.9,.3,1.2) both}'+
+'.br-pop.gone{opacity:0;transition:opacity .2s}.br-pt{display:block;font-size:18px;font-weight:800;margin-bottom:4px}.br-pp{margin:0 0 16px;color:var(--fg2,#777);font-weight:600}.br-pb{display:flex;gap:10px;flex-wrap:wrap}'+
+'@keyframes brpop{from{opacity:0;transform:translate(-50%,-44%) scale(.94)}}'+
+'.br-ov{position:fixed;inset:0;z-index:2147483000;background:var(--bg,#fff);color:var(--fg,#4b4b4b);display:flex;align-items:flex-start;justify-content:center;font:700 14px/1.45 var(--font-ui,"Nunito",ui-rounded,system-ui,-apple-system,"Segoe UI",sans-serif);transition:filter .7s,opacity .3s,clip-path .5s cubic-bezier(.2,.8,.2,1);outline:none}'+
 '.br-ov.night{filter:invert(1)}.br-ov.gone{opacity:0;pointer-events:none}'+
 '.br-ov.dk .br-cv,.br-ov.dk .br-top{filter:invert(.9)}'+
 '.br-card{width:min(600px,calc(100vw - 32px));margin-top:max(16px,calc(24vh - 170px))}.br-ov.ld .br-card{margin-top:max(70px,calc(24vh - 170px))}'+
@@ -3719,7 +3728,8 @@ function build(){
   for(var j=0;j<3;j++)clouds.push({x:40+j*90+Math.random()*30,y:12+Math.floor(Math.random()*14)});
   window.addEventListener('keydown',onKey,true);window.addEventListener('keyup',onKeyUp,true);
 }
-function onKey(e){if(!opts)return;var k=e.key,used=true;
+function onKey(e){if(pop&&!opts){if(e.key==='Enter'){e.preventDefault();e.stopImmediatePropagation();grow();}else if(e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();dropPop();}return;}
+  if(!opts)return;var k=e.key,used=true;
   if(k===' '||k==='ArrowUp'||k==='w'||k==='W')press();
   else if(k==='ArrowDown'||k==='s'||k==='S')duck(true);
   else if(k==='Enter'){if(!doneBtn.hidden)close();else press();}
@@ -3788,11 +3798,28 @@ function open(o){
   try{if(document.activeElement&&document.activeElement.blur)document.activeElement.blur();}catch(e){}
   try{ov.focus({preventScroll:true});}catch(e){}
   last=0;if(!raf)raf=requestAnimationFrame(frame);}
+/* the popup: asks first; Play grows it into the game screen */
+var pop=null,popOpts=null;
+function esc(s){return String(s).replace(/[&<>"]/g,function(m){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[m];});}
+function offer(o){if(opts||pop)return;if(!ov)build();popOpts=o||{mode:'loading'};
+  var L=popOpts.label?popOpts.label.charAt(0).toUpperCase()+popOpts.label.slice(1):'This page';
+  pop=document.createElement('div');pop.className='br-pop';pop.setAttribute('role','dialog');
+  pop.innerHTML='<b class="br-pt">Still loading</b><p class="br-pp">'+esc(L)+' takes a while to load.'+(popOpts.note?' '+esc(popOpts.note):'')+' Want to play a minigame while you wait?</p>'+
+    '<div class="br-pb"><button class="br-btn br-play">Play</button><button class="br-btn ghost br-no">No thanks</button></div>';
+  pop.querySelector('.br-play').onclick=grow;pop.querySelector('.br-no').onclick=function(){dropPop();};
+  document.body.appendChild(pop);}
+function dropPop(){if(!pop)return;var p=pop,o=popOpts;pop=null;popOpts=null;p.classList.add('gone');setTimeout(function(){if(p.parentNode)p.parentNode.removeChild(p);},250);
+  if(o&&o.onClose)try{o.onClose();}catch(e){}}
+function grow(){if(!pop)return;var r=pop.getBoundingClientRect(),o=popOpts,p=pop;pop=null;popOpts=null;
+  open(o);var W0=innerWidth,H0=innerHeight;
+  ov.style.transition='none';ov.style.clipPath='inset('+r.top+'px '+(W0-r.right)+'px '+(H0-r.bottom)+'px '+r.left+'px round 16px)';void ov.offsetWidth;
+  ov.style.transition='';ov.style.clipPath='inset(0px 0px 0px 0px round 0px)';
+  setTimeout(function(){if(p.parentNode)p.parentNode.removeChild(p);},60);setTimeout(function(){ov.style.clipPath='';},560);}
 function close(){if(!opts)return;var o=opts;opts=null;ov.classList.add('gone');setTimeout(function(){if(!opts&&ov.parentNode)ov.parentNode.removeChild(ov);},320);
   if(o.onClose)try{o.onClose();}catch(e){}}
 window.BookRun={
-  open:open,close:close,isOpen:function(){return !!opts;},
-  loaded:function(){if(!opts||opts.mode!=='loading'||loaded)return;loaded=true;if(st==='ready')close();else foot();}};
+  open:open,offer:offer,close:close,isOpen:function(){return !!opts||!!pop;},
+  loaded:function(){if(pop&&!opts){dropPop();return;}if(!opts||opts.mode!=='loading'||loaded)return;loaded=true;if(st==='ready')close();else foot();}};
 })();
 </script><!--/bookrun-->
 <script>
@@ -9224,8 +9251,8 @@ function themePref(k){let t=null;try{t=localStorage.getItem(k);}catch(_){}
 /* Desmos from the login page's menu: the graphing calculator full screen */
 let dzFocus=null;
 function openDesmos(){const d=document.getElementById('desmos');dzFocus=document.activeElement;
-  d.innerHTML=`<div class="dz-bar"><span class="dz-t" data-dz-close title="Back">Desmos</span><button class="dz-x" data-dz-close aria-label="Close" title="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div><iframe title="Desmos graphing calculator" src="https:${SLASH2}www.desmos.com/calculator" allow="clipboard-write; fullscreen"></iframe>`;
-  d.hidden=false;d.querySelector('.dz-x').focus({preventScroll:true});}
+  d.innerHTML=`<button class="dz-side" data-dz-close aria-label="Back" title="Back"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button><iframe title="Desmos graphing calculator" src="https:${SLASH2}www.desmos.com/calculator" allow="clipboard-write; fullscreen"></iframe>`;
+  d.hidden=false;d.querySelector('.dz-side').focus({preventScroll:true});}
 function closeDesmos(){const d=document.getElementById('desmos');if(d.hidden)return;d.hidden=true;d.innerHTML='';
   if(typeof tlDz!=='undefined'&&tlDz){tlDz=false;dzFocus=null;openTools();return;}
   const b=document.getElementById('spmenubtn');(dzFocus&&dzFocus.isConnected&&dzFocus.offsetParent?dzFocus:b).focus({preventScroll:true});dzFocus=null;}
@@ -9972,7 +9999,7 @@ document.addEventListener('click',e=>{if(e.target.closest('[data-nonet]')&&windo
     if(el){if(!since)since=Date.now();
       if(!mine&&!skip&&!BookRun.isOpen()&&Date.now()-since>=5000){
         const n=el.querySelector('.gm-lname'),label=n?n.textContent.replace(/\b\w/g,m=>m.toUpperCase()):el.id==='dataload'?'your planner':'this page';
-        mine=true;BookRun.open({mode:'loading',label,expect:n?10:8,onClose:()=>{mine=false;skip=true;const f=document.querySelector('#games .gm-frame');if(f)try{f.focus();}catch(_){}}});}}
+        mine=true;BookRun.offer({mode:'loading',label,expect:n?10:8,onClose:()=>{mine=false;skip=true;const f=document.querySelector('#games .gm-frame');if(f)try{f.focus();}catch(_){}}});}}
     else{since=0;if(mine&&BookRun.isOpen())BookRun.loaded();skip=false;}},400);})();
 /* the Clock's side arrow goes back to Tools, like Meditation's */
 document.addEventListener('click',e=>{if(!e.target.closest('[data-ck-back]'))return;state.view='home';try{localStorage.setItem('sx-tab','home');}catch(_){}render();openTools();});
