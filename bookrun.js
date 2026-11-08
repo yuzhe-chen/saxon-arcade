@@ -3,7 +3,9 @@
    Needs nothing from the network: it draws itself, so the planner's No Internet button works offline.
    The same code sits inline in planner/index.html: after editing this file run node tools/sync-bookrun.js.
 
-   BookRun.open({mode:'loading', label:'Subway Surfers'})  a loading screen is taking a while:
+   BookRun.offer({mode:'loading', label:'Subway Surfers', note:'...'})  a loading screen is taking a while: a small
+     popup asks whether to play; Play grows it into the game screen, No thanks (or Escape) puts it away.
+   BookRun.open({mode:'loading', label:'Subway Surfers'})  the game straight away:
      a pixel loading bar sits on top; once loading is done the game stays until the player loses, then
      "Loading complete" takes them on. If they never started a run it closes as soon as loading is done.
    BookRun.open({mode:'free'})   the No Internet game: closes with × or Escape at any time.
@@ -13,7 +15,10 @@
 if(window.BookRun)return;
 /* around the game it looks like the rest of Saxon Planner (its colors, font and buttons; the fallbacks are its light theme
    for pages without them, like a game frame); the game itself is gray and white, flipped to light-on-dark on a dark page */
-var CSS='.br-ov{position:fixed;inset:0;z-index:2147483000;background:var(--bg,#fff);color:var(--fg,#4b4b4b);display:flex;align-items:flex-start;justify-content:center;font:700 14px/1.45 var(--font-ui,"Nunito",ui-rounded,system-ui,-apple-system,"Segoe UI",sans-serif);transition:filter .7s,opacity .3s;outline:none}'+
+var CSS='.br-pop{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2147483001;width:min(360px,calc(100vw - 32px));box-sizing:border-box;background:var(--bg,#fff);color:var(--fg,#4b4b4b);border:2px solid var(--line,#e5e5e5);border-bottom-width:4px;border-radius:var(--r,16px);padding:20px 22px;box-shadow:0 14px 44px rgba(0,0,0,.18);font:700 14px/1.45 var(--font-ui,"Nunito",ui-rounded,system-ui,-apple-system,"Segoe UI",sans-serif);animation:brpop .28s cubic-bezier(.2,.9,.3,1.2) both}'+
+'.br-pop.gone{opacity:0;transition:opacity .2s}.br-pt{display:block;font-size:18px;font-weight:800;margin-bottom:4px}.br-pp{margin:0 0 16px;color:var(--fg2,#777);font-weight:600}.br-pb{display:flex;gap:10px;flex-wrap:wrap}'+
+'@keyframes brpop{from{opacity:0;transform:translate(-50%,-44%) scale(.94)}}'+
+'.br-ov{position:fixed;inset:0;z-index:2147483000;background:var(--bg,#fff);color:var(--fg,#4b4b4b);display:flex;align-items:flex-start;justify-content:center;font:700 14px/1.45 var(--font-ui,"Nunito",ui-rounded,system-ui,-apple-system,"Segoe UI",sans-serif);transition:filter .7s,opacity .3s,clip-path .5s cubic-bezier(.2,.8,.2,1);outline:none}'+
 '.br-ov.night{filter:invert(1)}.br-ov.gone{opacity:0;pointer-events:none}'+
 '.br-ov.dk .br-cv,.br-ov.dk .br-top{filter:invert(.9)}'+
 '.br-card{width:min(600px,calc(100vw - 32px));margin-top:max(16px,calc(24vh - 170px))}.br-ov.ld .br-card{margin-top:max(70px,calc(24vh - 170px))}'+
@@ -58,7 +63,8 @@ function build(){
   for(var j=0;j<3;j++)clouds.push({x:40+j*90+Math.random()*30,y:12+Math.floor(Math.random()*14)});
   window.addEventListener('keydown',onKey,true);window.addEventListener('keyup',onKeyUp,true);
 }
-function onKey(e){if(!opts)return;var k=e.key,used=true;
+function onKey(e){if(pop&&!opts){if(e.key==='Enter'){e.preventDefault();e.stopImmediatePropagation();grow();}else if(e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();dropPop();}return;}
+  if(!opts)return;var k=e.key,used=true;
   if(k===' '||k==='ArrowUp'||k==='w'||k==='W')press();
   else if(k==='ArrowDown'||k==='s'||k==='S')duck(true);
   else if(k==='Enter'){if(!doneBtn.hidden)close();else press();}
@@ -127,9 +133,26 @@ function open(o){
   try{if(document.activeElement&&document.activeElement.blur)document.activeElement.blur();}catch(e){}
   try{ov.focus({preventScroll:true});}catch(e){}
   last=0;if(!raf)raf=requestAnimationFrame(frame);}
+/* the popup: asks first; Play grows it into the game screen */
+var pop=null,popOpts=null;
+function esc(s){return String(s).replace(/[&<>"]/g,function(m){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[m];});}
+function offer(o){if(opts||pop)return;if(!ov)build();popOpts=o||{mode:'loading'};
+  var L=popOpts.label?popOpts.label.charAt(0).toUpperCase()+popOpts.label.slice(1):'This page';
+  pop=document.createElement('div');pop.className='br-pop';pop.setAttribute('role','dialog');
+  pop.innerHTML='<b class="br-pt">Still loading</b><p class="br-pp">'+esc(L)+' takes a while to load.'+(popOpts.note?' '+esc(popOpts.note):'')+' Want to play a minigame while you wait?</p>'+
+    '<div class="br-pb"><button class="br-btn br-play">Play</button><button class="br-btn ghost br-no">No thanks</button></div>';
+  pop.querySelector('.br-play').onclick=grow;pop.querySelector('.br-no').onclick=function(){dropPop();};
+  document.body.appendChild(pop);}
+function dropPop(){if(!pop)return;var p=pop,o=popOpts;pop=null;popOpts=null;p.classList.add('gone');setTimeout(function(){if(p.parentNode)p.parentNode.removeChild(p);},250);
+  if(o&&o.onClose)try{o.onClose();}catch(e){}}
+function grow(){if(!pop)return;var r=pop.getBoundingClientRect(),o=popOpts,p=pop;pop=null;popOpts=null;
+  open(o);var W0=innerWidth,H0=innerHeight;
+  ov.style.transition='none';ov.style.clipPath='inset('+r.top+'px '+(W0-r.right)+'px '+(H0-r.bottom)+'px '+r.left+'px round 16px)';void ov.offsetWidth;
+  ov.style.transition='';ov.style.clipPath='inset(0px 0px 0px 0px round 0px)';
+  setTimeout(function(){if(p.parentNode)p.parentNode.removeChild(p);},60);setTimeout(function(){ov.style.clipPath='';},560);}
 function close(){if(!opts)return;var o=opts;opts=null;ov.classList.add('gone');setTimeout(function(){if(!opts&&ov.parentNode)ov.parentNode.removeChild(ov);},320);
   if(o.onClose)try{o.onClose();}catch(e){}}
 window.BookRun={
-  open:open,close:close,isOpen:function(){return !!opts;},
-  loaded:function(){if(!opts||opts.mode!=='loading'||loaded)return;loaded=true;if(st==='ready')close();else foot();}};
+  open:open,offer:offer,close:close,isOpen:function(){return !!opts||!!pop;},
+  loaded:function(){if(pop&&!opts){dropPop();return;}if(!opts||opts.mode!=='loading'||loaded)return;loaded=true;if(st==='ready')close();else foot();}};
 })();

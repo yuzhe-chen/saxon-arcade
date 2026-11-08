@@ -18,14 +18,14 @@
     <div id="og-game-holder"></div>
     <script src="../bookrun.js"></script>
     <script>
-    /* Subway Surfers takes 20 to 40 seconds to load: after 5 seconds the Book Run minigame opens over its loader.
+    /* Subway Surfers takes 20 to 40 seconds to load: after 5 seconds a popup offers the Book Run minigame.
        The game logs its title screen through dataLayer.push, which is when loading is over. */
     (function(){
       var done=false;
       var dl=window.dataLayer=window.dataLayer||[],push=dl.push;
       dl.push=function(){if(!done){done=true;if(window.BookRun)BookRun.loaded();}return push.apply(dl,arguments);};
-      setTimeout(function(){if(!done&&window.BookRun)BookRun.open({mode:'loading',label:'Subway Surfers',expect:25,
-        note:'Subway Surfers usually takes 20 to 40 seconds to load.',onClose:function(){try{window.focus();}catch(e){}}});},5000);
+      setTimeout(function(){if(!done&&window.BookRun)BookRun.offer({mode:'loading',label:'Subway Surfers',expect:25,
+        note:'It usually takes 20 to 40 seconds.',onClose:function(){try{window.focus();}catch(e){}}});},5000);
     })();
     </script>
     <script type="bridge/defer" src="js/boot.js"></script>
