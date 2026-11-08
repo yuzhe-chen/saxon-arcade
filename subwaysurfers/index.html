@@ -9,13 +9,114 @@
       body { background-color: #000; margin: 0; overflow: hidden; -webkit-tap-highlight-color: rgba(0,0,0,0); }
       .fontcache { position: fixed; margin-left: -100px; }
       #og-game-holder { position: fixed; overflow: hidden; width: 100%; height: 100vh; background-position: center; background-repeat: no-repeat; margin: 0; }
+
+      /* waiting room: shown over the game's own loader until the title screen opens */
+      #wait { position: fixed; inset: 0; z-index: 10; display: flex; align-items: center; justify-content: center; background: #1c1630; font: 500 15px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif; color: #fff; transition: opacity .35s; }
+      #wait.gone { opacity: 0; pointer-events: none; }
+      #wait .card { width: min(720px, calc(100vw - 32px)); text-align: center; }
+      #wait h1 { font-size: 22px; margin: 0 0 6px; font-weight: 700; }
+      #wait p { margin: 0 0 16px; color: #d9d3ee; }
+      #wait button { font: 600 15px/1 system-ui,-apple-system,"Segoe UI",sans-serif; color: #1c1630; background: #ffd23f; border: 0; border-radius: 8px; padding: 12px 22px; cursor: pointer; }
+      #wait button:hover { background: #ffdf6b; }
+      #wait button.ghost { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,.4); margin-left: 8px; }
+      #dots::after { content: ""; animation: dots 1.4s steps(4) infinite; }
+      @keyframes dots { 0% { content: ""; } 25% { content: "."; } 50% { content: ".."; } 75% { content: "..."; } }
+      #mg { display: none; }
+      #mg canvas { display: block; width: 100%; border-radius: 10px; background: #f6f1e7; image-rendering: pixelated; touch-action: none; cursor: pointer; }
+      #mg .hint { margin-top: 8px; font-size: 13px; color: #bdb5d8; }
+      #ready { display: none; margin-bottom: 12px; padding: 10px 14px; border-radius: 10px; background: #2f8f4e; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; }
+      #ready.on { display: flex; }
     </style>
     <script type="bridge/defer" src="pokistub.js"></script>
     <!-- main.js logs screens to these (they came from the removed ad adapter); without them the title screen never opens -->
-    <script type="bridge/defer">window.dataLayer=[];window.productTitle='Subway Surfers';</script>
+    <script type="bridge/defer">window.dataLayer=window.dataLayer||[];window.productTitle='Subway Surfers';</script>
   </head>
   <body>
     <div id="og-game-holder"></div>
+    <div id="wait">
+      <div class="card">
+        <div id="intro">
+          <h1>Subway Surfers is loading<span id="dots"></span></h1>
+          <p>It takes a while, usually 20 to 40 seconds. Want to play something while you wait?</p>
+          <button id="mgStart">Play a minigame</button>
+        </div>
+        <div id="ready"><b>Subway Surfers is ready.</b><button id="goGame">Start Subway Surfers</button></div>
+        <div id="mg">
+          <canvas id="mgc" width="240" height="80"></canvas>
+          <div class="hint">Space, up or tap to jump. Down to duck. Enter starts Subway Surfers once it's ready.</div>
+        </div>
+      </div>
+    </div>
+    <script>
+    /* Waiting room: the game reports its title screen through dataLayer.push, which is when loading is over. */
+    (function(){
+      var wait=document.getElementById('wait'),intro=document.getElementById('intro'),readyBox=document.getElementById('ready'),mgBox=document.getElementById('mg');
+      var playing=false,loaded=false,closed=false;
+      function close(){if(closed)return;closed=true;playing=false;wait.classList.add('gone');setTimeout(function(){wait.style.display='none';},400);try{window.focus();}catch(e){}}
+      function onLoaded(){if(loaded)return;loaded=true;if(!playing)close();else readyBox.classList.add('on');}
+      var dl=window.dataLayer=window.dataLayer||[],push=dl.push;
+      dl.push=function(){onLoaded();return push.apply(dl,arguments);};
+      document.getElementById('goGame').onclick=close;
+      document.getElementById('mgStart').onclick=function(){intro.style.display='none';mgBox.style.display='block';playing=true;reset();cv.focus&&cv.focus();};
+      /* while the overlay is up, its keys stay out of the game behind it (H still goes back to the planner) */
+      window.addEventListener('keydown',function(e){if(closed)return;var k=e.key;
+        if(k==='Enter'&&loaded){e.preventDefault();e.stopImmediatePropagation();close();return;}
+        if(!playing)return;
+        if(k===' '||k==='ArrowUp'||k==='w'||k==='W'){e.preventDefault();e.stopImmediatePropagation();jump();}
+        else if(k==='ArrowDown'||k==='s'||k==='S'){e.preventDefault();e.stopImmediatePropagation();duck(true);}},true);
+      window.addEventListener('keyup',function(e){if(closed||!playing)return;if(e.key==='ArrowDown'||e.key==='s'||e.key==='S'){e.stopImmediatePropagation();duck(false);}},true);
+
+      /* the minigame: a pixel runner jumping upright books on fast-moving ground. Drawn at low resolution and scaled up. */
+      var cv=document.getElementById('mgc'),c=cv.getContext('2d'),W=cv.width,H=cv.height,G=64;
+      c.imageSmoothingEnabled=false;
+      var INK='#3a3348',PAPER='#f6f1e7';
+      /* runner sprite, 10x14: . clear  k ink  s skin  b bag */
+      var RUN=[["...kkkk...","..kkkkkk..","..ksskks..","..kssssk..","...kkkk...","..bkkkk...",".bbkkkkk..",".bbkkkk.k.",".bbkkkk...","..kkkkk...","..kk.kk...","..k...k...",".kk...kk..","..........."],
+               ["...kkkk...","..kkkkkk..","..ksskks..","..kssssk..","...kkkk...","..bkkkk...",".bbkkkkk..",".bbkkkk.k.",".bbkkkk...","..kkkkk...","...kkk....","...k.k....","...kk.k...","..........."]];
+      var DUCK=["..........","..........","..........","..........","..........","..........","..........","..kkkk....",".kkkkkk...",".ksskks.bb",".kssssbbbb","..kkkkkkk.","..kk..kk..",".kk....kk."];
+      var COL={k:INK,s:'#f2c28f',b:'#d9534f'};
+      function sprite(rows,x,y){for(var r=0;r<rows.length;r++)for(var q=0;q<rows[r].length;q++){var ch=rows[r][q];if(COL[ch]){c.fillStyle=COL[ch];c.fillRect(x+q,y+r,1,1);}}}
+      var BOOKC=['#d9534f','#3f7fd9','#3aa66a','#e3a72f','#8a5cc7'];
+      var p,obs,speed,dist,next,over,best=0,last=0,t=0,ground=[];
+      for(var i=0;i<60;i++)ground.push({x:Math.random()*W,y:G+2+Math.floor(Math.random()*12),w:Math.random()<.3?2:1});
+      try{best=+localStorage.getItem('sx-wait-best')||0;}catch(e){}
+      function reset(){p={y:0,vy:0,duck:false};obs=[];speed=2.4;dist=0;next=40;over=false;}
+      function jump(){if(over){reset();return;}if(p.y===0)p.vy=4.6;}
+      function duck(on){p.duck=on&&!over;if(on&&p.y>0)p.vy=Math.min(p.vy,-3);}
+      cv.addEventListener('pointerdown',function(e){e.preventDefault();jump();});
+      function book(h,w){return {h:h,w:w,c:BOOKC[Math.floor(Math.random()*BOOKC.length)]};}
+      function spawn(){var r=Math.random(),x=W+4;
+        if(dist>500&&r<0.2){obs.push({x:x,y:15+Math.floor(Math.random()*2)*6,w:11,h:5,plane:true});}   /* paper plane: duck or jump */
+        else{var n=r<0.55?1:r<0.85?2:3,books=[];for(var k=0;k<n;k++)books.push(book(10+Math.floor(Math.random()*9),4+Math.floor(Math.random()*2)));
+          var w=books.reduce(function(a,b){return a+b.w;},0),h=Math.max.apply(null,books.map(function(b){return b.h;}));
+          obs.push({x:x,y:0,w:w,h:h,books:books});}
+        next=Math.max(26,(55+Math.random()*55)-speed*4);}
+      function hit(o){var pw=p.duck?10:7,ph=p.duck?7:13,px=p.duck?16:18,py=G-p.y-ph,oy=G-o.y-o.h;
+        return px<o.x+o.w-1&&px+pw>o.x+1&&py<oy+o.h&&py+ph>oy+1;}
+      function step(){if(over)return;dist+=speed/5;speed=Math.min(6,2.4+dist/250);
+        p.vy-=0.28;p.y=Math.max(0,p.y+p.vy);if(p.y===0)p.vy=0;
+        ground.forEach(function(g){g.x-=speed;if(g.x<-2)g.x+=W+4;});
+        if(--next<=0)spawn();
+        for(var i=obs.length-1;i>=0;i--){var o=obs[i];o.x-=speed+(o.plane?0.6:0);if(o.x<-20)obs.splice(i,1);
+          else if(hit(o)){over=true;var s=Math.floor(dist);if(s>best){best=s;try{localStorage.setItem('sx-wait-best',String(best));}catch(e){}}}}}
+      function drawObs(o){var x=Math.round(o.x);
+        if(o.plane){var y=G-o.y-o.h,f=(t>>3)&1;c.fillStyle=INK;c.fillRect(x,y+2,11,1);c.fillRect(x+1,y+1+f,6,1);c.fillRect(x+2,y+3,7,1);c.fillRect(x+9,y+1,2,1);c.fillStyle=PAPER;c.fillRect(x+3,y+2,5,1);return;}
+        o.books.forEach(function(b){var y=G-b.h;c.fillStyle=INK;c.fillRect(x,y,b.w,b.h);c.fillStyle=b.c;c.fillRect(x+1,y+1,b.w-2,b.h-1);
+          c.fillStyle=PAPER;c.fillRect(x+1,y+3,b.w-2,1);c.fillRect(x+1,y+b.h-4,b.w-2,1);x+=b.w;});}
+      function digits(n){return String(n).padStart(5,'0');}
+      function draw(){c.fillStyle=PAPER;c.fillRect(0,0,W,H);
+        c.fillStyle=INK;c.fillRect(0,G,W,1);
+        ground.forEach(function(g){c.fillRect(Math.round(g.x),g.y,g.w,1);});
+        obs.forEach(drawObs);
+        var frame=p.y>0||over?RUN[0]:RUN[(t>>2)&1];
+        if(p.duck&&p.y===0)sprite(DUCK,14,G-14);else sprite(frame,16,G-14-Math.round(p.y));
+        c.fillStyle=INK;c.font='8px monospace';c.textAlign='right';c.fillText('HI '+digits(best)+'  '+digits(Math.floor(dist)),W-4,10);c.textAlign='left';
+        if(over){c.textAlign='center';c.font='bold 9px monospace';c.fillText('G A M E   O V E R',W/2,30);c.font='7px monospace';c.fillText('tap or space to run again',W/2,42);c.textAlign='left';}}
+      function frame(now){if(closed)return;requestAnimationFrame(frame);if(!playing)return;
+        if(!last)last=now;var n=Math.min(4,Math.floor((now-last)/16.67));if(n>0){last+=n*16.67;while(n--){step();t++;}}draw();}
+      reset();requestAnimationFrame(frame);
+    })();
+    </script>
     <script type="bridge/defer" src="js/boot.js"></script>
   </body>
 </html>
