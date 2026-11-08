@@ -1937,6 +1937,26 @@ nav.tabs .mmenu .mcolors button.kbtn:hover{background:var(--panel);color:var(--f
 #splash .sp-gate .sp-switch{background:var(--bg);border-color:var(--line);color:var(--blue);margin-left:0;padding:0 20px}
 #splash .sp-gate .sp-switch:hover{background:var(--panel2);opacity:1}
 #splash .sp-msg{font:700 15px/1.4 var(--font-ui);letter-spacing:0;text-transform:none;color:var(--danger)}
+/* sign up: the agreement box (a planner-style checkbox) and the two documents it names; logged out, the same two as small links */
+#splash .sp-terms{display:flex;align-items:flex-start;gap:12px;cursor:pointer;margin:2px 0 0;font:700 14px/1.4 var(--font-ui);color:var(--fg2);text-align:left;user-select:none;position:relative}
+#splash .sp-terms[hidden]{display:none}
+#splash .sp-gate .sp-terms input{position:absolute;opacity:0;width:1px;height:1px;margin:0;padding:0;border:0;pointer-events:none}
+#splash .sp-terms .sp-box{flex:none;width:26px;height:26px;box-sizing:border-box;border:2px solid var(--line);border-bottom-width:4px;border-radius:8px;background:var(--input);display:flex;align-items:center;justify-content:center;transition:background .15s,border-color .15s}
+#splash .sp-terms:hover .sp-box{border-color:var(--line-hi)}
+#splash .sp-terms .sp-box svg{width:16px;height:16px;fill:none;stroke:#fff;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round;opacity:0;transform:scale(.6);transition:opacity .15s,transform .15s}
+#splash .sp-terms input:checked+.sp-box{background:var(--pri);border-color:var(--pri-dark)}
+#splash .sp-terms input:checked+.sp-box svg{opacity:1;transform:none}
+#splash .sp-terms input:focus-visible+.sp-box{border-color:var(--blue)}
+#splash .sp-terms .sp-tt{padding-top:3px}
+#splash .sp-gate button.sp-tl{display:inline;min-height:0;height:auto;border:0;border-radius:0;background:none;padding:0;margin:0;font:inherit;letter-spacing:0;text-transform:none;color:var(--blue);cursor:pointer;vertical-align:baseline}
+#splash .sp-gate button.sp-tl:hover{background:none;text-decoration:underline}
+#splash .sp-gate button.sp-tl:active{transform:none;border-bottom-width:0;margin-bottom:0}
+#splash .sp-gate.bad .sp-terms.need .sp-box{border-color:var(--danger)}
+#splash .sp-legal{display:flex;gap:16px;justify-content:center;margin-top:14px;font:700 13px var(--font-ui)}
+#splash .sp-legal[hidden]{display:none}
+#splash .sp-legal .sp-tl{appearance:none;border:0;background:none;padding:0;font:inherit;color:var(--faint);cursor:pointer}
+#splash .sp-legal .sp-tl:hover{color:var(--fg2);text-decoration:underline}
+.sx-foot .sx-legal{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 6px}
 #splash .sp-down{position:absolute;left:50%;bottom:22px;margin-left:-26px;width:52px;height:52px;border:2px solid var(--line);border-bottom-width:4px;border-radius:50%;
   background:var(--bg);color:var(--faint);animation:none}
 #splash .sp-down:hover{background:var(--panel2);color:var(--fg2)}
@@ -3283,14 +3303,16 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
 
 <template id="docs-tpl">
 <h3>Getting started</h3>
-<p><b>Sign up</b> on the login page with a username (3 to 24 letters, numbers, periods, dashes or underscores) and a password of at least 6 characters. You stay signed in on this computer until you choose Log out. After too many wrong passwords, logging in is paused for a minute.</p>
-<p><b>Set up your classes.</b> A new account starts on Your Classes. Until you add classes, the other tabs only remind you to add them first.</p>
-<p>Everything you change saves to your account right away. The planner also reloads your data every 5 minutes and whenever you come back to its tab, so it stays the same across computers.</p>
+<p><b>Sign up</b> on the login page with a username (3 to 24 letters, numbers, periods, dashes or underscores) and a password of at least 6 characters, and tick the box agreeing to the Terms and Conditions and Privacy Policy (both open from their blue names, and from the footer on Home). You stay signed in on this computer until you choose Log out. After too many wrong passwords, logging in is paused for a minute.</p>
+<p><b>Forgot my password</b>, on the login page, resets a password in one of two ways: with your Schoology link plus the title of one assignment from that calendar (capitals and spelling matter), or with your picture password. Setting a new password signs out every other computer. Without a Schoology link or a picture password a lost password can't be recovered, and Courses shows a warning until you add one.</p>
+<p><b>Set up your classes.</b> A new account gets a short tutorial first, then lands on Your Classes. Until you add classes, the other tabs only remind you to add them first.</p>
+<p>Everything you change saves to your account right away. The planner also reloads your data every 5 minutes, and whenever you come back to its tab after a minute away, so it stays the same across computers.</p>
 <ul>
-<li><b>Top bar</b>: Courses, Calendar, To-Do, Assignments, Resources, Tools<span class="g-chat"> and Chat</span>, then the three lines at the top right. Their menu holds every page that doesn't fit in the bar, then <span class="g-games">Games, </span>Settings, Rewards, Suggestions, this Guide, Dark mode, and links to other sites. On a phone every page is in that menu.</li>
-<li><b>Home</b>: logging in opens it, and clicking Saxon Planner in the top bar returns to it. It shows the date, a card for every page (or the view you chose), See assignments, Suggestions, Tutorial, FAQ, Meme and <b>Edit home</b>, Other websites, your quick games, today at a glance and Jump back in. <b>Edit home</b> opens the Home settings in a pop-up: which view Home shows (Pages, Resources, Chat, Assignments or Notepad) and what it lists. Only Log out returns to the login page.</li>
-<li><b>Footer</b>: every page except Home ends with links to Suggestions, Tutorial, FAQ and this Guide. Settings, Appearance, Footer turns it off.</li>
-<li><b>Login page</b>: the three lines at the top right open Games, Desmos, soundboard, a dark mode switch that only applies to the login page, and links to ProfeGPT, Interpres and Planner. Scroll down, or press the arrow, for this documentation.</li>
+<li><b>Top bar</b>: Courses, Calendar, To-Do, Assignments, Resources, Tools<span class="g-chat"> and Chat</span>, then the three lines at the top right. Their menu holds every page that doesn't fit in the bar, then <span class="g-games">Games, </span>Settings, Suggestions,<span class="g-ref"> Rewards,</span> this Guide, Dark mode, Math (a separate math site), Dashboard (administrators only) and Other, a folder with ProfeGPT, Interpres, Ambicant and Planner. Your username and Log out are at the bottom. On a phone every page is in that menu<span class="g-chat">, and a dot on the three lines means a new chat message</span>.</li>
+<li><b>Home</b>: logging in opens it, and clicking Saxon Planner in the top bar returns to it. It shows the date, a card for every page (or the view you chose), See assignments, Suggestions, Tutorial, FAQ, Meme and <b>Edit home</b>, Other websites, your quick games, today and the next school day with a Go to calendar button, and Jump back in tiles for To-Do, Tools, Resources<span class="g-chat">, Chat</span><span class="g-games"> and Games</span>. <b>Edit home</b> opens the Home settings in a pop-up: which view Home shows (Pages, Resources<span class="g-chat">, Chat</span>, Assignments or Notepad) and what it lists. The Resources view holds up to 12 resources you pick, and the Notepad is kept only in this browser. Once a day a meme drops onto Home; Meme replays it and a click closes it. Only Log out returns to the login page.</li>
+<li><b>Footer</b>: Home ends with the copyright line, Terms, Privacy and <b>No Internet</b>. Every other page<span class="g-chat"> except Chat</span>, Your Classes and Jumpscare ends with links to Suggestions, Tutorial, FAQ and this Guide (without the one you're on). Settings, Appearance, Footer turns those links off.</li>
+<li><b>Menu bar</b>: it steps aside while a game or tool fills the screen, and for Desmos and the Clock. The arrow on the left edge (or <kbd>Esc</kbd>) brings you back.</li>
+<li><b>Login page</b>: the three lines at the top right open <span class="g-games">Games, </span>Desmos, <span class="g-sx">soundboard, </span>a dark mode switch that only applies to the login page, and links to ProfeGPT, Interpres, Ambicant and Planner. A Copy link button sits next to the address. Scroll down, or press the arrow, for this documentation.</li>
 </ul>
 
 <h3>Finding your Schoology link</h3>
@@ -3303,13 +3325,15 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
 <li>Paste it into Step 2 on Your Classes and press <b>Import</b>.</li>
 </ol>
 <p>The link is private to your account. Anyone who has it can read your Schoology calendar, so don't share it.</p>
+
 <h3>Your Classes</h3>
-<p>Open it any time from Settings (Classes and colors, Edit) or the Edit classes button on Courses. Setup is two steps, in order:</p>
+<p>Open it any time from Settings (Classes, Edit) or the Edit classes button on Courses, which blinks while you have no Schoology link. Setup is two steps, in order:</p>
 <ul>
-<li><b>Step 1, Enter your classes and periods</b>: name each class and fill in its period. The table starts with 7 rows; <b>+</b> adds more, up to 10 classes.</li>
+<li><b>Step 1, Enter your classes and periods</b>: name each class and fill in its period. The table starts with 7 rows; <b>+</b> adds more, up to 10 classes, and × removes a row.</li>
 <li><b>Step 2, Add your Schoology link</b> (optional, but highly recommended): paste your Schoology calendar (iCal) link and press Import (or <kbd>Enter</kbd>). Without it nothing syncs: assignments and tests won't come in from Schoology, and you'd add every one by hand. Finding your Schoology link, above, shows where to get it.</li>
 <li>Each row has the class name, an optional <b>period</b> (1 to 8), a <b>lunch</b> (A, B, C or D, only for periods 5 and 6) and a <b>color</b>. New classes get a color that isn't taken yet; click the swatch to pick another.</li>
-<li>Shorthand turns into the proper name when you leave the box (ap lang becomes AP English Language and Composition, calc bc becomes AP Calculus BC, bio becomes Biology). You can always change it. Typing AP Microeconomics or AP Macroeconomics offers the combined course if you take both.</li>
+<li>Shorthand turns into the proper name when you leave the box (ap lang becomes AP English Language and Composition, calc bc becomes AP Calculus BC, bio becomes Biology). You can always change it. Typing AP Microeconomics or AP Macroeconomics offers the combined course if you take both. A name the planner doesn't recognize gets a small warning with Did you mean suggestions; you can keep it anyway.</li>
+<li>Typing period 4 asks whether you meant Advisory, which isn't a class: Change or I understand.</li>
 <li>Changes save as you type, and so does the Schoology link. <b>Done</b> leaves Your Classes and files any imported items that had no class yet under your classes.</li>
 </ul>
 
@@ -3330,6 +3354,7 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
 <li>School days alternate <b>Green</b> and <b>Gold</b>. Odd periods (1, 3, 5, 7) meet on Green days and even periods (2, 4, 6, 8) on Gold days. A class with no period counts as meeting every school day.</li>
 <li>Bell times: periods 1 and 2 run 8:10 to 9:40, 3 and 4 run 9:46 to 11:15, 5 and 6 run 11:19 to 1:19, 7 and 8 run 1:27 to 2:55.</li>
 <li><b>Lunch</b> for periods 5 and 6: A 11:21 to 11:51, B 11:51 to 12:21, C 12:21 to 12:51, D 12:51 to 1:21. The lunch you chose on Your Classes shows under that period on Today.</li>
+<li><b>Early release</b>: every schedule on Today has a Regular and an Early release switch, and the planner switches on its own on the days the school calendar marks early release. Then periods 1, 3, 5 and 7 run 8:10 to 9:12, 9:18 to 10:20, 10:26 to 11:28 and 11:34 to 12:35; periods 2, 6 and 8 run 8:10 to 9:35, 9:41 to 11:05 and 11:11 to 12:35; period 4 doesn't meet, and everyone has lunch 12:35 to 12:55. The Clock follows the same schedule.</li>
 <li><b>Advisory</b> fills period 4 on Gold days when you have no period 4 class. The Advisory card on Courses sets which class you attend then.</li>
 <li>The calendar knows the 2026-27 school year: holidays, breaks, teacher workdays, early release days and observances show on their dates, and days off are marked No School or Weekend.</li>
 </ul>
@@ -3337,44 +3362,59 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
 <h3>Calendar</h3>
 <ul>
 <li><b>Today</b>, <b>Week</b> and <b>Month</b> views. The Calendar tab opens on Month; the arrows move between weeks or months.</li>
-<li><b>Today</b> shows two cards: today (or the next school day) and the following school day. Each has its Green or Gold label, school and personal events, the day's schedule with period times, your lunch, and what's due. Anything <b>Overdue</b> (assignments due before today) is listed above them.</li>
+<li><b>Today</b> shows two cards: Today (or Next school day) and Following school day. Each has its Green or Gold label, school and personal events, the day's schedule with period times, your lunch, and what's due. Anything <b>Overdue</b> (assignments due before today) is listed above them.</li>
 <li><b>Week</b> shows Monday to Friday, with the classes that meet each day and their periods. Anything on Saturday or Sunday is listed under Weekend.</li>
 <li><b>Month</b> shows up to 4 items a day, with a count of the rest. Click a day to open its week with that day highlighted. Items in Month can be dragged to another day but not edited there; open the week to change them. A school event opens School Events on the To-Do page.</li>
+<li>Under every view, the <b>Send to next month</b> strip takes anything dropped on it to the 1st of next month.</li>
 <li><b>+</b> on a day adds items to that date: pick a class, type one item per line, then choose Assignment, Exam, Optional, In-Class, Absence, Parent Needed or Advisory. With No course, or with Advisory, the lines become To-Do notes for that date instead, and show on the calendar as Advisory.</li>
-<li><b>Mode</b> filters to Assignments, Exams, Not Due (optional and in-class) or Notes (absences and parent needed). It applies to the calendar and Courses, and this computer remembers it.</li>
+<li><b>Mode</b> filters to All, Assignments, Exams, Not Due (optional and in-class) or Notes (absences and parent needed). It applies to the calendar and Courses, and this computer remembers it.</li>
 <li><b>Advisory</b> lists your To-Do notes. Press Send assignment, then click an assignment, and it becomes a note with its class.</li>
 </ul>
 
 <h3>Assignments and tasks</h3>
 <ul>
-<li>Each task shows its class in the class color, with a label for Exam, Optional, In-Class, Absent or Parent Needed.</li>
+<li>Each task shows its class in the class color, with a label for Exam, Optional, In-Class, Absent or Parent Needed. Labels can't be changed afterwards: delete the task and add it again.</li>
 <li>Click a task to edit it in place. The first line is the title; <kbd>Shift</kbd>+<kbd>Enter</kbd> adds lines for details. While editing, click the class name to move the task to another class.</li>
-<li>Drag a task to another day to move it.</li>
+<li>Drag a task to another day to move it. On Courses, drag a task onto another class's card to move it to that class.</li>
 <li>Delete a task with its ×, a double click, or by pressing and holding it.</li>
-<li><kbd>Ctrl</kbd>+<kbd>Z</kbd> (<kbd>Cmd</kbd>+<kbd>Z</kbd> on a Mac) brings back the last task you deleted or crossed off. An <b>Undo</b> button also pops up at the bottom of the screen for a few seconds after you delete or cross something off.</li>
+<li><kbd>Ctrl</kbd>+<kbd>Z</kbd> (<kbd>Cmd</kbd>+<kbd>Z</kbd> on a Mac) brings back the last task you deleted, crossed off or moved to another class. An <b>Undo</b> button also pops up at the bottom of the screen for a few seconds.</li>
 <li>The <b>Assignments</b> page lists every assignment not done yet, oldest first. <b>Toggle overdue</b> opens a column beside it with the ones due today or earlier.</li>
-<li>In-Class items more than a week past, and To-Do notes more than a week old, clear themselves.</li>
-<li><b>Tools</b>, in the top bar, opens a screen of tools: Physics Helper, GPA Calculator, Soundboard, Desmos, Clock (the time, and how long until class ends), Meditation (calm scenes, breathing and a session timer), Jumpscare, and Crashout (a doll to knock around, shown once Sensitive pictures is on in Settings, Security, and Show sensitive tools at the bottom of Tools is pressed). In the GPA Calculator, <b>Add by year</b> sorts classes by grade; classes after your current year are prospective (enter the grade you expect), and the Standard and Advanced Studies diploma credits show below. <b>Physics Helper</b>: paste cells copied from Google Sheets, type a unit over any column and it is added after every number in that column, pick the font, size, borders and alignment (Times New Roman 12 with black borders to start), then press <b>Copy table</b> and paste into Google Docs. <b>GPA Calculator</b>: list every class you have taken with its level, credit and letter grade; Honors adds 0.5 and AP, AV, DE and IB add 1, as FCPS does. The options button next to the grade holds the credit, <b>Expunge</b> (leaves a class out) and <b>Pass/Fail</b> (leaves it out unless the grade is F, which counts as 0).</li>
 <li><b>Unassigned</b> on the Assignments page lists items of any kind with no class, each with a Class picker.</li>
+<li>In-Class items more than a week past, and To-Do notes more than a week old, clear themselves.</li>
 </ul>
 
 <h3>Courses</h3>
 <ul>
-<li>One card per class with its period and its next 8 upcoming items. Cards are laid out by period, odd periods on the top row and even periods below; classes without a period come after.</li>
+<li>One card per class with its period and its next 8 upcoming items. Cards are laid out by period, odd periods on the top row and even periods below, with a dashed box for an empty period; classes without a period come after.</li>
 <li>Type in a card's box (one item per line) and choose a kind to add items due at that class's next meeting.</li>
 <li>Click a class name to cross off all of its assignments.</li>
 <li>The <b>Advisory</b> card sets which class you attend during Advisory.</li>
-<li><b>Edit classes</b> opens Your Classes. <b>FAQ</b> answers common questions and <b>Tutorial</b> replays the first-run tour. Mode and Resync work here too.</li>
-<li><b>Focus mode</b> shows one class at a time; drag the cards to put your classes in any order. The <b>print</b> button prints the page.</li>
+<li>The header has <b>Print</b>, <b>Edit classes</b>, Mode and Resync. Print copies every class's open assignments as a formatted list and opens a new Google Doc to paste it into.</li>
+<li>With <b>Focus mode</b> off (the switch is in Settings, Classes) you can drag the cards by their headers into any order, Advisory included. With it on, a list on the left shows each class with its period or Meets today and a count, and one class card shows at a time.</li>
+<li>With no Schoology link and no picture password, a <b>No way to reset your password</b> notice sits at the top with Add Schoology link and Set picture password buttons.</li>
 </ul>
 
 <h3>To-Do</h3>
 <ul>
 <li><b>+</b> adds a sticky note. Click a note to edit it. The first line is the bold title and the lines under it are the body.</li>
-<li>A note shows its class and date when it has them (from Send assignment or the calendar's +).</li>
+<li>Every note has a <b>Class</b> picker (No class or one of yours), and shows its date when it has one (from Send assignment or the calendar's +).</li>
 <li>Delete a note with its × or a double click; clearing its text also removes it.</li>
-<li>The dots on a note color it blue, red, yellow or green. With 4 referrals (see Rewards) the <b>+</b> dot picks any color, and colors you pick are kept as extra dots for every note.</li>
+<li>The dots on a note color it blue, red, yellow or green; clicking the chosen dot again removes the color. <span class="g-ref">With 4 referrals (see Rewards) the </span><b>+</b> dot picks any color, and up to 12 colors you pick are kept as extra dots for every note.</li>
+<li>The <b>Google Docs</b> button next to the title copies your notes, grouped by class, and opens a new Google Doc to paste them into.</li>
 <li><b>School Events</b>: pick a date, add an optional time and a title, then press Add. Times are read between 7 AM and 6 PM, so 8:10 means 8:10 AM and 3 means 3:00 PM. Upcoming events are listed here and show on the calendar.</li>
+</ul>
+
+<h3>Tools</h3>
+<p>Tools, in the top bar, is a screen of tools. The menu bar hides while one fills the screen; the arrow on the left edge brings you back.</p>
+<ul>
+<li><b>Physics Helper</b>: paste cells copied from Google Sheets, type a unit over any column and it is added after every number in that column. Pick the font and size (6 to 48 on the slider, or 4 to 96 typed), Black, Gray or No borders, Centered, Left or Right alignment, Bold top row and Full width (Times New Roman 12 with black borders to start), then press <b>Copy table</b> and paste into Google Docs. The <b>Equation</b> box types like Desmos: Copy equation gives LaTeX for Docs, Copy as text gives plain text like v₀², and there is an on-screen keyboard. The document icon opens a sidebar of every resource for your Physics class.</li>
+<li><b>GPA Calculator</b>: list every class you have taken with its level, credit and letter grade; Honors adds 0.5 and AP, AV, DE and IB add 1, as FCPS does. <b>Add my classes</b> fills in your current classes. The options button next to the grade holds the credit (1 or 0.5), <b>Expunge</b> (leaves a class out) and <b>Pass/Fail</b> (leaves it out unless the grade is F). The totals show Weighted GPA, Unweighted and Credits counted. <b>Add by year</b> sorts classes into Middle school and 9th to 12th grade with a Current year picker and a Subject for each row; rows can be dragged between years. Classes after your current year are prospective (enter the grade you expect) and add a Projected weighted GPA, and the Standard and Advanced Studies diploma credits show below as Fulfilled, On track or Not yet.</li>
+<li><b>Soundboard</b>: sound effects at the press of a button.</li>
+<li><b>Desmos</b>: the Desmos graphing calculator.</li>
+<li><b>Clock</b>: a full-screen clock with the current class or lunch and how many minutes until it ends, or when the next period starts. It follows the Green and Gold schedule and early release days.</li>
+<li><b>Meditation</b>: calm scenes that change every minute (or pick one), a breathing guide with Calm, Box and Sleep patterns, a session timer of 1 to 20 minutes or open, and optional soft sound. The controls fade when you leave them alone.</li>
+<li><b>Jumpscare</b>: a dark page that asks Is someone there? Afterwards, Again replays it and Leave goes back.</li>
+<li><b>Crashout</b>: a plush doll to fling around and hit with everything from a pillow to a confetti bomb. It shows once <b>Sensitive pictures</b> is on in Settings, Security, and <b>Show sensitive tools</b> at the bottom of Tools is pressed.</li>
 </ul>
 
 <h3>Resources</h3>
@@ -3384,6 +3424,7 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
 <li>Click a resource to open it. Documents open as a page, links open in a new tab, and <b>PDFs</b> open in a new tab.</li>
 <li>Only the author and the <b>contributors</b> they add by username (up to 10) can edit a resource. Only the author can delete it, change its contributors, or make it public or private. A resource you contribute to shows under your class with the same name.</li>
 <li>A <b>star</b> next to a title marks a long document that has been reviewed and rated. Changing its text removes the star until it is reviewed again.</li>
+<li class="g-sx">Some classes come with built-in guides, vocabulary lists, practice and timelines. Timelines switch between Timeline and Table and have their own Search box.</li>
 </ul>
 
 <h3>Resource editor</h3>
@@ -3411,8 +3452,8 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
 <h3>Public library</h3>
 <ul>
 <li><b>See public resources</b> opens the library: every class people have registered, with how many students take it, and the published resources for each.</li>
-<li>Search covers class names, titles, descriptions and document text.</li>
-<li><b>Import</b> copies a resource into one of your classes. Your own resources show as Yours, and ones you already have show as Imported.</li>
+<li>Search covers class names, titles, descriptions and document text.<span class="g-sx"> <b>Filter</b> narrows the list by Level and Subject, shown as chips you can remove, and <b>Leaderboard</b> ranks authors by their public resources.</span></li>
+<li><b>Import</b> asks which of your classes to copy a resource into. Your own resources show as Yours, and ones you already have show as Imported.</li>
 <li>Until you have published 2 resources of your own, you can import one resource a day. The Import button shows how long to wait.</li>
 <li>Downloaded resources can't be edited. A class's resync button (or the one on the resource) brings them up to the author's latest version. If the author makes it private or deletes it, your copy keeps its last version.</li>
 </ul>
@@ -3423,34 +3464,39 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
 <li><b>Requests</b> you receive appear at the top with Accept and Decline. Requests you sent appear under Sent with Cancel.</li>
 <li>Click a friend to open a direct chat. The icon next to a friend removes them. Only friends can message each other directly.</li>
 <li><b>New group</b> (the people icon): give it a name, check the friends to add, and press Start. Groups hold up to 20 people.</li>
-<li>Up to 8 conversations stay open as tabs. Scroll up or press Older to load earlier messages.</li>
+<li>With 2 or more chats open they become tabs, up to 8. Scroll up or press Older to load earlier messages.</li>
 <li>The arrow-out icon leaves a group, or hides a direct chat until a new message arrives.</li>
-<li>Messages can be up to 1000 characters, and up to 20 a minute in one conversation. A message that didn't send is marked; click it to try again.</li>
-<li>A dot on the Chat tab means a new request or an unread message.</li>
+<li>Messages can be up to 1000 characters, and up to 20 a minute in one conversation. A message that didn't send says Not sent, click to retry.</li>
+<li>The <b>inbox</b>, with the site's logo, carries update notes and replies from the site. It can't be answered.</li>
+<li><b>Notepad</b>, under On this computer, is a private scratch pad kept only in this browser. It is the same Notepad as the Home view.</li>
+<li>A dot on the Chat tab means a new request or an unread message. Your avatar, chosen in Settings, Appearance, shows next to your name.</li>
 </ul></div>
 
 <h3>Settings</h3>
-<p>Settings, in the menu under the three lines at the top right, is a page with a sidebar (the button beside its title shows or hides the sidebar):</p>
+<p>Settings, in the menu under the three lines at the top right, is a page with a sidebar of categories (the button beside its title hides or shows them):</p>
 <ul>
-<li><b>Classes</b>: Edit opens Your Classes, where you change classes, periods, lunches and colors, and can paste or replace your Schoology link.</li>
-<li><b>Appearance</b>: <b>Hide pages</b> takes any page out of the top bar, the menu and Home. <b>Home</b> picks what Home shows (the same settings as Edit home). <b>Colors</b> gives each page its own color (2 referrals), and a second color makes it a gradient (3 referrals). <b>Fade</b> adds a soft glow of the page color in the corner. <b>Decorations</b> adds circles to the corners of the cards on Home and Tools. <b>Footer</b> shows the links at the bottom of each page. <b>Avatar</b> picks the picture next to your name in Chat; the Crown avatars unlock with 10 referrals.</li>
-<li><b>Security</b>: change your password, set a picture password (3 of 12 pictures that let you reset a forgotten password), turn on two-step login, and turn on <b>Sensitive pictures</b>. Security notices list recent changes to your account.</li>
+<li><b>Classes</b>: <b>Extended view</b> shows dates and details on tasks (this computer remembers it). <b>Full course names</b> shows full names everywhere instead of short ones (AP Calc BC, AP US History). <b>Focus mode</b> shows one class at a time on Courses. <b>Classes and colors</b>, Edit opens Your Classes. <b>Schoology calendar</b> holds your iCal link. <span class="g-games"><b>Guest code</b>: paste a code from playing games as a guest and press Move to bring that progress into your account. Each code works once.</span></li>
+<li><b>Appearance</b>: <b>Hide pages</b> takes any page out of the top bar, the menu and Home. <b>Home</b> picks what Home shows (the same settings as Edit home). <b>Colors</b> gives Home and each page its own color from nine swatches<span class="g-ref">; a custom color comes with 2 referrals, and with 3 a second color makes a gradient, from presets like Prideful, Sunset Drive and Northern Lights or two colors of your own</span>. <b>Fade</b> adds a soft glow of the page color in the corner<span class="g-ref">, in the gradient when there is one</span>. <b>Decorations</b> adds circles to the corners of the cards on Home and Tools. <b>Footer</b> shows the links at the bottom of each page. <b>Avatar</b> picks the picture next to your name in Chat<span class="g-ref">; the Crown avatars unlock with 10 referrals</span>.</li>
+<li><b>Security</b>: a <b>To do</b> list (Add your Schoology link, Set a picture password, Turn on two-step login), then <b>Change password</b> (the old one keeps working for 3 days), <b>Picture password</b> (3 of 12 pictures, in order, that let you reset a forgotten password; 6 wrong tries lock it until you log in with your password), <b>Two-step login</b> (asks for your pictures at every login; needs a picture password first), <b>Sensitive pictures</b>, and <b>Security notices</b>, a list of recent changes to your account.</li>
 <li><b>Administration</b> (the owner): the Administration page.</li>
 </ul>
-<p>Dark mode, in the same menu, switches between light and dark themes. Your username and Log out are at the bottom of the menu.</p>
+<p>Dark mode, in the same menu, switches between light and dark themes.</p>
 <p>Each account can store up to 512 KB of planner data.</p>
 
 <h3>Administration</h3>
 <ul>
-<li>The Administration page lists every <b>administrator</b> (red) and <b>moderator</b> (green) and the 30 most recent sign-ups.</li>
+<li>The Administration page lists every <b>administrator</b> and <b>moderator</b> and the 30 most recent sign-ups.</li>
 <li>Administrators add moderators by username or with Make moderator next to a recent sign-up, and remove them with the × on their name.</li>
+<li class="g-ref">The <b>Multiplayer unlocked</b> list opens multiplayer for an account by username without a referral, and × locks it again.</li>
+<li><b>Message</b> sends a note to one username, or to Everyone, that arrives in the inbox in Chat.</li>
 <li class="g-games"><b>Game testing mode</b> (game administrators): opens every game maxed out. Nothing is saved while it's on.</li>
 <li>Administrators also see <b>Suggestions</b>: every suggestion and bug report, newest first, with who sent it and when. All, Suggestion and Bug filter the list, and <b>Done</b> removes one.</li>
 <li>Moderators and administrators review public resources from the <b>Review</b> button in the public library, which shows how many are waiting. <b>Open</b> shows the document or link, <b>Approve</b> publishes it, and <b>Turn down</b> marks it Not approved.</li>
+<li><b>Dashboard</b>, in the menu for administrators, counts accounts, sign-ups and logins by week, logins by time of day, assignments completed and on time, the most played games and the most used buttons.</li>
 </ul>
 
-<h3>Rewards</h3>
-<p>Rewards, in the menu at the top right, shows your rank and what each referral unlocks. Your referral code is your username: share your link, or have friends type your username into Referral code when they sign up. Everyone they bring in counts for you too (if you refer someone and they refer someone, you have 2). Rewards lists the people who used your code.</p>
+<div class="g-ref"><h3>Rewards</h3>
+<p>Rewards, in the menu at the top right, shows your rank and what each referral unlocks. Your referral code is your username: share your link, or have friends type your username into Referral code when they sign up. Everyone they bring in counts for you too (if you refer someone and they refer someone, you have 2). Rewards lists the people who used your code. Everyone starts as a Newcomer.</p>
 <ul>
 <li><b>1</b> (Scout): Multiplayer and Online games.</li>
 <li><b>2</b> (Artisan): custom colors for pages.</li>
@@ -3460,56 +3506,62 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
 <li><b>8</b> (Envoy): every suggestion you send goes first in line.</li>
 <li><b>10</b> (Monarch): the Crown avatars.</li>
 </ul>
-<p>Class colors are always yours to pick.</p>
+<p>Class colors are always yours to pick.</p></div>
 
 <h3>Suggestions</h3>
-<p>Suggestions in the menu at the top right, on Home, or in the footer opens Suggestions. Choose <b>Suggestion</b> or <b>Bug</b>, write up to 2000 characters, and press Send (or <kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>Enter</kbd>). It goes to the site's administrators with your username.</p>
+<p>Suggestions in the menu at the top right, on Home, or in the footer opens Suggestions. Choose <b>Suggestion</b> or <b>Bug</b>, write up to 2000 characters, and press Send (or <kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>Enter</kbd>). It goes to the site's administrators with your username, and a reply arrives in your inbox. This is also where to send questions about the Terms and Conditions or Privacy Policy, takedown requests and account deletion requests.</p>
+
+<h3>Tutorial and FAQ</h3>
+<p>The <b>Tutorial</b> starts right after sign up and can be replayed from Home or the footer. Next, Back and Skip move through it, and <kbd>Esc</kbd> ends it. It visits Home, <span class="g-games">Games, </span>Your Classes, the Calendar, Courses, Assignments, To-Do, Tools, <span class="g-ref">Rewards, </span>Settings and Security.</p>
+<p>The <b>FAQ</b>, on Home and in the footer, answers the common questions: an assignment in the wrong class, a missing assignment, a wrong label, and a class on the wrong days. New accounts get an I Can Read button that stops it blinking.</p>
 
 <div class="g-games"><h3>Games</h3>
-<p>Games in the menu at the top right, or the Games card on Home, opens the games. Press <kbd>H</kbd> at any time to hide them and go straight back to the planner. The arrow on the left edge, or clicking a game's title, returns to the games menu.</p>
-<p>Every game is in one list, each marked Singleplayer, Social, Multiplayer or Online, with a search bar above it. The <b>+</b> tile suggests a game. <b>Show sensitive games</b>, at the bottom, adds five nights at epstein's to the list. A star keeps a game at the top, and Add quick games on Home puts up to 5 there.</p>
-<p>Signed in, your progress saves to your account. On the login page (the three lines at the top right, then Games) you can play as a guest: progress is kept under a guest code instead, which you can move into an account once from Settings.</p>
-<p>Games marked Embed are outside games running inside the planner. Online ones play on live servers with real people.</p>
-<p>Multiplayer and Online games start locked on a new account (Social games never lock). The lock panel at the top of the games has your referral link: copy it and share it, and once one other person signs up with it, both sections unlock for you (the first reward in Rewards). They can also type your username into Referral code when they sign up. A referral only works on a device that hasn't been used for an account before. Guests need to sign up first.</p>
+<p>Games in the menu at the top right, or the Games card on Home, opens the games. Press <kbd>H</kbd> at any time (outside a text box) to close them and go to Home. The menu bar hides while a game is on screen; the arrow on the left edge<span class="g-sx"> (on games built into the planner)</span>, or clicking a game's title, returns to the games menu. <kbd>Esc</kbd> in Metrica's world picker does the same.</p>
+<p>Every game is in one list, each marked Singleplayer, Social, Multiplayer or Online, with a search bar above it (<kbd>Esc</kbd> clears it). The <b>+</b> tile suggests a game by name and link. <span class="g-sx"><b>Show sensitive games</b>, at the bottom, adds five nights at epstein's to the list. </span>A star keeps a game at the top, and Add quick games on Home puts up to 5 there, each opening straight into its game.</p>
+<p>Signed in, your progress saves to your account. On the login page (the three lines at the top right, then Games) you can play as a guest: progress is kept under a guest code instead, which you can move into an account once from Settings, Classes.</p>
+<p>If a game takes more than a few seconds to load, a Still loading pop-up offers <b>Book Run</b>, a small pixel runner (Play or No thanks). A loading bar sits over it, and when the game is ready, Loading complete takes you on after your run. No Internet on Home opens Book Run on its own. Space, ↑ or W jumps the books, ↓ or S ducks the flying grades, and every 700 points night falls. Your best score is kept on this computer.</p>
+<p class="g-sx">Games marked Embed are outside games running inside the planner. Online ones play on live servers with real people.</p>
+<p class="g-ref">Multiplayer and Online games start locked on a new account (Social games never lock). The lock panel at the top of the games has your referral link: copy it and share it, and once one other person signs up with it, both sections unlock for you (the first reward in Rewards). They can also type your username into Referral code when they sign up. A referral only works on a device that hasn't been used for an account before. Guests need to sign up first. Leaving a multiplayer room by closing the games keeps your seat for 5 minutes.</p>
 <ul>
 <li><b>lander</b>: fly a rocket from planet to planet and land softly. Coins buy upgrades, towers and bases.</li>
-<li><b>solitaire</b>: classic Klondike. Build the four suits up from Ace to King.</li>
+<li class="g-sx"><b>solitaire</b>: classic Klondike. Build the four suits up from Ace to King.</li>
 <li><b>geobowl</b>: you get 8 countries one at a time and 8 world stats (life expectancy, chocolate eaten, Olympic medals and more). Put each country in the stat where you think it ranks highest; the lower your total rank, the better. Classic, Daily and Weekly rounds.</li>
-<li><b>krillion</b>: name answers to a prompt before the clock runs out. Rare answers sink you deeper, and every prompt hides one gem. Pick ours (works at school, with Race and Puffer Party rooms for friends) or the embedded krillion.cc, which has a bigger answer list.</li>
-<li><b>tycoon simulator</b>: start with a lemonade stand and build a business empire. Hire managers so it runs while you're away.</li>
-<li><b>little fishing</b>: drop the hook as deep as it goes, catch fish on the way up, and spend the money on a longer line and more fish.</li>
+<li><b>krillion</b>: name answers to a prompt before the clock runs out. Rare answers sink you deeper, and every prompt hides one gem.<span class="g-sx"> Pick ours (works at school, with Race and Puffer Party rooms for friends) or the embedded krillion.cc, which has a bigger answer list.</span></li>
+<li><b>pipworks</b>: a card roguelike. Build poker hands to beat each goal, and collect charms, spells and charts that bend the rules.</li>
+<li class="g-sx"><b>tycoon simulator</b>: start with a lemonade stand and build a business empire. Hire managers so it runs while you're away.</li>
+<li class="g-sx"><b>little fishing</b>: drop the hook as deep as it goes, catch fish on the way up, and spend the money on a longer line and more fish.</li>
 <li><b>chess</b>: play a friend or the computer, with a choice of boards and piece sets.</li>
 <li><b>metrica</b>: one game, four worlds. <b>classic</b>: the cube runs on its own; jump at the right moment to clear spikes, pads and portals, and fly the ship in Liftoff. Includes practice mode and a cube level editor. <b>platformer</b>: a precise platformer. Reach the goal, collect gems, and build your own levels in its editor. <b>wave</b>: hold to fly the dart up and let go to dive, threading it between the spikes. <b>mixed</b>: the editor for levels that switch between cube, ship, platformer and wave through portals. Clearing every level in a world unlocks its mode there. All the worlds share one set of skins.</li>
-<li><b>getaway shootout</b> (Embed): race other players to the getaway, hopping and shooting your way there.</li>
-<li><b>tag</b> (Embed): 2 to 4 players on one keyboard; whoever is it has to tag someone else before time runs out.</li>
-<li><b>crossy road</b> (Embed): hop across roads, rivers and train tracks without getting hit.</li>
-<li><b>drive mad</b> (Embed): drive a wobbly truck over ramps and bridges to the finish without flipping.</li>
-<li><b>gladihoppers</b> (Embed): hop-and-swing gladiator fights. Win battles to buy better weapons and armor.</li>
-<li><b>monkey mart</b> (Embed): run a supermarket as a monkey; grow crops, stock shelves and serve customers.</li>
-<li><b>stickman hook</b> (Embed): swing from hook to hook and fling yourself to the finish.</li>
-<li><b>paper.io 2</b> (Embed): claim ground by drawing loops, and cut off the other players' trails.</li>
-<li><b>smash karts</b> (Embed): online kart battles with weapons against real players.</li>
-<li><b>yohoho.io</b> (Embed): pirate brawler; knock other pirates off the shrinking island and level up.</li>
-<li><b>basketball random</b> (Embed): 1 or 2 player floppy basketball where the court, ball and players change every point.</li>
-<li><b>house of hazards</b> (Embed): 1 to 4 players on one keyboard race through a house to finish chores while setting off traps on each other.</li>
-<li><b>google snake</b> (Embed): the snake game from Google. Eat apples, grow longer and don't hit the walls or your own tail.</li>
-<li><b>torah runner</b> (Embed): Nicholi's 3D runner through the stories of the Torah. Catch golden Hebrew letters to spell words and find all ten commandments.</li>
-<li><b>retro bowl</b> (Embed): run an American football team; call plays, throw passes and manage the roster through the seasons.</li>
-<li><b>subway surfers</b> (Embed): run along the train tracks, dodge trains and the guard, and grab coins and power-ups.</li>
-<li><b>tunnel rush</b> (Embed): fly down a spinning tunnel and steer around the obstacles.</li>
-<li><b>drift boss</b> (Embed): tap to drift a car around the corners of a narrow road without falling off.</li>
-<li><b>five nights at epstein's</b> (Embed): meme horror game; watch the cameras and survive the night.</li>
-<li><b>gartic phone</b>: draw what you're given, guess what others drew, and watch the chain go wrong.</li>
-<li><b>guess the drawing</b>: one player draws a word, the rest race to guess it.</li>
-<li><b>imposter</b>: everyone but the imposter gets the secret word; give clues and vote out who's faking.</li>
-<li><b>poker</b>: Texas Hold'em with friends.</li>
-<li><b>votesout</b>: a party game where the group answers questions and votes on each other.</li>
+<li class="g-sx"><b>getaway shootout</b> (Embed): race other players to the getaway, hopping and shooting your way there.</li>
+<li class="g-sx"><b>tag</b> (Embed): 2 to 4 players on one keyboard; whoever is it has to tag someone else before time runs out.</li>
+<li class="g-sx"><b>crossy road</b> (Embed): hop across roads, rivers and train tracks without getting hit.</li>
+<li class="g-sx"><b>drive mad</b> (Embed): drive a wobbly truck over ramps and bridges to the finish without flipping.</li>
+<li class="g-sx"><b>gladihoppers</b> (Embed): hop-and-swing gladiator fights. Win battles to buy better weapons and armor.</li>
+<li class="g-sx"><b>monkey mart</b> (Embed): run a supermarket as a monkey; grow crops, stock shelves and serve customers.</li>
+<li class="g-sx"><b>stickman hook</b> (Embed): swing from hook to hook and fling yourself to the finish.</li>
+<li class="g-sx"><b>paper.io 2</b> (Embed): claim ground by drawing loops, and cut off the other players' trails.</li>
+<li class="g-sx"><b>smash karts</b> (Embed): online kart battles with weapons against real players.</li>
+<li class="g-sx"><b>yohoho.io</b> (Embed): pirate brawler; knock other pirates off the shrinking island and level up.</li>
+<li class="g-sx"><b>basketball random</b> (Embed): 1 or 2 player floppy basketball where the court, ball and players change every point.</li>
+<li class="g-sx"><b>house of hazards</b> (Embed): 1 to 4 players on one keyboard race through a house to finish chores while setting off traps on each other.</li>
+<li class="g-sx"><b>google snake</b> (Embed): the snake game from Google. Eat apples, grow longer and don't hit the walls or your own tail.</li>
+<li class="g-sx"><b>torah runner</b> (Embed): Nicholi's 3D runner through the stories of the Torah. Catch golden Hebrew letters to spell words and find all ten commandments.</li>
+<li class="g-sx"><b>retro bowl</b> (Embed): run an American football team; call plays, throw passes and manage the roster through the seasons.</li>
+<li class="g-sx"><b>subway surfers</b> (Embed): run along the train tracks, dodge trains and the guard, and grab coins and power-ups.</li>
+<li class="g-sx"><b>tunnel rush</b> (Embed): fly down a spinning tunnel and steer around the obstacles.</li>
+<li class="g-sx"><b>drift boss</b> (Embed): tap to drift a car around the corners of a narrow road without falling off.</li>
+<li class="g-sx"><b>five nights at epstein's</b> (Embed): meme horror game; watch the cameras and survive the night.</li>
+<li class="g-sx"><b>gartic phone</b>: draw what you're given, guess what others drew, and watch the chain go wrong.</li>
+<li class="g-sx"><b>guess the drawing</b>: one player draws a word, the rest race to guess it.</li>
+<li class="g-sx"><b>imposter</b>: everyone but the imposter gets the secret word; give clues and vote out who's faking.</li>
+<li class="g-sx"><b>poker</b>: Texas Hold'em with friends.</li>
+<li class="g-sx"><b>votesout</b>: a party game where the group answers questions and votes on each other.</li>
 <li><b>soundboard</b>: a board of sound effects to play.</li>
 </ul></div>
 
 <h3>Keyboard shortcuts</h3>
 <table><thead><tr><th>Keys</th><th>Where</th><th>What it does</th></tr></thead><tbody>
-<tr><td data-label="Keys"><kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>Z</kbd></td><td data-label="Where">Anywhere outside a text box</td><td data-label="What it does">Brings back the last deleted or crossed-off task</td></tr>
+<tr><td data-label="Keys"><kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>Z</kbd></td><td data-label="Where">Anywhere outside a text box</td><td data-label="What it does">Brings back the last deleted, crossed-off or moved task</td></tr>
 <tr><td data-label="Keys"><kbd>Enter</kbd></td><td data-label="Where">Editing a task or note</td><td data-label="What it does">Saves</td></tr>
 <tr><td data-label="Keys"><kbd>Shift</kbd> + <kbd>Enter</kbd></td><td data-label="Where">Editing a task or note</td><td data-label="What it does">New line</td></tr>
 <tr><td data-label="Keys"><kbd>Esc</kbd></td><td data-label="Where">Editing a task or note</td><td data-label="What it does">Cancels the edit</td></tr>
@@ -3518,11 +3570,191 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
 <tr><td data-label="Keys"><kbd>Esc</kbd></td><td data-label="Where">Inside a highlighted passage</td><td data-label="What it does">Leaves the passage</td></tr>
 <tr class="g-chat"><td data-label="Keys"><kbd>Enter</kbd></td><td data-label="Where">Chat message box</td><td data-label="What it does">Sends (<kbd>Shift</kbd> + <kbd>Enter</kbd> for a new line)</td></tr>
 <tr><td data-label="Keys"><kbd>Ctrl</kbd>/<kbd>Cmd</kbd> + <kbd>Enter</kbd></td><td data-label="Where">Suggestions</td><td data-label="What it does">Sends</td></tr>
-<tr class="g-games"><td data-label="Keys"><kbd>H</kbd></td><td data-label="Where">Games</td><td data-label="What it does">Hides the games and goes back to the planner</td></tr>
-<tr><td data-label="Keys"><kbd>Esc</kbd></td><td data-label="Where">Menus, pop-ups, this guide</td><td data-label="What it does">Closes them</td></tr>
+<tr><td data-label="Keys"><kbd>Enter</kbd></td><td data-label="Where">GPA Calculator class name</td><td data-label="What it does">Moves to the next class, or adds one</td></tr>
+<tr class="g-games"><td data-label="Keys"><kbd>H</kbd></td><td data-label="Where">Games and tools</td><td data-label="What it does">Closes them and goes to Home</td></tr>
+<tr class="g-games"><td data-label="Keys"><kbd>Space</kbd>, <kbd>↑</kbd> or <kbd>W</kbd></td><td data-label="Where">Book Run</td><td data-label="What it does">Jumps (<kbd>↓</kbd> or <kbd>S</kbd> ducks)</td></tr>
+<tr><td data-label="Keys"><kbd>Esc</kbd></td><td data-label="Where">Menus, pop-ups, Desmos, the Clock, this guide</td><td data-label="What it does">Closes them</td></tr>
 <tr><td data-label="Keys"><kbd>↑</kbd> <kbd>↓</kbd> <kbd>←</kbd> <kbd>→</kbd></td><td data-label="Where">Your Classes table</td><td data-label="What it does">Moves between rows, and between name and period at the edge of the text</td></tr>
 <tr><td data-label="Keys"><kbd>Enter</kbd></td><td data-label="Where">Schoology link box on Your Classes</td><td data-label="What it does">Imports</td></tr>
 </tbody></table>
+</template>
+
+<template id="terms-tpl">
+<p>Last updated November 8, 2026. These Terms and Conditions (the "Terms") are an agreement between you and the operator of Saxon Planner (the "Operator", "we" or "us"). They apply to saxonplanner.web.app, the same planner served from other addresses, and everything inside it: the planner, resources, chat, tools and games (together, the "Service"). By creating an account or using the Service you agree to these Terms and confirm that you have read the Privacy Policy. If you do not agree, do not use the Service.</p>
+
+<h3>1. About the Service</h3>
+<ul>
+<li>Saxon Planner is a free, non-commercial homework planner built and run by a student as an independent project. It is not affiliated with, endorsed by or operated by Fairfax County Public Schools, Langley High School, Schoology, PowerSchool, Google, GitHub or the publishers of any game or site that appears inside it.</li>
+<li>The Service is provided as a convenience. It does not replace your school's official systems. Due dates, grades and announcements from your teachers and school always take precedence over anything shown here.</li>
+<li>The Service and these Terms may change at any time. When the Terms change in a meaningful way, the date above is updated and signed-in users are told in their inbox. Using the Service after a change means you accept the new Terms.</li>
+</ul>
+
+<h3>2. Who may use the Service</h3>
+<ul>
+<li>You must be at least 13 years old to create an account. If you are under 18, you confirm that a parent or guardian has reviewed these Terms and allows you to use the Service.</li>
+<li>You are responsible for following your school's rules about devices, networks and acceptable use while you use the Service.</li>
+<li>We may refuse, suspend or close an account at any time if these Terms are broken or the account is misused.</li>
+</ul>
+
+<h3>3. Your account</h3>
+<ul>
+<li>An account is one username and one password. It is for you alone: do not share it, sell it or let anyone else use it, and do not make accounts for other people.</li>
+<li>Choose a username that does not impersonate another person and does not contain slurs, threats or sexual content. We may rename or close an account whose name breaks this rule.</li>
+<li>Keep your password private. Everything done while signed in to your account is treated as done by you. Set a picture password or add your Schoology link in Settings, Security so you can reset a forgotten password; without one of them a lost password cannot be recovered.</li>
+<li>Do not try to log in to an account that is not yours, guess passwords, use automated tools against the Service, bypass its limits, or interfere with its operation or other people's use of it.</li>
+</ul>
+
+<h3>4. Your content</h3>
+<ul>
+<li>"Your content" is anything you add: classes, assignments, notes, resources, documents, links, PDFs, chat messages, suggestions and the like. It stays yours. You are responsible for it and must have the right to post it.</li>
+<li>So the Service can work, you give us a non-exclusive, royalty-free, worldwide permission to store, copy, display and transmit your content as needed to run, back up and improve the Service, and, for content you make public, to show it to other users and let them import a copy. This permission ends when the content is deleted, except for copies other users imported while it was public and copies kept in routine backups for a limited time.</li>
+<li>Public resources are reviewed by moderators before they appear in the public library, and may be approved, turned down or removed at any time without notice. A resource you make private or delete is removed from the library, but copies that other users already imported keep their last version.</li>
+<li>Your content must not: contain slurs, hate, harassment, threats or sexual content; include personal information about other people without their permission; infringe someone else's copyright, trademark or other rights, including school-owned materials you are not allowed to share; help anyone cheat, such as copies of tests or quizzes or answer keys; contain malware or links to harmful sites; or break any law.</li>
+<li>We may remove any content that we believe breaks these Terms, and we may report illegal content to the appropriate authorities.</li>
+</ul>
+
+<h3>5. Chat and other users</h3>
+<ul>
+<li>Chat lets friends and groups message each other. Be respectful. Harassment, bullying, threats, spam and sexual content are not allowed and may lead to removal of messages or closure of your account.</li>
+<li>Messages are visible to everyone in the conversation and can be copied by them. Do not share passwords, addresses, or other sensitive information in chat.</li>
+<li>Chat is not monitored in real time. If something concerns you, send a bug report or suggestion through Suggestions, or tell a trusted adult.</li>
+</ul>
+
+<h3>6. Schoology import</h3>
+<ul>
+<li>You may paste your personal Schoology calendar (iCal) link to import assignments. You do this voluntarily, and you may remove the link at any time from Settings.</li>
+<li>The link gives read access to your Schoology calendar. Keep it private. We use it only to fetch your calendar when you import or resync, as described in the Privacy Policy.</li>
+<li>Imports are a best-effort convenience. Items may be missed, misplaced or matched to the wrong class, and we do not guarantee accuracy.</li>
+</ul>
+
+<h3 class="g-games">7. Games and tools</h3>
+<ul class="g-games">
+<li>Games marked Embed are made by other people and run inside the Service from third-party sources. Online games connect to their publishers' servers and may have their own terms and privacy practices. We do not control them and are not responsible for their content, availability or conduct.</li>
+<li>Games, names, artwork and trademarks that appear in the Service belong to their respective owners, who are not affiliated with us. If you own rights in something shown here and want it removed or credited differently, contact us through Suggestions and we will respond promptly.</li>
+<li>Game progress is a convenience and may be lost or reset at any time. Do not use the games to disrupt lessons or break your school's rules.</li>
+<li>Some content is marked sensitive and is hidden until you turn it on in Settings. By turning it on you confirm you want to see it.</li>
+</ul>
+
+<h3 class="g-ref">8. Referrals and rewards</h3>
+<ul class="g-ref">
+<li>Rewards unlock features of the Service when people sign up with your referral code. They have no cash value and cannot be sold or transferred.</li>
+<li>Creating fake or duplicate accounts, or otherwise gaming referrals, is not allowed. We may remove referral credit, revoke rewards or close accounts involved in abuse. Rewards and their requirements may change or end at any time.</li>
+</ul>
+
+<h3>9. Availability, warranties and liability</h3>
+<ul>
+<li>The Service is provided free of charge, "as is" and "as available", with no warranties of any kind, express or implied, including fitness for a particular purpose, accuracy or uninterrupted operation. It runs on free hosting and storage that have their own limits, and it may be unavailable, changed or discontinued at any time without notice.</li>
+<li>Keep your own record of important deadlines. We are not responsible for missed assignments, lost data or any other loss that comes from using or being unable to use the Service.</li>
+<li>To the fullest extent permitted by law, the Operator is not liable to you for any indirect, incidental, special, consequential or punitive damages, or for any loss of data, in connection with the Service. Where liability cannot be excluded, it is limited to the greatest extent the law allows. Nothing in these Terms limits liability that cannot be limited by law.</li>
+<li>You agree not to hold the Operator responsible for claims that arise from your content or your breach of these Terms.</li>
+</ul>
+
+<h3>10. Ending your use</h3>
+<ul>
+<li>You can stop using the Service at any time. You can delete your own classes, assignments, notes, resources and chats from inside the Service, and you can ask for your whole account to be deleted through Suggestions. Deletion is described in the Privacy Policy.</li>
+<li>We may suspend or close accounts that break these Terms, and we may end the Service as a whole. If the Service is ending, we will try to give notice in your inbox so you can save what you need.</li>
+</ul>
+
+<h3>11. General</h3>
+<ul>
+<li>These Terms are governed by the laws of the Commonwealth of Virginia, United States, without regard to its conflict of law rules. Disputes are to be resolved in the state or federal courts located in Virginia, unless the law where you live gives you other rights.</li>
+<li>If any part of these Terms is found unenforceable, the rest stays in effect. If we do not enforce a part of these Terms, that is not a waiver of it.</li>
+<li>These Terms and the Privacy Policy are the whole agreement between you and the Operator about the Service.</li>
+</ul>
+
+<h3>12. Contact</h3>
+<p>Questions, takedown requests, reports of misuse and deletion requests go through <b>Suggestions</b>, in the menu at the top right or in the footer of any page, which reaches the Operator directly. Please mark a legal matter clearly in the message.</p>
+</template>
+
+<template id="privacy-tpl">
+<p>Last updated November 8, 2026. This Privacy Policy explains what Saxon Planner (the "Service"), run by its operator (the "Operator", "we" or "us"), collects about you, how it is used and stored, and what you can do about it. It applies to saxonplanner.web.app and the same planner served from other addresses. The short version: the Service collects only what it needs to run, does not sell or share your information for marketing, and does not use advertising or third-party analytics.</p>
+
+<h3>1. What we collect</h3>
+<p>You give us this information directly:</p>
+<ul>
+<li><b>Account</b>: a username and a password. The password is stored only as a salted, iterated hash, never as the password itself. We do not ask for your name, email address, phone number or school ID. The account record also keeps when it was created and a hashed copy of your active session tokens.</li>
+<li><b>Security settings</b>: your picture password (stored as a salted hash), whether two-step login is on, whether sensitive content is shown, and a short list of security notices (password changed, picture password set, lockouts) with their dates.</li>
+<li><b>Planner data</b>: your classes, periods, lunch and colors, assignments, exams, To-Do notes, school events, page and Home settings, and your other preferences.</li>
+<li><b>Schoology link</b>: if you choose to add it, your personal Schoology calendar (iCal) link. The link is stored in your account and used only to fetch your calendar when you import or resync. The import reads only calendar items (titles and dates). We never log in to Schoology on your behalf.</li>
+<li><b>Resources</b>: the documents, links and PDFs you write or upload, who may edit them, and whether they are private, waiting for approval, public or not approved.</li>
+<li><b>Chat</b>: your friends, friend requests, group memberships, messages, the time you last read a conversation, and your avatar choice. Messages are kept so everyone in the conversation can read them.</li>
+<li><b>Suggestions</b>: the suggestions and bug reports you send, with your username and the time.</li>
+<li><b>Game progress</b> (if games are enabled): saves and scores for the games, stored under your account or, as a guest, under a random guest code that lives in your browser.</li>
+<li class="g-ref"><b>Referrals</b>: the username of the person whose code you used and the usernames of people who used yours.</li>
+</ul>
+<p>The Service also records:</p>
+<ul>
+<li class="g-ref"><b>A device identifier</b>: a random code created in your browser the first time you use the Service, sent with sign ups and log ins. It exists only so one referral cannot be credited from the same device twice. It is not tied to your hardware and resets if you clear your browser's site data.</li>
+<li><b>Usage counts</b>: how many times pages, buttons and games are opened, added up across everyone. These totals are not linked to your account.</li>
+<li><b>Login activity</b>: the time of each login on your account, used for the account's own security notices and for aggregate statistics such as how many people logged in this week.</li>
+<li><b>Moderation records</b>: for public resources, the approval decision and which moderator made it.</li>
+</ul>
+<p>We do not collect your location, contacts, camera or microphone, and we do not read your clipboard except when you press a Copy or Paste button yourself.</p>
+
+<h3>2. Information stored in your browser</h3>
+<ul>
+<li>The Service keeps some items in your browser's local storage so it works quickly and remembers your choices: your session token, your chosen theme and pages, a cached summary of your account for a fast start, the device identifier and any referral code you arrived with, a guest code if you played games as a guest, and small preferences such as the last tab you used, your Book Run best score and the Notepad on Home and in Chat, which never leaves your browser.</li>
+<li>We do not set tracking cookies and we do not use third-party analytics or advertising networks. Clearing your browser's site data signs you out and removes these items.</li>
+</ul>
+
+<h3>3. How we use information</h3>
+<ul>
+<li>To run the Service: sign you in, save and show your planner, sync your Schoology calendar, store and share resources, deliver chat messages and keep game progress.</li>
+<li>To keep accounts safe: enforce rate limits and lockouts, show you security notices, and investigate misuse.</li>
+<li>To improve the Service: aggregate usage counts show which features matter; suggestions and bug reports guide what is fixed and built.</li>
+<li>To communicate: the inbox in Chat carries update notes and replies to suggestions. We never send marketing.</li>
+<li>We do not sell your information, use it for advertising, or build profiles about you.</li>
+</ul>
+
+<h3>4. Who can see what</h3>
+<ul>
+<li><b>Your planner data, settings and Schoology link</b> are private to your account.</li>
+<li><b>Private resources</b> are seen only by you and the contributors you add. <b>Public resources</b> are seen by moderators while waiting for approval and, once approved, by every signed-in user, together with your username as the author. Resources others import keep their last version even if you later make them private or delete them.</li>
+<li><b>Chat messages</b> are seen by everyone in that conversation. Your username and avatar are visible to your friends and group members.</li>
+<li><b>Suggestions</b> are seen by the Service's administrators together with your username.</li>
+<li><b>Administrators</b> can see the list of usernames, when accounts were created, roles, and aggregate statistics. The Operator has technical access to all stored data in order to run, repair and back up the Service, and looks at individual accounts only to fix a problem, respond to your request or investigate misuse.</li>
+<li>We do not share your information with anyone else, except when the law requires it, to protect the safety of users, or to the providers described below that store or deliver the Service on our behalf.</li>
+</ul>
+
+<h3>5. Service providers and third parties</h3>
+<ul>
+<li><b>Google</b>: the Service's backend runs on Google Apps Script and stores all account data in a Google Sheet owned by the Operator, and the main address is served by Firebase Hosting. Google processes this data under its own terms and may log technical details such as IP addresses. Desmos and the Google Docs export buttons open Google and Desmos services, which have their own policies.</li>
+<li><b>GitHub and jsDelivr</b>: a copy of the page is published through GitHub andgame files, fonts and some libraries are delivered through jsDelivr, a content delivery network, which sees your IP address when your browser fetches them.</li>
+<li><b>Google Fonts</b>: the Service's fonts load from Google Fonts, which receives your IP address in the request.</li>
+<li class="g-games"><b>Embedded games</b>: games marked Embed are published by third parties. Online games connect to their publishers' servers, which may collect gameplay data and set their own cookies under their own privacy policies. We do not control them.</li>
+<li><b>Schoology (PowerSchool)</b>: when you import or resync, our server requests your calendar from Schoology's servers using the link you provided.</li>
+<li><b>Memes</b>: the meme of the day is a public post from Reddit that our server copies once a day; your browser does not contact Reddit.</li>
+</ul>
+
+<h3>6. Security</h3>
+<ul>
+<li>All traffic uses HTTPS. Passwords and picture passwords are stored as salted, iterated hashes. Session tokens are stored hashed on the server. Repeated wrong passwords or pictures pause logins, and changing your password signs out your other devices after a short grace period.</li>
+<li>No system is perfectly secure. Choose a password you do not use elsewhere, keep your Schoology link private, and sign out on shared computers.</li>
+</ul>
+
+<h3>7. Retention and deletion</h3>
+<ul>
+<li>Your information is kept for as long as your account exists so the Service can work. Some items clear themselves: In-Class items more than a week past, To-Do notes more than a week old, and expired session tokens. Each conversation keeps only its most recent messages.</li>
+<li>You can delete your own classes, assignments, notes, events, resources and messages, remove your Schoology link, and leave groups or hide chats from inside the Service.</li>
+<li>To delete your whole account, send a request through <b>Suggestions</b> from the account itself. The Operator removes the account record, its planner data, private resources, game saves and chats within 30 days. Public resources that other users have imported, and messages in other people's conversations, may remain as their copies. Aggregate usage counts contain nothing about individual accounts and are kept.</li>
+<li>Routine backups made to protect against data loss may hold deleted data for a limited time before they are overwritten.</li>
+</ul>
+
+<h3>8. Children</h3>
+<p>The Service is intended for students aged 13 and older. We do not knowingly collect information from children under 13. If you believe a child under 13 has an account, tell us through Suggestions and the account will be deleted.</p>
+
+<h3>9. Your choices and rights</h3>
+<ul>
+<li>You can use the Service without giving us an email, a real name, or a Schoology link. You can hide Chat and Games entirely in Settings, Appearance.</li>
+<li>You can see and change your data inside the Service at any time, and you can ask for a copy of it or for its deletion through Suggestions. Depending on where you live you may have additional legal rights over your data; requests under those rights go through the same channel and are answered without charge.</li>
+<li>If you disagree with how your request was handled, you may complain to your local data protection authority.</li>
+</ul>
+
+<h3>10. Changes to this policy</h3>
+<p>When this policy changes in a meaningful way, the date at the top is updated and signed-in users are told in their inbox. The current version is always available from the sign up form and from the footer on Home.</p>
+
+<h3>11. Contact</h3>
+<p>Privacy questions and requests go through <b>Suggestions</b>, in the menu at the top right or in the footer of any page, which reaches the Operator directly.</p>
 </template>
 
 <div id="splash">
@@ -3558,9 +3790,11 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
       <button type="button" class="sp-forgot" id="spforgot">Forgot my password</button>
       <input type="password" id="spconf" placeholder="Confirm password" aria-label="Confirm password" maxlength="200" hidden>
       <input type="text" id="spref" placeholder="Referral code (optional)" aria-label="Referral code" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="24" hidden>
+      <label class="sp-terms" id="spterms" hidden><input type="checkbox" id="spagree"><span class="sp-box" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span class="sp-tt">I agree to the <button type="button" class="sp-tl" data-legal="terms">Terms and Conditions</button> and I have read the <button type="button" class="sp-tl" data-legal="privacy">Privacy Policy</button>.</span></label>
       <div class="sp-msg" id="spmsg" role="alert"></div>
       <div class="sp-row"><button type="submit" id="spgo">Log in</button><button type="button" class="sp-switch" id="spswitch">Sign up</button></div>
     </form>
+    <div class="sp-legal" id="splegal"><button type="button" class="sp-tl" data-legal="terms">Terms and Conditions</button><button type="button" class="sp-tl" data-legal="privacy">Privacy Policy</button></div>
   </div>
   </div>
   <button class="sp-down" id="spdown" aria-label="Documentation" title="Documentation"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
@@ -6232,10 +6466,12 @@ function setToken(t){
 }
 /* log in / sign up: resolves to {token,user} or {error} */
 /* both carry this browser's device id (referrals only count from a device never seen before); sign up also the referral code */
+/* the version of the Terms and Conditions and Privacy Policy a sign up agrees to (the date at the top of both) */
+const TERMS_VER='2026-11-08';
 async function authCall(kind,username,password,ref,seq){
   const device=deviceId();ref=kind==='signup'?String(ref||'').trim().toLowerCase():'';
-  if(GS)return kind==='signup'?gsCall('rpcSignup',username,password,ref,device):gsCall('rpcLogin',username,password,device,seq||null);
-  const r=await fetch('/api/'+kind,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,password,ref,device,seq:seq||null})});
+  if(GS)return kind==='signup'?gsCall('rpcSignup',username,password,ref,device,TERMS_VER):gsCall('rpcLogin',username,password,device,seq||null);
+  const r=await fetch('/api/'+kind,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username,password,ref,device,seq:seq||null,terms:TERMS_VER})});
   return r.json();
 }
 /* every change goes through api(); changes to the same item run one after another (a slow save can't land after a
@@ -9743,7 +9979,7 @@ function footSync(v){
   const f=document.getElementById('sxfoot');if(!f)return;
   v=v||(state.setup&&state.user?'setup':state.view);
   const want=!state.user||v==='setup'||v==='chat'||v==='scare'?'':v==='home'?'c':state.settings.footerOff?'':'l';
-  if(f.dataset.k!==want){f.dataset.k=want;f.innerHTML=want==='c'?'<span class="sx-copy">© 2026 YC</span><button class="sx-fl sx-nonet" data-nonet>No Internet</button>':want==='l'?footHTML(''):'';}
+  if(f.dataset.k!==want){f.dataset.k=want;f.innerHTML=want==='c'?'<span class="sx-copy">© 2026 YC</span><div class="sx-legal"><button class="sx-fl" data-legal="terms">Terms</button><button class="sx-fl" data-legal="privacy">Privacy</button><button class="sx-fl sx-nonet" data-nonet>No Internet</button></div>':want==='l'?footHTML(''):'';}
   if(f.hidden!==!want)f.hidden=!want;
   footOv();
 }
@@ -10227,7 +10463,7 @@ if(window.SX_REF)sxRefArrived(window.SX_REF);
     sw=document.getElementById('spswitch'),msg=document.getElementById('spmsg');
   let signup=false,busy=false;
   const refIn=document.getElementById('spref');
-  const setMode=su=>{signup=su;conf.hidden=!su;refIn.hidden=!su;if(su&&!refIn.value)refIn.value=refStored();go.textContent=su?'Sign up':'Log in';document.getElementById('spforgot').hidden=su;sw.textContent=su?'Log in':'Sign up';
+  const setMode=su=>{signup=su;conf.hidden=!su;refIn.hidden=!su;{const tm=document.getElementById('spterms'),lg=document.getElementById('splegal');tm.hidden=!su;lg.hidden=su;if(!su)document.getElementById('spagree').checked=false;}if(su&&!refIn.value)refIn.value=refStored();go.textContent=su?'Sign up':'Log in';document.getElementById('spforgot').hidden=su;sw.textContent=su?'Log in':'Sign up';
     msg.textContent='';conf.value='';};
   const focusFirst=()=>setTimeout(()=>(user.value?code:user).focus(),0);
   const hero=document.getElementById('sphero'),img=sp.querySelector('.sp-img');
@@ -10323,6 +10559,7 @@ if(window.SX_REF)sxRefArrived(window.SX_REF);
   ERR.refdevice='Referral links can’t be used on a device that already has an account. Sign up without the link instead.';
   ERR.noref='No account with that referral code';
   ERR.tfalocked='Too many wrong pictures. Logins are locked for an hour.';
+  ERR.terms='Please agree to the Terms and Conditions and the Privacy Policy first';
   gate.addEventListener('submit',async e=>{
     e.preventDefault();
     if(busy)return;
@@ -10334,6 +10571,7 @@ if(window.SX_REF)sxRefArrived(window.SX_REF);
       if(!/^[a-z0-9_.-]{3,24}$/.test(name))return fail('name');
       if(pw.length<6)return fail('short');
       if(pw!==conf.value)return fail('mismatch');
+      if(!document.getElementById('spagree').checked)return fail('terms');
     }
     busy=true;msg.textContent='';go.classList.add('busy');
     let r=null;
@@ -10645,8 +10883,17 @@ function docsToc(d){
   mark(0);
 }
 let docsFocus=null;
+/* Terms and Conditions or Privacy Policy, shown in the Guide's page (same look, contents column and keys); works signed out too */
+function openLegal(kind){
+  const d=document.getElementById('docs'),priv=kind==='privacy',tpl=document.getElementById(priv?'privacy-tpl':'terms-tpl');if(!d||!tpl)return;
+  if(!d.hidden)closeDocs();
+  d.innerHTML=`<div class="docs-in"><button class="hbtn res-x" data-docs-close title="Close">×</button><div class="res-head"><div class="rh-text"><span class="rh-art">${art('guide')}</span><span class="rc">Saxon Planner</span><span class="rt">${priv?'Privacy Policy':'Terms and Conditions'}</span></div></div><div class="docs-body"><nav class="docs-toc" aria-label="Contents"></nav><div class="rdoc udoc">${tpl.innerHTML}</div></div></div>`;
+  docsToc(d);d.dataset.legal='1';openDocs();
+}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-legal]');if(!b)return;e.preventDefault();e.stopPropagation();openLegal(b.dataset.legal);},true);
 function closeDocs(){
   const d=document.getElementById('docs');if(d.hidden)return;d.hidden=true;
+  if(d.dataset.legal){delete d.dataset.legal;d.innerHTML='';}
   document.documentElement.classList.remove('docs-open');
   const w=document.querySelector('.wrap');if(w)w.inert=false;
   if(docsFocus&&docsFocus.isConnected&&docsFocus.focus)docsFocus.focus({preventScroll:true});docsFocus=null;
