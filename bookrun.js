@@ -3,7 +3,7 @@
    Needs nothing from the network: it draws itself, so the planner's No Internet button works offline.
    The same code sits inline in planner/index.html: after editing this file run node tools/sync-bookrun.js.
 
-   BookRun.open({mode:'loading', label:'Subway Surfers', note:'...'})  a loading screen is taking a while:
+   BookRun.open({mode:'loading', label:'Subway Surfers'})  a loading screen is taking a while:
      a pixel loading bar sits on top; once loading is done the game stays until the player loses, then
      "Loading complete" takes them on. If they never started a run it closes as soon as loading is done.
    BookRun.open({mode:'free'})   the No Internet game: closes with × or Escape at any time.
@@ -11,15 +11,17 @@
    BookRun.isOpen()                                                                                     */
 (function(){
 if(window.BookRun)return;
-var CSS='.br-ov{position:fixed;inset:0;z-index:2147483000;background:#fafafa;color:#575757;display:flex;align-items:center;justify-content:center;font:600 14px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;transition:filter .7s,opacity .3s;outline:none}'+
+var CSS='.br-ov{position:fixed;inset:0;z-index:2147483000;background:#fafafa;color:#575757;display:flex;align-items:flex-start;justify-content:center;font:600 14px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif;transition:filter .7s,opacity .3s;outline:none}'+
 '.br-ov.night{filter:invert(1)}.br-ov.gone{opacity:0;pointer-events:none}'+
-'.br-card{width:min(720px,calc(100vw - 32px));text-align:center}'+
-'.br-title{display:block;font-size:20px;font-weight:800;color:#3c3c3c;margin-bottom:2px}.br-note{display:block;color:#7a7a7a;margin-bottom:14px;font-weight:500}'+
-'.br-cv{display:block;width:100%;image-rendering:pixelated;image-rendering:crisp-edges;touch-action:none;cursor:pointer;border:2px solid #d6d6d6;border-radius:6px;background:#fafafa}'+
-'.br-foot{margin-top:10px;min-height:40px;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;color:#8a8a8a;font-size:13px;font-weight:500}'+
-'.br-btn{font:700 14px/1 system-ui,-apple-system,"Segoe UI",sans-serif;color:#fafafa;background:#575757;border:0;border-radius:6px;padding:11px 18px;cursor:pointer}.br-btn:hover{background:#3c3c3c}'+
+'@media (prefers-color-scheme:dark){.br-ov{filter:invert(.88)}.br-ov.night{filter:none}}'+
+/* no box and no words: the ground sits about a quarter of the way down the screen */
+'.br-card{width:min(600px,calc(100vw - 32px));margin-top:max(16px,calc(24vh - 220px))}'+
+'.br-top{position:absolute;top:14px;left:50%;transform:translateX(-50%);width:min(600px,calc(100vw - 32px));image-rendering:pixelated;image-rendering:crisp-edges}.br-top[hidden]{display:none}'+
+'.br-cv{display:block;width:100%;image-rendering:pixelated;image-rendering:crisp-edges;touch-action:none;cursor:pointer}'+
+'.br-foot{margin-top:6px;display:flex;gap:10px;flex-wrap:wrap}'+
+'.br-btn{font:700 14px/1 system-ui,-apple-system,"Segoe UI",sans-serif;color:#fafafa;background:#575757;border:0;border-radius:6px;padding:11px 18px;cursor:pointer}.br-btn:hover{background:#3c3c3c}.br-btn[hidden]{display:none}'+
 '.br-btn.ghost{background:transparent;color:#575757;border:2px solid #c4c4c4;padding:9px 16px}.br-btn.ghost:hover{background:#eee}'+
-'.br-x{position:absolute;top:14px;right:16px;width:40px;height:40px;border:0;border-radius:8px;background:transparent;color:#575757;font:400 30px/1 system-ui,sans-serif;cursor:pointer}.br-x:hover{background:#ececec}';
+'.br-x{position:absolute;top:10px;right:12px;width:36px;height:36px;border:0;border-radius:8px;background:transparent;color:#b0b0b0;font:400 26px/1 system-ui,sans-serif;cursor:pointer}.br-x:hover{background:#ececec;color:#575757}.br-x[hidden]{display:none}';
 
 /* 3x5 pixel font */
 var F={A:'010101111101101',B:'110101110101110',C:'011100100100011',D:'110101101101110',E:'111100110100111',F:'111100110100100',G:'011100101101011',H:'101101111101101',I:'111010010010111',J:'001001001101010',K:'101101110101101',L:'100100100100111',M:'101111111101101',N:'110101101101101',O:'010101101101010',P:'110101110100100',Q:'010101101110011',R:'110101110101101',S:'011100010001110',T:'111010010010010',U:'101101101101111',V:'101101101101010',W:'101101111111101',X:'101101010101101',Y:'101101010010010',Z:'111001010100111',
@@ -30,7 +32,7 @@ var RUN=[["...kkkk...","..kkkkkkk.","..klkkl...","..kllll...","...kkkk...","..mk
          ["...kkkk...","..kkkkkkk.","..klkkl...","..kllll...","...kkkk...","..mkkkk...",".mmkkkkk..",".mmkkkk.k.",".mmkkkk...","..kkkkk...","...kkk....","...k.k....","...kk.k..."]];
 var DUCK=["..kkkk......",".kkkkkkk....",".klkkl..mm..",".kllllmmmm..","..kkkkkkkk..","..kk..kk....",".kk....kk..."];
 var PAL={k:INK,l:LITE,m:MID};
-var ov,cv,c,titleEl,noteEl,hintEl,doneBtn,closeBtn,xBtn,opts=null,raf=0;
+var ov,cv,c,top,tc,doneBtn,closeBtn,xBtn,opts=null,raf=0;
 var st,p,obs,speed,dist,next,best=0,last=0,t=0,ground=[],clouds=[],loaded=false,openedAt=0,night=false;
 try{best=+localStorage.getItem('sx-bookrun-best')||0;}catch(e){}
 
@@ -41,11 +43,11 @@ function sprite(rows,x,y){for(var r=0;r<rows.length;r++)for(var q=0;q<rows[r].le
 function build(){
   var s=document.createElement('style');s.textContent=CSS;(document.head||document.documentElement).appendChild(s);
   ov=document.createElement('div');ov.className='br-ov';ov.tabIndex=-1;ov.setAttribute('role','dialog');
-  ov.innerHTML='<div class="br-card"><b class="br-title"></b><span class="br-note"></span><canvas class="br-cv" width="'+W+'" height="'+H+'"></canvas>'+
-    '<div class="br-foot"><span class="br-hint"></span><button class="br-btn br-done" hidden>Loading complete</button><button class="br-btn ghost br-close" hidden>Close minigame</button></div></div>'+
+  ov.innerHTML='<canvas class="br-top" width="'+W+'" height="16" hidden></canvas><div class="br-card"><canvas class="br-cv" width="'+W+'" height="'+H+'"></canvas>'+
+    '<div class="br-foot"><button class="br-btn br-done" hidden>Loading complete</button><button class="br-btn ghost br-close" hidden>Close minigame</button></div></div>'+
     '<button class="br-x" aria-label="Close" title="Close">×</button>';
   cv=ov.querySelector('.br-cv');c=cv.getContext('2d');c.imageSmoothingEnabled=false;
-  titleEl=ov.querySelector('.br-title');noteEl=ov.querySelector('.br-note');hintEl=ov.querySelector('.br-hint');
+  top=ov.querySelector('.br-top');tc=top.getContext('2d');tc.imageSmoothingEnabled=false;
   doneBtn=ov.querySelector('.br-done');closeBtn=ov.querySelector('.br-close');xBtn=ov.querySelector('.br-x');
   doneBtn.onclick=close;closeBtn.onclick=close;xBtn.onclick=close;
   cv.addEventListener('pointerdown',function(e){e.preventDefault();press();});
@@ -94,35 +96,28 @@ function drawObs(o){var x=Math.round(o.x);
 function pad(n){return ('00000'+n).slice(-5);}
 function draw(){
   c.fillStyle=BG;c.fillRect(0,0,W,H);
-  c.fillStyle=LITE;clouds.forEach(function(k){var x=Math.round(k.x);c.fillRect(x+3,k.y,8,1);c.fillRect(x+1,k.y+1,13,1);c.fillRect(x,k.y+2,16,1);});
-  if(opts.mode==='loading'){
-    var label=loaded?'LOADING COMPLETE':'LOADING '+(opts.label||'');txt(label,4,3);
-    var frac=loaded?1:Math.min(.95,1-Math.exp(-(Date.now()-openedAt)/((opts.expect||12)*1000)));
-    c.fillStyle=INK;c.fillRect(4,11,W-8,1);c.fillRect(4,17,W-8,1);c.fillRect(4,11,1,7);c.fillRect(W-5,11,1,7);
-    var cells=Math.floor((W-12)/4),on=Math.round(cells*frac);for(var i=0;i<on;i++)c.fillRect(6+i*4,13,3,3);
-  }
-  txt('HI '+pad(best)+'  '+pad(Math.floor(dist)),W-4,opts.mode==='loading'?22:4,'right');
-  c.fillStyle=INK;c.fillRect(0,G,W,1);ground.forEach(function(g){c.fillRect(Math.round(g.x),g.y,g.w,1);});
+  var go=st!=='ready';
+  if(go){c.fillStyle=LITE;clouds.forEach(function(k){var x=Math.round(k.x);c.fillRect(x+3,k.y,8,1);c.fillRect(x+1,k.y+1,13,1);c.fillRect(x,k.y+2,16,1);});}
+  if(go)txt('HI '+pad(best)+'  '+pad(Math.floor(dist)),W-4,4,'right');
+  if(opts.mode==='loading')drawTop();
+  c.fillStyle=INK;c.fillRect(0,G,W,1);if(go)ground.forEach(function(g){c.fillRect(Math.round(g.x),g.y,g.w,1);});
   obs.forEach(drawObs);
   if(p.duck&&p.y===0&&st==='run')sprite(DUCK,15,G-7);else sprite(st==='run'&&p.y===0?RUN[(t>>2)&1]:RUN[0],16,G-13-Math.round(p.y));
-  if(st==='ready')txt('PRESS SPACE OR TAP TO START',W/2,46,'center');
   if(st==='dead'){txt('G A M E   O V E R',W/2,40,'center');txt('SPACE OR TAP TO RUN AGAIN',W/2,50,'center');}}
+function drawTop(){var g=c;c=tc;c.fillStyle=BG;c.fillRect(0,0,W,16);
+  txt(loaded?'LOADING COMPLETE':'LOADING '+(opts.label||''),0,0);txt('TEMPORARY MINIGAME',W,0,'right',MID);
+  var frac=loaded?1:Math.min(.95,1-Math.exp(-(Date.now()-openedAt)/((opts.expect||12)*1000)));
+  c.fillStyle=INK;c.fillRect(0,8,W,1);c.fillRect(0,14,W,1);c.fillRect(0,8,1,7);c.fillRect(W-1,8,1,7);
+  var cells=Math.floor((W-4)/4),on=Math.round(cells*frac);for(var i=0;i<on;i++)c.fillRect(2+i*4,10,3,3);c=g;}
 function frame(now){if(!opts){raf=0;return;}raf=requestAnimationFrame(frame);
   if(!last)last=now;var n=Math.min(4,Math.floor((now-last)/16.67));if(n>0){last+=n*16.67;while(n--){step();t++;}}draw();}
 
 function foot(){if(!opts)return;var L=opts.mode==='loading';
-  var Cap=opts.label?opts.label.charAt(0).toUpperCase()+opts.label.slice(1):'';
-  if(L)titleEl.textContent=loaded?(Cap?Cap+' is ready':'Ready'):(Cap?Cap+' is still loading':'Still loading');
-  hintEl.textContent='Space, up or tap to jump. Down to duck.';
-  doneBtn.hidden=!(L&&loaded&&st==='dead');closeBtn.hidden=!(L&&!loaded&&st==='dead');xBtn.hidden=L;
-  if(L)noteEl.textContent=loaded?(st==='run'?'Loading complete. Finish your run: when you lose, you can go on.':'Loading complete.')
-    :'This is a temporary minigame to play while '+(opts.label||'it')+' loads.'+(opts.note?' '+opts.note:'');}
+  doneBtn.hidden=!(L&&loaded&&st==='dead');closeBtn.hidden=!(L&&!loaded&&st==='dead');xBtn.hidden=L;}
 function open(o){
   if(!ov)build();
   opts=o||{mode:'free'};loaded=false;openedAt=Date.now();st='ready';reset();
-  if(opts.mode!=='loading')titleEl.textContent='No Internet';
-  if(opts.mode!=='loading')noteEl.textContent='Jump the books, duck the grades. Escape or × to close.';
-  foot();ov.classList.remove('gone');setNight(false);
+  top.hidden=opts.mode!=='loading';foot();ov.classList.remove('gone');setNight(false);
   if(!ov.parentNode)document.body.appendChild(ov);
   try{if(document.activeElement&&document.activeElement.blur)document.activeElement.blur();}catch(e){}
   try{ov.focus({preventScroll:true});}catch(e){}
