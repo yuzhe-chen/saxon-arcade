@@ -1436,6 +1436,7 @@ html.gm-play body>:not(#games):not(#gwarn):not(#gasmove),html.gm-play body>:not(
   font:600 13px/1 var(--font-ui);color:var(--fg2);opacity:0;transition:opacity .15s;pointer-events:none}
 #games .gm-load.data .gm-lsub{opacity:1}
 #games .gm-bar i{display:block;width:35%;height:100%;background:#f2f0ea;animation:gmbar 1s ease-in-out infinite}
+#games .gm-bar.det i{animation:none;width:var(--p,0%);transition:width .3s linear}
 @keyframes gmbar{0%{transform:translateX(-100%)}100%{transform:translateX(290%)}}
 
 /* ---------- resources ---------- */
@@ -3908,6 +3909,7 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
      a pixel loading bar sits on top; once loading is done the game stays until the player loses, then
      "Loading complete" takes them on. If they never started a run it closes as soon as loading is done.
    BookRun.open({mode:'free'})   the No Internet game: closes with × or Escape at any time.
+   BookRun.progress(0..1)        how far the thing being waited on really is (the bar shows it; without it, a time estimate)
    BookRun.loaded()              the thing being waited on has finished.
    BookRun.isOpen()                                                                                     */
 (function(){
@@ -3940,7 +3942,7 @@ var RUN=[["...kkkk...","..kkkkkkk.","..klkkl...","..kllll...","...kkkk...","..mk
 var DUCK=["..kkkk......",".kkkkkkk....",".klkkl..mm..",".kllllmmmm..","..kkkkkkkk..","..kk..kk....",".kk....kk..."];
 var PAL={k:INK,l:LITE,m:MID};
 var ov,cv,c,top,tc,doneBtn,closeBtn,xBtn,opts=null,raf=0;
-var st,p,obs,speed,dist,next,best=0,last=0,t=0,ground=[],clouds=[],loaded=false,openedAt=0,night=false;
+var st,p,obs,speed,dist,next,best=0,last=0,t=0,ground=[],clouds=[],loaded=false,openedAt=0,night=false,prog=null;
 try{best=+localStorage.getItem('sx-bookrun-best')||0;}catch(e){}
 
 function txt(s,x,y,align,col){s=String(s).toUpperCase();var w=s.length*4-1;if(align==='right')x-=w;else if(align==='center')x-=Math.floor(w/2);
@@ -4014,7 +4016,7 @@ function draw(){
   if(st==='dead'){txt('G A M E   O V E R',W/2,24,'center');txt('SPACE OR TAP TO RUN AGAIN',W/2,34,'center');}}
 function drawTop(){var g=c;c=tc;c.clearRect(0,0,W,16);
   txt(loaded?'LOADING COMPLETE':'LOADING '+(opts.label||''),0,0);txt('TEMPORARY MINIGAME',W,0,'right',MID);
-  var frac=loaded?1:Math.min(.95,1-Math.exp(-(Date.now()-openedAt)/((opts.expect||12)*1000)));
+  var frac=loaded?1:prog!=null?Math.min(.98,Math.max(0,prog)):Math.min(.95,1-Math.exp(-(Date.now()-openedAt)/((opts.expect||12)*1000)));
   c.fillStyle=INK;c.fillRect(0,8,W,1);c.fillRect(0,14,W,1);c.fillRect(0,8,1,7);c.fillRect(W-1,8,1,7);
   var cells=Math.floor((W-4)/4),on=Math.round(cells*frac);for(var i=0;i<on;i++)c.fillRect(2+i*4,10,3,3);c=g;}
 function frame(now){if(!opts){raf=0;return;}raf=requestAnimationFrame(frame);
@@ -4026,7 +4028,7 @@ function isDark(){if(!ov.parentNode)document.body.appendChild(ov);var m=getCompu
   return !!m&&(0.299*m[0]+0.587*m[1]+0.114*m[2])<128;}
 function open(o){
   if(!ov)build();
-  opts=o||{mode:'free'};loaded=false;openedAt=Date.now();st='ready';reset();
+  opts=o||{mode:'free'};loaded=false;openedAt=Date.now();st='ready';reset();prog=o&&o.progress!=null?o.progress:null;
   top.hidden=opts.mode!=='loading';ov.classList.toggle('dk',isDark());ov.classList.toggle('ld',opts.mode==='loading');foot();ov.classList.remove('gone');setNight(false);
   if(!ov.parentNode)document.body.appendChild(ov);
   try{if(document.activeElement&&document.activeElement.blur)document.activeElement.blur();}catch(e){}
@@ -4053,6 +4055,7 @@ function close(){if(!opts)return;var o=opts;opts=null;ov.classList.add('gone');s
   if(o.onClose)try{o.onClose();}catch(e){}}
 window.BookRun={
   open:open,offer:offer,close:close,isOpen:function(){return !!opts||!!pop;},
+  progress:function(f){prog=f==null?null:Math.max(prog||0,+f||0);if(popOpts)popOpts.progress=prog;},
   loaded:function(){if(pop&&!opts){dropPop();return;}if(!opts||opts.mode!=='loading'||loaded)return;loaded=true;if(st==='ready')close();else foot();}};
 })();
 </script><!--/bookrun-->
@@ -10229,14 +10232,16 @@ document.addEventListener('click',e=>{
 });
 /* ---------- Book Run (arcade/bookrun.js): No Internet on Home, and the minigame over any loading screen that passes 5 s ---------- */
 document.addEventListener('click',e=>{if(e.target.closest('[data-nonet]')&&window.BookRun&&!BookRun.isOpen())BookRun.open({mode:'free'});});
-(function(){let since=0,mine=false,skip=false;
+(function(){let since=0,mine=false,skip=false,cur='';
   const busy=()=>[...document.querySelectorAll('#games .gm-load:not(.done):not(.tr-intro),#dataload,.res-load')].find(e=>e.getClientRects().length);
   setInterval(()=>{if(!window.BookRun)return;const el=busy();
     if(el){if(!since)since=Date.now();
       if(!mine&&!skip&&!BookRun.isOpen()&&Date.now()-since>=5000){
         const n=el.querySelector('.gm-lname'),label=n?n.textContent.replace(/\b\w/g,m=>m.toUpperCase()):el.id==='dataload'?'your planner':'this page';
-        mine=true;BookRun.offer({mode:'loading',label,expect:n?10:8,onClose:()=>{mine=false;skip=true;const f=document.querySelector('#games .gm-frame');if(f)try{f.focus();}catch(_){}}});}}
-    else{since=0;if(mine&&BookRun.isOpen())BookRun.loaded();skip=false;}},400);})();
+        const secs=lsJSON('sx-loadsecs'),f0=document.querySelector('#games .gm-frame'),known=f0&&f0._gr&&f0._gr.frac;
+        mine=true;cur=label;BookRun.offer({mode:'loading',label,expect:secs[label]||(n?10:8),progress:known||null,onClose:()=>{mine=false;skip=true;const f=document.querySelector('#games .gm-frame');if(f)try{f.focus();}catch(_){}}});}}
+    else{if(since&&cur){const secs=lsJSON('sx-loadsecs'),s=(Date.now()-since)/1000;secs[cur]=secs[cur]?Math.round((secs[cur]+s)*5)/10:Math.round(s*10)/10;lsPut('sx-loadsecs',secs);cur='';}
+      since=0;if(mine&&BookRun.isOpen())BookRun.loaded();skip=false;}},400);})();
 /* the Clock's side arrow goes back to Tools, like Meditation's */
 document.addEventListener('click',e=>{if(!e.target.closest('[data-ck-back]'))return;state.view='home';try{localStorage.setItem('sx-tab','home');}catch(_){}render();openTools();});
 /* html.nobar hides the menu bar: a game or tool frame (or its loading screen) on screen, Desmos, or the Clock with nothing over it */
@@ -12001,7 +12006,7 @@ document.addEventListener('keydown',gamesKey);
    save request has been answered; anything else shows when the frame has loaded. Safety: 8 s after the frame loads it
    shows anyway, but only once every save request it made has been answered */
 function gmReveal(f){const st=f&&f._gr;if(!st||st.shown)return;const g=document.getElementById('games');
-  if(!g||g.querySelector('.gm-frame')!==f)return;st.shown=true;clearTimeout(st.t8);clearTimeout(st.t20);
+  if(!g||g.querySelector('.gm-frame')!==f)return;gmLearn(f);st.shown=true;clearTimeout(st.t8);clearTimeout(st.t20);
   const l0=g.querySelector('.gm-load'),wait=l0&&l0.classList.contains('tr-intro')?Math.max(0,(l0._at||0)+3700-Date.now()):0;
   setTimeout(()=>requestAnimationFrame(()=>requestAnimationFrame(()=>{const l=g.querySelector('.gm-load');if(l){l.classList.add('done');setTimeout(()=>l.remove(),l.classList.contains('tr-intro')?900:300);}})),wait);}
 function gmCheck(f){const st=f&&f._gr;if(!st||st.shown||!st.loaded)return;
@@ -12009,9 +12014,34 @@ function gmCheck(f){const st=f&&f._gr;if(!st||st.shown||!st.loaded)return;
   if(st.mode==='load'||st.ready&&st.mode==='wait'){setTimeout(()=>gmReveal(f),st.mode==='load'?150:0);return;}
   if(st.mode==='embed'&&st.asked&&answered){setTimeout(()=>gmReveal(f),150);return;}
   if(st.late&&st.asked&&answered)setTimeout(()=>gmReveal(f),400);}
-function gmAsked(f){const st=f&&f._gr;if(!st)return;st.asked++;
+function gmAsked(f){const st=f&&f._gr;if(!st)return;st.asked++;gmStage(f,'asked');
   if(!st.shown){const l=document.querySelector('#games .gm-load');if(l)l.classList.add('data');}}
-function gmReplied(f){const st=f&&f._gr;if(!st)return;st.replied++;gmCheck(f);}
+function gmReplied(f){const st=f&&f._gr;if(!st)return;st.replied++;gmStage(f,'replied');gmCheck(f);}
+/* ---------- real loading progress for the loading screen and Book Run ----------
+   Stages are the steps that actually happen: the game page fetched from the backend (wrap), its frame running (frame),
+   its two files in from the CDN (file1, file2), its save asked for (asked) and answered (replied). Between stages the
+   bar creeps by how long this game took on this device last time (sx-gload). Games that download assets before they
+   show (bytes from boot.js, against last time's total in sx-gbytes, or the game's known size) can push it further. */
+const GM_STAGES={wrap:.12,frame:.25,file1:.4,file2:.55,asked:.68,replied:.92};
+const GAME_BYTES={subwaysurfers:17088409,tunnelrush:19591217,driftboss:11902611,smashkarts:76949376,gladihoppers:48733123,getaway:23525745,drivemad:5389267,houseofhazards:13083622,crossyroad:7024736,monkeymart:8956838,stickmanhook:8946577,paperio:508261,yohoho:7134974,basketballrandom:2351297,retrobowl:10038790,snake:2115387,fnae:51829466,tag:4993296};
+const lsJSON=k=>{try{return JSON.parse(localStorage.getItem(k)||'{}')||{};}catch(_){return {};}};
+const lsPut=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch(_){}};
+function gmStage(f,k){const st=f&&f._gr;if(!st||st.shown)return;st.stage=Math.max(st.stage||0,GM_STAGES[k]||0);gmPaint(f);}
+function gmBytes(f,m){const st=f&&f._gr;if(!st||st.shown)return;const id=f.title,loaded=Math.max(0,+m.loaded||0);
+  st.bytes=Math.max(st.bytes||0,loaded);const need=Math.max(lsJSON('sx-gbytes')[id]||0,GAME_BYTES[id]||0);
+  let fr=need?loaded/need:0;if(m.unity>0)fr=Math.max(fr,+m.unity);st.bfrac=Math.max(st.bfrac||0,Math.min(.98,fr));gmPaint(f);}
+function gmPaint(f){const st=f&&f._gr;if(!st||st.shown)return;
+  const floor=st.stage||0,next=Math.min(.98,...Object.values(GM_STAGES).filter(v=>v>floor).concat([.98]));
+  const took=lsJSON('sx-gload')[f.title]||0,el=Date.now()-(st.t0||Date.now());
+  const timed=took?Math.min(next-.02,el/took):floor;
+  const frac=Math.max(floor,timed,st.bfrac||0);
+  if(frac<=(st.frac||0))return;st.frac=frac;
+  const bar=document.querySelector('#games .gm-load .gm-bar');if(bar){bar.classList.add('det');bar.style.setProperty('--p',Math.round(frac*100)+'%');}
+  if(window.BookRun)BookRun.progress(frac);}
+function gmLearn(f){const st=f&&f._gr;if(!st||!st.t0)return;const id=f.title,el=Date.now()-st.t0;clearInterval(st.tick);
+  const L=lsJSON('sx-gload');L[id]=L[id]?Math.round((L[id]+el)/2):el;lsPut('sx-gload',L);
+  /* the byte total is only worth remembering when the game really downloaded itself under the loading screen */
+  const known=GAME_BYTES[id]||0;if(st.bytes>=(known||1e6)*.8){const B=lsJSON('sx-gbytes');B[id]=Math.round(((B[id]||st.bytes)+st.bytes)/2);lsPut('sx-gbytes',B);}}
 /* Torah Runner's titles: black, "NicholiVirus presents...", then the name in the game's own font (Suez One), then the
    game fades in. They replace the loading screen, can't be skipped and last 5 seconds at most once the game is ready */
 const TR_INTRO='<div class="gm-load tr-intro"><p class="tr-by">NicholiVirus presents...</p><p class="tr-name">Torah Runner</p></div>';
@@ -12029,14 +12059,14 @@ function playGame(id){
   if(gm&&gm.modes){metricaPick(gm);return;}
   if(gmParent(id))metricaLast=id;
   trackGame(id);
-  roomLeaveAll();
+  roomLeaveAll();g._t0=Date.now();
   /* a loading screen covers the frame until the game has started */
   /* Torah Runner opens on its own titles instead of the loading screen (trIntro) */
   g.innerHTML=(id==='torahrunner'?TR_INTRO:`<div class="gm-load">${bookFlip('gm-llogo')}<div class="gm-lname">${esc((gm?gm.name:id).toLowerCase())}</div><div class="gm-barw"><div class="gm-bar"><i></i></div><div class="gm-lsub">${esc(loadTip())}</div></div></div>`)+`
     <iframe class="gm-frame" allow="fullscreen; gamepad; autoplay" title="${esc(id)}"></iframe>${gm&&!gm.labels.includes('Embed')?'<button class="gm-side" data-gm-side aria-label="Games" title="Games"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>':''}`;
   if(id==='torahrunner')trIntro(g);
   loadGame(id).then(src=>{const f=g.querySelector('.gm-frame');if(!f)return;
-    f.addEventListener('load',()=>{const st=f._gr;st.loaded=true;st.t8=setTimeout(()=>{st.late=true;if(st.mode!=='wait'&&!st.asked)gmReveal(f);else gmCheck(f);},8000);st.t20=setTimeout(()=>{if(!st.asked)gmReveal(f);},20000);gmCheck(f);try{watchErrors(f.contentWindow,'game:'+id);f.contentWindow.document.addEventListener('keydown',gamesKey);frameMenus(f);f.contentWindow.focus();}catch(e){reportErr('game-load',e&&e.stack||e);}},{once:true});
+    f.addEventListener('load',()=>{const st=f._gr;st.loaded=true;gmStage(f,'frame');st.t8=setTimeout(()=>{st.late=true;if(st.mode!=='wait'&&!st.asked)gmReveal(f);else gmCheck(f);},8000);st.t20=setTimeout(()=>{if(!st.asked)gmReveal(f);},20000);gmCheck(f);try{watchErrors(f.contentWindow,'game:'+id);f.contentWindow.document.addEventListener('keydown',gamesKey);frameMenus(f);f.contentWindow.focus();}catch(e){reportErr('game-load',e&&e.stack||e);}},{once:true});
     /* testing mode: window.SX_TEST tells the game to start maxed out and not save (lander also gets its TEST_MODE: J skips to the next body) */
     /* scrolling inside a game never carries on into the planner or the frame around it */
     const OVS='<style>html,body{overscroll-behavior:none}</style><script>(function(){var L=window.__sxAC=[];["AudioContext","webkitAudioContext"].forEach(function(k){var A=window[k];if(typeof A!="function"||typeof Proxy!="function")return;'+
@@ -12046,7 +12076,8 @@ function playGame(id){
     const test=isGameAdmin()&&gameTest();
     if(test){const T='<script>window.SX_TEST=true;</'+'script>';src=src.replace('var TEST_MODE = false;','var TEST_MODE = true;');src=/<head[^>]*>/i.test(src)?src.replace(/<head[^>]*>/i,m=>m+T):T+src;}
     /* how this frame waits for its save (see gmCheck): wrappers (arcade-load) as embeds, games with game-ready wait for it */
-    f._gr={asked:0,replied:0,ready:false,loaded:false,shown:false,late:false,mode:/arcade-load/.test(src)?(test?'load':'embed'):/game-ready/.test(src)?'wait':'load'};
+    f._gr={asked:0,replied:0,ready:false,loaded:false,shown:false,late:false,t0:g._t0||Date.now(),mode:/arcade-load/.test(src)?(test?'load':'embed'):/game-ready/.test(src)?'wait':'load'};
+    f._gr.tick=setInterval(()=>gmPaint(f),300);gmStage(f,'wrap');
     f.srcdoc=src;reportErr('game','srcdoc set '+src.length);}).catch(e=>{console.warn('game failed',e);reportErr('game-fetch',e&&e.message||e);});
 }
 /* each browser gets a random device id so saves are kept per player
@@ -12372,6 +12403,8 @@ window.addEventListener('message',async e=>{
     if(m.type==='games-close'){closeGames();return;}
     if(m.type==='room'){roomBridge(f,m);return;}
     if(m.type==='game-ready'){if(f._gr){f._gr.ready=true;gmCheck(f);}return;}
+    if(m.type==='game-stage'){gmStage(f,m.n>=2?'file2':'file1');return;}
+    if(m.type==='game-progress'){gmBytes(f,m);return;}
     /* shared levels (Metrica editors): level-share {game,data} and level-get {code}, answered with level-share-res / level-get-res {reqId,res} */
     /* chess ratings: chess-elo {op,args}, answered with chess-elo-res {reqId,res}; testing mode never reports results */
     if(m.type==='chess-elo'&&m.game==='chess'){
