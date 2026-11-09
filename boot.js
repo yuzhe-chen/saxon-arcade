@@ -317,11 +317,11 @@ function fetchRetry(input,init,tries){return nfetch(input,init).then(function(r)
 function partsBody(p){
   var reqs=[];for(var i=0;i<p.n;i++)reqs.push(fetchRetry(CDN+'/'+p.rel+'.part'+i,{credentials:'omit'},4).then(function(r){if(!r.ok)throw new Error('could not load '+r.url+' ('+r.status+')');return r;}));
   reqs.forEach(function(q){q.catch(function(){});});
-  var i2=0,reader=null;
+  var i2=0,reader=null,got=0;
   return new ReadableStream({pull:function(c){return (function step(){
-    if(!reader){if(i2>=p.n){c.close();return;}return reqs[i2++].then(function(r){reader=r.body.getReader();return step();});}
-    return reader.read().then(function(x){if(x.done){reader=null;return step();}c.enqueue(x.value);});})();},
-    cancel:function(){if(reader)try{reader.cancel();}catch(e){}}});}
+    if(!reader){if(i2>=p.n){c.close();progFin(p.url,got);return;}return reqs[i2++].then(function(r){reader=r.body.getReader();return step();});}
+    return reader.read().then(function(x){if(x.done){reader=null;return step();}got+=x.value.length;progIn(p.url,got);c.enqueue(x.value);});})();},
+    cancel:function(){if(reader)try{reader.cancel();}catch(e){}delete prog.inflight[p.url];}});}
 function partsResponse(p){var r=new Response(partsBody(p),{status:200,statusText:'OK',headers:{'Content-Type':mimeOf(p.rel),'Content-Length':String(p.size)}});
   try{Object.defineProperty(r,'url',{value:p.url});}catch(e){}return r;}
 SX.partsResponse=function(u){var p=partOf(abs(u));return p?partsResponse(p):null;};
@@ -329,12 +329,14 @@ W.fetch=function(input,init){
   var url=typeof input==='string'?input:(input&&input.url)||String(input),a=abs(url),m=String((init&&init.method)||(input&&input.method)||'GET').toUpperCase();
   if(a&&NOADS.test(a))return Promise.resolve(new Response(null,{status:204}));
   if(m==='GET'||m==='HEAD'){var p=partOf(a);if(p){if(m==='HEAD')return Promise.resolve(new Response(null,{status:200,headers:{'Content-Type':mimeOf(p.rel),'Content-Length':String(p.size)}}));return Promise.resolve(partsResponse(p));}
-    if(onCdn(a))return fetchRetry(input,init,2);}
+    if(onCdn(a))return fetchRetry(input,init,2).then(function(r){return m==='GET'?countResp(r,a):r;});}
   return nfetch(input,init);};
 /* XMLHttpRequest for split files (old Unity loaders use XHR with progress events) */
 (function(){var XP=XMLHttpRequest.prototype,xopen=XP.open,xsend=XP.send,xabort=XP.abort;
-  XP.open=function(m,u){var a=abs(u),p=String(m).toUpperCase()==='GET'?partOf(a):null;this.__sxp=p;return xopen.apply(this,arguments);};
-  XP.send=function(){var x=this,p=x.__sxp;if(!p)return xsend.apply(this,arguments);
+  XP.open=function(m,u){var a=abs(u),p=String(m).toUpperCase()==='GET'?partOf(a):null;this.__sxp=p;this.__sxu=!p&&onCdn(a)?a:null;return xopen.apply(this,arguments);};
+  XP.send=function(){var x=this,p=x.__sxp;
+    if(!p){if(x.__sxu&&!x.__sxw){x.__sxw=1;var key=x.__sxu;x.addEventListener('progress',function(e){progIn(key,e.loaded||0);});x.addEventListener('loadend',function(e){progFin(key,e.loaded||0);});}
+      return xsend.apply(this,arguments);}
     var rs=1,status=0,resp=null,text='',aborted=false,type=p&&mimeOf(p.rel);x.__sxab=function(){aborted=true;};
     def(x,'readyState',function(){return rs;});def(x,'status',function(){return status;});def(x,'statusText',function(){return status?'OK':'';});
     def(x,'responseURL',function(){return rs===4?p.url:'';});
@@ -398,6 +400,34 @@ SX.noAds=NOADS;
 /* ================= save bridge ================= */
 var CAP=150000,LOAD_TIMEOUT=9000,EVERY=10000;
 var inFrame=W.parent&&W.parent!==W,PARENT=W.parent,TEST=false;
+/* ================= loading progress: real bytes, reported to the planner's loading screen =================
+   done: finished resources by URL (resource timing: scripts, images, fetches, XHR; jsDelivr sends Timing-Allow-Origin),
+   inflight: bytes streamed so far of fetches and XHRs still running (big Unity files), unity: the Unity loader's own 0..1.
+   The planner turns the byte count into a bar against what this game needed last time (or its known size). */
+var prog={done:{},inflight:{},unity:0,sent:0,timer:0,bytes:0};
+function progSum(){var s=0,k;for(k in prog.done)s+=prog.done[k];for(k in prog.inflight)s+=prog.inflight[k];return s;}
+function progPost(force){if(!inFrame)return;var now=Date.now();
+  if(!force&&now-prog.sent<250){if(!prog.timer)prog.timer=setTimeout(function(){prog.timer=0;progPost(true);},260);return;}
+  prog.sent=now;var b=progSum();if(b===prog.bytes&&!force)return;prog.bytes=b;
+  try{PARENT.postMessage({type:'arcade-progress',loaded:b,unity:prog.unity},'*');}catch(e){}}
+function progIn(key,got){if(!key)return;if(prog.done[key]==null)prog.inflight[key]=got;progPost(false);}
+function progFin(key,got){if(!key)return;delete prog.inflight[key];if(prog.done[key]==null)prog.done[key]=got;progPost(false);}
+try{new PerformanceObserver(function(l){l.getEntries().forEach(function(e){var n=e.name;if(/\.part\d+(\?|$)/.test(n)||prog.done[n]!=null)return;
+    var b=e.decodedBodySize||e.encodedBodySize||e.transferSize||0;if(prog.inflight[n]!=null&&prog.inflight[n]>b)b=prog.inflight[n];
+    prog.done[n]=b;delete prog.inflight[n];});progPost(false);}).observe({type:'resource',buffered:true});}catch(e){}
+/* a fetch's body is read through a counting stream, so a big file shows its progress while it downloads */
+function countResp(r,key){if(!r||!r.body||r.status!==200||prog.done[key]!=null)return r;var rd,got=0;
+  try{rd=r.body.getReader();}catch(e){return r;}
+  var s=new ReadableStream({pull:function(c){return rd.read().then(function(x){if(x.done){c.close();progFin(key,got);return;}got+=x.value.length;progIn(key,got);c.enqueue(x.value);});},
+    cancel:function(){try{rd.cancel();}catch(e){}delete prog.inflight[key];}});
+  var out=new Response(s,{status:r.status,statusText:r.statusText,headers:r.headers});
+  try{Object.defineProperty(out,'url',{value:r.url});}catch(e){}return out;}
+/* the Unity loaders report their own progress (download and start-up); it is passed on as well */
+function hookUnity(){var cu=W.createUnityInstance;
+  if(typeof cu==='function'&&!cu.__sx){var w=function(cv,cfg,onp){return cu.call(this,cv,cfg,function(p){prog.unity=Math.max(prog.unity,+p||0);progPost(false);if(typeof onp==='function')try{onp(p);}catch(e){}});};w.__sx=1;try{W.createUnityInstance=w;}catch(e){}}
+  var UL=W.UnityLoader;if(UL&&typeof UL.instantiate==='function'&&!UL.instantiate.__sx){var inst=UL.instantiate;
+    var w2=function(ct,url,params){params=params||{};var op=params.onProgress;params.onProgress=function(g,p){prog.unity=Math.max(prog.unity,+p||0);progPost(false);if(typeof op==='function')try{op(g,p);}catch(e){}};return inst.call(this,ct,url,params);};w2.__sx=1;UL.instantiate=w2;}}
+(function(){var n=0,iv=setInterval(function(){hookUnity();if(++n>600)clearInterval(iv);},50);})();
 function b64(u){var s='',i,C=0x8000;for(i=0;i<u.length;i+=C)s+=String.fromCharCode.apply(null,u.subarray(i,i+C));return btoa(s);}
 function unb64(s){var b=atob(s),u=new Uint8Array(b.length);for(var i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return u;}
 function enc(v){if(v===null||typeof v!=='object')return v;

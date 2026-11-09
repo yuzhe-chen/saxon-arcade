@@ -9,6 +9,7 @@
      a pixel loading bar sits on top; once loading is done the game stays until the player loses, then
      "Loading complete" takes them on. If they never started a run it closes as soon as loading is done.
    BookRun.open({mode:'free'})   the No Internet game: closes with × or Escape at any time.
+   BookRun.progress(0..1)        how far the thing being waited on really is (the bar shows it; without it, a time estimate)
    BookRun.loaded()              the thing being waited on has finished.
    BookRun.isOpen()                                                                                     */
 (function(){
@@ -41,7 +42,7 @@ var RUN=[["...kkkk...","..kkkkkkk.","..klkkl...","..kllll...","...kkkk...","..mk
 var DUCK=["..kkkk......",".kkkkkkk....",".klkkl..mm..",".kllllmmmm..","..kkkkkkkk..","..kk..kk....",".kk....kk..."];
 var PAL={k:INK,l:LITE,m:MID};
 var ov,cv,c,top,tc,doneBtn,closeBtn,xBtn,opts=null,raf=0;
-var st,p,obs,speed,dist,next,best=0,last=0,t=0,ground=[],clouds=[],loaded=false,openedAt=0,night=false;
+var st,p,obs,speed,dist,next,best=0,last=0,t=0,ground=[],clouds=[],loaded=false,openedAt=0,night=false,prog=null;
 try{best=+localStorage.getItem('sx-bookrun-best')||0;}catch(e){}
 
 function txt(s,x,y,align,col){s=String(s).toUpperCase();var w=s.length*4-1;if(align==='right')x-=w;else if(align==='center')x-=Math.floor(w/2);
@@ -115,7 +116,7 @@ function draw(){
   if(st==='dead'){txt('G A M E   O V E R',W/2,24,'center');txt('SPACE OR TAP TO RUN AGAIN',W/2,34,'center');}}
 function drawTop(){var g=c;c=tc;c.clearRect(0,0,W,16);
   txt(loaded?'LOADING COMPLETE':'LOADING '+(opts.label||''),0,0);txt('TEMPORARY MINIGAME',W,0,'right',MID);
-  var frac=loaded?1:Math.min(.95,1-Math.exp(-(Date.now()-openedAt)/((opts.expect||12)*1000)));
+  var frac=loaded?1:prog!=null?Math.min(.98,Math.max(0,prog)):Math.min(.95,1-Math.exp(-(Date.now()-openedAt)/((opts.expect||12)*1000)));
   c.fillStyle=INK;c.fillRect(0,8,W,1);c.fillRect(0,14,W,1);c.fillRect(0,8,1,7);c.fillRect(W-1,8,1,7);
   var cells=Math.floor((W-4)/4),on=Math.round(cells*frac);for(var i=0;i<on;i++)c.fillRect(2+i*4,10,3,3);c=g;}
 function frame(now){if(!opts){raf=0;return;}raf=requestAnimationFrame(frame);
@@ -127,7 +128,7 @@ function isDark(){if(!ov.parentNode)document.body.appendChild(ov);var m=getCompu
   return !!m&&(0.299*m[0]+0.587*m[1]+0.114*m[2])<128;}
 function open(o){
   if(!ov)build();
-  opts=o||{mode:'free'};loaded=false;openedAt=Date.now();st='ready';reset();
+  opts=o||{mode:'free'};loaded=false;openedAt=Date.now();st='ready';reset();prog=o&&o.progress!=null?o.progress:null;
   top.hidden=opts.mode!=='loading';ov.classList.toggle('dk',isDark());ov.classList.toggle('ld',opts.mode==='loading');foot();ov.classList.remove('gone');setNight(false);
   if(!ov.parentNode)document.body.appendChild(ov);
   try{if(document.activeElement&&document.activeElement.blur)document.activeElement.blur();}catch(e){}
@@ -154,5 +155,6 @@ function close(){if(!opts)return;var o=opts;opts=null;ov.classList.add('gone');s
   if(o.onClose)try{o.onClose();}catch(e){}}
 window.BookRun={
   open:open,offer:offer,close:close,isOpen:function(){return !!opts||!!pop;},
+  progress:function(f){prog=f==null?null:Math.max(prog||0,+f||0);if(popOpts)popOpts.progress=prog;},
   loaded:function(){if(pop&&!opts){dropPop();return;}if(!opts||opts.mode!=='loading'||loaded)return;loaded=true;if(st==='ready')close();else foot();}};
 })();
