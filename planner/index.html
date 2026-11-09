@@ -10233,11 +10233,14 @@ document.addEventListener('click',e=>{
 /* ---------- Book Run (arcade/bookrun.js): No Internet on Home, and the minigame over any loading screen that passes 5 s ---------- */
 document.addEventListener('click',e=>{if(e.target.closest('[data-nonet]')&&window.BookRun&&!BookRun.isOpen())BookRun.open({mode:'free'});});
 (function(){let since=0,mine=false,skip=false,cur='';
-  const busy=()=>[...document.querySelectorAll('#games .gm-load:not(.done):not(.tr-intro),#dataload,.res-load')].find(e=>e.getClientRects().length);
+  /* never at the start: not while signing in (splash), not over "loading data" on a reload, and not in the first 15 s of the page */
+  const vis=e=>!!(e&&!e.hidden&&e.getClientRects().length);
+  const booting=()=>performance.now()<15000||vis(document.getElementById('splash'))||vis(document.getElementById('dataload'))||!!(state.user&&!settingsLoaded);
+  const busy=()=>booting()?null:[...document.querySelectorAll('#games .gm-load:not(.done):not(.tr-intro),.res-load')].find(e=>e.getClientRects().length);
   setInterval(()=>{if(!window.BookRun)return;const el=busy();
     if(el){if(!since)since=Date.now();
       if(!mine&&!skip&&!BookRun.isOpen()&&Date.now()-since>=5000){
-        const n=el.querySelector('.gm-lname'),label=n?n.textContent.replace(/\b\w/g,m=>m.toUpperCase()):el.id==='dataload'?'your planner':'this page';
+        const n=el.querySelector('.gm-lname'),label=n?n.textContent.replace(/\b\w/g,m=>m.toUpperCase()):'this page';
         const secs=lsJSON('sx-loadsecs'),f0=document.querySelector('#games .gm-frame'),known=f0&&f0._gr&&f0._gr.frac;
         mine=true;cur=label;BookRun.offer({mode:'loading',label,expect:secs[label]||(n?10:8),progress:known||null,onClose:()=>{mine=false;skip=true;const f=document.querySelector('#games .gm-frame');if(f)try{f.focus();}catch(_){}}});}}
     else{if(since&&cur){const secs=lsJSON('sx-loadsecs'),s=(Date.now()-since)/1000;secs[cur]=secs[cur]?Math.round((secs[cur]+s)*5)/10:Math.round(s*10)/10;lsPut('sx-loadsecs',secs);cur='';}
