@@ -1080,51 +1080,6 @@ html.splash-on,html.splash-on body{overflow:hidden}
 #splash .sp-down svg{width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 @keyframes spbob{0%,100%{transform:translateY(0)}50%{transform:translateY(7px)}}
 #splash .sp-more{cursor:default;transition:opacity .4s ease}
-#splash .sp-gm{max-width:1160px;margin:0 auto;padding:56px 30px 6px}
-#splash .sp-gm h2{margin:0 0 18px;font:800 clamp(1.8rem,3.4vw,2.6rem)/1 var(--font-ui);text-transform:uppercase;letter-spacing:-0.03em}
-#splash .sp-gm-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
-#splash .sp-gm-grid>div{background:color-mix(in srgb,var(--fg) 5%,var(--bg));padding:16px 18px 18px}
-#splash .sp-gm-grid b{display:block;font:800 12.5px var(--font-ui);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px}
-#splash .sp-gm-grid p{margin:0;font-size:13.5px;line-height:1.45;color:var(--fg2)}
-#splash .sp-gm kbd{font:700 12px var(--font-ui);border:1px solid var(--edge);padding:0 6px}
-@media (max-width:900px){#splash .sp-gm-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media (max-width:700px){#splash .sp-gm{padding:36px 16px 0}#splash .sp-gm-grid{grid-template-columns:1fr}}
-/* the documentation on the login page: the Guide's layout, with its contents column sticky inside the login page */
-#spdoc{--rin:0px;color:var(--fg)}
-#spdoc .docs-in{position:relative;max-width:880px;margin:0 auto;padding:40px 30px 80px}
-#spdoc .res-head{margin-bottom:18px;position:sticky;top:0;z-index:6;background:var(--bg);padding:14px 0 10px}
-#spdoc .rdoc{padding:0 0 28px;background:transparent}
-#spdoc .rdoc h3:first-child{margin-top:22px}
-#spdoc .rdoc td{white-space:normal}
-#spdoc .rdoc kbd{font-family:var(--font-ui);font-size:12px;font-weight:700;border:1px solid var(--edge);padding:1px 6px;white-space:nowrap;display:inline-block;line-height:1.5}
-#spdoc .docs-toc{font-family:var(--font-ui)}
-#spdoc .dt-list{list-style:none;margin:0;padding:0}
-#spdoc .dt-list li{margin:0;padding:0}
-#spdoc .dt-list a{display:block;padding:5px 8px 5px 12px;border-left:2px solid transparent;color:var(--fg2);text-decoration:none;font-size:13.5px;line-height:1.35;transition:color .15s,border-color .15s}
-#spdoc .dt-list .dt-sub a{padding-left:24px;font-size:13px}
-#spdoc .dt-list a:hover{color:var(--fg)}
-#spdoc .dt-list a.on{color:var(--fg);font-weight:700;border-left-color:var(--accent)}
-#spdoc .dt-list a:focus-visible,#spdoc .dt-tog:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
-#spdoc .dt-h{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--fg2);line-height:1;margin:0 0 12px 14px}
-#spdoc .dt-tog{display:none}
-@media (min-width:900px){
-  #spdoc .docs-in{max-width:1160px}
-  #spdoc .docs-body{display:grid;grid-template-columns:210px minmax(0,1fr);column-gap:48px;align-items:start}
-  #spdoc .docs-toc{position:sticky;top:124px;margin-top:22px;max-height:calc(100vh - 140px);display:flex;flex-direction:column}
-  #spdoc .dt-list{overflow-y:auto;overscroll-behavior:contain;min-height:0;flex:1 1 auto}
-}
-@media (max-width:899px){
-  #spdoc .dt-h{display:none}
-  #spdoc .docs-toc{margin:0 0 6px;background:var(--panel2)}
-  #spdoc .dt-tog{display:flex;align-items:center;justify-content:space-between;width:100%;appearance:none;border:0;background:transparent;color:var(--fg);font:800 13px var(--font-ui);letter-spacing:.06em;text-transform:uppercase;padding:13px 14px;cursor:pointer}
-  #spdoc .dt-tog svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:transform .15s}
-  #spdoc .docs-toc.open .dt-tog svg{transform:rotate(180deg)}
-  #spdoc .docs-toc:not(.open) .dt-list{display:none}
-  #spdoc .dt-list{padding:0 0 10px}
-  #spdoc .dt-list a{padding:8px 14px 8px 12px;font-size:14px}
-  #spdoc .dt-list .dt-sub a{padding-left:26px}
-}
-@media (max-width:700px){#spdoc .docs-in{padding:24px 16px 48px}}
 /* logging in: the wallpaper fades to the page color, the title slides to its place on Home, the form gives way */
 #splash.morph{overflow:hidden}
 #splash.morph .sp-img,#splash.morph .sp-shade,#splash.morph .sp-top,#splash.morph .sp-down,#splash.morph .sp-more{opacity:0}
@@ -1989,13 +1944,116 @@ nav.tabs .mmenu .mcolors button.kbtn:hover{background:var(--panel);color:var(--f
 #splash .sp-down svg{width:24px;height:24px;stroke-width:3}
 #splash .sp-menu button:focus-visible,#splash .sp-down:focus-visible,#splash .sp-burger:focus-visible{outline:none}
 #splash .sp-more{background:var(--bg);border-top:2px solid var(--line)}
-#splash .sp-gm{padding:64px var(--gut) 8px}
-#splash .sp-gm h2{font-family:var(--display);font-weight:700;font-size:clamp(2.2rem,4.4vw,3.2rem);text-transform:none;letter-spacing:-0.03em;color:var(--pri);margin:0 0 24px}
-#splash .sp-gm-grid{gap:16px}
-#splash .sp-gm-grid>div{background:var(--bg);border:2px solid var(--line);border-bottom-width:4px;border-radius:var(--r);padding:18px 20px 20px}
-#splash .sp-gm-art{display:block;width:56px;height:56px;margin-bottom:12px}
-#splash .sp-gm-grid b{font:800 17px/1.2 var(--font-ui);letter-spacing:0;text-transform:none;margin-bottom:6px}
-#splash .sp-gm-grid p{font-size:15px;color:var(--fg2)}
+/* under the hero: what the planner does, in rows (Ambicant's home page, in the planner's look); flat colors, no motion */
+#splash .lp{max-width:1140px;margin:0 auto;padding:72px var(--gut) 80px;color:var(--fg);font-family:var(--font-ui)}
+#splash .lp-head{text-align:center;max-width:660px;margin:0 auto 44px}
+#splash .lp-kick{font:800 14px/1.2 var(--font-ui);letter-spacing:1px;text-transform:uppercase;color:var(--faint);margin:0 0 12px}
+#splash .lp h2{font-family:var(--display);font-weight:700;letter-spacing:-0.02em;line-height:1.08;color:var(--pri);margin:0;text-transform:none}
+#splash .lp-head h2{font-size:clamp(2rem,4.2vw,3rem);margin-bottom:14px}
+#splash .lp-head p{margin:0;font:600 18px/1.55 var(--font-ui);color:var(--fg2)}
+#splash .lp-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);background:var(--bg);border:2px solid var(--line);border-bottom-width:4px;border-radius:24px;overflow:hidden;margin:0 0 24px}
+#splash .lp-row.flip .lp-info{order:2}
+#splash .lp-info{padding:40px 40px 38px;min-width:0}
+#splash .lp-title{display:flex;align-items:center;gap:14px;margin:0 0 14px}
+#splash .lp-title i,#splash .lp-card>i{display:block;flex:none;width:52px;height:52px}
+#splash .lp i svg{display:block;width:100%;height:100%}
+#splash .lp h3{font:700 28px/1.15 var(--display);letter-spacing:-0.01em;color:var(--fg);margin:0}
+#splash .lp-sub{margin:0 0 8px;font:800 19px/1.35 var(--font-ui);color:var(--fg)}
+#splash .lp-blurb{margin:0 0 22px;font:600 16px/1.6 var(--font-ui);color:var(--fg2)}
+#splash .lp-list{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+#splash .lp-list li{display:flex;gap:12px;align-items:flex-start;background:var(--panel2);border-radius:14px;padding:12px 16px}
+#splash .lp-list li::before{content:"";flex:none;width:22px;height:22px;margin-top:1px;border-radius:50%;background:var(--lp-c) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5.5 10.4l3 3 6-6.6' fill='none' stroke='white' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/14px no-repeat}
+#splash .lp-list b{display:block;font:800 15.5px/1.3 var(--font-ui);color:var(--fg)}
+#splash .lp-list small{display:block;font:600 14px/1.45 var(--font-ui);color:var(--fg2);margin-top:2px}
+#splash .lp-look{display:grid;place-items:center;padding:40px 32px;min-height:400px;min-width:0;background:color-mix(in srgb,var(--lp-c) 14%,var(--bg))}
+/* the little pictures of the pages: plain boxes with the planner's edges, made-up classes */
+#splash .lp-mock{width:min(400px,100%);display:grid;gap:12px;font-family:var(--font-ui);color:var(--fg)}
+#splash .lp-box{background:var(--bg);border:2px solid var(--line);border-bottom-width:4px;border-radius:16px;padding:12px 14px;min-width:0}
+#splash .lp-ch{display:flex;align-items:baseline;gap:8px;margin:0 0 6px}
+#splash .lp-ch b{font:800 15px/1.25 var(--font-ui);color:var(--cc);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#splash .lp-ch span{margin-left:auto;flex:none;font:700 12px var(--font-ui);color:var(--faint)}
+#splash .lp-it{display:flex;align-items:center;gap:10px;padding:5px 0;font:700 14px/1.3 var(--font-ui);color:var(--fg);min-width:0}
+#splash .lp-it>span{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#splash .lp-it i{flex:none;width:18px;height:18px;border:2px solid var(--line);border-bottom-width:3px;border-radius:6px;background:var(--bg)}
+#splash .lp-it.done>span{text-decoration:line-through;color:var(--faint)}
+#splash .lp-it.done i{background:var(--green) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5.5 10.4l3 3 6-6.6' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/12px no-repeat;border-color:var(--green)}
+#splash .lp-it em{margin-left:auto;flex:none;font:700 12px var(--font-ui);font-style:normal;color:var(--fg2)}
+#splash .lp-mock u{text-decoration:none;flex:none;font:800 11px/1 var(--font-ui);letter-spacing:.4px;text-transform:uppercase;padding:4px 7px;border-radius:7px;background:var(--panel2);color:var(--fg2)}
+#splash .lp-mock u.lp-tag{background:var(--red-wash);color:var(--red-dark)}
+#splash .lp-mock u.lp-cl{margin-left:auto;text-transform:none;letter-spacing:0;font-size:12px;color:var(--cc);background:color-mix(in srgb,var(--cc) 14%,var(--bg))}
+#splash .lp-pill{justify-self:start;display:inline-flex;align-items:center;gap:8px;background:var(--bg);border:2px solid var(--line);border-bottom-width:4px;border-radius:999px;padding:6px 14px 6px 8px;font:800 13px var(--font-ui);color:var(--fg)}
+#splash .lp-pill i{width:20px;height:20px;border-radius:50%;background:var(--green) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5.5 10.4l3 3 6-6.6' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/12px no-repeat}
+#splash .lp-week{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;padding:10px}
+#splash .lp-wd{display:flex;flex-direction:column;gap:5px;min-width:0;min-height:150px;padding:6px;border-radius:10px}
+#splash .lp-wd.on{background:var(--blue-wash)}
+#splash .lp-wd b{font:800 13px/1.1 var(--font-ui);color:var(--fg)}
+#splash .lp-wd small{font:800 10px/1 var(--font-ui);text-transform:uppercase;letter-spacing:.4px;margin-bottom:2px}
+#splash .lp-wd small.g{color:var(--green)}
+#splash .lp-wd small.o{color:var(--gold)}
+#splash .lp-wd span{display:block;font:700 11px/1.25 var(--font-ui);color:var(--fg);background:color-mix(in srgb,var(--cc) 16%,var(--bg));border-left:3px solid var(--cc);border-radius:5px;padding:4px 5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#splash .lp-notes{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+#splash .lp-note{border-radius:14px;padding:12px 14px 14px;font:600 13px/1.4 var(--font-ui);color:#4b4b4b;background:#fff1b8;border-bottom:4px solid #f2d466}
+#splash .lp-note.b{background:#d3ecff;border-bottom-color:#9fd1fb}
+#splash .lp-note b{display:block;font:800 14px/1.25 var(--font-ui);color:#3c3c3c;margin-bottom:4px}
+#splash .lp-rr{display:flex;align-items:center;gap:10px;padding:6px 0;font:700 14px/1.3 var(--font-ui);min-width:0}
+#splash .lp-rr+.lp-rr{border-top:2px solid var(--panel2)}
+#splash .lp-rr i{flex:none;width:30px;height:30px}
+#splash .lp-rr span{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#splash .lp-rr u{margin-left:auto}
+#splash .lp-mock u.pub{background:var(--green-bg);color:var(--green)}
+#splash .lp-mock u.wait{background:var(--gold-bg);color:var(--gold)}
+/* games (class g-games: the game-free build cuts the whole row out) */
+#splash .lp-games{grid-template-columns:repeat(2,minmax(0,1fr))}
+#splash .lp-gt{display:flex;flex-direction:column;align-items:flex-start;gap:6px;min-width:0;background:var(--bg);border:2px solid var(--line);border-bottom-width:4px;border-radius:16px;padding:12px 14px}
+#splash .lp-gt i{display:block;width:40px;height:40px}
+#splash .lp-gt b{font:800 15px/1.2 var(--font-ui);color:var(--fg);max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#splash .lp-mock u.sp{background:var(--blue-wash);color:var(--blue-dark)}
+:root[data-theme="dark"] #splash .lp-mock u.sp{color:var(--blue-light)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) #splash .lp-mock u.sp{color:var(--blue-light)}}
+#splash .lp-mock u.so{background:var(--gold-bg);color:var(--gold)}
+#splash .lp-mock u.mp{background:var(--green-bg);color:var(--green)}
+#splash .lp kbd{font:800 12px/1 var(--font-ui);color:var(--fg);background:var(--bg);border:2px solid var(--line);border-bottom-width:4px;border-radius:8px;padding:2px 7px}
+#splash .lp-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;margin:0 0 24px}
+#splash .lp-card{background:var(--bg);border:2px solid var(--line);border-bottom-width:4px;border-radius:24px;padding:28px 26px 30px}
+#splash .lp-card>i{width:60px;height:60px;margin:0 0 14px}
+#splash .lp-card h3{font-size:23px;margin:0 0 8px}
+#splash .lp-card p{margin:0;font:600 15.5px/1.55 var(--font-ui);color:var(--fg2)}
+#splash .lp-end{position:relative;overflow:hidden;text-align:center;background:var(--blue);border-bottom:4px solid var(--blue-dark);border-radius:24px;padding:60px 24px 64px;color:#fff}
+#splash .lp-end h2{color:#fff;font-size:clamp(1.9rem,4vw,2.75rem);margin:0 0 12px}
+#splash .lp-end p{max-width:520px;margin:0 auto 28px;font:700 17px/1.55 var(--font-ui);color:#fff}
+#splash .lp-go{appearance:none;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:0 28px;border-radius:14px;
+  background:#fff;color:#3c81db;border:2px solid #fff;border-bottom:4px solid #cfe3fb;font:800 15px var(--font-ui);letter-spacing:.8px;text-transform:uppercase}
+#splash .lp-go:hover{background:#f2f8ff}
+#splash .lp-go:active{transform:translateY(2px);border-bottom-width:2px;margin-bottom:2px}
+#splash .lp-go:focus-visible{outline:3px solid #fff;outline-offset:3px}
+#splash .lp-deco{position:absolute;width:120px;height:120px;bottom:-14px;pointer-events:none}
+#splash .lp-deco.l{left:28px;transform:rotate(-12deg)}
+#splash .lp-deco.r{right:28px;bottom:-10px}
+@media (max-width:900px){
+  #splash .lp-row{grid-template-columns:minmax(0,1fr)}
+  #splash .lp-row.flip .lp-info{order:0}
+  #splash .lp-look{min-height:0;padding:32px 24px}
+  #splash .lp-cards{grid-template-columns:minmax(0,1fr)}
+  #splash .lp-deco{display:none}}
+@media (max-width:700px){
+  #splash .lp{padding:48px var(--gut) 56px}
+  #splash .lp-head{margin-bottom:28px}
+  #splash .lp-head p{font-size:16px}
+  #splash .lp-row,#splash .lp-cards{margin-bottom:16px}
+  #splash .lp-cards{gap:16px}
+  #splash .lp-info{padding:26px 20px 24px}
+  #splash .lp-title i{width:44px;height:44px}
+  #splash .lp h3{font-size:24px}
+  #splash .lp-sub{font-size:17px}
+  #splash .lp-blurb{font-size:15px}
+  #splash .lp-look{padding:24px 14px}
+  #splash .lp-week{gap:4px;padding:8px 6px}
+  #splash .lp-wd{padding:4px 3px;min-height:128px}
+  #splash .lp-wd span{font-size:10px;padding:3px 4px}
+  #splash .lp-notes{gap:10px}
+  #splash .lp-card{padding:22px 20px 24px}
+  #splash .lp-end{padding:44px 20px 48px}
+  #splash .lp-end p{font-size:16px}}
 #splash.morph .sp-art{opacity:0;transition:opacity .3s ease}
 #splash.morph .sp-title{color:var(--pri)}
 #splash.morph .sp-kicker{color:var(--faint)}
@@ -3699,7 +3757,7 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
 <li><b>Home</b>: logging in opens it, and clicking Saxon Planner in the top bar returns to it. It shows the date, a card for every page (or the view you chose), See assignments, Suggestions, Tutorial, FAQ, Meme and <b>Edit home</b>, Other websites, your quick games, today and the next school day with a Go to calendar button, and Jump back in tiles for To-Do, Tools, Resources<span class="g-chat">, Chat</span>. <b>Edit home</b> opens the Home settings in a pop-up: which view Home shows (Pages, Resources<span class="g-chat">, Chat</span>, Assignments or Notepad) and what it lists. The Resources view holds up to 12 resources you pick, and the Notepad is kept only in this browser. Once a day a meme drops onto Home; Meme replays it and a click closes it. Only Log out returns to the login page.</li>
 <li><b>Footer</b>: Home ends with the copyright line, Terms, Privacy and <b>No Internet</b>. Every other page<span class="g-chat"> except Chat</span>, Your Classes and Jumpscare ends with links to Suggestions, Tutorial, FAQ and this Guide (without the one you're on). Settings, Appearance, Footer turns those links off.</li>
 <li><b>Menu bar</b>: it steps aside while a game or tool fills the screen, and for Desmos and the Clock. The arrow on the left edge (or <kbd>Esc</kbd>) brings you back.</li>
-<li><b>Login page</b>: the three lines at the top right open Desmos, a dark mode switch that only applies to the login page, and links to ProfeGPT, Interpres, Ambicant and Planner. A Copy link button sits next to the address. Scroll down, or press the arrow, for this documentation.</li>
+<li><b>Login page</b>: the three lines at the top right open Desmos, a dark mode switch that only applies to the login page, and links to ProfeGPT, Interpres, Ambicant and Planner. A Copy link button sits next to the address. Scroll down, or press the arrow, for a short overview of what the planner does.</li>
 </ul>
 
 <h3>Finding your Schoology link</h3>
@@ -4126,11 +4184,131 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
     <div class="sp-legal" id="splegal"><button type="button" class="sp-tl" data-legal="terms">Terms and Conditions</button><button type="button" class="sp-tl" data-legal="privacy">Privacy Policy</button></div>
   </div>
   </div>
-  <button class="sp-down" id="spdown" aria-label="Documentation" title="Documentation"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
+  <button class="sp-down" id="spdown" aria-label="What Saxon Planner does" title="What Saxon Planner does"><svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
  </div>
  <div class="sp-more" id="spmore">
-  
-  <div id="spdoc"></div>
+  <section class="lp" aria-labelledby="lp-h">
+    <div class="lp-head">
+      <div class="lp-kick">What it does</div>
+      <h2 id="lp-h">Your classes, homework and notes in one place</h2>
+      <p>Saxon Planner is a school planner built around your schedule. Add your classes once, paste your Schoology link, and your assignments show up on their own.</p>
+    </div>
+
+    <article class="lp-row" style="--lp-c:var(--blue)">
+      <div class="lp-info">
+        <div class="lp-title"><i data-art="backpack"></i><h3>Courses</h3></div>
+        <p class="lp-sub">Every class, and what's coming up in it.</p>
+        <p class="lp-blurb">Each class gets a card with its period and the next things due. Odd periods meet on Green days and even periods on Gold days, and the planner keeps track of which is which.</p>
+        <ul class="lp-list">
+          <li><div><b>Periods and lunch</b><small>Set each class's period and lunch once, and every day's schedule fills in.</small></div></li>
+          <li><div><b>Add in seconds</b><small>Type a line in a class's card and it's due at that class's next meeting.</small></div></li>
+          <li><div><b>Drag to fix</b><small>Move a task to another day, or onto another class's card.</small></div></li>
+        </ul>
+      </div>
+      <div class="lp-look" aria-hidden="true">
+        <div class="lp-mock">
+          <div class="lp-box" style="--cc:#4b9af3"><div class="lp-ch"><b>AP Calculus BC</b><span>Period 3</span></div>
+            <div class="lp-it"><i></i><span>HW 4.2</span><em>Thu</em></div>
+            <div class="lp-it"><i></i><span>Unit 4 test</span><u class="lp-tag">Exam</u><em>Mon</em></div></div>
+          <div class="lp-box" style="--cc:#58a700"><div class="lp-ch"><b>Biology</b><span>Period 2</span></div>
+            <div class="lp-it"><i></i><span>Enzyme lab report</span><em>Fri</em></div>
+            <div class="lp-it done"><i></i><span>Read 7.1 to 7.3</span><em>Wed</em></div></div>
+          <div class="lp-box" style="--cc:#ce82ff"><div class="lp-ch"><b>AP English Language</b><span>Period 1</span></div>
+            <div class="lp-it"><i></i><span>Rhetorical analysis draft</span><em>Tue</em></div></div>
+        </div>
+      </div>
+    </article>
+
+    <article class="lp-row flip" style="--lp-c:var(--green)">
+      <div class="lp-info">
+        <div class="lp-title"><i data-art="calendar"></i><h3>Calendar</h3></div>
+        <p class="lp-sub">Day, week and month, synced with Schoology.</p>
+        <p class="lp-blurb">Paste your Schoology calendar (iCal) link once. Assignments and tests import automatically and land in the right class. The calendar already knows the school year's holidays, breaks and early release days.</p>
+        <ul class="lp-list">
+          <li><div><b>Today</b><small>Today and the next school day, with period times, your lunch and what's due.</small></div></li>
+          <li><div><b>Week and month</b><small>See the week class by class, or drag items to another day in Month.</small></div></li>
+          <li><div><b>Your edits stay</b><small>Importing only adds. It never undoes what you changed or deleted.</small></div></li>
+        </ul>
+      </div>
+      <div class="lp-look" aria-hidden="true">
+        <div class="lp-mock">
+          <div class="lp-pill"><i></i>Imported from Schoology</div>
+          <div class="lp-box lp-week">
+            <div class="lp-wd"><b>Mon</b><small class="g">Green</small><span style="--cc:#4b9af3">Test</span><span style="--cc:#ce82ff">Quiz</span></div>
+            <div class="lp-wd"><b>Tue</b><small class="o">Gold</small><span style="--cc:#ff9600">Essay</span></div>
+            <div class="lp-wd on"><b>Wed</b><small class="g">Green</small><span style="--cc:#58a700">Lab</span><span style="--cc:#4b9af3">HW 4.3</span></div>
+            <div class="lp-wd"><b>Thu</b><small class="o">Gold</small><span style="--cc:#4b9af3">HW 4.4</span></div>
+            <div class="lp-wd"><b>Fri</b><small class="g">Green</small><span style="--cc:#ff4b4b">DBQ</span></div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="lp-row" style="--lp-c:var(--orange)">
+      <div class="lp-info">
+        <div class="lp-title"><i data-art="clipboard"></i><h3>Assignments and To-Do</h3></div>
+        <p class="lp-sub">One list of what's left, and notes for everything else.</p>
+        <p class="lp-blurb">Assignments lists everything not done yet, oldest first, and you cross things off as you finish them. To-Do holds sticky notes for the rest: reminders, forms to turn in, things to bring.</p>
+        <ul class="lp-list">
+          <li><div><b>Overdue at a glance</b><small>Open the overdue column to see what was due today or earlier.</small></div></li>
+          <li><div><b>Sticky notes</b><small>Color them, give them a class, or turn an assignment into a note.</small></div></li>
+          <li><div><b>Undo</b><small>Crossed off the wrong thing? Ctrl+Z brings it back.</small></div></li>
+        </ul>
+      </div>
+      <div class="lp-look" aria-hidden="true">
+        <div class="lp-mock lp-mock-todo">
+          <div class="lp-box">
+            <div class="lp-it" style="--cc:#4b9af3"><i></i><span>HW 4.2</span><u class="lp-cl">Calc BC</u></div>
+            <div class="lp-it done" style="--cc:#58a700"><i></i><span>Read 7.1 to 7.3</span><u class="lp-cl">Biology</u></div>
+            <div class="lp-it" style="--cc:#ff4b4b"><i></i><span>DBQ outline</span><u class="lp-cl">APUSH</u></div>
+            <div class="lp-it" style="--cc:#ce82ff"><i></i><span>Vocab unit 5</span><u class="lp-cl">English</u></div>
+          </div>
+          <div class="lp-notes">
+            <div class="lp-note"><b>Field trip form</b>Signed, to the front office by Friday</div>
+            <div class="lp-note b"><b>Bring</b>Calculator and graph paper</div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <article class="lp-row flip" style="--lp-c:var(--purple)">
+      <div class="lp-info">
+        <div class="lp-title"><i data-art="books"></i><h3>Resources</h3></div>
+        <p class="lp-sub">Documents and links for each class, shared by classmates.</p>
+        <p class="lp-blurb">Keep study guides, notes and links under the class they belong to. Make one public and, once it's approved, anyone taking that class can import it from the public library.</p>
+        <ul class="lp-list">
+          <li><div><b>Documents and links</b><small>Write guides with headings, lists and highlights, or save a link or a PDF.</small></div></li>
+          <li><div><b>Public library</b><small>Search by class, title or text, and import what helps.</small></div></li>
+          <li><div><b>Reviewed first</b><small>Public resources are checked before anyone else can see them.</small></div></li>
+        </ul>
+      </div>
+      <div class="lp-look" aria-hidden="true">
+        <div class="lp-mock">
+          <div class="lp-box lp-res"><div class="lp-ch" style="--cc:#ff4b4b"><b>AP US History</b><span>4 resources</span></div>
+            <div class="lp-rr"><i data-art="notepad"></i><span>Unit 3 study guide</span><u class="pub">Public</u></div>
+            <div class="lp-rr"><i data-art="scroll"></i><span>Key court cases</span><u class="wait">In review</u></div>
+            <div class="lp-rr"><i data-art="globe"></i><span>Primary source reader</span><u>Link</u></div>
+            <div class="lp-rr"><i data-art="clock"></i><span>Reconstruction timeline</span><u>Private</u></div>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    
+
+    <div class="lp-cards">
+      <div class="lp-card" style="--lp-c:var(--blue)"><i data-art="calc"></i><h3>Tools</h3><p>A GPA calculator that weights classes the FCPS way, Desmos, a clock that counts down the period, a physics table helper and a breathing timer for study breaks.</p></div>
+      <div class="lp-card" style="--lp-c:var(--green)"><i data-art="chat"></i><h3>Chat</h3><p>Message friends one on one, or start a group of up to 20. Only people on your friends list can message you directly.</p></div>
+      <div class="lp-card" style="--lp-c:var(--orange)"><i data-art="trophy"></i><h3>Rewards</h3><p>Share your link. Each person who signs up with it moves you up a rank and unlocks something new, like custom page colors, colored notes and Crown avatars.</p></div>
+    </div>
+
+    <div class="lp-end">
+      <i class="lp-deco l" data-art="pencil" aria-hidden="true"></i><i class="lp-deco r" data-art="books" aria-hidden="true"></i>
+      <h2>Start with your classes</h2>
+      <p>All it takes is a username and a password. Add your classes, paste your Schoology link, and you're set.</p>
+      <button type="button" class="lp-go" id="lpgo">Log in or sign up</button>
+    </div>
+  </section>
  </div>
 </div>
 <header class="topbar">
@@ -10774,8 +10952,7 @@ if(window.SX_REF)sxRefArrived(window.SX_REF);
   const hero=document.getElementById('sphero'),img=sp.querySelector('.sp-img');
   const show=()=>{go.classList.remove('busy');sp.classList.remove('gone','out','morph');resetMorph();document.documentElement.classList.add('splash-on');
     themePref('sx-theme-login');spThemeSync();spMenu(false);sp.scrollTop=0;
-    gate.hidden=false;user.value='';code.value='';conf.value='';msg.textContent='';focusFirst();
-    setTimeout(buildSpDoc,60);};
+    gate.hidden=false;user.value='';code.value='';conf.value='';msg.textContent='';focusFirst();};
   splashShow=(m)=>{setMode(false);show();if(m)msg.textContent=m;};
   /* the title's four pieces and where they sit on Home */
   const mv=()=>[[sp.querySelector('.sp-kicker'),'.hm-kicker'],[sp.querySelector('.sp-url'),'.hm-url'],[sp.querySelector('.sp-title .l1'),'.hm-title .l1'],
@@ -10917,22 +11094,16 @@ if(window.SX_REF)sxRefArrived(window.SX_REF);
     if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();it[(i+(e.key==='ArrowDown'?1:-1)+it.length)%it.length].focus();}});
   document.addEventListener('pointerdown',e=>{if(menu.classList.contains('open')&&!e.target.closest('.sp-mwrap'))spMenu(false);},true);
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&menu.classList.contains('open')){e.stopPropagation();spMenu(false);mbtn.focus();}},true);
-  /* the arrow at the bottom of the wallpaper glides down to the documentation */
-  /* where it stops: the games note at the top with the Documentation heading in view; on a short screen the heading itself at the top */
-  const docTop=()=>{buildSpDoc();const base=document.getElementById('spmore').offsetTop,h=sp.querySelector('#spdoc .res-head');if(!h)return base;
-    const top=h.getBoundingClientRect().top-sp.getBoundingClientRect().top+sp.scrollTop;
-    return top+h.offsetHeight+24<=base+sp.clientHeight?base:Math.max(base,Math.round(top-24));};
+  /* the arrow at the bottom of the wallpaper glides down to what the planner does */
+  const docTop=()=>document.getElementById('spmore').offsetTop;
   let gliding=false,lockTo=0,lockCap=0;
   const glide=y=>{gliding=true;sp.scrollTo({top:y,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});
     const end=()=>{if(!gliding)return;gliding=false;lockTo=performance.now()+260;lockCap=lockTo+1000;};
     sp.addEventListener('scrollend',end,{once:true});setTimeout(end,900);};
   document.getElementById('spdown').addEventListener('click',e=>{e.stopPropagation();glide(docTop());});
-  /* the documentation under the wallpaper: the Guide, with its contents column */
-  function buildSpDoc(){const d=document.getElementById('spdoc'),tpl=document.getElementById('docs-tpl');if(!d||d.firstChild||!tpl)return;
-    d.innerHTML=`<div class="docs-in"><div class="res-head"><div class="rh-text"><span class="rh-art">${art('guide')}</span><span class="rc">Saxon Planner</span><span class="rt">Documentation</span></div></div><div class="docs-body"><nav class="docs-toc" aria-label="Contents"></nav><div class="rdoc udoc">${tpl.innerHTML}</div></div></div>`;
-    /* the login page writes the games in lowercase */
-    d.querySelectorAll('.g-games h3').forEach(h=>{if(h.textContent==='Games')h.textContent='games';});
-    docsToc(sp);}
+  /* the button at the end of the overview glides back up to the form and puts the cursor in it */
+  document.getElementById('lpgo').addEventListener('click',e=>{e.stopPropagation();glide(0);
+    setTimeout(()=>{if(!gate.hidden)(user.value?code:user).focus({preventScroll:true});},matchMedia('(prefers-reduced-motion: reduce)').matches?0:650);});
   document.documentElement.classList.add('splash-on');
   if(passKey){
     gate.hidden=true;state.view='home';
