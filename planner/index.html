@@ -476,8 +476,8 @@ section.view{display:none}
 .rl-user .rl-seen{color:var(--faint)}
 .rl-cnt{font-weight:600;color:var(--faint);font-size:.8em;margin-left:6px}
 .rl-seeall{display:block;width:100%;margin-top:10px}
-.rla-ov{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.4)}
-.rla-box{width:min(900px,100%);max-height:calc(100vh - 32px);display:flex;flex-direction:column;gap:14px;padding:20px;background:var(--bg);border:2px solid var(--line);border-bottom-width:4px;border-radius:16px}
+.rla-ov{position:fixed;left:0;right:0;bottom:0;top:var(--rla-top,0px);z-index:1500;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.4)}
+.rla-box{width:min(900px,100%);max-height:100%;box-sizing:border-box;display:flex;flex-direction:column;gap:14px;padding:20px;background:var(--bg);border:2px solid var(--line);border-bottom-width:4px;border-radius:16px}
 .rla-head{display:flex;align-items:center;gap:12px}.rla-head h3{margin:0;flex:none}
 .rla-head .res-x{position:static;margin-left:auto}
 .rla-q{flex:1;min-width:0;max-width:280px;height:40px;padding:0 12px;border:2px solid var(--line);border-radius:12px;background:var(--panel);color:var(--fg);font:inherit;font-size:14px}
@@ -11717,13 +11717,17 @@ async function rlAllOpen(){
   let r=null;try{r=await api('/api/roles',{method:'POST',body:JSON.stringify({op:'accounts'})});}catch(_){r=null;}
   if(!RLA)return;RLA.list=r&&r.ok?r.recent:[];RLA.err=!(r&&r.ok);rlAllPaint();
 }
+/* the overlay starts under the top bar, never behind it */
+function rlAllTop(){const o=document.querySelector('#roles .rla-ov');if(!o)return;const h=document.querySelector('header.topbar');
+  o.style.setProperty('--rla-top',Math.max(0,h&&h.offsetParent!==null?Math.round(h.getBoundingClientRect().bottom):0)+'px');}
+addEventListener('resize',()=>{if(RLA)rlAllTop();});
 function rlAllClose(){RLA=null;const o=document.querySelector('#roles .rla-ov');if(o)o.remove();}
 function rlAllPaint(){
   const d=document.getElementById('roles');if(!d||d.hidden||!RLA)return;
   let o=d.querySelector('.rla-ov');
   if(!o){o=document.createElement('div');o.className='rla-ov';o.setAttribute('role','dialog');o.setAttribute('aria-label','All accounts');
     o.innerHTML=`<div class="rla-box"><div class="rla-head"><h3>All accounts</h3><input type="search" class="rla-q" placeholder="Search usernames" aria-label="Search usernames" spellcheck="false"><button type="button" class="hbtn res-x" data-rl-allx title="Close" aria-label="Close">\u00d7</button></div><div class="rla-body"></div><div class="rla-pages"></div></div>`;
-    d.appendChild(o);o.querySelector('.rla-q').addEventListener('input',e=>{RLA.q=e.target.value.trim().toLowerCase();RLA.page=0;rlAllPaint();});
+    d.appendChild(o);rlAllTop();o.querySelector('.rla-q').addEventListener('input',e=>{RLA.q=e.target.value.trim().toLowerCase();RLA.page=0;rlAllPaint();});
     setTimeout(()=>o.querySelector('.rla-q').focus(),30);}
   const body=o.querySelector('.rla-body'),pg=o.querySelector('.rla-pages');
   if(!RLA.list){body.innerHTML=`<div class="res-load">${resRunHTML()}</div>`;pg.innerHTML='';return;}
