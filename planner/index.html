@@ -475,6 +475,19 @@ section.view{display:none}
 .rl-user .rl-sub{color:var(--fg2);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .rl-user .rl-seen{color:var(--faint)}
 .rl-cnt{font-weight:600;color:var(--faint);font-size:.8em;margin-left:6px}
+.rl-seeall{display:block;width:100%;margin-top:10px}
+.rla-ov{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.4)}
+.rla-box{width:min(900px,100%);max-height:calc(100vh - 32px);display:flex;flex-direction:column;gap:14px;padding:20px;background:var(--bg);border:2px solid var(--line);border-bottom-width:4px;border-radius:16px}
+.rla-head{display:flex;align-items:center;gap:12px}.rla-head h3{margin:0;flex:none}
+.rla-head .res-x{position:static;margin-left:auto}
+.rla-q{flex:1;min-width:0;max-width:280px;height:40px;padding:0 12px;border:2px solid var(--line);border-radius:12px;background:var(--panel);color:var(--fg);font:inherit;font-size:14px}
+.rla-q:focus{outline:none;border-color:var(--blue)}
+.rla-body{overflow-y:auto;min-height:0}
+.rla-cols{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px;align-items:start}
+.rla-pages{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.rla-pages .kbtn.on{background:var(--blue);border-color:var(--blue);color:#fff}
+.rla-gap{color:var(--faint);padding:0 2px}.rla-info{margin-left:auto;color:var(--faint);font-size:13px}
+@media (max-width:700px){.rla-cols{grid-template-columns:1fr}.rla-head{flex-wrap:wrap}.rla-q{order:3;max-width:none;flex-basis:100%}}
 @media (max-width:700px){.rl-user{flex-wrap:wrap}}
 .rl-user .kbtn{padding:5px 9px;font-size:10.5px}
 .rl-q{background:var(--panel);padding:12px 14px}
@@ -3321,7 +3334,7 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
 <p><b>Set up your classes.</b> A new account gets a short tutorial first, then lands on Your Classes. Until you add classes, the other tabs only remind you to add them first.</p>
 <p>Everything you change saves to your account right away. The planner also reloads your data every 5 minutes, and whenever you come back to its tab after a minute away, so it stays the same across computers.</p>
 <ul>
-<li><b>Top bar</b>: Courses, Calendar, To-Do, Assignments, Resources, Tools<span class="g-chat"> and Chat</span>, then the three lines at the top right. Their menu holds every page that doesn't fit in the bar, then <span class="g-games">Games, </span>Settings, Suggestions,<span class="g-ref"> Rewards,</span> this Guide, Dark mode, Math (a separate math site), Dashboard (administrators only) and Other, a folder with ProfeGPT, Interpres, Ambicant and Planner. Your username and Log out are at the bottom. On a phone every page is in that menu<span class="g-chat">, and a dot on the three lines means a new chat message</span>.</li>
+<li><b>Top bar</b>: Courses, Calendar, To-Do, Assignments, Resources, Tools<span class="g-chat"> and Chat</span>, then the three lines at the top right. Their menu holds every page that doesn't fit in the bar, then <span class="g-games">Games, </span>Settings, Suggestions,<span class="g-ref"> Rewards,</span> this Guide, Dark mode, Math (a separate math site) and Other, a folder with ProfeGPT, Interpres, Ambicant and Planner. Your username and Log out are at the bottom. On a phone every page is in that menu<span class="g-chat">, and a dot on the three lines means a new chat message</span>.</li>
 <li><b>Home</b>: logging in opens it, and clicking Saxon Planner in the top bar returns to it. It shows the date, a card for every page (or the view you chose), See assignments, Suggestions, Tutorial, FAQ, Meme and <b>Edit home</b>, Other websites, your quick games, today and the next school day with a Go to calendar button, and Jump back in tiles for To-Do, Tools, Resources<span class="g-chat">, Chat</span><span class="g-games"> and Games</span>. <b>Edit home</b> opens the Home settings in a pop-up: which view Home shows (Pages, Resources<span class="g-chat">, Chat</span>, Assignments or Notepad) and what it lists. The Resources view holds up to 12 resources you pick, and the Notepad is kept only in this browser. Once a day a meme drops onto Home; Meme replays it and a click closes it. Only Log out returns to the login page.</li>
 <li><b>Footer</b>: Home ends with the copyright line, Terms, Privacy and <b>No Internet</b>. Every other page<span class="g-chat"> except Chat</span>, Your Classes and Jumpscare ends with links to Suggestions, Tutorial, FAQ and this Guide (without the one you're on). Settings, Appearance, Footer turns those links off.</li>
 <li><b>Menu bar</b>: it steps aside while a game or tool fills the screen, and for Desmos and the Clock. The arrow on the left edge (or <kbd>Esc</kbd>) brings you back.</li>
@@ -3456,9 +3469,9 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
 <h3>Publishing</h3>
 <ul>
 <li>New resources are <b>Private</b>. Private resources never appear in the public library.</li>
-<li>Switching a resource to <b>Public</b> sends it to a moderator. A document needs at least 350 words and fewer than 5 typos first (the word count is next to the switch). If it falls short it is saved as private and the reason shows. Lowercase words the dictionary doesn't know count as typos; capitalized words are taken as names.</li>
+<li>Switching a resource to <b>Public</b> sends it for review. A document needs at least 350 words and fewer than 5 typos first (the word count is next to the switch). If it falls short it is saved as private and the reason shows. Lowercase words the dictionary doesn't know count as typos; capitalized words are taken as names.</li>
 <li>Text with slurs or strong profanity isn't published. It shows as <b>Not published</b> and the words are highlighted so you can change them.</li>
-<li>Until a moderator decides, it shows as <b>Waiting for approval</b> and stays out of the library. If it's approved it shows as Public and appears in the public library. If it's turned down it shows as <b>Not approved</b> and stays out of the library; saving it again with Public on sends it back to a moderator.</li>
+<li>Until it's reviewed, it shows as <b>Waiting for approval</b> and stays out of the library. If it's approved it shows as Public and appears in the public library. If it's turned down it shows as <b>Not approved</b> and stays out of the library; saving it again with Public on sends it back for review.</li>
 <li>Changing an approved resource sends it back for approval.</li>
 </ul>
 
@@ -3491,22 +3504,9 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
 <li><b>Classes</b>: <b>Extended view</b> shows dates and details on tasks (this computer remembers it). <b>Full course names</b> shows full names everywhere instead of short ones (AP Calc BC, AP US History). <b>Focus mode</b> shows one class at a time on Courses. <b>Classes and colors</b>, Edit opens Your Classes. <b>Schoology calendar</b> holds your iCal link. <span class="g-games"><b>Guest code</b>: paste a code from playing games as a guest and press Move to bring that progress into your account. Each code works once.</span></li>
 <li><b>Appearance</b>: <b>Hide pages</b> takes any page out of the top bar, the menu and Home. <b>Home</b> picks what Home shows (the same settings as Edit home). <b>Colors</b> gives Home and each page its own color from nine swatches<span class="g-ref">; a custom color comes with 2 referrals, and with 3 a second color makes a gradient, from presets like Prideful, Sunset Drive and Northern Lights or two colors of your own</span>. <b>Fade</b> adds a soft glow of the page color in the corner<span class="g-ref">, in the gradient when there is one</span>. <b>Decorations</b> adds circles to the corners of the cards on Home and Tools. <b>Footer</b> shows the links at the bottom of each page. <b>Avatar</b> picks the picture next to your name in Chat<span class="g-ref">; the Crown avatars unlock with 10 referrals</span>.</li>
 <li><b>Security</b>: a <b>To do</b> list (Add your Schoology link, Set a picture password, Turn on two-step login), then <b>Change password</b> (the old one keeps working for 3 days), <b>Picture password</b> (3 of 12 pictures, in order, that let you reset a forgotten password; 6 wrong tries lock it until you log in with your password), <b>Two-step login</b> (asks for your pictures at every login; needs a picture password first), <b>Sensitive pictures</b>, and <b>Security notices</b>, a list of recent changes to your account.</li>
-<li><b>Administration</b> (the owner): the Administration page.</li>
 </ul>
 <p>Dark mode, in the same menu, switches between light and dark themes.</p>
 <p>Each account can store up to 512 KB of planner data.</p>
-
-<h3>Administration</h3>
-<ul>
-<li>The Administration page lists every <b>administrator</b> and <b>moderator</b> and the 30 most recent sign-ups, with when each signed up and was last here. It checks for new sign-ups every minute while open.</li>
-<li>Administrators add moderators by username or with Make moderator next to a recent sign-up, and remove them with the × on their name.</li>
-<li class="g-ref">The <b>Multiplayer unlocked</b> list opens multiplayer for an account by username without a referral, and × locks it again.</li>
-<li><b>Message</b> sends a note to one username, or to Everyone, that arrives in the inbox in Chat.</li>
-<li class="g-games"><b>Game testing mode</b> (game administrators): opens every game maxed out. Nothing is saved while it's on.</li>
-<li>Administrators also see <b>Suggestions</b>: every suggestion and bug report, newest first, with who sent it and when. All, Suggestion and Bug filter the list. Type a message in the box under one (optional), then <b>Accept</b> (<b>Fixed</b> for a bug) or <b>Decline</b>: the verdict and your message go to the sender's inbox. <b>Remove</b> takes one off the list without telling them.</li>
-<li>Moderators and administrators review public resources from the <b>Review</b> button in the public library, which shows how many are waiting. <b>Open</b> shows the document or link, <b>Approve</b> publishes it, and <b>Turn down</b> marks it Not approved.</li>
-<li><b>Dashboard</b>, in the menu for administrators, counts accounts, sign-ups by day and week, who was active (a login or a visit), visits by time of day, assignments completed and on time, the most played games and the most used buttons. <b>New players</b> shows what accounts from the last 30 days did first: finished or skipped the tutorial (and where they skipped), added classes, linked Schoology, went straight to games, or came back later. It refreshes every minute while open.</li>
-</ul>
 
 <div class="g-ref"><h3>Rewards</h3>
 <p>Rewards, in the menu at the top right, shows your rank and what each referral unlocks. Your referral code is your username: share your link, or have friends type your username into Referral code when they sign up. Everyone they bring in counts for you too (if you refer someone and they refer someone, you have 2). Rewards lists the people who used your code. Everyone starts as a Newcomer.</p>
@@ -3522,7 +3522,7 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
 <p>Class colors are always yours to pick.</p></div>
 
 <h3>Suggestions</h3>
-<p>Suggestions in the menu at the top right, on Home, or in the footer opens Suggestions. Choose <b>Suggestion</b> or <b>Bug</b>, write up to 2000 characters, and press Send (or <kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>Enter</kbd>). It goes to the site's administrators with your username, and a reply arrives in your inbox. This is also where to send questions about the Terms and Conditions or Privacy Policy, takedown requests and account deletion requests.</p>
+<p>Suggestions in the menu at the top right, on Home, or in the footer opens Suggestions. Choose <b>Suggestion</b> or <b>Bug</b>, write up to 2000 characters, and press Send (or <kbd>Ctrl</kbd>/<kbd>Cmd</kbd>+<kbd>Enter</kbd>). It's sent with your username, and a reply arrives in your inbox. This is also where to send questions about the Terms and Conditions or Privacy Policy, takedown requests and account deletion requests.</p>
 
 <h3>Tutorial and FAQ</h3>
 <p>The <b>Tutorial</b> starts right after sign up and can be replayed from Home or the footer. Next, Back and Skip move through it, and <kbd>Esc</kbd> ends it. It visits Home, <span class="g-games">Games, </span>Your Classes, the Calendar, Courses, Assignments, To-Do, Tools, <span class="g-ref">Rewards, </span>Settings and Security.</p>
@@ -11685,7 +11685,7 @@ async function openRoles(){
   if(nl&&!nl.error)pcPut('roles',{RL:nl,RLS:ns});else if(pc)return;
   if(!pcSame(nl,RL)||!pcSame(ns,RLS)){RL=nl;RLS=ns;rolesPaint();}
 }
-function closeRoles(){const d=document.getElementById('roles');d.hidden=true;d.innerHTML='';RL=null;RLS=null;clearInterval(rlTimer);pgBackTools();}
+function closeRoles(){RLA=null;const d=document.getElementById('roles');d.hidden=true;d.innerHTML='';RL=null;RLS=null;clearInterval(rlTimer);pgBackTools();}
 /* while Administration is open the lists are asked for again every minute, so a new sign-up shows without reopening it.
    Something being typed is never wiped: then only the Recently signed up column is redrawn */
 let rlTimer=0;
@@ -11706,10 +11706,43 @@ function rolesTick(){
 }
 /* Recently signed up: newest first, with the sign-up date and time and when the account was last here */
 function rlRecentHTML(){
+  return `<h3>Recently signed up${RL.total?` <span class="rl-cnt">${RL.total} accounts</span>`:''}</h3>`+(RL.recent.map(rlUserHTML).join('')||'<div class="rl-none">None</div>')
+    +(RL.total>RL.recent.length?`<button type="button" class="kbtn rl-seeall" data-rl-all>See all ${RL.total}</button>`:'');
+}
+/* See all: every account, newest first, two columns of 10 per page, with a name search and page buttons */
+let RLA=null;
+const RLA_PER=20;
+async function rlAllOpen(){
+  RLA={list:null,page:0,q:''};rlAllPaint();
+  let r=null;try{r=await api('/api/roles',{method:'POST',body:JSON.stringify({op:'accounts'})});}catch(_){r=null;}
+  if(!RLA)return;RLA.list=r&&r.ok?r.recent:[];RLA.err=!(r&&r.ok);rlAllPaint();
+}
+function rlAllClose(){RLA=null;const o=document.querySelector('#roles .rla-ov');if(o)o.remove();}
+function rlAllPaint(){
+  const d=document.getElementById('roles');if(!d||d.hidden||!RLA)return;
+  let o=d.querySelector('.rla-ov');
+  if(!o){o=document.createElement('div');o.className='rla-ov';o.setAttribute('role','dialog');o.setAttribute('aria-label','All accounts');
+    o.innerHTML=`<div class="rla-box"><div class="rla-head"><h3>All accounts</h3><input type="search" class="rla-q" placeholder="Search usernames" aria-label="Search usernames" spellcheck="false"><button type="button" class="hbtn res-x" data-rl-allx title="Close" aria-label="Close">\u00d7</button></div><div class="rla-body"></div><div class="rla-pages"></div></div>`;
+    d.appendChild(o);o.querySelector('.rla-q').addEventListener('input',e=>{RLA.q=e.target.value.trim().toLowerCase();RLA.page=0;rlAllPaint();});
+    setTimeout(()=>o.querySelector('.rla-q').focus(),30);}
+  const body=o.querySelector('.rla-body'),pg=o.querySelector('.rla-pages');
+  if(!RLA.list){body.innerHTML=`<div class="res-load">${resRunHTML()}</div>`;pg.innerHTML='';return;}
+  if(RLA.err){body.innerHTML='<div class="rl-none">Can\u2019t load the accounts</div>';pg.innerHTML='';return;}
+  const L=RLA.q?RLA.list.filter(u=>u.name.includes(RLA.q)):RLA.list,n=Math.max(1,Math.ceil(L.length/RLA_PER));
+  RLA.page=Math.min(RLA.page,n-1);const at=RLA.page*RLA_PER,part=L.slice(at,at+RLA_PER);
+  body.innerHTML=part.length?`<div class="rla-cols"><div class="rla-col">${part.slice(0,10).map(rlUserHTML).join('')}</div><div class="rla-col">${part.slice(10).map(rlUserHTML).join('')}</div></div>`:'<div class="rl-none">No matches</div>';
+  /* page buttons: first, last and the two around the current one */
+  const nums=[...new Set([0,n-1,RLA.page-1,RLA.page,RLA.page+1].filter(i=>i>=0&&i<n))].sort((a,b)=>a-b);
+  let h=`<button type="button" class="kbtn" data-rl-pg="${RLA.page-1}" ${RLA.page?'':'disabled'} aria-label="Previous page">\u2039</button>`,prev=-1;
+  nums.forEach(i=>{if(i-prev>1)h+='<span class="rla-gap">\u2026</span>';h+=`<button type="button" class="kbtn${i===RLA.page?' on':''}" data-rl-pg="${i}"${i===RLA.page?' aria-current="page"':''}>${i+1}</button>`;prev=i;});
+  h+=`<button type="button" class="kbtn" data-rl-pg="${RLA.page+1}" ${RLA.page<n-1?'':'disabled'} aria-label="Next page">\u203a</button><span class="rla-info">${L.length?(at+1)+'\u2013'+(at+part.length)+' of '+L.length:''}</span>`;
+  pg.innerHTML=h;
+}
+function rlUserHTML(u){
   const ed=RL.canEdit,now=Date.now();
   const dt=t=>t?new Date(t).toLocaleString([],{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):'Before sign-up times were kept';
   const ago=t=>{if(!t)return '';const m=Math.round((now-t)/60000);return m<2?'here just now':m<60?'here '+m+' min ago':m<1440?'here '+Math.round(m/60)+' h ago':'here '+Math.round(m/1440)+' d ago';};
-  return `<h3>Recently signed up${RL.total?` <span class="rl-cnt">${RL.total} accounts</span>`:''}</h3>`+(RL.recent.map(u=>`<div class="rl-user"><span class="rl-who"><span class="nm">${esc(u.name)}</span><span class="rl-sub"><time datetime="${u.created?new Date(u.created).toISOString():''}">${esc(dt(u.created))}</time>${u.seen&&u.seen-u.created>60000?`<span class="rl-seen">, ${esc(ago(u.seen))}</span>`:''}</span></span>${ed&&!u.mod&&!u.admin?`<button class="kbtn" data-rl-mod="${esc(u.name)}">Make moderator</button>`:''}</div>`).join('')||'<div class="rl-none">None</div>');
+  return `<div class="rl-user"><span class="rl-who"><span class="nm">${esc(u.name)}</span><span class="rl-sub"><time datetime="${u.created?new Date(u.created).toISOString():''}">${esc(dt(u.created))}</time>${u.seen&&u.seen-u.created>60000?`<span class="rl-seen">, ${esc(ago(u.seen))}</span>`:''}</span></span>${ed&&!u.mod&&!u.admin?`<button class="kbtn" data-rl-mod="${esc(u.name)}">Make moderator</button>`:''}</div>`;
 }
 function rolesPaint(msg){
   const d=document.getElementById('roles');if(d.hidden)return;
@@ -11744,6 +11777,8 @@ function rolesPaint(msg){
       ${RLS?`<div class="rl-col"><div class="rl-sgh"><h3>Suggestions</h3><div class="hgroup">${kb('all','All')}${kb('idea','Suggestion')}${kb('bug','Bug')}</div></div>
         ${sq||'<div class="rl-none">Nothing here</div>'}</div>`:''}
     </div></div>`;
+  /* a redraw keeps See all open */
+  if(RLA)rlAllPaint();
 }
 async function rolesSet(name,remove){
   let r=null;try{r=await api('/api/roles',{method:'POST',body:JSON.stringify({op:'set',name,role:'moderator',remove:!!remove})});}catch(_){r={error:'conn'};}
@@ -11772,6 +11807,9 @@ document.addEventListener('click',e=>{
   const d=document.getElementById('roles');if(!d||d.hidden||!d.contains(e.target))return;
   const b=e.target.closest('button');if(!b)return;
   if(b.matches('[data-rl-close]')){closeRoles();return;}
+  if(b.matches('[data-rl-all]')){rlAllOpen();return;}
+  if(b.matches('[data-rl-allx]')){rlAllClose();return;}
+  if(b.dataset.rlPg!==undefined){if(RLA){RLA.page=Number(b.dataset.rlPg)||0;rlAllPaint();}return;}
   if(b.dataset.rlMod){b.disabled=true;rolesSet(b.dataset.rlMod,false);return;}
   if(b.dataset.rlUnmod){b.disabled=true;rolesSet(b.dataset.rlUnmod,true);return;}
   if(b.dataset.rlSk){rlSK=b.dataset.rlSk;rolesPaint();return;}
@@ -11790,7 +11828,7 @@ document.addEventListener('submit',async e=>{const f=e.target.closest('#roles .r
 document.addEventListener('change',e=>{if(e.target.id!=='rl-sys-all')return;const i=document.getElementById('rl-sys-to');if(i)i.disabled=e.target.checked;});
 document.addEventListener('submit',e=>{if(!e.target.closest('#roles .rl-mpf'))return;e.preventDefault();const i=document.getElementById('rl-mpname'),v=i&&i.value.trim().toLowerCase();if(v)rolesMp(v,true);});
 document.addEventListener('submit',e=>{if(!e.target.closest('#roles .rl-add:not(.rl-mpf)'))return;e.preventDefault();const i=document.getElementById('rl-name'),v=i&&i.value.trim().toLowerCase();if(v)rolesSet(v,false);});
-document.addEventListener('keydown',e=>{const d=document.getElementById('roles');if(d&&!d.hidden&&e.key==='Escape'){e.stopPropagation();closeRoles();}},true);
+document.addEventListener('keydown',e=>{const d=document.getElementById('roles');if(d&&!d.hidden&&e.key==='Escape'){e.stopPropagation();if(RLA){rlAllClose();return;}closeRoles();}},true);
 async function redeemGuest(code){
   code=String(code||'').trim().toLowerCase();if(!GUEST_RE.test(code))return {error:'bad'};
   try{return GS?await gsRun('rpcRedeemGuest',code):await api('/api/redeem',{method:'POST',body:JSON.stringify({code})});}catch(_){return {error:'conn'};}
