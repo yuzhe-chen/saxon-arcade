@@ -6631,7 +6631,7 @@ function heroArt(){const g=(k,x,y,s)=>`<g transform="translate(${x} ${y}) scale(
 /* the three sister sites. On Google's Apps Script copy a link offers all three addresses (Firebase, Tinyurl,
    Google Script); everywhere else it goes straight to the Firebase site */
 const SITE_URLS={
-  planner:{Firebase:'saxon-planner.web.app/',Tinyurl:'tinyurl.com/saxon-planner','Google Script':'script.google.com/macros/s/AKfycbxDk0GrC7XrtoekZdrW4qPsffwxxuG0ujTopOYe5m3rzRPX1GOtbv9-aUtvaXAZlFLW/exec'},
+  planner:{Firebase:'atoll.web.app/',Tinyurl:'tinyurl.com/saxon-planner','Google Script':'script.google.com/macros/s/AKfycbxDk0GrC7XrtoekZdrW4qPsffwxxuG0ujTopOYe5m3rzRPX1GOtbv9-aUtvaXAZlFLW/exec'},
   profegpt:{Firebase:'profegpt.web.app/',Tinyurl:'tinyurl.com/profe-gpt','Google Script':'script.google.com/macros/s/AKfycbzQJSe8rHdR9ZDTmpEfFtOtUaHbirB9jQd0rP8GuOYqA-5MNLCDGZYBfOPirBDVybsObQ/exec'},
   interpres:{Firebase:'interpres.web.app/',Tinyurl:'tinyurl.com/interpres-latin','Google Script':'script.google.com/macros/s/AKfycbyfS0EeA5rlHcOyaDjO88BjaxAes0Zwvsh92wXzPKYgDciVoRuDa2eQXZ_eiJNECofn/exec'},
   ambicant:{Firebase:'ambicant.web.app/'}};
@@ -9950,7 +9950,8 @@ const HM_PAGES=[['courses','Courses','Every class with its period and what is co
   ['advisory','To-Do','Sticky notes and school events'],['assignments','Assignments','Everything not done yet, oldest first'],
   ['resources','Resources','Documents and links for each class'],['tools','Tools','Calculators and study helpers'],['tasks','Tasks','Contests, grants and programs'],['chat','Chat','Messages with friends and groups'],
   ['games','Games','Singleplayer, social and multiplayer games'],['guide','Guide','Every feature explained, step by step']];
-const HM_URL=/\.web\.app$/.test(location.hostname)?location.hostname:'saxon-planner.web.app';
+/* the address people copy and share is always atoll.web.app (the game-free copy shares its own address) */
+const HM_URL=location.hostname==='lectern.web.app'?'lectern.web.app':'atoll.web.app';
 document.querySelectorAll('.sp-url a').forEach(a=>{a.href='https:'+SLASH2+HM_URL+'/';a.textContent=HM_URL;});
 /* each Home card's drawing */
 const HM_ART={courses:'backpack',calendar:'calendar',advisory:'sticky',assignments:'clipboard',resources:'books',tools:'calc',tasks:'trophy',chat:'chat',games:'controller',guide:'guide'};
@@ -10085,7 +10086,7 @@ function renderHome(fly){
     el.dataset.sig=sig;
     el.innerHTML=(hv!=='pages'?`<div class="hm-main hm-v-${hv}" id="hm-main"></div>`:`<div class="hm-cards" id="hmcards">${pages.map(([k,n,d],i)=>`<button type="button" class="hm-card" id="hm-${k}" data-home-go="${k}" style="--i:${i}">${art(HM_ART[k],'hm-art')}<span class="hm-tx"><span class="hm-n">${n}</span><span class="hm-d">${d}</span></span></button>`).join('')}</div>`)+`
       <div class="hm-side" id="hmside"><div class="hm-kicker"></div><h2 class="hm-title"><span class="l1">Saxon</span><br><span class="l2">Planner</span></h2><div class="hm-url"><a href="https:${SLASH2}${HM_URL}" target="_blank" rel="noopener">${HM_URL}</a><button type="button" data-hm-copy aria-label="Copy link" title="Copy link"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12"/><path d="M5 15H3V3h12v2"/></svg></button><span class="hm-ok" aria-live="polite"></span></div><div class="hm-rule"></div>
-      <div class="hm-btns"><button type="button" class="hm-btn" id="hm-asg" data-home-go="assignments">See assignments</button><button type="button" class="hm-btn hm-hl" id="hm-sugg" data-act-sugg><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></svg>Suggestions</button><button type="button" class="hm-btn alt" id="hm-tut" data-act-tut>Tutorial</button><button type="button" class="hm-btn alt" id="hm-faq" data-act="faq">FAQ</button><button type="button" class="hm-btn alt" id="hm-meme" data-act-meme>Meme</button><button type="button" class="hm-btn alt hm-gray" id="hm-edit" data-act-hmedit>Edit home</button></div>
+      <div class="hm-btns"><button type="button" class="hm-btn" id="hm-asg" data-home-go="assignments">See assignments</button><button type="button" class="hm-btn hm-hl" id="hm-sugg" data-act-sugg>Suggestions</button><button type="button" class="hm-btn alt" id="hm-tut" data-act-tut>Tutorial</button><button type="button" class="hm-btn alt" id="hm-faq" data-act="faq">FAQ</button><button type="button" class="hm-btn alt" id="hm-meme" data-act-meme>Meme</button><button type="button" class="hm-btn alt hm-gray" id="hm-edit" data-act-hmedit>Edit home</button></div>
       <div class="hm-sites" id="hm-row"><div class="hm-ow"><button type="button" class="hm-site" id="hm-other" data-act-hmother aria-expanded="false">${art('folder')}<span>Other websites</span><svg class="hm-chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button><div class="hm-opop" hidden>${HM_SITES.map(([k,a,n])=>`<a class="hm-oi" data-site="${k}" target="_blank" rel="noopener">${art(a)}<span>${n}</span></a>`).join('')}</div></div></div></div>
       <div class="hm-more" id="hm-more"></div>`;
     siteLinks(el);
@@ -11792,7 +11793,7 @@ const gmInSec=(x,lab)=>lab==='Online'?x.labels.includes('Online'):x.labels.inclu
 const mpLocked=()=>!(state.user&&state.user.mpUnlocked!==false);
 const gameLocked=x=>!!(x&&(x.labels.includes('Multiplayer')||x.labels.includes('Online'))&&!x.labels.includes('Social')&&mpLocked());
 const HOSTED_URL='https:'+SLASH2+'script.google.com/macros/s/AKfycbxDk0GrC7XrtoekZdrW4qPsffwxxuG0ujTopOYe5m3rzRPX1GOtbv9-aUtvaXAZlFLW/exec';
-const refLink=()=>state.user?(GS?SITES.planner:location.origin+location.pathname)+'?ref='+encodeURIComponent(state.user.refCode||state.user.name):'';
+const refLink=()=>state.user?'https:'+SLASH2+HM_URL+'/?ref='+encodeURIComponent(state.user.refCode||state.user.name):'';
 const LOCK_SVG=art('lock');
 function gmLockPanel(){
   if(!state.user)return `<div class="gm-lock" id="gm-lock"><span class="gm-lock-i">${LOCK_SVG}</span><div class="gm-lock-t"><b>Multiplayer is locked</b>
