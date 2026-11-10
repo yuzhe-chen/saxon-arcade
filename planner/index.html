@@ -3389,6 +3389,294 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
   :is(#docs,#spdoc) .rdoc td[data-label="Where"]::before{display:none}
 }
 </style>
+<script>
+/* realtime.js: Saxon Planner's push layer, no dependencies, no external scripts.
+   window.SXRT = { start(getTicket, handlers), notify(to, kind), typing(to, conv), watch(names), presence(fn),
+                   room(code, pid) -> {ok, ready, send(data, to, except), on(fn), leave()}, mode(), stop() }
+
+   getTicket(force) returns (or resolves to) {ticket, channel, url, db} from the Apps Script (rtTicket_ / rtChannel_);
+   force=true means the old ticket was refused (expired), so fetch a fresh one.
+   handlers: { ping(kind, from)  something changed for you: fetch from the Apps Script now
+               resync()          pings may have been missed (reconnect, hub restart): fetch once
+               mode(m)           'ws' | 'http' | 'rtdb' | 'off'  (off: keep the normal Apps Script polling)
+               typing(from, conv) }
+   Chain: WebSocket to the Worker (must open within 5 s) -> HTTP long-poll to the same Worker -> Firebase RTDB REST
+   stream (EventSource) -> 'off'. From http/rtdb/off it tries to climb back to WebSocket every few minutes.
+   Rooms ride their own WebSocket and only work when the Worker's WebSocket does (room().ok false: use rpcRoom). */
+(function () {
+  'use strict';
+  var WS_OPEN_MS = 5000, HEARTBEAT_MS = 100000, PONG_MS = 15000, UPGRADE_MS = 5 * 60000, OFF_RETRY_MS = 10 * 60000;
+  var S = null; /* state while started */
+  var httpGen = 0;
+  var presenceFns = [], watchList = [], online = {};
+
+  function now() { return Date.now(); }
+  function log() { try { if (window.SXRT_DEBUG) console.log.apply(console, ['[sxrt]'].concat([].slice.call(arguments))); } catch (e) {} }
+  function call(fn) { try { if (typeof fn === 'function') fn.apply(null, [].slice.call(arguments, 1)); } catch (e) { log('handler error', e); } }
+  function wsUrl(base) { return base.replace(/^http/, 'ws').replace(/\/$/, ''); }
+  function post(path, body, timeout) {
+    var ctl = typeof AbortController === 'function' ? new AbortController() : null;
+    var t = setTimeout(function () { if (ctl) ctl.abort(); }, timeout || 15000);
+    /* text/plain: a "simple" request, so no CORS preflight (each preflight would be one more billed request) */
+    return fetch(S.cfg.url.replace(/\/$/, '') + path, { method: 'POST', headers: { 'Content-Type': 'text/plain' }, body: JSON.stringify(body), signal: ctl ? ctl.signal : undefined, cache: 'no-store' })
+      .then(function (r) { clearTimeout(t); return r.json().then(function (j) { return { status: r.status, body: j }; }, function () { return { status: r.status, body: null }; }); },
+            function (e) { clearTimeout(t); throw e; });
+  }
+  function setMode(m) {
+    if (!S || S.mode === m) return;
+    S.mode = m; log('mode', m);
+    if (m !== 'ws') { online = {}; emitPresence({}, true); }
+    call(S.h.mode, m);
+  }
+  function emitPresence(changed, all) { var on = Object.keys(online).filter(function (k) { return online[k]; }); presenceFns.forEach(function (f) { call(f, { online: on, changed: changed, all: !!all }); }); }
+  function getCfg(force) {
+    return Promise.resolve().then(function () { return S.getTicket(!!force); }).then(function (c) {
+      if (!c || typeof c.ticket !== 'string' || typeof c.url !== 'string') throw new Error('no ticket');
+      S.cfg = c; return c;
+    });
+  }
+  function timer(name, fn, ms) { clearTimeout(S.t[name]); S.t[name] = setTimeout(function () { if (S) fn(); }, ms); }
+  function workerBlocked() { return S.blockedUntil && now() < S.blockedUntil; }
+  function budgetOff(retry) { S.blockedUntil = typeof retry === 'number' ? retry : now() + 3600000; log('worker budget off until', new Date(S.blockedUntil)); }
+
+  /* ---------------- 1. WebSocket ---------------- */
+  function openWs(cb) { /* cb(ws|null, reason) once */
+    var done = false, ws, refused = false;
+    function fin(x, why) { if (done) return; done = true; clearTimeout(to); cb(x, why); }
+    try { ws = new WebSocket(wsUrl(S.cfg.url) + '/ws?t=' + encodeURIComponent(S.cfg.ticket)); } catch (e) { return cb(null, 'ctor'); }
+    var to = setTimeout(function () { try { ws.close(); } catch (e) {} fin(null, 'timeout'); }, WS_OPEN_MS);
+    ws.onmessage = function (e) { if (done) return; var m; try { m = JSON.parse(e.data); } catch (x) { return; } if (m.k === 'hi') fin(ws); else if (m.k === 'off') { refused = true; budgetOff(m.retry); } };
+    ws.onerror = function () {};
+    ws.onclose = function (e) { fin(null, refused ? 'off' : 'close' + (e && e.code || '')); };
+  }
+  function startWs(attempt) {
+    if (!S) return;
+    if (workerBlocked()) return startRtdb();
+    openWs(function (ws, why) {
+      if (!S) { if (ws) ws.close(); return; }
+      if (!ws) {
+        log('ws failed', why, attempt);
+        /* an expired ticket closes without a 'hi' (the upgrade is refused with 401): refresh once */
+        if (!attempt) return getCfg(true).then(function () { startWs(1); }, function () { startHttp(); });
+        return startHttp();
+      }
+      useWs(ws);
+    });
+  }
+  function useWs(ws) {
+    if (S.ws && S.ws !== ws) try { S.ws.close(); } catch (e) {}
+    stopHttp(); stopRtdb();
+    S.ws = ws; S.wsFails = 0; var openedAt = now();
+    var wasMode = S.mode; setMode('ws');
+    if (wasMode !== 'ws' && S.started) call(S.h.resync); /* we may have missed pings meanwhile */
+    S.started = true;
+    if (watchList.length) ws.send(JSON.stringify({ o: 'w', u: watchList }));
+    var beat = function () {
+      if (S.ws !== ws) return;
+      try { ws.send('p'); } catch (e) {}
+      timer('pong', function () { log('no pong'); try { ws.close(); } catch (e) {} }, PONG_MS);
+      timer('beat', beat, HEARTBEAT_MS);
+    };
+    timer('beat', beat, HEARTBEAT_MS);
+    ws.onmessage = function (e) {
+      if (e.data === 'q') { clearTimeout(S.t.pong); return; }
+      var m; try { m = JSON.parse(e.data); } catch (x) { return; }
+      if (m.k === 'n') call(S.h.ping, m.kind, m.f);
+      else if (m.k === 'ty') call(S.h.typing, m.f, m.c);
+      else if (m.k === 'pr') {
+        var ch = {};
+        if (m.all) { online = {}; (m.on || []).forEach(function (u) { online[u] = true; ch[u] = true; }); }
+        else { (m.on || []).forEach(function (u) { online[u] = true; ch[u] = true; }); (m.off || []).forEach(function (u) { delete online[u]; ch[u] = false; }); }
+        emitPresence(ch, !!m.all);
+      } else if (m.k === 'na' && S.acks[m.id]) { S.acks[m.id](m); delete S.acks[m.id]; }
+      else if (m.k === 'off') budgetOff(m.retry);
+    };
+    ws.onclose = function (e) {
+      if (!S || S.ws !== ws) return;
+      S.ws = null; clearTimeout(S.t.beat); clearTimeout(S.t.pong);
+      log('ws closed', e && e.code);
+      if (e && e.code === 4029) budgetOff();
+      /* a socket that lived a while just reconnects (with backoff); one that dies fast counts as a failure */
+      if (now() - openedAt < 30000) S.wsFails++; else S.wsFails = 0;
+      if (S.wsFails >= 3 || workerBlocked()) { S.wsFails = 0; return startHttp(); }
+      var wait = Math.min(30000, 1000 * Math.pow(2, S.wsFails)) + Math.random() * 1000;
+      timer('re', function () { startWs(0); }, wait);
+    };
+  }
+
+  /* ---------------- 2. HTTP long-poll ---------------- */
+  function startHttp() {
+    if (!S) return;
+    if (workerBlocked()) return startRtdb();
+    S.http = { cur: '', fails: 0, gen: ++httpGen };
+    var gen = S.http.gen, first = true;
+    var loop = function () {
+      if (!S || !S.http || S.http.gen !== gen) return;
+      post('/poll', { t: S.cfg.ticket, cur: S.http.cur, w: watchList, wait: first ? 0 : undefined }, 65000).then(function (r) {
+        if (!S || !S.http || S.http.gen !== gen) return;
+        if (r.status === 401) return getCfg(true).then(function () { timer('poll', loop, 1000); }, function () { startRtdb(); });
+        if (r.status === 429 && r.body && r.body.off) { budgetOff(r.body.retry); return startRtdb(); }
+        if (r.status !== 200 || !r.body) throw new Error('status ' + r.status);
+        S.http.fails = 0;
+        if (first) { first = false; var was = S.mode; setMode('http'); stopRtdb(); if (was !== 'http' && S.started) call(S.h.resync); S.started = true; scheduleUpgrade(); }
+        if (r.body.reset) call(S.h.resync);
+        S.http.cur = r.body.cur || '';
+        (r.body.items || []).forEach(function (i) { call(S.h.ping, i.k, i.f); });
+        if (Array.isArray(r.body.on)) { var ch = {}; online = {}; r.body.on.forEach(function (u) { online[u] = true; ch[u] = true; }); emitPresence(ch, true); }
+        timer('poll', loop, 300 + Math.random() * 700);
+      }).catch(function (e) {
+        if (!S || !S.http || S.http.gen !== gen) return;
+        log('poll failed', e && e.message);
+        S.http.fails++;
+        if (first || S.http.fails >= 3) { stopHttp(); return startRtdb(); }
+        timer('poll', loop, 2000 * S.http.fails);
+      });
+    };
+    loop();
+  }
+  function stopHttp() { if (S) { clearTimeout(S.t.poll); S.http = null; } }
+
+  /* ---------------- 3. Firebase RTDB REST stream ---------------- */
+  function startRtdb() {
+    if (!S) return;
+    var c = S.cfg;
+    if (!c.db || !c.channel || typeof EventSource !== 'function') return goOff();
+    stopRtdb();
+    var since = now() - 5000, opened = false, es;
+    try { es = new EventSource(c.db.replace(/\/$/, '') + '/p/' + c.channel + '.json'); } catch (e) { return goOff(); }
+    S.es = es;
+    var to = setTimeout(function () { if (!opened) { stopRtdb(); goOff(); } }, 8000);
+    var onData = function (e) {
+      var m; try { m = JSON.parse(e.data); } catch (x) { return; }
+      if (!opened) { opened = true; clearTimeout(to); var was = S.mode; setMode('rtdb'); if (was !== 'rtdb' && S.started) call(S.h.resync); S.started = true; scheduleUpgrade(); }
+      var d = m && m.data; if (!d) return;
+      if (m.path !== '/' && typeof d === 'number') d = { t: d };       /* a patch of just t */
+      if (typeof d.t === 'number' && d.t > since) { since = d.t; call(S.h.ping, d.k || 'x', ''); }
+    };
+    es.addEventListener('put', onData); es.addEventListener('patch', onData);
+    es.addEventListener('keep-alive', function () {});
+    es.addEventListener('cancel', function () { stopRtdb(); goOff(); });
+    es.addEventListener('auth_revoked', function () { stopRtdb(); goOff(); });
+    es.onerror = function () { if (!opened) { clearTimeout(to); stopRtdb(); goOff(); } /* after opening, EventSource reconnects by itself */ };
+  }
+  function stopRtdb() { if (S && S.es) { try { S.es.close(); } catch (e) {} S.es = null; } }
+
+  /* ---------------- 4. off ---------------- */
+  function goOff() { if (!S) return; stopHttp(); stopRtdb(); setMode('off'); timer('up', climb, OFF_RETRY_MS); }
+
+  /* from http / rtdb / off, try to get back up the chain (WebSocket first) every few minutes */
+  function scheduleUpgrade() { timer('up', climb, UPGRADE_MS + Math.random() * 30000); }
+  function climb() {
+    if (!S || S.mode === 'ws') return;
+    if (workerBlocked()) { if (S.mode === 'off') startRtdb(); else scheduleUpgrade(); return; }
+    openWs(function (ws) {
+      if (!S) { if (ws) ws.close(); return; }
+      if (ws) return useWs(ws);
+      if (S.mode === 'rtdb' || S.mode === 'off') {
+        /* WebSocket still blocked: would plain HTTP to the Worker work now? */
+        post('/poll', { t: S.cfg.ticket, cur: '', wait: 0 }, 10000).then(function (r) { if (r.status === 200) startHttp(); else if (S.mode === 'off') startRtdb(); else scheduleUpgrade(); },
+          function () { if (S.mode === 'off') startRtdb(); else scheduleUpgrade(); });
+      } else scheduleUpgrade();
+    });
+  }
+
+  /* ---------------- public ---------------- */
+  var api = {
+    start: function (getTicket, handlers) {
+      api.stop();
+      S = { getTicket: getTicket, h: handlers || {}, mode: '', t: {}, acks: {}, wsFails: 0, started: false, blockedUntil: 0 };
+      getCfg(false).then(function () { startWs(0); }, function () { setMode('off'); timer('up', function () { getCfg(false).then(function () { startWs(0); }, function () {}); }, OFF_RETRY_MS); });
+      var vis = function () { if (S && document.visibilityState === 'visible' && S.mode !== 'ws' && !workerBlocked() && now() - (S.lastVisTry || 0) > 60000) { S.lastVisTry = now(); climb(); } };
+      document.addEventListener('visibilitychange', vis); S.unvis = function () { document.removeEventListener('visibilitychange', vis); };
+    },
+    stop: function () {
+      if (!S) return;
+      var s = S; Object.keys(s.t).forEach(function (k) { clearTimeout(s.t[k]); });
+      if (s.ws) { var w = s.ws; s.ws = null; try { w.close(1000); } catch (e) {} }
+      stopHttp(); stopRtdb(); if (s.unvis) s.unvis();
+      S = null; online = {};
+    },
+    mode: function () { return S ? S.mode || 'off' : 'off'; },
+    /* resolves {ok, miss:[names the Worker could not reach]} ; ok false when the Worker isn't in use */
+    notify: function (to, kind) {
+      to = [].concat(to || []).slice(0, 20);
+      if (!S || !to.length) return Promise.resolve({ ok: false, miss: to });
+      if (S.mode === 'ws' && S.ws) {
+        var id = Math.random().toString(36).slice(2, 10), ws = S.ws;
+        return new Promise(function (res) {
+          S.acks[id] = function (m) { res({ ok: true, miss: m.miss || [] }); };
+          setTimeout(function () { if (S && S.acks[id]) { delete S.acks[id]; res({ ok: false, miss: to }); } }, 8000);
+          try { ws.send(JSON.stringify({ o: 'n', to: to, k: kind || 'x', id: id })); } catch (e) { delete S.acks[id]; res({ ok: false, miss: to }); }
+        });
+      }
+      if (S.mode === 'http') return post('/notify', { t: S.cfg.ticket, to: to, kind: kind || 'x' }).then(function (r) { return r.status === 200 && r.body ? { ok: true, miss: r.body.miss || [] } : { ok: false, miss: to }; }, function () { return { ok: false, miss: to }; });
+      return Promise.resolve({ ok: false, miss: to });
+    },
+    /* typing indicator: call at most every ~3 s while the person types; WebSocket mode only */
+    typing: function (to, conv) {
+      if (!S || S.mode !== 'ws' || !S.ws) return false;
+      var k = [].concat(to).join(',') + '|' + (conv || '');
+      if (S.lastTy === k && now() - S.lastTyAt < 3000) return true;
+      S.lastTy = k; S.lastTyAt = now();
+      try { S.ws.send(JSON.stringify({ o: 'ty', to: [].concat(to).slice(0, 10), c: conv || '' })); return true; } catch (e) { return false; }
+    },
+    /* whose presence to follow (friends); sent once, and again after each reconnect */
+    watch: function (names) {
+      watchList = [].concat(names || []).filter(function (x) { return typeof x === 'string'; }).slice(0, 300);
+      if (S && S.mode === 'ws' && S.ws) try { S.ws.send(JSON.stringify({ o: 'w', u: watchList })); } catch (e) {}
+    },
+    /* fn({online:[names], changed:{name:bool}, all}) ; returns an unsubscribe function */
+    presence: function (fn) { presenceFns.push(fn); return function () { presenceFns = presenceFns.filter(function (f) { return f !== fn; }); }; },
+    isOnline: function (name) { return !!online[name]; },
+    /* a game room relay. pid: the player's id from rpcRoom create/join (p1, p2, ...), so messages can be addressed.
+       on(fn) gets {type:'msg'|'join'|'leave'|'peers', from: pid, user, data, peers}. ok is false (use rpcRoom) unless the
+       Worker WebSocket is up; ready resolves true once this room's socket is open (false if it could not open). */
+    room: function (code, pid) {
+      var fns = [], ws = null, left = false, tries = 0, queue = [];
+      var R = { ok: !!(S && S.mode === 'ws'), ready: null,
+        send: function (data, to, except) {
+          var m = JSON.stringify({ d: data, to: to || undefined, ex: except || undefined });
+          if (ws && ws.readyState === 1) { try { ws.send(m); return true; } catch (e) { return false; } }
+          if (!left && R.ok && queue.length < 50) { queue.push(m); return true; }
+          return false;
+        },
+        on: function (fn) { fns.push(fn); return R; },
+        leave: function () { left = true; if (ws) try { ws.close(1000); } catch (e) {} ws = null; } };
+      if (!R.ok) { R.ready = Promise.resolve(false); return R; }
+      var emit = function (ev) { fns.forEach(function (f) { call(f, ev); }); };
+      var connect = function (resolve) {
+        var opened = false, w;
+        try { w = new WebSocket(wsUrl(S.cfg.url) + '/ws?t=' + encodeURIComponent(S.cfg.ticket) + '&room=' + encodeURIComponent(code) + (pid ? '&pid=' + encodeURIComponent(pid) : '')); }
+        catch (e) { R.ok = false; if (resolve) resolve(false); return; }
+        var to = setTimeout(function () { if (!opened) { try { w.close(); } catch (e) {} } }, WS_OPEN_MS);
+        w.onmessage = function (e) {
+          var m; try { m = JSON.parse(e.data); } catch (x) { return; }
+          if (m.k === 'rs') {
+            opened = true; clearTimeout(to); tries = 0; ws = w;
+            queue.splice(0).forEach(function (q) { try { w.send(q); } catch (x) {} });
+            if (resolve) { resolve(true); resolve = null; }
+            emit({ type: 'peers', peers: (m.peers || []).map(function (p) { return { pid: p.p, user: p.u }; }) });
+          }
+          else if (m.k === 'rm') emit({ type: 'msg', from: m.p, user: m.u, data: m.d });
+          else if (m.k === 'rj') emit({ type: 'join', from: m.p, user: m.u });
+          else if (m.k === 'rl') emit({ type: 'leave', from: m.p, user: m.u });
+          else if (m.k === 'slow') emit({ type: 'slow' });
+        };
+        w.onclose = function () {
+          clearTimeout(to); if (ws === w) ws = null;
+          if (left || !S) return;
+          if (++tries > 3 || S.mode !== 'ws') { R.ok = false; if (resolve) resolve(false); emit({ type: 'down' }); return; }
+          setTimeout(function () { if (!left && S) connect(resolve); }, 1000 * tries);
+        };
+      };
+      R.ready = new Promise(function (res) { connect(res); });
+      return R;
+    },
+  };
+  window.SXRT = api;
+})();
+
+</script>
 </head>
 <body>
 <div id="games" hidden></div>
@@ -5922,7 +6210,8 @@ function normalizeCourse(input){
         e.l = now; e.p = pv; e.t = cv.group ? (cv.ch.g.name || cv.list.join(', ')) : (n === me ? cv.other : me);
         if (n === me) e.r = now; x.c[id] = e; if (n !== me) socPut(io, n, x); });
       socPut(io, me, a);
-      return { ok: true, time: now };
+      /* to: who else is in it (the page pings them over the realtime layer) */
+      return { ok: true, time: now, to: cv.list.filter(function (n) { return n !== me; }).slice(0, 50) };
     }
     if (op === 'leave') {
       if (!cv.group) { delete a.c[id]; socPut(io, me, a); return SX.socialState(io, me); }
@@ -6773,6 +7062,22 @@ let pageV=null;
 function uiBusy(){return !!document.querySelector('.view.on [contenteditable="true"].editing,.tk-cls.open,.xdd.on,.ccard.cdrop,.ccard.cdragging,#su-p4ask')||tDragging;}
 function uiIdle(){const t0=Date.now();return new Promise(res=>{const t=setInterval(()=>{if(!uiBusy()||Date.now()-t0>45000){clearInterval(t);res();}},300);});}
 let lastLoad=0;
+/* ---------- live updates (realtime.js, window.SXRT): the Cloudflare Worker pushes "something changed for you" so the
+   page fetches from the Apps Script only then; it falls back to Firebase and finally to the normal checks on its own ---------- */
+let RT_INFO=null,RT_USER='';
+function rtStart(info){
+  if(!window.SXRT||!info||!info.ticket)return;
+  RT_INFO=info;const u=state.user&&state.user.name||'';
+  if(RT_USER===u&&SXRT.mode()!=='off')return;
+  RT_USER=u;
+  SXRT.start(force=>(!force&&RT_INFO&&RT_INFO.exp>Date.now())?RT_INFO:gsCallSafe('rpcRtTicket').then(r=>r&&r.ticket?(RT_INFO=r):Promise.reject(new Error('off'))),{
+    ping:(kind)=>{if(kind==='data'){loadData();return;}if(CH&&state.user)chatSchedule(0);},
+    resync:()=>{if(CH&&state.user)chatSchedule(0);},
+    mode:()=>{if(CH&&state.user&&CH.timer)chatSchedule(1500);}
+  });
+}
+/* rpcRtTicket over whichever bridge this copy uses */
+function gsCallSafe(fn){return GS?gsRun(fn):apiRaw('/api/rt',{method:'POST',body:'{}'});}
 /* the account data version from the last full load (the server answers "same" while it hasn't moved) */
 let DATA_VER=null;
 async function loadData(pre){
@@ -6792,6 +7097,7 @@ async function loadData(pre){
     /* the page was updated on disk: pick up the new version automatically */
     if(d.__v){if(pageV===null)pageV=d.__v;else if(pageV!==d.__v){location.reload();return;}}
     DATA_VER=d.__dv||null;
+    if(d.rt)rtStart(d.rt);
     state.tasks=Object.values(d.tasks||{});
     state.advisory=Object.values(d.advisory||{});
     setTimeout(weekSweep,0);
@@ -11168,7 +11474,7 @@ function chatShow(){
 }
 function chatSchedule(ms){clearTimeout(CH.timer);CH.timer=setTimeout(chatPoll,ms);}
 /* live updates (realtime.js): on when connected over the Worker or Firebase, off otherwise */
-const chLive=()=>!!(window.SXRT&&SXRT.mode&&/^(ws|http|rtdb)$/.test(SXRT.mode()));
+const chLive=()=>!!(window.SXRT&&SXRT.mode&&/^(ws|http)$/.test(SXRT.mode()));
 async function chatPoll(){
   if(!state.user){CH.timer=0;return;}
   /* a game is on screen: wait until it closes (gmPlaySync starts the next one) */
@@ -11392,6 +11698,7 @@ async function chSend(id,text,k){
   chatPaint();
   CH.quiet=0;
   let r=null;try{r=await chatApi('send',{id,text:m.text});}catch(_){r={error:'conn'};}
+  if(r&&r.ok&&Array.isArray(r.to)&&window.SXRT&&SXRT.mode()!=='off')SXRT.notify(r.to,'chat');
   if(r&&r.ok){m.pend=false;m.time=r.time;c.msgs.sort((a,b)=>((a.pend||a.fail)?1:0)-((b.pend||b.fail)?1:0)||a.time-b.time);}
   else{m.pend=false;m.fail=true;c.err=CH_ERR[r&&r.error]||'Not sent';}
   chatPaint();
@@ -11497,6 +11804,7 @@ function authLost(){
   render();if(splashShow)splashShow();
 }
 async function logOut(){
+  try{if(window.SXRT)SXRT.stop();}catch(_){}RT_USER='';RT_INFO=null;
   state.setOpen=false;closeNavMenus();render();
   const out=api('/api/logout',{method:'POST',body:'{}'}).catch(()=>{});
   if(!splashLeave){await out;authLost();return;}
