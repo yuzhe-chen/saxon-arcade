@@ -8,7 +8,7 @@ if(name==='withSuccessHandler')return function(f){return runner(f,fail);};
 if(name==='withFailureHandler')return function(f){return runner(ok,f);};
 if(name==='withUserObject')return function(){return runner(ok,fail);};
 return function(){var args=Array.prototype.slice.call(arguments);
-fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({fn:name,args:args,site:location.hostname})})
+fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({fn:name,args:args,site:location.hostname,framed:window.top!==window})})
 .then(function(r){return r.json();})
 .then(function(o){if(o&&o.ok){if(ok)ok(o.result);}else if(fail)fail(new Error(o&&o.error||'failed'));})
 .catch(function(e){if(fail)fail(e);});};}});}
@@ -9514,7 +9514,7 @@ document.addEventListener('click',e=>{const d=document.getElementById('rewards')
 document.addEventListener('keydown',e=>{const d=document.getElementById('rewards');if(d&&!d.hidden&&e.key==='Escape'){e.stopPropagation();closeRewards();}},true);
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-act-rewards]');if(!b||!state.user)return;e.preventDefault();e.stopPropagation();closeNavMenus();openRewards();},true);
 /* sensitive pictures: Crashout stays hidden until Security turns on Sensitive pictures and then the switch at the
-   bottom of Tools; Five Nights at Epstein's only needs the button at the bottom of the Games menu */
+   bottom of Tools; the sensitive game only needs the button at the bottom of the Games menu */
 const SENS_TOOLS=['crashout'],SENS_GAMES=['fnae'];
 function sensOn(){return !SAFE&&!!(state.settings&&state.settings.sensPics);}
 function sensHidden(id){const s=state.settings||{};if(SAFE&&(SENS_TOOLS.includes(id)||SENS_GAMES.includes(id)))return true;
@@ -12222,7 +12222,7 @@ function rolesPaint(msg){
         ${ed?`<h3>Banned</h3><p class="rl-none">Banned accounts can't log in and are signed out everywhere.</p>${(RL.banned||[]).map(n=>`<div class="rl-box mp"><span class="nm">${esc(n)}</span><span class="tg">Banned</span><button data-rl-unban="${esc(n)}" title="Unban" aria-label="Unban">×</button></div>`).join('')||'<div class="rl-none">Nobody</div>'}
         ${(RL.flagged||[]).length?`<h3>Flagged usernames</h3>${RL.flagged.map(n=>`<div class="rl-box mp"><span class="nm">${esc(n)}</span><button class="kbtn rl-banb" data-rl-ban="${esc(n)}">Ban</button></div>`).join('')}`:''}
         <div class="rl-banmsg rl-msg" role="status"></div>`:''}
-        ${Array.isArray(RL.conv)?`<h3>Convenience access</h3><p class="rl-none">Only these accounts (and you) can log in on saxon-planner.web.app. Everyone else uses atoll.web.app.</p>${RL.conv.map(n=>`<div class="rl-box mp"><span class="nm">${esc(n)}</span><span class="tg">Allowed</span><button data-rl-convx="${esc(n)}" title="Remove" aria-label="Remove">×</button></div>`).join('')||'<div class="rl-none">Nobody yet</div>'}
+        ${Array.isArray(RL.conv)?`<h3>Convenience access</h3><p class="rl-none">Only these accounts (and you) can log in by typing saxon-planner.web.app directly. Everyone can still use it through atoll.web.app.</p>${RL.conv.map(n=>`<div class="rl-box mp"><span class="nm">${esc(n)}</span><span class="tg">Allowed</span><button data-rl-convx="${esc(n)}" title="Remove" aria-label="Remove">×</button></div>`).join('')||'<div class="rl-none">Nobody yet</div>'}
         <form class="rl-add rl-convf" autocomplete="off"><input type="text" id="rl-convname" placeholder="Username" maxlength="24" spellcheck="false" aria-label="Username"><button class="kbtn" type="submit">Allow</button></form>
         <div class="rl-convmsg rl-msg" role="status"></div>`:''}
         ${Array.isArray(RL.gas)?`<h3>Google Script access</h3><p class="rl-none">Only these accounts (and you) can log in or sign up on the Google Script address. Everyone else sees Account not found.</p>${RL.gas.map(n=>`<div class="rl-box mp"><span class="nm">${esc(n)}</span><span class="tg">Allowed</span><button data-rl-gasx="${esc(n)}" title="Remove" aria-label="Remove">×</button></div>`).join('')||'<div class="rl-none">Nobody yet</div>'}
