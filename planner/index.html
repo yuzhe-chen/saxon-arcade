@@ -2072,6 +2072,36 @@ nav.tabs .mmenu .mcolors button.kbtn:hover{background:var(--panel);color:var(--f
   #splash .lp-end{padding:44px 20px 48px}
   #splash .lp-end p{font-size:16px}}
 #splash.morph .sp-art{opacity:0;transition:opacity .3s ease}
+/* the legal links leave and come back with the form */
+#splash.morph .sp-legal{opacity:0;transform:translateY(10px);transition:opacity .3s ease,transform .3s ease;pointer-events:none}
+#splash.unmorph .sp-legal{transition:opacity .45s ease .6s,transform .45s cubic-bezier(.2,.8,.3,1) .6s}
+/* logging in: the picture gives way to a clock whose hands spin from 5:30 PM to 8:10 AM, the words leave, and the clock's
+   middle cap grows until its blue fills the screen; then the planner fades in from behind it */
+#splash.clk{overflow:hidden;pointer-events:none}
+#splash.clk .sp-art{opacity:0;transition:opacity .3s ease}
+#splash.clk-out :is(.sp-mid,.sp-top,.sp-down){opacity:0;transform:translateY(-14px);transition:opacity .3s ease,transform .35s cubic-bezier(.5,0,.75,0)}
+#spclock{position:fixed;inset:0;z-index:1700;pointer-events:none;overflow:hidden}
+#spclock svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+#spcover{position:fixed;inset:0;z-index:1700;background:#1cb0f6;pointer-events:none;transition:opacity .5s ease}
+#spcover.off{opacity:0}
+#spcover.wait::after{content:"";position:absolute;left:50%;top:50%;width:28px;height:28px;margin:-16px 0 0 -16px;
+  border:3px solid #fff;border-right-color:transparent;border-radius:50%;animation:spspin .7s linear infinite}
+/* logging out: the app fades to the login page's own background while vertical bars in the color of the page that was open
+   streak across from left to right, speeding up as they go; they come wide and close together at first, then fewer, thinner and
+   further apart, so the effect trails off; the login page's pieces settle in together (the legal links with the form) */
+#sxwipe{position:fixed;inset:0;z-index:1700;pointer-events:none;overflow:hidden}
+#sxwipe .wp-bg{position:absolute;inset:0;background:var(--lbg);opacity:0;transition:opacity .62s ease-in-out}
+#sxwipe.go .wp-bg{opacity:1}
+#sxwipe i{position:absolute;top:0;bottom:0;left:0;width:var(--w);background:var(--c);transform:translateX(-100%);
+  transition:transform var(--t) cubic-bezier(.5,0,.9,.45) var(--d)}
+#sxwipe.go i{transform:translateX(100vw)}
+#spclock.solid{background:var(--bg)}
+#splash.sp-pre :is(.sp-top,.sp-art,.sp-down,.sp-mid>*){opacity:0;transform:translateY(18px);transition:none}
+#splash.sp-settle :is(.sp-top,.sp-art,.sp-down,.sp-mid>*){transition:opacity .4s ease calc(var(--d,0) * 60ms),transform .5s cubic-bezier(.2,.8,.3,1) calc(var(--d,0) * 60ms)}
+#splash .sp-art,#splash .sp-mid>.sp-kicker{--d:1}
+#splash .sp-mid>.sp-title{--d:2}
+#splash .sp-mid>.sp-url,#splash .sp-mid>.sp-rule{--d:3}
+#splash .sp-mid>.sp-gate,#splash .sp-mid>.sp-legal,#splash .sp-down{--d:4}
 #splash.morph .sp-title{color:var(--pri)}
 #splash.morph .sp-kicker{color:var(--faint)}
 #splash.morph .sp-rule{background:var(--line)}
@@ -2498,6 +2528,8 @@ html.no-v-guide [data-act-docs]{display:none!important}
 .pwx .sec .ap-fh{flex:1;margin:0}
 .ap-hv{display:flex;flex-wrap:wrap;gap:8px;margin:2px 0 6px}
 .ap-hp[hidden]{display:none}
+.ap-hpn{grid-column:1/-1;font:700 13px var(--font-ui);color:var(--faint);padding:2px 2px 6px}
+label.hide-it.hp-off{opacity:.45;cursor:default}
 .ap-sw.on{box-shadow:0 0 0 2px var(--bg),0 0 0 4px var(--c)}
 @media (max-width:560px){.ap-col{flex-direction:column;align-items:flex-start;gap:8px}.ap-sws{gap:9px}}
 /* Colors rewards: locked rows, the custom colour swatch and the gradient swatch */
@@ -4235,12 +4267,12 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
     <h2 class="sp-title"><span class="l1 sp-mv">Saxon</span><br><span class="l2 sp-mv">Planner</span></h2>
     <div class="sp-url sp-mv"><a href="https://saxonplanner.web.app/" target="_blank" rel="noopener">saxonplanner.web.app</a><button type="button" data-hm-copy aria-label="Copy link" title="Copy link"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12"/><path d="M5 15H3V3h12v2"/></svg></button><span class="hm-ok" aria-live="polite"></span></div>
     <div class="sp-rule sp-mv"></div>
-    <form class="sp-gate" id="spgate" autocomplete="off" onsubmit="return false">
-      <input type="text" id="spuser" placeholder="Username" aria-label="Username" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="24">
-      <input type="password" id="spcode" placeholder="Password" aria-label="Password" maxlength="200">
+    <form class="sp-gate" id="spgate" action="#" method="post">
+      <input type="text" id="spuser" name="username" autocomplete="username" placeholder="Username" aria-label="Username" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="24">
+      <input type="password" id="spcode" name="password" autocomplete="current-password" placeholder="Password" aria-label="Password" maxlength="200">
       <button type="button" class="sp-forgot" id="spforgot">Forgot my password</button>
-      <input type="password" id="spconf" placeholder="Confirm password" aria-label="Confirm password" maxlength="200" hidden>
-      <input type="text" id="spref" placeholder="Referral code (optional)" aria-label="Referral code" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="24" hidden>
+      <input type="password" id="spconf" name="confirm-password" autocomplete="new-password" placeholder="Confirm password" aria-label="Confirm password" maxlength="200" hidden>
+      <input type="text" id="spref" autocomplete="off" placeholder="Referral code (optional)" aria-label="Referral code" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="24" hidden>
       <label class="sp-terms" id="spterms" hidden><input type="checkbox" id="spagree"><span class="sp-box" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span class="sp-tt">I agree to the <button type="button" class="sp-tl" data-legal="terms">Terms and Conditions</button> and I have read the <button type="button" class="sp-tl" data-legal="privacy">Privacy Policy</button>.</span></label>
       <div class="sp-msg" id="spmsg" role="alert"></div>
       <div class="sp-row"><button type="submit" id="spgo">Log in</button><button type="button" class="sp-switch" id="spswitch">Sign up</button></div>
@@ -4402,6 +4434,7 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
   <h1 class="brand" id="brand"><i class="brand-logo" data-art="logo" aria-hidden="true"></i><span class="brand-w">Saxon Planner</span></h1>
   <nav class="tabs" id="tabs">
     <div class="trow" id="trow">
+      <button data-v="home" data-act-home>Home</button>
       <button data-v="courses">Courses</button>
       <button data-v="calendar">Calendar</button>
       <button data-v="advisory">To-Do</button>
@@ -4430,8 +4463,8 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
     </button>
     <button id="menubtn" aria-label="Menu" title="Menu" aria-haspopup="true" aria-expanded="false" aria-controls="mmenu"><svg viewBox="0 0 24 24"><path d="M4 6.5h16M4 12h16M4 17.5h16"/></svg><i class="mb-dot" hidden></i></button>
     <div class="mmenu" id="mmenu" aria-hidden="true">
-      <button class="mm-row mm-home" data-act-home><i class="mi" data-art="logo"></i><span>Home</span></button>
       <div class="mm-pages">
+        <button class="mtab" data-v="home" data-act-home><i class="mi" data-art="logo"></i><span>Home</span></button>
         <button class="mtab" data-v="courses"><i class="mi" data-art="backpack"></i><span>Courses</span></button>
         <button class="mtab" data-v="calendar"><i class="mi" data-art="calendar"></i><span>Calendar</span></button>
         <button class="mtab" data-v="advisory"><i class="mi" data-art="sticky"></i><span>To-Do</span></button>
@@ -8828,6 +8861,8 @@ function needClasses(btn){
 /* ---------- events ---------- */
 document.getElementById('tabs').addEventListener('click',e=>{
   const b=e.target.closest('button[data-v]');if(!b)return;
+  /* Home is handled by [data-act-home] (it works even before any classes are added) */
+  if(b.dataset.v==='home')return;
   /* Tools opens the tools screen over the page, like Games */
   if(b.dataset.v==='tools'){closeNavMenus();openTools();return;}
   /* no classes yet: the other pages have nothing to show, so point back to setup */
@@ -10325,12 +10360,18 @@ document.addEventListener('click',e=>{
   if(e.target.closest('[data-act-hmres]')){hmResOpen();return;}
   const c=e.target.closest('[data-hm-chat]');if(c)chOpen(c.dataset.hmChat);});
 document.addEventListener('input',e=>{if(e.target.id==='hm-pad')padSet(e.target.value);});
+/* Home shows at most 8 page cards: the pages picked in Edit home (homePages), or by default the first 8 of the pages
+   that can show, in HM_PAGES order (Guide stays in the menu). A saved pick longer than 8 shows its first 8 */
+const HM_MAX=8;
+function hmShown(){const own=!!(state.user&&state.user.owner),noChat=!!(state.user&&state.settings&&state.settings.hideChat);
+  const noGames=SAFE||!!(state.user&&state.settings&&state.settings.hideGames),pick=(state.settings&&state.settings.homePages)||[];
+  return HM_PAGES.filter(([k])=>!(k==='tasks'&&!own)&&!(k==='chat'&&noChat)&&!(k==='games'&&noGames)&&!pageHidden(k)&&(pick.length?pick.includes(k):k!=='clock')).slice(0,HM_MAX);}
+function hmDefault(){const a=state.settings.homePages;state.settings.homePages=[];const d=hmShown().map(p=>p[0]);state.settings.homePages=a;return d;}
 function renderHome(fly){
   const el=document.getElementById('v-home');if(!el)return;
   const own=!!(state.user&&state.user.owner),noChat=!!(state.user&&state.settings&&state.settings.hideChat);
   const noGames=SAFE||!!(state.user&&state.settings&&state.settings.hideGames);
-  const hv=hmView(noChat),pick=(state.settings&&state.settings.homePages)||[];
-  const pages=HM_PAGES.filter(([k])=>!(k==='tasks'&&!own)&&!(k==='chat'&&noChat)&&!(k==='games'&&noGames)&&!pageHidden(k)&&(pick.length?pick.includes(k):k!=='clock'));
+  const hv=hmView(noChat),pages=hmShown();
   const sig=(hv==='pages'?pages.map(p=>p[0]).join():'')+'|'+hv;
   const held=homeHold||document.documentElement.classList.contains('splash-on');
   if(el.dataset.sig!==sig){
@@ -10729,16 +10770,20 @@ document.addEventListener('change',e=>{if(e.target.id!=='ap-foot'||!state.user)r
 const HV_OPTS=[['pages','Pages'],['resources','Resources'],['chat','Chat'],['assignments','Assignments'],['notepad','Notepad']];
 const hpPages=()=>{const a=AP_PAGES.filter(([k])=>k!=='tasks'||(state.user&&state.user.owner));
   return a;};
-const hpOn=k=>{const a=state.settings.homePages||[];return a.length?a.includes(k):!pageHidden(k);};
+const hpOn=k=>hmShown().some(p=>p[0]===k);
+/* up to 8 boxes can be ticked: once 8 are, the others are greyed out until one is unticked */
+function hpCap(box){const cbs=[...box.querySelectorAll('[data-ap-hp]')],n=cbs.filter(x=>x.checked).length;
+  cbs.forEach(x=>{const off=!x.checked&&n>=HM_MAX;x.disabled=off;x.closest('label').classList.toggle('hp-off',off);});
+  const t=box.querySelector('.ap-hpn');if(t)t.textContent=`Up to ${HM_MAX} pages (${n} chosen)`;}
 /* the Home section's controls, shown in Appearance and in the Edit home popup on Home */
-function apHomeHTML(hv){return `<div class="ap-hv">${HV_OPTS.map(([k,n])=>`<button type="button" class="hbtn${hv===k?' on':''}" data-ap-hv="${k}" aria-pressed="${hv===k}">${n}</button>`).join('')}</div>
-      <div class="ap-hide ap-hp"${hv==='pages'?'':' hidden'}>${hpPages().map(([k,n])=>`<label class="hide-it"><span>${n}</span><input type="checkbox" class="hide-cb" data-ap-hp="${k}" ${hpOn(k)?'checked':''}><span class="hide-box" aria-hidden="true"></span></label>`).join('')}</div>`;}
+function apHomeHTML(hv){const nOn=hmShown().length;return `<div class="ap-hv">${HV_OPTS.map(([k,n])=>`<button type="button" class="hbtn${hv===k?' on':''}" data-ap-hv="${k}" aria-pressed="${hv===k}">${n}</button>`).join('')}</div>
+      <div class="ap-hide ap-hp"${hv==='pages'?'':' hidden'}><div class="ap-hpn">Up to ${HM_MAX} pages (${nOn} chosen)</div>${hpPages().map(([k,n])=>{const on=hpOn(k),off=!on&&nOn>=HM_MAX;return `<label class="hide-it${off?' hp-off':''}"><span>${n}</span><input type="checkbox" class="hide-cb" data-ap-hp="${k}" ${on?'checked':''}${off?' disabled':''}><span class="hide-box" aria-hidden="true"></span></label>`;}).join('')}</div>`;}
 function hmEditOpen(){
   if(!state.user)return;hmQgClose();
   const o=document.createElement('div');o.className='qov hm-qgov';o.id='hm-qgp';
   o.innerHTML=`<div class="qbox hm-qgbox hm-edbox" role="dialog" aria-modal="true" aria-labelledby="hm-qgh"><div class="faq-top"><div class="qhd" id="hm-qgh">Home</div><button class="hbtn faq-x" data-act-qgclose title="Close">×</button></div>
     ${apHomeHTML(state.settings.homeView||'pages')}</div>`;
-  document.body.appendChild(o);
+  document.body.appendChild(o);hpCap(o);
   o.addEventListener('mousedown',e=>{if(e.target===o)hmQgClose();});
 }
 document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('[data-act-hmedit]'))hmEditOpen();});
@@ -10752,10 +10797,11 @@ document.addEventListener('click',e=>{
 document.addEventListener('change',e=>{
   if(!e.target.dataset||!e.target.dataset.apHp||!state.user)return;
   const box=e.target.closest('#pwx,#hm-qgp');if(!box)return;
+  if(e.target.checked&&box.querySelectorAll('[data-ap-hp]:checked').length>HM_MAX){e.target.checked=false;hpCap(box);return;}
   const on=[...box.querySelectorAll('[data-ap-hp]')].filter(x=>x.checked).map(x=>x.dataset.apHp);
-  const def=hpPages().map(([k])=>k).filter(k=>!pageHidden(k));
+  const def=hmDefault();
   state.settings.homePages=on.length===def.length&&on.every(k=>def.includes(k))?[]:on;
-  render();saveSettings();
+  hpCap(box);render();saveSettings();
 });
 document.addEventListener('change',e=>{
   if(e.target.id!=='ap-fade'||!state.user)return;
@@ -11198,7 +11244,7 @@ if(window.SX_REF)sxRefArrived(window.SX_REF);
     sw=document.getElementById('spswitch'),msg=document.getElementById('spmsg');
   let signup=false,busy=false;
   const refIn=document.getElementById('spref');
-  const setMode=su=>{signup=su;conf.hidden=!su;refIn.hidden=!su;{const tm=document.getElementById('spterms'),lg=document.getElementById('splegal');tm.hidden=!su;lg.hidden=su;if(!su)document.getElementById('spagree').checked=false;}if(su&&!refIn.value)refIn.value=refStored();go.textContent=su?'Sign up':'Log in';document.getElementById('spforgot').hidden=su;sw.textContent=su?'Log in':'Sign up';
+  const setMode=su=>{signup=su;conf.hidden=!su;code.setAttribute('autocomplete',su?'new-password':'current-password');refIn.hidden=!su;{const tm=document.getElementById('spterms'),lg=document.getElementById('splegal');tm.hidden=!su;lg.hidden=su;if(!su)document.getElementById('spagree').checked=false;}if(su&&!refIn.value)refIn.value=refStored();go.textContent=su?'Sign up':'Log in';document.getElementById('spforgot').hidden=su;sw.textContent=su?'Log in':'Sign up';
     msg.textContent='';conf.value='';};
   const focusFirst=()=>setTimeout(()=>(user.value?code:user).focus(),0);
   const hero=document.getElementById('sphero'),img=sp.querySelector('.sp-img');
@@ -11246,30 +11292,98 @@ if(window.SX_REF)sxRefArrived(window.SX_REF);
      (reset), the wallpaper fades back, the title slides back and the form fades in. From any other page, a quick fade. */
   splashLeave=async(ready,reset)=>{
     spMenu(false);
-    const html=document.documentElement,reduce=matchMedia('(prefers-reduced-motion: reduce)').matches,hv=document.getElementById('v-home');
+    const html=document.documentElement,reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
     const wait=ms=>new Promise(r=>setTimeout(r,ms)),cap=p=>Promise.race([p,wait(4000)]);
-    const home=!reduce&&state.view==='home'&&hv&&hv.offsetParent&&hv.querySelector('.hm-title')&&sp.classList.contains('gone');
-    if(!home){
+    if(reduce){
       html.classList.add('sx-leave');
-      await Promise.all([cap(ready),wait(reduce?0:260)]);
+      await cap(ready);
       reset();setMode(false);show();sp.classList.add('out','fadein');void sp.offsetWidth;sp.classList.remove('out');
       await wait(450);sp.classList.remove('fadein');html.classList.remove('sx-leave');return;}
-    sp.classList.add('morph','back','snap','out');sp.classList.remove('gone');sp.scrollTop=0;
-    setMode(false);gate.hidden=false;user.value='';code.value='';conf.value='';msg.textContent='';resetMorph();
-    const pairs=mv().map(([a,sel])=>[a,hv.querySelector(sel)]).filter(([a,b])=>a&&b);
-    pairs.forEach(([a,b])=>{const ra=a.getBoundingClientRect(),rb=b.getBoundingClientRect();if(!ra.width||!ra.height)return;
-      const rl=a.classList.contains('sp-rule'),sy=rl?1:rb.height/ra.height,sx=rl?rb.width/ra.width:sy;
-      a.style.transform=`translate(${rb.left-ra.left}px,${rb.top-ra.top}px) scale(${sx},${sy})`;});
-    void sp.offsetWidth;sp.classList.remove('snap','out');
-    await Promise.all([cap(ready),wait(380)]);
-    reset();html.classList.add('splash-on');
-    /* the account's colors hold while the theme turns to the login page's own, then everything glides back */
-    const lock=[[hero,'backgroundColor'],...pairs.map(([a])=>[a,a.classList.contains('sp-rule')?'backgroundColor':'color'])];
-    lock.forEach(([el,k])=>{el.style[k]=getComputedStyle(el)[k];});
-    themePref('sx-theme-login');spThemeSync();void sp.offsetWidth;
-    sp.classList.add('unmorph');sp.classList.remove('morph','back');
-    lock.forEach(([el,k])=>{el.style[k]='';});pairs.forEach(([a])=>{a.style.transform='';});
-    await wait(1150);sp.classList.remove('unmorph');show();
+    document.querySelectorAll('#sxwipe').forEach(x=>x.remove());
+    /* the colors: the open page's own (and a darker shade), and the login page's background in its own theme (read by
+       switching the theme for a moment, with nothing drawn in between) */
+    const cs=getComputedStyle(html),c1=cs.getPropertyValue('--pri').trim()||'#1cb0f6',c2=cs.getPropertyValue('--pri-dark').trim()||c1;
+    const th=html.getAttribute('data-theme');themePref('sx-theme-login');const lbg=getComputedStyle(sp).backgroundColor;
+    if(th===null)html.removeAttribute('data-theme');else html.setAttribute('data-theme',th);
+    /* 14 bars: each later one starts a little longer after the last and is a little thinner */
+    let bars='',d=0;const N=14,rnd=(a,b)=>a+Math.random()*(b-a);
+    for(let i=0;i<N;i++){const f=i/(N-1),wd=(16-14.6*f)*rnd(.8,1.2);
+      bars+=`<i style="--c:${i%2?c2:c1};--w:${wd.toFixed(2)}vw;--d:${Math.round(d)}ms;--t:${Math.round(rnd(420,500))}ms"></i>`;d+=14+5.5*i;}
+    const w=document.createElement('div');w.id='sxwipe';w.setAttribute('aria-hidden','true');
+    w.style.setProperty('--lbg',lbg);
+    w.innerHTML='<div class="wp-bg"></div>'+bars;
+    document.body.appendChild(w);html.classList.add('sx-leave');void w.offsetWidth;w.classList.add('go');
+    /* once the background has turned and the server has signed out, the login page goes in behind it (same color) */
+    await Promise.all([cap(ready),wait(640)]);
+    reset();setMode(false);show();sp.classList.remove('fadein','unmorph','back','snap','clk','clk-out','sp-settle','out');
+    sp.classList.add('sp-pre');html.classList.remove('sx-leave');w.querySelector('.wp-bg').remove();void sp.offsetWidth;
+    await wait(40);sp.classList.add('sp-settle');sp.classList.remove('sp-pre');
+    await wait(480);w.remove();
+    await wait(380);sp.classList.remove('sp-settle');
+  };
+  /* logging in from the form: the picture gives way to a clock, its hands spin from 5:30 PM to 8:10 AM, the words leave and
+     the clock's middle cap grows to fill the screen; behind its color the planner is drawn, then it fades away. dataP is the
+     account's data loading (true once in hand); a short ring shows on the color only if it is still on its way */
+  /* opts.center: no login page (a framed start with a saved session): the clock on a plain page in the middle of the
+     screen, and opts.swap draws the planner behind the color */
+  const clockEnter=async(dataP,opts={})=>{
+    spMenu(false);
+    const html=document.documentElement,wait=ms=>new Promise(r=>setTimeout(r,ms));
+    document.querySelectorAll('#spclock,#spcover').forEach(x=>x.remove());
+    let ok=null;dataP.then(v=>{ok=!!v;},()=>{ok=false;});
+    if(!opts.center)sp.scrollTop=0;
+    const W=document.documentElement.clientWidth||innerWidth,H=document.documentElement.clientHeight||innerHeight,art=!opts.center&&sp.querySelector('.sp-art'),ar=art&&art.getBoundingClientRect();
+    /* the clock sits where the picture was (centered on it), or mid-screen when the picture isn't on screen */
+    const onScr=ar&&ar.width>40&&ar.height>40&&ar.bottom>40&&ar.top<H-40;
+    const bx=onScr?ar.left+ar.width/2:W/2,by=onScr?Math.max(ar.top,0)/2+Math.min(ar.bottom,H)/2:H/2;
+    const bw=onScr?ar.width:Math.min(W*.86,560),bh=onScr?Math.min(ar.bottom,H)-Math.max(ar.top,0):Math.min(H*.6,440);
+    const R=Math.max(64,Math.min(Math.min(bw,bh)*.38,190));
+    /* a round wall clock in 100 units, centered on (50,50): a gold rim with a darker bottom edge, a cream face, 12 ticks
+       (longer at 12, 3, 6 and 9), dark hands and a blue cap; the cap's blue is the color that fills the screen */
+    const tick=a=>a%90?`<rect x="49" y="13" width="2" height="5" rx="1" fill="#c7c1b0" transform="rotate(${a} 50 50)"/>`:`<rect x="48" y="12.5" width="4" height="9" rx="2" fill="#4b4b4b" transform="rotate(${a} 50 50)"/>`;
+    const CLOCK='<circle cx="50" cy="53" r="46" fill="#e5a400"/><circle cx="50" cy="50" r="46" fill="#ffc800"/><circle cx="50" cy="50" r="39" fill="#fffdf5"/>'+
+      Array.from({length:12},(_,i)=>tick(i*30)).join('')+
+      '<path class="ck-h" d="M50 50V30" stroke="#3c3c3c" stroke-width="6" stroke-linecap="round"/>'+
+      '<path class="ck-m" d="M50 50V20" stroke="#3c3c3c" stroke-width="4" stroke-linecap="round"/>'+
+      '<circle cx="50" cy="50" r="5.5" fill="#1cb0f6"/>';
+    const ov=document.createElement('div');ov.id='spclock';ov.setAttribute('aria-hidden','true');if(opts.center)ov.classList.add('solid');
+    ov.innerHTML=`<svg viewBox="0 0 ${W} ${H}"><g class="ck-pos"><g class="ck-pop">${CLOCK}</g></g></svg>`;
+    document.body.appendChild(ov);
+    const svg=ov.firstChild,pos=svg.querySelector('.ck-pos'),pop=svg.querySelector('.ck-pop'),hh=svg.querySelector('.ck-h'),mh=svg.querySelector('.ck-m');
+    /* 5:30 PM to 8:10 AM is 880 minutes: the minute hand turns 5280 degrees, the hour hand 440 */
+    const setT=m=>{hh.setAttribute('transform',`rotate(${(165+m*.5)%360} 50 50)`);mh.setAttribute('transform',`rotate(${(180+m*6)%360} 50 50)`);};
+    const setPop=(s,o)=>{pop.setAttribute('transform',`translate(50 50) scale(${s}) translate(-50 -50)`);pop.setAttribute('opacity',o);};
+    const io=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2,back=t=>{const c=1.6;return 1+(c+1)*Math.pow(t-1,3)+c*Math.pow(t-1,2);};
+    const run=(ms,f)=>new Promise(res=>{const t0=performance.now();const fr=now=>{const t=Math.min(1,(now-t0)/ms);f(t);if(t<1)requestAnimationFrame(fr);else res();};requestAnimationFrame(fr);});
+    let cx,cy,rc;
+    setT(0);setPop(.55,0);
+    if(!opts.center)sp.classList.add('clk');
+    const k=R/46;cx=bx;cy=by;rc=5.5*k;
+    pos.setAttribute('transform',`translate(${cx-50*k} ${cy-50*k}) scale(${k})`);
+    await wait(60);
+    await run(340,t=>setPop(.55+.45*back(t),Math.min(1,t*2.5)));
+    await wait(50);
+    await run(1250,t=>setT(880*io(t)));
+    await wait(50);
+    if(!opts.center)sp.classList.add('clk-out');
+    await wait(120);
+    /* the zoom: the view closes in on the cap until its circle covers the farthest corner (scale grows evenly on a log scale) */
+    const far=Math.max(Math.hypot(cx,cy),Math.hypot(W-cx,cy),Math.hypot(cx,H-cy),Math.hypot(W-cx,H-cy)),sEnd=far/rc*1.04,lnE=Math.log(sEnd);
+    await run(700,t=>{const s=Math.exp(lnE*(t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2));
+      svg.setAttribute('viewBox',`${cx-cx/s} ${cy-cy/s} ${W/s} ${H/s}`);});
+    const cov=document.createElement('div');cov.id='spcover';cov.setAttribute('aria-hidden','true');document.body.appendChild(cov);ov.remove();
+    if(ok===null){const wt=setTimeout(()=>cov.classList.add('wait'),250);await dataP.catch(()=>{});clearTimeout(wt);cov.classList.remove('wait');}
+    if(!ok){
+      /* the data didn't come: back to the form */
+      sp.classList.remove('clk','clk-out');go.classList.remove('busy');cov.classList.add('off');setTimeout(()=>cov.remove(),550);return false;}
+    /* behind the color: the account's theme, the login page gone, the planner drawn; then the color fades */
+    if(opts.swap)opts.swap();
+    else{themePref('sx-theme');
+      sp.classList.remove('clk','clk-out');finish();html.classList.remove('splash-on');homeHold=false;render();
+      if(state.view==='home'&&!(state.setup&&state.user))homeFly();}
+    requestAnimationFrame(()=>requestAnimationFrame(()=>cov.classList.add('off')));
+    setTimeout(()=>cov.remove(),600);
+    return true;
   };
   /* clicking the wallpaper puts the cursor in the form, but never when a drag-select started inside a box
      (letting go past the end of the text lands the click on the backdrop) or while text is selected */
@@ -11318,11 +11432,19 @@ if(window.SX_REF)sxRefArrived(window.SX_REF);
     setToken(r.token);state.user=r.user;
     resetAccountState();
     state.view='home';try{localStorage.setItem('sx-tab','home');}catch(_){}
-    if(!(await loadData(r.data)))return fail('conn');
     /* a new account: the FAQ button blinks until its "I Can Read" */
     /* and it lands on Home, where the tutorial starts once the login page is gone (Your Classes comes in the tutorial) */
-    if(signup){state.settings.faqNew=true;state.settings.tutorialNew=true;state.setup=false;render();saveSettings();}
-    enter();
+    const su=signup,newAcct=()=>{if(su){state.settings.faqNew=true;state.settings.tutorialNew=true;state.setup=false;render();saveSettings();}};
+    /* the data usually came with the reply (r.data), so it is in hand at once; the clock plays either way */
+    const dataP=loadData(r.data).then(ok=>{if(ok)newAcct();return ok;});
+    if(matchMedia('(prefers-reduced-motion: reduce)').matches){
+      if(!(await dataP))return fail('conn');
+      enter();
+      if(state.settings.tutorialNew)tutSoon();return;}
+    busy=true;
+    const ok=await clockEnter(dataP);
+    busy=false;
+    if(!ok)return fail('conn');
     if(state.settings.tutorialNew)tutSoon();
   });
   /* the brand in the top bar opens Home; only Log out returns to the login page */
@@ -11370,11 +11492,21 @@ if(window.SX_REF)sxRefArrived(window.SX_REF);
       /* a drawing error must never stop the data from loading */
       try{render();}catch(e){console.warn('first render failed',e);}
     }
-    loadData().then(ok=>{
+    /* opened from atoll (framed, with the saved login it handed over): no login page, the clock sits mid-screen, spins and
+       zooms into its cap, and the planner fades in from behind the color. ?framedtest=1 on localhost pretends to be framed */
+    let framed=false;try{framed=window.top!==window||(location.hostname==='localhost'&&new URLSearchParams(location.search).get('framedtest')==='1');}catch(_){framed=true;}
+    if(matchMedia('(prefers-reduced-motion: reduce)').matches)framed=false;
+    const lp=loadData(),bad=()=>{if(passKey){if(quick){sp.classList.remove('gone');document.documentElement.classList.add('splash-on');}setMode(false);show();fail('conn');}};
+    if(framed){
+      clockEnter(lp,{center:true,swap:()=>{state.view=quick&&state.view!=='home'?state.view:'home';try{localStorage.setItem('sx-tab',state.view);}catch(_){}
+        if(!quick){finish();document.documentElement.classList.remove('splash-on');}
+        homeHold=false;render();if(state.view==='home'&&!(state.setup&&state.user))homeFly();}})
+      .then(ok=>{if(ok){if(state.settings.tutorialNew)tutSoon();}else bad();});
+    }else lp.then(ok=>{
       if(ok){state.view=quick&&state.view!=='home'?state.view:'home';try{localStorage.setItem('sx-tab',state.view);}catch(_){}
         if(quick)render();else enter();
         if(state.settings.tutorialNew)tutSoon();}
-      else if(passKey){if(quick){sp.classList.remove('gone');document.documentElement.classList.add('splash-on');}setMode(false);show();fail('conn');}
+      else bad();
     });
   }else{setMode(!!refStored());show();}
   /* arriving through a referral link (signed out): the form opens on Sign up with the code filled in */
@@ -11399,8 +11531,11 @@ const tutFind=s=>!s?null:typeof s==='function'?s():[...document.querySelectorAll
 const tutUp=s=>()=>{const b=tutFind(s);return b&&b.parentElement;};
 const TUT_STEPS=[
   {v:'home',t:'Welcome',p:'Here’s a quick tour of Saxon Planner. It takes about a minute.'},
-  {v:'home',s:'#hm-edit',alt:'#v-home .hm-btns',t:'Home',
-    p:'Home has your day at a glance, quick games and Jump back in. Edit home picks what it shows.'},
+  {v:'home',s:'#hmcards',t:'Your pages',
+    p:'Home shows up to 8 of your favorite pages. Click a card to open that page.',
+    pa:'Home can show up to 8 of your favorite pages as cards. Pick Pages in Edit home to see them.'},
+  {v:'home',s:'#hm-edit',alt:'#v-home .hm-btns',t:'Edit home',
+    p:'Edit home picks what Home shows: your page cards, Resources, Chat, Assignments or a Notepad. With Pages, tick up to 8 pages for the cards. Appearance in Settings has the same choices.'},
   {v:'home',games:1,s:'#gamesbtn',m:'#mmenu [data-act-games]',click:1,t:'Games',
     p:'Games live here, for when you need a break. Press <kbd>H</kbd> at any time to hide them and jump straight back to the planner.'},
   {v:'home',games:2,s:'#games #gm-lock',alt:'#games .gm-h',live:1,t:'Unlock Multiplayer',
@@ -12011,12 +12146,30 @@ function authLost(){
   setToken('');state.user=null;resetAccountState();
   render();if(splashShow)splashShow();
 }
+/* logging out closes everything open over the planner first (Tools, Games and any game or tool running in them, the Guide,
+   Rewards, Suggestions, Administration and All accounts, the Dashboard, popups, menus, the tutorial), so the login page is
+   what's left once the bars have passed */
+function logOutClose(){
+  const t=f=>{try{f();}catch(e){console.warn('close on log out failed',e);}};
+  t(()=>{if(TUT)tutEnd();});
+  t(()=>pgCloseAll(''));
+  t(()=>{const g=document.getElementById('games');if(gmPark){clearTimeout(gmPark.t);gmPark=null;}
+    if(g&&(!g.hidden||g.innerHTML)){roomLeaveAll();g.hidden=true;g.innerHTML='';}gmDirect=false;});
+  t(()=>{const d=document.getElementById('desmos');if(d&&!d.hidden){tlDz=false;closeDesmos();}});
+  t(closeDocs);
+  t(()=>{const d=document.getElementById('dash');if(d&&!d.hidden)closeDash();});
+  t(hmQgClose);
+  document.querySelectorAll('.rla-ov,.qov,#meme').forEach(x=>x.remove());
+  t(closeNavMenus);
+  state.setOpen=false;state.setup=false;state.view='home';try{localStorage.setItem('sx-tab','home');}catch(_){}
+}
 async function logOut(){
   try{if(window.SXRT)SXRT.stop();}catch(_){}RT_USER='';RT_INFO=null;
   state.setOpen=false;closeNavMenus();render();
   const out=api('/api/logout',{method:'POST',body:'{}'}).catch(()=>{});
-  if(!splashLeave){await out;authLost();return;}
-  await splashLeave(out,()=>{setToken('');state.user=null;resetAccountState();render();});
+  if(!splashLeave){await out;logOutClose();authLost();return;}
+  /* the overlays close once the bars and the login page's background cover the screen, so nothing jumps before that */
+  await splashLeave(out,()=>{logOutClose();setToken('');state.user=null;resetAccountState();render();});
 }
 /* resync: the account's Schoology calendar feed, plus the Claude deep sync for the owner */
 async function resync(){
@@ -12881,7 +13034,7 @@ document.addEventListener('click',e=>{
   /* a menu row leaves the menu closed (the page it opens sits under the bar, where the open menu would cover it) */
   if(t.closest('#mmenu,#moredd,#setdd'))closeNavMenus();
   if(!pgOpenNow())return;
-  if(t.matches('[data-v]')&&t.dataset.v!=='courses'&&t.dataset.v!=='tools'&&state.user&&!COURSES.length)return;
+  if(t.matches('[data-v]')&&t.dataset.v!=='courses'&&t.dataset.v!=='tools'&&t.dataset.v!=='home'&&state.user&&!COURSES.length)return;
   pgCloseAll(t.matches('[data-act-sugg]')?'sugg':t.matches('[data-act-roles]')?'roles':t.matches('[data-act-rewards]')?'rewards':'');
 },true);
 /* while a game frame is on screen the planner behind it does nothing: html.gm-play skips drawing it and stops its
