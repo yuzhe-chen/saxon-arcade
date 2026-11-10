@@ -1,6 +1,23 @@
 <!doctype html>
 <html lang="en">
-<head><script>/* runs outside script.google.com: the page's google.script.run calls go to the backend as plain web requests (no Google sign-in) */
+<head><script>/* inside atoll.web.app's tab the planner is a third-party frame, where school Chrome blocks storage, so the
+login would be forgotten every time. atoll keeps it instead: it hands the saved login over in the address's #sxk= part
+(read and removed here before the page runs; it never goes over the network), and every change to the saved login is
+sent back to atoll. When storage is blocked, an in-memory stand-in keeps the page working. */
+(function(){if(window.top===window)return;var ATOLL='https://atoll.web.app';
+var m=/[#&]sxk=([^&]+)/.exec(location.hash),tok='';if(m){try{tok=decodeURIComponent(m[1]);}catch(e){}
+try{history.replaceState(null,'',location.pathname+location.search);}catch(e){}}
+var ok=true;try{localStorage.setItem('__sxt','1');localStorage.removeItem('__sxt');}catch(e){ok=false;}
+var tell=function(v){try{parent.postMessage({sx:'token',t:v||''},ATOLL);}catch(e){}};
+if(!ok){var mem={},st={getItem:function(k){return Object.prototype.hasOwnProperty.call(mem,k)?mem[k]:null;},
+setItem:function(k,v){mem[k]=String(v);if(k==='sx-token')tell(String(v));},removeItem:function(k){delete mem[k];if(k==='sx-token')tell('');},
+clear:function(){mem={};},key:function(i){return Object.keys(mem)[i]||null;}};Object.defineProperty(st,'length',{get:function(){return Object.keys(mem).length;}});
+try{Object.defineProperty(window,'localStorage',{value:st,configurable:true});}catch(e){}}
+else{var P=Storage.prototype,os=P.setItem,orm=P.removeItem;
+P.setItem=function(k,v){os.call(this,k,v);if(k==='sx-token'&&this===window.localStorage)tell(String(v));};
+P.removeItem=function(k){orm.call(this,k);if(k==='sx-token'&&this===window.localStorage)tell('');};}
+if(/^[a-z0-9_.-]{3,24}:[0-9a-f]{64}$/.test(tok)){try{if(!localStorage.getItem('sx-token'))localStorage.setItem('sx-token',tok);}catch(e){}}
+})();</script><script>/* runs outside script.google.com: the page's google.script.run calls go to the backend as plain web requests (no Google sign-in) */
 (function(){if(window.google&&window.google.script)return;
 var API='https:'+'/'+'/script.google.com/macros/s/AKfycbxDk0GrC7XrtoekZdrW4qPsffwxxuG0ujTopOYe5m3rzRPX1GOtbv9-aUtvaXAZlFLW/exec';
 function runner(ok,fail){return new Proxy({},{get:function(_,name){
