@@ -25,7 +25,7 @@ if(name==='withSuccessHandler')return function(f){return runner(f,fail);};
 if(name==='withFailureHandler')return function(f){return runner(ok,f);};
 if(name==='withUserObject')return function(){return runner(ok,fail);};
 return function(){var args=Array.prototype.slice.call(arguments);
-fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({fn:name,args:args,site:location.hostname,framed:window.top!==window})})
+fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({fn:name,args:args,site:location.hostname,framed:window.top!==window,via:(location.ancestorOrigins&&location.ancestorOrigins.length?location.ancestorOrigins[location.ancestorOrigins.length-1]:'')})})
 .then(function(r){return r.json();})
 .then(function(o){if(o&&o.ok){if(ok)ok(o.result);}else if(fail)fail(new Error(o&&o.error||'failed'));})
 .catch(function(e){if(fail)fail(e);});};}});}
