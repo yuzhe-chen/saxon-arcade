@@ -7040,6 +7040,8 @@ function rtStart(info){
 }
 /* rpcRtTicket over whichever bridge this copy uses */
 function gsCallSafe(fn){return GS?gsRun(fn):apiRaw('/api/rt',{method:'POST',body:'{}'});}
+/* the menu's Home was picked while the account has no classes yet: stay on Home instead of class setup */
+let HOME_PICK=false;
 /* the account data version from the last full load (the server answers "same" while it hasn't moved) */
 let DATA_VER=null;
 async function loadData(pre){
@@ -7086,7 +7088,7 @@ async function loadData(pre){
     /* remembered for the next reload, so Home can show at once before the data arrives */
     try{if(state.user)localStorage.setItem('sx-boot',JSON.stringify({u:state.user,hc:!!state.settings.hideChat,hg:!!state.settings.hideGames}));}catch(_){}
     /* a new account starts on the class setup screen */
-    if(!COURSES.length&&!TUT)state.setup=true;
+    if(!COURSES.length&&!TUT&&!HOME_PICK)state.setup=true;
     /* spinning resync button until the watcher finishes a requested sync */
     state.syncPending=GS?!!state.hostedSync:!!(d.syncRequested&&(!d.syncedAt||d.syncedAt<d.syncRequested));
     clearTimeout(syncPollT);
@@ -8844,7 +8846,7 @@ document.addEventListener('click',async e=>{
     if(t){t.course=el.dataset.c;render();await saveTask(t);await loadData();}return;}
   if(act==='asgf'){state.asgFilter=el.dataset.f;try{localStorage.setItem('sx-asgf',state.asgFilter);}catch(_){}render();return;}
   if(act==='syncreq'){resync();return;}
-  if(act==='classes'){state.setOpen=false;closeNavMenus();state.setup=true;render();document.querySelector('.wrap').scrollTop=0;return;}
+  if(act==='classes'){state.setOpen=false;closeNavMenus();HOME_PICK=false;state.setup=true;render();document.querySelector('.wrap').scrollTop=0;return;}
   if(act==='susave'){saveSetup();return;}
   if(act==='suimport'){suImport();return;}
   if(act==='suadd'){
@@ -10194,7 +10196,7 @@ async function pwxAct(a){
     const r=await call('rpcPwChange',passKey,c,n1);if(!r.ok)return pwxMsg(PWX_ERR[r.error]||PWX_ERR.conn);secOpen('Password changed. Your old password still works for 3 days.');return;}
   if(a==='picset'){pwx={mode:'set',seq:[],back:'sec'};pwxPics();return;}
   if(a==='picoff'){const r=await call('rpcPicSet',passKey,null);if(r.ok&&state.user)state.user.pic=false;secOpen(r.ok?'Picture password turned off.':PWX_ERR.conn);render();return;}
-  if(a==='classes'){pwxClose();state.setOpen=false;closeNavMenus();state.setup=true;render();const w=document.querySelector('.wrap');if(w)w.scrollTop=0;return;}
+  if(a==='classes'){pwxClose();state.setOpen=false;closeNavMenus();HOME_PICK=false;state.setup=true;render();const w=document.querySelector('.wrap');if(w)w.scrollTop=0;return;}
   if(a==='who'){const n=v('pwx-name').trim().toLowerCase();if(!n)return pwxMsg(PWX_ERR.nouser);pwx.name=n;
     const r=await call('rpcPwInfo',n);if(r.error)return pwxMsg(PWX_ERR[r.error]||PWX_ERR.conn);pwx.info=r;pwxHow(r);return;}
   if(a==='school'){if(pwx.info&&pwx.info.school)pwxSchool();return;}
@@ -11076,7 +11078,8 @@ if(window.SX_REF)sxRefArrived(window.SX_REF);
   });
   /* the brand in the top bar opens Home; only Log out returns to the login page */
   document.getElementById('brand').addEventListener('click',()=>{if(state.user)goHome();});
-  document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('[data-act-home]')&&state.user)goHome();});
+  /* Home in the menu always goes to Home, even before any classes are added (then a reload doesn't bounce back to setup) */
+  document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('[data-act-home]')&&state.user){HOME_PICK=true;state.setup=false;goHome();}});
   /* the three lines: Games, Desmos, Soundboard and the login page's own dark mode */
   const mbtn=document.getElementById('spmenubtn'),menu=document.getElementById('spmenu'),tsw=document.getElementById('spthemesw');
   function spMenu(open){menu.classList.toggle('open',open);mbtn.setAttribute('aria-expanded',String(open));}
