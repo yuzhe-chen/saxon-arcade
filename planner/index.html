@@ -11749,7 +11749,7 @@ function rolesPaint(msg){
   if(!RL||RL.error){d.innerHTML=`<div class="docs-in"><button class="hbtn res-x" data-rl-close title="Close">×</button><div class="rl-none">Can't load Administration</div></div>`;return;}
   const ed=RL.canEdit,dt=t=>t?new Date(t).toLocaleDateString([],{month:'short',day:'numeric'}):'';
   const box=(n,kind)=>`<div class="rl-box ${kind}"><span class="nm">${esc(n)}</span><span class="tg">${kind==='admin'?'Admin':'Moderator'}</span>${kind==='mod'&&ed?`<button data-rl-unmod="${esc(n)}" title="Remove moderator" aria-label="Remove moderator">×</button>`:''}</div>`;
-  const sg=RLS?RLS.filter(s=>rlSK==='all'||(s.kind==='bug'?'bug':'idea')===rlSK):[];
+  const sg=RLS?RLS.filter(s=>!SG_PEND.has(s.id)).filter(s=>rlSK==='all'||(s.kind==='bug'?'bug':'idea')===rlSK):[];
   const sw=t=>t?new Date(t).toLocaleString([],{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):'';
   const sq=sg.map(s=>`<div class="rl-q rl-sg"><div class="rl-sh"><span class="rl-k ${s.kind==='bug'?'bug':''}">${s.kind==='bug'?'Bug':'Suggestion'}</span>
     <span class="m">${esc([s.user==='guest'&&s.device?'guest '+s.device.slice(0,8):s.user||'guest',sw(s.created)].filter(Boolean).join(', '))}</span>
@@ -11791,16 +11791,24 @@ async function rolesMp(name,unlock){
   if(r&&r.ok){RL=Object.assign(r,{open:RL&&RL.open});rolesPaint();return;}
   rolesPaint();const m=document.querySelector('#roles .rl-mpmsg');if(m)m.textContent=r&&r.error==='nouser'?'No account named '+name:'Couldn\u2019t change it';
 }
-/* answering a suggestion: accept or decline sends the verdict and the typed message to the sender's inbox; remove sends nothing */
+/* answering a suggestion: accept or decline sends the verdict and the typed message to the sender's inbox; remove sends nothing.
+   It leaves the list at once and is sent in the background (Apps Script takes a few seconds); if that fails it comes back */
+const SG_PEND=new Set();
 async function suggDone(id,how){
+  SG_PEND.add(id);
   const ta=document.querySelector(`#roles [data-rl-rep="${CSS.escape(id)}"]`),note=ta?ta.value.trim():'';
-  /* other suggestions' unsent replies survive the redraw */
   const keep={};document.querySelectorAll('#roles [data-rl-rep]').forEach(x=>{if(x.value&&x.dataset.rlRep!==id)keep[x.dataset.rlRep]=x.value;});
+  const restore=()=>Object.keys(keep).forEach(k=>{const x=document.querySelector(`#roles [data-rl-rep="${CSS.escape(k)}"]`);if(x&&!x.value)x.value=keep[k];});
+  const item=(RLS||[]).find(x=>x.id===id),at=(RLS||[]).indexOf(item);
+  if(RLS)RLS=RLS.filter(x=>x.id!==id);
+  rolesPaint(how==='silent'?'Removed':'Sent to their inbox');restore();
   let r=null;try{r=await api('/api/roles',{method:'POST',body:JSON.stringify({op:'suggDone',ids:[id],how:how==='decline'?'decline':'accept',note,silent:how==='silent'})});}catch(_){r={error:'conn'};}
-  if(r&&r.ok){RLS=r.suggestions;rolesPaint(how==='silent'?'Removed':'Sent to their inbox');}
-  else rolesPaint('Couldn\u2019t send that');
-  Object.keys(keep).forEach(k=>{const x=document.querySelector(`#roles [data-rl-rep="${CSS.escape(k)}"]`);if(x)x.value=keep[k];});
-  if(!(r&&r.ok)&&ta){const x=document.querySelector(`#roles [data-rl-rep="${CSS.escape(id)}"]`);if(x)x.value=note;}
+  SG_PEND.delete(id);
+  if(r&&r.ok){pcPut('roles',{RL,RLS});return;}
+  /* failed: put it back where it was, with the message that was typed */
+  document.querySelectorAll('#roles [data-rl-rep]').forEach(x=>{if(x.value)keep[x.dataset.rlRep]=x.value;});
+  if(item&&RLS&&!RLS.some(x=>x.id===id)){RLS.splice(Math.max(0,at),0,item);}
+  keep[id]=note;rolesPaint('Couldn\u2019t send that, try again');restore();
 }
 document.addEventListener('click',e=>{
   if(e.target.closest('[data-act-roles]')){e.stopPropagation();openRoles();return;}
