@@ -479,7 +479,9 @@ section.view{display:none}
 .rla-ov{position:fixed;left:0;right:0;bottom:0;top:var(--rla-top,0px);z-index:1500;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.4)}
 .rla-box{width:min(900px,100%);max-height:100%;box-sizing:border-box;display:flex;flex-direction:column;gap:14px;padding:20px;background:var(--bg);border:2px solid var(--line);border-bottom-width:4px;border-radius:16px}
 .rla-head{display:flex;align-items:center;gap:12px}.rla-head h3{margin:0;flex:none}
-.rla-head .res-x{position:static;margin-left:auto}
+.rla-head .rla-x{margin-left:auto;flex:none}
+.rl-flag{flex:none;font-size:12px;font-weight:800;color:#ea2b2b;margin-right:6px}
+#roles .kbtn.rl-banb{color:#ea2b2b}
 .rla-q{flex:1;min-width:0;max-width:280px;height:40px;padding:0 12px;border:2px solid var(--line);border-radius:12px;background:var(--panel);color:var(--fg);font:inherit;font-size:14px}
 .rla-q:focus{outline:none;border-color:var(--blue)}
 .rla-body{overflow-y:auto;min-height:0}
@@ -2953,6 +2955,9 @@ html.pg-open:not(.splash-on) header.topbar{z-index:1550}
 .ccard .chd>span:last-child:not(.nm){font-weight:800!important;font-size:13px!important;color:var(--faint);letter-spacing:.5px}
 .hm-btn.alt{background:var(--bg);color:var(--blue)}
 .hm-btn.alt:hover{background:var(--panel2);color:var(--blue)}
+/* Suggestions on Home stands out (yellow) so people find it */
+html #v-home .hm-btn.hm-hl,html.pg2 #v-home .hm-btn.hm-hl{background:#ffc800;color:#4b3600;border-color:#e0a800;display:inline-flex;align-items:center;gap:6px}
+#v-home .hm-btn.hm-hl svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
 /* secondary buttons carry blue text, as ProfeGPT's do; option groups (tabs) stay gray until chosen */
 .hbtn:not(.on),.kbtn:not(.on),.hbtn:not(.on):hover,.kbtn:not(.on):hover{color:var(--blue)}
 :is([data-cv],[data-act="asgf"],[data-act="resview"],[data-sugg-kind],[data-rl-sk],[data-act="oppfield"],[data-act="keyunit"],[data-act="prcat"],[data-act="resf"],.navbtn,.res-x,[data-act="syncreq"],[data-act="myresync"]):not(.on){color:var(--fg2)!important}
@@ -3315,6 +3320,74 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
   #v-clock .ck-time{font-size:60px}
   #v-clock .ck-now{text-align:left}
 }
+/* ---------- the Guide, polished: one reading column (about 68 characters a line), a clear type scale, space between
+   sections instead of rules, regular-weight text so bold means something, light tables and real-looking keys.
+   Applies to the Guide page (#docs) and the same guide on the login page (#spdoc). ---------- */
+:is(#docs,#spdoc){--g-text:color-mix(in srgb,var(--fg) 92%,var(--bg));--g-head:var(--fg);--g-rule:var(--line)}
+@media (min-width:900px){
+  :is(#docs,#spdoc) .docs-body{grid-template-columns:224px minmax(0,1fr);column-gap:56px}
+  :is(#docs,#spdoc) .docs-toc{margin-top:6px}
+}
+:is(#docs,#spdoc) .docs-body .rdoc{font-size:16px;line-height:1.7;font-weight:500;color:var(--g-text);max-width:760px;padding-bottom:48px}
+:is(#docs,#spdoc) .rdoc :is(p,ul,ol){max-width:68ch}
+/* headings: Fredoka, a size step above the text, room above and no rule under */
+:is(#docs,#spdoc) .rdoc h3{font-family:var(--display);font-weight:600;font-size:1.625rem;line-height:1.2;letter-spacing:-0.005em;color:var(--g-head);
+  margin:3.5rem 0 .875rem;padding:0;border:0;scroll-margin-top:24px}
+:is(#docs,#spdoc) .rdoc>h3:first-child{margin-top:6px}
+:is(#docs,#spdoc) .rdoc>div>h3:first-child{margin-top:3.5rem}
+:is(#docs,#spdoc) .rdoc h4{font-size:1rem;font-weight:800;color:var(--g-head);margin:1.75rem 0 .5rem}
+/* paragraphs and lists share one rhythm */
+:is(#docs,#spdoc) .rdoc p{margin:0 0 1rem}
+:is(#docs,#spdoc) .rdoc :is(ul,ol){margin:0 0 1.25rem;padding-left:1.25rem;list-style-position:outside}
+:is(#docs,#spdoc) .rdoc ul{list-style-type:disc}
+:is(#docs,#spdoc) .rdoc li{margin:0;padding-left:.25rem;overflow:visible}
+:is(#docs,#spdoc) .rdoc li+li{margin-top:.625rem}
+:is(#docs,#spdoc) .rdoc ul>li::marker{color:var(--faint)}
+:is(#docs,#spdoc) .rdoc ol>li::marker{color:var(--fg2);font-weight:700}
+/* bold is for the names of things on screen; the label that starts a list item is the only heavy one */
+:is(#docs,#spdoc) .rdoc b{font-weight:700;color:var(--g-head)}
+:is(#docs,#spdoc) .rdoc li>b:first-child{font-weight:800}
+:is(#docs,#spdoc) .rdoc a{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:2px}
+/* the Schoology steps: numbered, the screenshots a little apart from the text */
+:is(#docs,#spdoc) .rdoc .ical-steps{padding-left:1.5rem;margin-bottom:1.25rem}
+:is(#docs,#spdoc) .rdoc .ical-steps li+li{margin-top:1rem}
+:is(#docs,#spdoc) .rdoc .ical-steps .shot{margin:.625rem 0 .25rem;max-width:480px}
+/* keys look like keys: a small cap with a deeper bottom edge, sitting on the text line */
+:is(#docs,#spdoc) .rdoc kbd{font-family:var(--font-ui);font-weight:800;font-size:12px;line-height:1;color:var(--g-head);background:var(--bg);
+  display:inline-block;min-width:1.75em;text-align:center;padding:3px 6px 2px;margin:0 1px;vertical-align:1px;
+  border:1px solid var(--line-hi);border-bottom-width:3px;border-radius:6px;white-space:nowrap}
+/* tables: hairline rows, quiet small-caps header, keys never wrap */
+:is(#docs,#spdoc) .rdoc table{font-size:15px;line-height:1.5;margin:.25rem 0 1.5rem}
+:is(#docs,#spdoc) .rdoc :is(th,td){border-bottom:1px solid var(--g-rule);padding:11px 16px 11px 0}
+:is(#docs,#spdoc) .rdoc thead th{background:var(--bg);color:var(--fg2);font-size:11.5px;font-weight:800;letter-spacing:.06em;height:auto;padding-top:8px;padding-bottom:8px;border-bottom:1px solid var(--line-hi)}
+@media (min-width:701px){:is(#docs,#spdoc) .rdoc td[data-label="Keys"]{white-space:nowrap;width:1%}}
+:is(#docs,#spdoc) .rdoc td[data-label="What it does"]{color:var(--g-head)}
+:is(#docs,#spdoc) .rdoc tbody tr:last-child td{border-bottom:0}
+/* contents: plain text links, the section you're reading marked in blue */
+:is(#docs,#spdoc) .dt-h{font-size:12px;margin:0 0 10px 12px}
+:is(#docs,#spdoc) .dt-list a{font-size:14px;font-weight:600;line-height:1.3;padding:6px 12px;color:var(--fg2)}
+:is(#docs,#spdoc) .dt-list li+li{margin-top:1px}
+:is(#docs,#spdoc) .dt-list a.on{font-weight:800}
+@media (max-width:899px){
+  :is(#docs,#spdoc) .docs-toc{margin-bottom:28px}
+  :is(#docs,#spdoc) .dt-list{padding:0 8px 10px}
+  :is(#docs,#spdoc) .dt-list a{font-size:15px;padding:9px 12px}
+}
+@media (max-width:700px){
+  :is(#docs,#spdoc) .docs-body .rdoc{font-size:16px;line-height:1.65}
+  :is(#docs,#spdoc) .rdoc h3{font-size:1.4rem;margin-top:2.75rem}
+  :is(#docs,#spdoc) .rdoc>div>h3:first-child{margin-top:2.75rem}
+  :is(#docs,#spdoc) .rdoc>h3:first-child{margin-top:0}
+  :is(#docs,#spdoc) .rdoc tr{border-bottom:1px solid var(--g-rule);padding:12px 0}
+  :is(#docs,#spdoc) .rdoc tbody tr:last-child{border-bottom:0}
+  :is(#docs,#spdoc) .rdoc td{padding:2px 0;border:0}
+  :is(#docs,#spdoc) .rdoc td[data-label]::before{font-weight:800;font-size:11px;color:var(--faint);margin-bottom:2px}
+  :is(#docs,#spdoc) .rdoc td[data-label="Keys"]{white-space:normal!important;margin-bottom:4px}
+  :is(#docs,#spdoc) .rdoc td[data-label="Keys"]::before{display:none}
+  :is(#docs,#spdoc) .rdoc td[data-label="What it does"]::before{display:none}
+  :is(#docs,#spdoc) .rdoc td[data-label="Where"]{color:var(--fg2);font-size:14px}
+  :is(#docs,#spdoc) .rdoc td[data-label="Where"]::before{display:none}
+}
 </style>
 </head>
 <body>
@@ -3334,7 +3407,7 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
 <p><b>Set up your classes.</b> A new account gets a short tutorial first, then lands on Your Classes. Until you add classes, the other tabs only remind you to add them first.</p>
 <p>Everything you change saves to your account right away. The planner also reloads your data every 5 minutes, and whenever you come back to its tab after a minute away, so it stays the same across computers.</p>
 <ul>
-<li><b>Top bar</b>: Courses, Calendar, To-Do, Assignments, Resources, Tools<span class="g-chat"> and Chat</span>, then the three lines at the top right. Their menu holds every page that doesn't fit in the bar, then <span class="g-games">Games, </span>Settings, Suggestions,<span class="g-ref"> Rewards,</span> this Guide, Dark mode, Math (a separate math site) and Other, a folder with ProfeGPT, Interpres, Ambicant and Planner. Your username and Log out are at the bottom. On a phone every page is in that menu<span class="g-chat">, and a dot on the three lines means a new chat message</span>.</li>
+<li><b>Top bar</b>: Courses, Calendar, To-Do, Assignments, Resources, Tools<span class="g-chat"> and Chat</span>, then the three lines at the top right. Their menu holds every page that doesn't fit in the bar, then <span class="g-games">Games, </span>Settings, Suggestions,<span class="g-ref"> Rewards,</span> this Guide, Dark mode and Other, a folder with ProfeGPT, Interpres, Ambicant and Planner. Your username and Log out are at the bottom. On a phone every page is in that menu<span class="g-chat">, and a dot on the three lines means a new chat message</span>.</li>
 <li><b>Home</b>: logging in opens it, and clicking Saxon Planner in the top bar returns to it. It shows the date, a card for every page (or the view you chose), See assignments, Suggestions, Tutorial, FAQ, Meme and <b>Edit home</b>, Other websites, your quick games, today and the next school day with a Go to calendar button, and Jump back in tiles for To-Do, Tools, Resources<span class="g-chat">, Chat</span><span class="g-games"> and Games</span>. <b>Edit home</b> opens the Home settings in a pop-up: which view Home shows (Pages, Resources<span class="g-chat">, Chat</span>, Assignments or Notepad) and what it lists. The Resources view holds up to 12 resources you pick, and the Notepad is kept only in this browser. Once a day a meme drops onto Home; Meme replays it and a click closes it. Only Log out returns to the login page.</li>
 <li><b>Footer</b>: Home ends with the copyright line, Terms, Privacy and <b>No Internet</b>. Every other page<span class="g-chat"> except Chat</span>, Your Classes and Jumpscare ends with links to Suggestions, Tutorial, FAQ and this Guide (without the one you're on). Settings, Appearance, Footer turns those links off.</li>
 <li><b>Menu bar</b>: it steps aside while a game or tool fills the screen, and for Desmos and the Clock. The arrow on the left edge (or <kbd>Esc</kbd>) brings you back.</li>
@@ -3532,7 +3605,7 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
 <p>Games in the menu at the top right, or the Games card on Home, opens the games. Press <kbd>H</kbd> at any time (outside a text box) to close them and go to Home. The menu bar hides while a game is on screen; the arrow on the left edge<span class="g-sx"> (on games built into the planner)</span>, or clicking a game's title, returns to the games menu. <kbd>Esc</kbd> in Metrica's world picker does the same.</p>
 <p>Every game is in one list, each marked Singleplayer, Social, Multiplayer or Online, with a search bar above it (<kbd>Esc</kbd> clears it). The <b>+</b> tile suggests a game by name and link. <span class="g-sx"><b>Show sensitive games</b>, at the bottom, adds five nights at epstein's to the list. </span>A star keeps a game at the top, and Add quick games on Home puts up to 5 there, each opening straight into its game.</p>
 <p>Signed in, your progress saves to your account. On the login page (the three lines at the top right, then Games) you can play as a guest: progress is kept under a guest code instead, which you can move into an account once from Settings, Classes.</p>
-<p>If a game takes more than a few seconds to load, a Still loading pop-up offers <b>Book Run</b>, a small pixel runner (Play or No thanks). A loading bar sits over it, and when the game is ready, Loading complete takes you on after your run. No Internet on Home opens Book Run on its own. Space, ↑ or W jumps the books, ↓ or S ducks the flying grades, and every 700 points night falls. Your best score is kept on this computer.</p>
+<p>If a game takes more than a few seconds to load, a Still loading pop-up offers <b>Book Run</b>, a small pixel runner (Play or No thanks). A loading bar sits over it, and when the game is ready, Loading complete takes you on after your run. No Internet on Home opens Book Run on its own. <kbd>Space</kbd>, <kbd>↑</kbd> or <kbd>W</kbd> jumps the books, <kbd>↓</kbd> or <kbd>S</kbd> ducks the flying grades, and every 700 points night falls. Your best score is kept on this computer.</p>
 <p class="g-sx">Games marked Embed are outside games running inside the planner. Online ones play on live servers with real people.</p>
 <p class="g-ref">Multiplayer and Online games start locked on a new account (Social games never lock). The lock panel at the top of the games has your referral link: copy it and share it, and once one other person signs up with it, both sections unlock for you (the first reward in Rewards). They can also type your username into Referral code when they sign up. A referral only works on a device that hasn't been used for an account before. Guests need to sign up first. Leaving a multiplayer room by closing the games keeps your seat for 5 minutes.</p>
 <ul>
@@ -3860,6 +3933,7 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
     </button>
     <button id="menubtn" aria-label="Menu" title="Menu" aria-haspopup="true" aria-expanded="false" aria-controls="mmenu"><svg viewBox="0 0 24 24"><path d="M4 6.5h16M4 12h16M4 17.5h16"/></svg><i class="mb-dot" hidden></i></button>
     <div class="mmenu" id="mmenu" aria-hidden="true">
+      <button class="mm-row mm-home" data-act-home><i class="mi" data-art="logo"></i><span>Home</span></button>
       <div class="mm-pages">
         <button class="mtab" data-v="courses"><i class="mi" data-art="backpack"></i><span>Courses</span></button>
         <button class="mtab" data-v="calendar"><i class="mi" data-art="calendar"></i><span>Calendar</span></button>
@@ -3879,7 +3953,6 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
       <button class="mm-row" data-act-docs><i class="mi" data-art="guide"></i><span>Guide</span></button>
       <button class="mm-row" data-theme-toggle role="menuitemcheckbox"><i class="mi" data-art="moon"></i><span>Dark mode</span><i class="mm-sw" aria-hidden="true"></i></button>
       <div class="mm-sep"></div>
-      <a class="mm-row mm-math" href="https://script.google.com/macros/s/AKfycbwjN8KkUN7K-EDeWRi4MI8ygQXyACrWvDMps8uzcyuvPYVpsT_zToyOTRk71-V_Lmx_kg/exec?open=" target="_blank" rel="noopener"><i class="mi" data-art="calc"></i><span>Math</span><svg class="mm-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
       <button class="mm-row" data-act-dash hidden><i class="mi" data-art="graph"></i><span>Dashboard</span><svg class="mm-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></button>
       <button class="mm-row" id="mother" aria-expanded="false" aria-controls="mother-l"><i class="mi" data-art="folder"></i><span>Other</span><svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
       <div class="mm-other" id="mother-l" hidden>
@@ -5401,6 +5474,39 @@ function normalizeCourse(input){
     return out.sort(function (x, y) { return x.start - y.start; });
   };
   SX.flagged = function (text) { return SX.checkText(text).map(function (m) { return m.text; }); };
+  /* usernames: the word filter plus hate figures and violent words people pick as names (adolf_hitler). Names are split on
+     _ . - and digits; long terms count anywhere in the name, short ones only as a whole part */
+  var NAME_ANY = ['hitler', 'nazi', 'swastika', 'heilhitler', 'siegheil', 'pedophile', 'paedophile', 'molester', 'goebbels', 'himmler', 'auschwitz', 'kkk'];
+  var NAME_PART = ['heil', 'rape', 'rapist', 'raper', 'pedo', 'pedos', 'klan', 'isis', 'jihad', 'reich', 'genocide', 'holocaust', 'adolf'];
+  SX.badName = function (name) {
+    var n = String(name || '').toLowerCase();
+    if (SX.checkText(n.replace(/[_.\-]+/g, ' ')).length || SX.checkText(n.replace(/[_.\-0-9]+/g, '')).length) return true;
+    var lt = n.replace(/[0-9@$!|]/g, function (c) { return { '0': 'o', '1': 'i', '3': 'e', '4': 'a', '5': 's', '7': 't', '8': 'b', '9': 'g', '@': 'a', '$': 's', '!': 'i', '|': 'i' }[c] || ''; });
+    var flat = lt.replace(/[^a-z]/g, '');
+    if (NAME_ANY.some(function (t) { return flat.indexOf(t) >= 0; })) return true;
+    return n.split(/[_.\-0-9]+/).some(function (p) { return NAME_PART.indexOf(p) >= 0; });
+  };
+  /* the same filter, but the words are taken out instead of refused (class names: existing ones and new ones) */
+  SX.scrubText = function (text) {
+    text = String(text == null ? '' : text);
+    var m = SX.checkText(text);
+    if (!m.length) return text;
+    for (var i = m.length - 1; i >= 0; i--) text = text.slice(0, m[i].start) + text.slice(m[i].end);
+    return text.replace(/\s{2,}/g, ' ').replace(/^[\s\-:,.]+|[\s\-:,]+$/g, '');
+  };
+  /* returns true when a class name or short name was changed; an emptied name becomes "Class" */
+  SX.scrubCourses = function (courses) {
+    var changed = false;
+    (courses || []).forEach(function (c) {
+      if (!c) return;
+      ['name', 'abbr', 'raw'].forEach(function (k) {
+        if (typeof c[k] !== 'string' || !c[k]) return;
+        var v = SX.scrubText(c[k]);
+        if (v !== c[k]) { changed = true; c[k] = v || (k === 'raw' ? '' : 'Class'); }
+      });
+    });
+    return changed;
+  };
 
   /* ---------- user documents: a strict whitelist of the formatting the resource pages use ---------- */
   var ENT = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ', '#39': "'" };
@@ -6274,12 +6380,14 @@ function heroArt(){const g=(k,x,y,s)=>`<g transform="translate(${x} ${y}) scale(
 /* the three sister sites. On Google's Apps Script copy a link offers all three addresses (Firebase, Tinyurl,
    Google Script); everywhere else it goes straight to the Firebase site */
 const SITE_URLS={
-  planner:{Firebase:'saxonplanner.web.app/',Tinyurl:'tinyurl.com/saxonplanner','Google Script':'script.google.com/macros/s/AKfycbxDk0GrC7XrtoekZdrW4qPsffwxxuG0ujTopOYe5m3rzRPX1GOtbv9-aUtvaXAZlFLW/exec'},
+  planner:{Firebase:'saxon-planner.web.app/',Tinyurl:'tinyurl.com/saxon-planner','Google Script':'script.google.com/macros/s/AKfycbxDk0GrC7XrtoekZdrW4qPsffwxxuG0ujTopOYe5m3rzRPX1GOtbv9-aUtvaXAZlFLW/exec'},
   profegpt:{Firebase:'profegpt.web.app/',Tinyurl:'tinyurl.com/profe-gpt','Google Script':'script.google.com/macros/s/AKfycbzQJSe8rHdR9ZDTmpEfFtOtUaHbirB9jQd0rP8GuOYqA-5MNLCDGZYBfOPirBDVybsObQ/exec'},
   interpres:{Firebase:'interpres.web.app/',Tinyurl:'tinyurl.com/interpres-latin','Google Script':'script.google.com/macros/s/AKfycbyfS0EeA5rlHcOyaDjO88BjaxAes0Zwvsh92wXzPKYgDciVoRuDa2eQXZ_eiJNECofn/exec'},
   ambicant:{Firebase:'ambicant.web.app/'}};
 const SITE_NAMES={planner:'Saxon Planner',profegpt:'ProfeGPT',interpres:'Interpres',ambicant:'Ambicant'};
 const ON_GAS=/googleusercontent\.com$/.test(location.hostname);
+/* the game-free build (lectern.web.app): no games anywhere */
+const SAFE=!!window.SX_SAFE;if(SAFE)document.documentElement.classList.add('no-games');
 const SITES={};Object.keys(SITE_URLS).forEach(k=>SITES[k]='https:'+SLASH2+SITE_URLS[k].Firebase);
 /* old ProfeGPT and Interpres addresses in resources open the current sites */
 const sisU=u=>SX.sisterUrl(u,{profegpt:SITES.profegpt.replace(/\/$/,''),interpres:SITES.interpres.replace(/\/$/,'')});
@@ -6577,7 +6685,7 @@ async function api(path,opts){
   const run=prev.catch(()=>{}).then(async()=>{
     for(let i=0;;i++){
       try{return await apiRaw(path,opts);}
-      catch(e){if(i>=2||/auth|classes-shift/.test(String(e&&e.message||e)))throw e;await new Promise(r=>setTimeout(r,800*(i+1)));}
+      catch(e){if(i>=3||/auth|classes-shift|too big|too many|required/.test(String(e&&e.message||e)))throw e;await new Promise(r=>setTimeout(r,900*(i+1)+Math.random()*900));}
     }
   });
   writeChains.set(key,run);
@@ -6601,7 +6709,7 @@ async function apiRaw(path,opts){
   if(GS){
     const method=(opts&&opts.method)||'GET';
     const body=opts&&opts.body?JSON.parse(opts.body):null;
-    if(path==='/api/data')return gsRun('rpcGetData');
+    if(path==='/api/data')return gsRun('rpcGetData',DATA_VER||undefined);
     if(path==='/api/resources')return gsRun('rpcGetResources');
     if(path==='/api/opps')return gsRun('rpcGetOpps');
     if(path==='/api/myres'&&method==='GET')return gsRun('rpcListMyRes');
@@ -6612,6 +6720,7 @@ async function apiRaw(path,opts){
     if(path==='/api/library')return gsRun('rpcGetLibrary');
     if(path==='/api/library/import')return gsRun('rpcImportRes',body);
     if(path==='/api/task'&&method==='POST')return gsRun('rpcSaveTask',body);
+    if(path==='/api/tasks'&&method==='POST')return gsRun('rpcTasksBatch',body);
     if(path.startsWith('/api/task/'))return gsRun('rpcDeleteTask',decodeURIComponent(path.slice(10)));
     if(path==='/api/settings')return gsRun('rpcSaveSettings',body);
     if(path==='/api/first')return gsRun('rpcFirst',body);
@@ -6664,6 +6773,8 @@ let pageV=null;
 function uiBusy(){return !!document.querySelector('.view.on [contenteditable="true"].editing,.tk-cls.open,.xdd.on,.ccard.cdrop,.ccard.cdragging,#su-p4ask')||tDragging;}
 function uiIdle(){const t0=Date.now();return new Promise(res=>{const t=setInterval(()=>{if(!uiBusy()||Date.now()-t0>45000){clearInterval(t);res();}},300);});}
 let lastLoad=0;
+/* the account data version from the last full load (the server answers "same" while it hasn't moved) */
+let DATA_VER=null;
 async function loadData(pre){
   /* a game is on screen: load once it closes (gmPlaySync) */
   if(!pre&&gmPlaying()){gmMissed.load=true;return true;}
@@ -6672,12 +6783,15 @@ async function loadData(pre){
     /* log in and sign up return the account's data, saving a second request */
     const gen=writeGen;
     const d=pre||await api('/api/data');lastLoad=Date.now();
+    /* nothing changed since the last load: the server only says so */
+    if(d&&d.same)return true;
     /* someone is typing in a box or has a menu open: load again once they're done, so nothing is redrawn under them */
     if(!pre&&uiBusy()){await uiIdle();return loadData();}
     /* a change was sent while this was loading: this copy may be from before it, so wait and load again */
     if(!pre&&(writing||gen!==writeGen)){reloadAfterWrites=true;if(!writing){reloadAfterWrites=false;setTimeout(loadData,300);}return true;}
     /* the page was updated on disk: pick up the new version automatically */
     if(d.__v){if(pageV===null)pageV=d.__v;else if(pageV!==d.__v){location.reload();return;}}
+    DATA_VER=d.__dv||null;
     state.tasks=Object.values(d.tasks||{});
     state.advisory=Object.values(d.advisory||{});
     setTimeout(weekSweep,0);
@@ -6685,7 +6799,6 @@ async function loadData(pre){
     const st=d.settings||{};
     COURSES=(st.courses||[]).map(c=>({id:c.id,name:c.name,abbr:c.abbr||makeAbbr(c.name),raw:c.raw||'',keys:c.keys||[],fresh:!!c.fresh}));
     settingsLoaded=true;
-    if(ON_GAS)setTimeout(gasMove,0);
     /* classes the calendar import just created get their proper names here */
     const fresh=COURSES.filter(c=>c.fresh);
     fresh.forEach(c=>{const n=normalizeCourse(c.raw||c.name);if(n.name){c.name=n.name;c.abbr=n.abbr;}
@@ -6730,6 +6843,12 @@ function resetAccountState(){
   if(typeof closeResEditor==='function')closeResEditor();
 }
 async function saveTask(t){if(STALE.has(t))return;try{await api('/api/task',{method:'POST',body:JSON.stringify(t)});}catch(e){console.warn('save failed',e);}}
+/* many assignments at once go in one request (one lock and one write on the server instead of one each) */
+async function saveTasks(ts,dels){ts=(ts||[]).filter(t=>t&&!STALE.has(t));dels=dels||[];
+  if(ts.length+dels.length<=1){if(ts.length)return saveTask(ts[0]);if(dels.length)return removeTask(dels[0]);return;}
+  const send=async o=>{try{await api('/api/tasks',{method:'POST',body:JSON.stringify(o)});}catch(e){console.warn('save failed',e);}};
+  for(let i=0;i<ts.length;i+=150)await send({save:ts.slice(i,i+150),del:[]});
+  for(let i=0;i<dels.length;i+=150)await send({save:[],del:dels.slice(i,i+150)});}
 async function patchTask(id,patch){const t=state.tasks.find(x=>x.id===id);if(!t)return;Object.assign(t,patch);return saveTask(t);}
 /* cross assignments off: strike them in place, then they drop out on the next render.
    Done tasks stay in data.json (hidden) so a resync never re-adds them. */
@@ -6740,7 +6859,7 @@ async function completeTasks(ids){
   const ts=ids.map(id=>state.tasks.find(x=>x.id===id)).filter(Boolean);
   ts.forEach(t=>{t.done=true;t.doneAt=Date.now();});
   setTimeout(render,700);
-  for(const t of ts)await saveTask(t);
+  await saveTasks(ts);
 }
 /* ctrl-z / cmd-z (or the Undo button that pops up) restores the last removed task (deleted or crossed off) */
 async function doUndo(){
@@ -6749,7 +6868,7 @@ async function doUndo(){
   if(u.type==='move'){const t=state.tasks.find(x=>x.id===u.id);if(t){t.course=u.course;render();await patchTask(t.id,{course:u.course});await loadData();}return true;}
   if(u.type==='del'){state.tasks.push(u.task);render();await saveTask(u.task);}
   else if(u.type==='done'){const ts=u.ids.map(id=>state.tasks.find(x=>x.id===id)).filter(Boolean);
-    ts.forEach(t=>{t.done=false;delete t.doneAt;});render();for(const t of ts)await saveTask(t);}
+    ts.forEach(t=>{t.done=false;delete t.doneAt;});render();await saveTasks(ts);}
   return true;
 }
 document.addEventListener('keydown',e=>{
@@ -6812,7 +6931,7 @@ function confetti(x,y){
   }
 }
 async function removeTask(id){try{await api('/api/task/'+encodeURIComponent(id),{method:'DELETE'});}catch(e){console.warn('delete failed',e);}}
-async function saveSettings(){if(!settingsLoaded)return;try{await api('/api/settings',{method:'POST',body:JSON.stringify({colors:state.settings.colors,periods:state.settings.periods,
+async function saveSettings(){if(!settingsLoaded)return;SX.scrubCourses(COURSES);try{await api('/api/settings',{method:'POST',body:JSON.stringify({colors:state.settings.colors,periods:state.settings.periods,
   advisoryCourse:state.settings.advisoryCourse||'',courses:COURSES,ical:state.settings.ical||'',fullNames:!!state.settings.fullNames,quickGames:state.settings.quickGames||[],focusMode:!!state.settings.focusMode,pageFade:!!state.settings.pageFade,decoOn:!!state.settings.decoOn,sensPics:!!state.settings.sensPics,sensGames:!!state.settings.sensGames,sensTools:!!state.settings.sensTools,footerOff:!!state.settings.footerOff,pageGrads:state.settings.pageGrads||{},noteCols:state.settings.noteCols||[],pageColors:state.settings.pageColors||{},courseOrder:state.settings.courseOrder||[],homeView:state.settings.homeView||'pages',homePages:state.settings.homePages||[],homeRes:state.settings.homeRes||[],hideGames:!!state.settings.hideGames,hideChat:!!state.settings.hideChat,faqNew:!!state.settings.faqNew,oppStar:state.settings.oppStar||[],oppArch:state.settings.oppArch||[],gamesIntro:!!state.settings.gamesIntro,gameStar:state.settings.gameStar||[],hidePages:state.settings.hidePages||[],tutorialNew:!!state.settings.tutorialNew,rel:state.settings.rel||{},lunch:state.settings.lunch||{},gpa:SX.cleanGpa(state.settings.gpa),gpaYear:SX.cleanGpaYear(state.settings.gpaYear),gpaByYear:!!state.settings.gpaByYear})});}catch(e){console.warn('save failed',e);}}
 async function saveNote(n){if(STALE.has(n))return;try{await api('/api/advisory',{method:'POST',body:JSON.stringify(n)});}catch(e){console.warn('save failed',e);}}
 /* in-class assignments a week past their date, and sticky notes a week old, are removed by themselves */
@@ -6825,7 +6944,7 @@ async function weekSweep(){
   sweepBusy=true;
   const ti=new Set(ts.map(t=>t.id)),ni=new Set(ns.map(n=>n.id));
   state.tasks=state.tasks.filter(t=>!ti.has(t.id));state.advisory=state.advisory.filter(n=>!ni.has(n.id));render();
-  try{for(const t of ts)await removeTask(t.id);for(const n of ns)await removeNote(n.id);}finally{sweepBusy=false;}
+  try{await saveTasks([],ts.map(t=>t.id));for(const n of ns)await removeNote(n.id);}finally{sweepBusy=false;}
 }
 async function removeNote(id){try{await api('/api/advisory/'+encodeURIComponent(id),{method:'DELETE'});}catch(e){console.warn('delete failed',e);}}
 async function saveEvent(ev){if(STALE.has(ev))return;try{await api('/api/event',{method:'POST',body:JSON.stringify(ev)});}catch(e){console.warn('save failed',e);}}
@@ -8110,7 +8229,7 @@ async function resyncCourse(c){
 const ICAL_NOTE='Only calendar events are imported. Course materials, updates and outside sources can\'t be imported.';
 const ICAL_WEEK_NOTE='Imports this week\'s and next week\'s assignments, and tests up to 4 weeks out.';
 /* Hide: parts of the planner an account can turn off (the button names what's hidden; the list below it picks) */
-const HIDE_ITEMS=[['hideChat','Chat'],['hideGames','Games']];
+const HIDE_ITEMS=[['hideChat','Chat']].concat(window.SX_SAFE?[]:[['hideGames','Games']]);
 const hideLabel=()=>HIDE_ITEMS.filter(x=>state.settings[x[0]]).map(x=>x[1]).join(', ')||'None';
 function hideHTML(){
   return `<div class="row"><span>Hidden</span><button class="kbtn wide hide-tog" data-act-hide aria-expanded="${state.hideOpen?'true':'false'}"><span class="hide-lb">Open</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button></div>
@@ -8379,7 +8498,7 @@ document.addEventListener('click',async e=>{
       made.push({id:newId(),course:c,date:due,title:line,details:'',done:false,kind,source:'manual',created:Date.now()});
     }
     state.tasks.push(...made);state.qaDay=null;render();
-    for(const t of made)await saveTask(t);
+    await saveTasks(made);
     return;}
   if(act==='modedd'){state.modeOpen=!state.modeOpen;render();return;}
   if(act==='mode'){state.mode=el.dataset.m;state.modeOpen=false;
@@ -8521,7 +8640,7 @@ document.addEventListener('click',async e=>{
     }
     for(const t of made){state.tasks.push(t);}
     inp.value='';render();
-    for(const t of made)await saveTask(t);
+    await saveTasks(made);
     return;}
 });
 document.getElementById('gearbtn').addEventListener('click',e=>{
@@ -9563,7 +9682,8 @@ const HM_PAGES=[['courses','Courses','Every class with its period and what is co
   ['advisory','To-Do','Sticky notes and school events'],['assignments','Assignments','Everything not done yet, oldest first'],
   ['resources','Resources','Documents and links for each class'],['tools','Tools','Calculators and study helpers'],['tasks','Tasks','Contests, grants and programs'],['chat','Chat','Messages with friends and groups'],
   ['games','Games','Singleplayer, social and multiplayer games'],['guide','Guide','Every feature explained, step by step']];
-const HM_URL='saxonplanner.web.app';
+const HM_URL=/\.web\.app$/.test(location.hostname)?location.hostname:'saxon-planner.web.app';
+document.querySelectorAll('.sp-url a').forEach(a=>{a.href='https:'+SLASH2+HM_URL+'/';a.textContent=HM_URL;});
 /* each Home card's drawing */
 const HM_ART={courses:'backpack',calendar:'calendar',advisory:'sticky',assignments:'clipboard',resources:'books',tools:'calc',tasks:'trophy',chat:'chat',games:'controller',guide:'guide'};
 /* while the login page is turning into Home, Home's cards wait above the screen */
@@ -9688,7 +9808,7 @@ document.addEventListener('input',e=>{if(e.target.id==='hm-pad')padSet(e.target.
 function renderHome(fly){
   const el=document.getElementById('v-home');if(!el)return;
   const own=!!(state.user&&state.user.owner),noChat=!!(state.user&&state.settings&&state.settings.hideChat);
-  const noGames=!!(state.user&&state.settings&&state.settings.hideGames);
+  const noGames=SAFE||!!(state.user&&state.settings&&state.settings.hideGames);
   const hv=hmView(noChat),pick=(state.settings&&state.settings.homePages)||[];
   const pages=HM_PAGES.filter(([k])=>!(k==='tasks'&&!own)&&!(k==='chat'&&noChat)&&!(k==='games'&&noGames)&&!pageHidden(k)&&(pick.length?pick.includes(k):k!=='clock'));
   const sig=(hv==='pages'?pages.map(p=>p[0]).join():'')+'|'+hv;
@@ -9697,7 +9817,7 @@ function renderHome(fly){
     el.dataset.sig=sig;
     el.innerHTML=(hv!=='pages'?`<div class="hm-main hm-v-${hv}" id="hm-main"></div>`:`<div class="hm-cards" id="hmcards">${pages.map(([k,n,d],i)=>`<button type="button" class="hm-card" id="hm-${k}" data-home-go="${k}" style="--i:${i}">${art(HM_ART[k],'hm-art')}<span class="hm-tx"><span class="hm-n">${n}</span><span class="hm-d">${d}</span></span></button>`).join('')}</div>`)+`
       <div class="hm-side" id="hmside"><div class="hm-kicker"></div><h2 class="hm-title"><span class="l1">Saxon</span><br><span class="l2">Planner</span></h2><div class="hm-url"><a href="https:${SLASH2}${HM_URL}" target="_blank" rel="noopener">${HM_URL}</a><button type="button" data-hm-copy aria-label="Copy link" title="Copy link"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12"/><path d="M5 15H3V3h12v2"/></svg></button><span class="hm-ok" aria-live="polite"></span></div><div class="hm-rule"></div>
-      <div class="hm-btns"><button type="button" class="hm-btn" id="hm-asg" data-home-go="assignments">See assignments</button><button type="button" class="hm-btn alt" id="hm-sugg" data-act-sugg>Suggestions</button><button type="button" class="hm-btn alt" id="hm-tut" data-act-tut>Tutorial</button><button type="button" class="hm-btn alt" id="hm-faq" data-act="faq">FAQ</button><button type="button" class="hm-btn alt" id="hm-meme" data-act-meme>Meme</button><button type="button" class="hm-btn alt hm-gray" id="hm-edit" data-act-hmedit>Edit home</button></div>
+      <div class="hm-btns"><button type="button" class="hm-btn" id="hm-asg" data-home-go="assignments">See assignments</button><button type="button" class="hm-btn hm-hl" id="hm-sugg" data-act-sugg><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/></svg>Suggestions</button><button type="button" class="hm-btn alt" id="hm-tut" data-act-tut>Tutorial</button><button type="button" class="hm-btn alt" id="hm-faq" data-act="faq">FAQ</button><button type="button" class="hm-btn alt" id="hm-meme" data-act-meme>Meme</button><button type="button" class="hm-btn alt hm-gray" id="hm-edit" data-act-hmedit>Edit home</button></div>
       <div class="hm-sites" id="hm-row"><div class="hm-ow"><button type="button" class="hm-site" id="hm-other" data-act-hmother aria-expanded="false">${art('folder')}<span>Other websites</span><svg class="hm-chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button><div class="hm-opop" hidden>${HM_SITES.map(([k,a,n])=>`<a class="hm-oi" data-site="${k}" target="_blank" rel="noopener">${art(a)}<span>${n}</span></a>`).join('')}</div></div><span class="hm-qg g-games" id="hm-qg"></span></div></div>
       <div class="hm-more" id="hm-more"></div>`;
     siteLinks(el);
@@ -9912,7 +10032,7 @@ const avName=id=>{const m=/^([mac])(\d{1,2})$/.exec(id||'');return m&&VO_AV_N[m[
 let chAvs={};
 const AP_PAGES=[['courses','Courses'],['calendar','Calendar'],['advisory','To-Do'],['assignments','Assignments'],['resources','Resources'],['tools','Tools'],
   ['tasks','Tasks'],['chat','Chat'],['games','Games'],['guide','Guide']];
-const hiddenPages=()=>{const h=new Set((state.settings&&state.settings.hidePages)||[]);if(state.settings&&state.settings.hideChat)h.add('chat');if(state.settings&&state.settings.hideGames)h.add('games');return h;};
+const hiddenPages=()=>{const h=new Set((state.settings&&state.settings.hidePages)||[]);if(state.settings&&state.settings.hideChat)h.add('chat');if(SAFE||state.settings&&state.settings.hideGames)h.add('games');return h;};
 const pageHidden=k=>!!state.user&&hiddenPages().has(k);
 function apOpen(note){
   if(!state.user)return;
@@ -10066,7 +10186,7 @@ function footSync(v){
   const f=document.getElementById('sxfoot');if(!f)return;
   v=v||(state.setup&&state.user?'setup':state.view);
   const want=!state.user||v==='setup'||v==='chat'||v==='scare'?'':v==='home'?'c':state.settings.footerOff?'':'l';
-  if(f.dataset.k!==want){f.dataset.k=want;f.innerHTML=want==='c'?'<span class="sx-copy">© 2026 YC</span><div class="sx-legal"><button class="sx-fl" data-legal="terms">Terms</button><button class="sx-fl" data-legal="privacy">Privacy</button><button class="sx-fl sx-nonet" data-nonet>No Internet</button></div>':want==='l'?footHTML(''):'';}
+  if(f.dataset.k!==want){f.dataset.k=want;f.innerHTML=want==='c'?'<span class="sx-copy">© 2026 Saxon Planner</span><div class="sx-legal"><button class="sx-fl" data-legal="terms">Terms</button><button class="sx-fl" data-legal="privacy">Privacy</button><button class="sx-fl sx-nonet" data-nonet>No Internet</button></div>':want==='l'?footHTML(''):'';}
   if(f.hidden!==!want)f.hidden=!want;
   footOv();
 }
@@ -10318,8 +10438,8 @@ document.addEventListener('click',e=>{
       .finally(()=>{if(!ok)return;ok.textContent='Copied';ok.classList.add('on');clearTimeout(ok._t);ok._t=setTimeout(()=>ok.classList.remove('on'),1400);});}
 });
 /* ---------- Book Run (arcade/bookrun.js): No Internet on Home, and the minigame over any loading screen that passes 5 s ---------- */
-document.addEventListener('click',e=>{if(e.target.closest('[data-nonet]')&&window.BookRun&&!BookRun.isOpen())BookRun.open({mode:'free'});});
-(function(){let since=0,mine=false,skip=false,cur='';
+document.addEventListener('click',e=>{if(!SAFE&&e.target.closest('[data-nonet]')&&window.BookRun&&!BookRun.isOpen())BookRun.open({mode:'free'});});
+(function(){if(window.SX_SAFE)return;let since=0,mine=false,skip=false,cur='';
   /* never at the start: not while signing in (splash), not over "loading data" on a reload, and not in the first 15 s of the page */
   const vis=e=>!!(e&&!e.hidden&&e.getClientRects().length);
   const booting=()=>performance.now()<15000||vis(document.getElementById('splash'))||vis(document.getElementById('dataload'))||!!(state.user&&!settingsLoaded);
@@ -10483,7 +10603,7 @@ function render(){
   document.documentElement.classList.toggle('chat-on',v==='chat');
   document.documentElement.classList.toggle('home-on',v==='home');
   pcApply(v);
-  document.documentElement.classList.toggle('no-games',!!(state.user&&state.settings.hideGames));
+  document.documentElement.classList.toggle('no-games',SAFE||!!(state.user&&state.settings.hideGames));
   document.documentElement.classList.toggle('no-chat',!!(state.user&&state.settings.hideChat));
   AP_PAGES.forEach(([k])=>document.documentElement.classList.toggle('no-v-'+k,k!=='games'&&k!=='chat'&&pageHidden(k)));
   /* a view that throws falls back to the calendar instead of leaving the page stuck */
@@ -10643,7 +10763,7 @@ if(window.SX_REF)sxRefArrived(window.SX_REF);
     const a=document.activeElement;if(a&&a.tagName==='INPUT'&&a.selectionStart!==a.selectionEnd)return;
     (user.value?code:user).focus();});
   sw.addEventListener('click',()=>{setMode(!signup);focusFirst();});
-  const ERR={empty:'Enter a username and password',wrong:'Wrong password',nouser:'No account with that username',taken:'That username is taken',
+  const ERR={empty:'Enter a username and password',wrong:'Wrong password',nouser:'Account not found',banned:'This account has been banned',badname:'Pick a different username',taken:'That username is taken',
     short:'Password must be at least 6 characters',long:'Password is too long',mismatch:'Passwords don’t match',
     name:'Usernames are 3 to 24 letters, numbers, periods, dashes or underscores',locked:'Too many tries, wait a minute',
     full:'No room for new accounts',busy:'Too many new accounts right now, try again later',conn:'Can’t connect, try again'};
@@ -10688,6 +10808,7 @@ if(window.SX_REF)sxRefArrived(window.SX_REF);
   });
   /* the brand in the top bar opens Home; only Log out returns to the login page */
   document.getElementById('brand').addEventListener('click',()=>{if(state.user)goHome();});
+  document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('[data-act-home]')&&state.user)goHome();});
   /* the three lines: Games, Desmos, Soundboard and the login page's own dark mode */
   const mbtn=document.getElementById('spmenubtn'),menu=document.getElementById('spmenu'),tsw=document.getElementById('spthemesw');
   function spMenu(open){menu.classList.toggle('open',open);mbtn.setAttribute('aria-expanded',String(open));}
@@ -11046,21 +11167,29 @@ function chatShow(){
     chatSchedule(300);}
 }
 function chatSchedule(ms){clearTimeout(CH.timer);CH.timer=setTimeout(chatPoll,ms);}
+/* live updates (realtime.js): on when connected over the Worker or Firebase, off otherwise */
+const chLive=()=>!!(window.SXRT&&SXRT.mode&&/^(ws|http|rtdb)$/.test(SXRT.mode()));
 async function chatPoll(){
   if(!state.user){CH.timer=0;return;}
   /* a game is on screen: wait until it closes (gmPlaySync starts the next one) */
   if(gmPlaying()){CH.parked=true;return;}
-  const onPage=state.view==='chat'&&!document.hidden,next=onPage?2500:60000;
+  /* on the chat page: every 2.5 s while a conversation is active, easing to 5 s and then 10 s once nothing new has
+     come for a while (anything new, or sending, goes back to 2.5 s). With live updates on (SXRT) a ping fetches at
+     once, so the regular check only backs it up */
+  const onPage=state.view==='chat'&&!document.hidden,live=chLive();
+  const q=CH.quiet||0,next=onPage?(live?20000:q<8?2500:q<24?5000:10000):(live?240000:60000);
   if(document.hidden||CH.inflight){chatSchedule(next);return;}
   CH.inflight=true;
   try{
-    const id=onPage?CH.cur:null,c=id&&chC(id);
+    const id=onPage?CH.cur:null,c=id&&chC(id),was=c?c.last||0:0,sig0=CH.sig||'';
     const r=await chatApi('sync',id?{id,since:c.loaded?c.last:0}:{});
     if(r&&r.state){CH.state=r.state;
       if(id&&r.open){if(r.open.error==='noconv')chCloseTab(id);else if(r.open.messages)chMerge(id,r.open,!c.loaded);}
+      CH.sig=JSON.stringify(r.state);
+      CH.quiet=(c&&(c.last||0)!==was)||CH.sig!==sig0?0:q+1;
       chatPaint();}
   }catch(e){}
-  CH.inflight=false;chatSchedule(next);
+  CH.inflight=false;chatSchedule(onPage&&!live?(CH.quiet?next:2500):next);
 }
 /* merge server messages into a conversation (a first load replaces, later ones append; sent ones already shown are matched) */
 function chMerge(id,r,first){
@@ -11261,6 +11390,7 @@ async function chSend(id,text,k){
   c.toEnd=true;c.err='';
   const cv=chConv(id);if(cv){cv.preview=(id.startsWith('g')?me()+': ':'')+m.text.slice(0,80);cv.last=Date.now();CH.state.convs.sort((a,b)=>b.last-a.last);}
   chatPaint();
+  CH.quiet=0;
   let r=null;try{r=await chatApi('send',{id,text:m.text});}catch(_){r={error:'conn'};}
   if(r&&r.ok){m.pend=false;m.time=r.time;c.msgs.sort((a,b)=>((a.pend||a.fail)?1:0)-((b.pend||b.fail)?1:0)||a.time-b.time);}
   else{m.pend=false;m.fail=true;c.err=CH_ERR[r&&r.error]||'Not sent';}
@@ -11433,6 +11563,7 @@ const GAMES=[
   {id:'soundboard',name:'Soundboard',labels:['Social']},
   {id:'meditation',name:'Meditation',labels:['Singleplayer'],hide:true},
   {id:'crashout',name:'Crashout',labels:['Singleplayer'],hide:true}];
+if(SAFE)GAMES.length=0;
 /* the picker is one list (no sections); the labels stay on each tile */
 const GAME_SECTIONS=[['Singleplayer','Singleplayer'],['Social','Social'],['Multiplayer','Multiplayer'],['Online','Online']];
 const gmInSec=(x,lab)=>lab==='Online'?x.labels.includes('Online'):x.labels.includes(lab)&&!x.labels.includes('Online');
@@ -11663,7 +11794,13 @@ function dashPaint(){
     <p class="db-note">${lg.length?(trend>0?`Up ${trend}% from the start of the week`:trend<0?`Down ${-trend}% from the start of the week`:'Steady through the week'):'No visits yet'}</p>
     <div class="db-bars">${days.map((n,i)=>`<div class="db-row"><span class="db-d">${esc(dayl(i))}</span><span class="db-bar"><i style="width:${Math.round(n/dm*100)}%"></i></span><span class="db-n">${n}</span></div>`).join('')}</div>
     <h2 class="db-h">Assignments</h2>
-    <div class="db-stats">${st(T.done||0,'Completed',1)}${st(T.onTime||0,'Finished on time')}${st(pct,'On time rate')}${st(T.open||0,'Still open')}</div>
+    <div class="db-stats">${st(T.done||0,'Completed',1)}${st(T.week||0,'Completed this week')}${st(T.onTime||0,'Finished on time')}${st(T.late||0,'Finished late')}${st(pct,'On time rate')}</div>
+    <div class="db-stats">${st(Math.max(0,(T.open||0)-(T.overdue||0)),'Still to do')}${st(T.overdue||0,'Overdue, not done')}${st(T.people||0,'Students crossing off')}${st(T.cleared||0,'Cleared in bulk')}</div>
+    ${(T.days||[]).length?`<p class="db-note">Crossed off in the last 14 days</p><div class="db-bars">${T.days.map((n,i)=>`<div class="db-row"><span class="db-d">${esc(jl(i))}</span><span class="db-bar"><i style="width:${Math.round(n/Math.max(1,...T.days)*100)}%"></i></span><span class="db-n">${n}</span></div>`).join('')}</div>`:''}
+    <p class="db-note">Completed counts only assignments crossed off with a time (not in-class work or events, not banned accounts). Five or more overdue ones crossed off together are counted as cleared in bulk, not completed.${T.untimed?` ${T.untimed} were crossed off before times were kept and aren't counted.`:''}</p>
+    ${DB.classes?`<h2 class="db-h">Classes</h2>
+    <div class="db-stats">${st(DB.classes.accounts,'Accounts with classes',1)}${st(DB.classes.total,'Classes in all')}${st(DB.classes.accounts?(DB.classes.total/DB.classes.accounts).toFixed(1):'-','Classes per student')}${st(DB.classes.ical,'Linked Schoology')}</div>
+    <h2 class="db-h">Most common classes</h2>${list(DB.classes.names||{},top(DB.classes.names||{},12))}`:''}
     <h2 class="db-h">Most played games</h2>${list(U.g,tg,gname)}
     <h2 class="db-h">Most clicked buttons</h2>${list(U.c,tc)}
     <h2 class="db-h">Sign-ups by week</h2>
@@ -11726,7 +11863,7 @@ function rlAllPaint(){
   const d=document.getElementById('roles');if(!d||d.hidden||!RLA)return;
   let o=d.querySelector('.rla-ov');
   if(!o){o=document.createElement('div');o.className='rla-ov';o.setAttribute('role','dialog');o.setAttribute('aria-label','All accounts');
-    o.innerHTML=`<div class="rla-box"><div class="rla-head"><h3>All accounts</h3><input type="search" class="rla-q" placeholder="Search usernames" aria-label="Search usernames" spellcheck="false"><button type="button" class="hbtn res-x" data-rl-allx title="Close" aria-label="Close">\u00d7</button></div><div class="rla-body"></div><div class="rla-pages"></div></div>`;
+    o.innerHTML=`<div class="rla-box"><div class="rla-head"><h3>All accounts</h3><input type="search" class="rla-q" placeholder="Search usernames" aria-label="Search usernames" spellcheck="false"><button type="button" class="kbtn rla-x" data-rl-allx>Close</button></div><div class="rla-body"></div><div class="rla-pages"></div></div>`;
     d.appendChild(o);rlAllTop();o.querySelector('.rla-q').addEventListener('input',e=>{RLA.q=e.target.value.trim().toLowerCase();RLA.page=0;rlAllPaint();});
     setTimeout(()=>o.querySelector('.rla-q').focus(),30);}
   const body=o.querySelector('.rla-body'),pg=o.querySelector('.rla-pages');
@@ -11746,7 +11883,7 @@ function rlUserHTML(u){
   const ed=RL.canEdit,now=Date.now();
   const dt=t=>t?new Date(t).toLocaleString([],{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):'Before sign-up times were kept';
   const ago=t=>{if(!t)return '';const m=Math.round((now-t)/60000);return m<2?'here just now':m<60?'here '+m+' min ago':m<1440?'here '+Math.round(m/60)+' h ago':'here '+Math.round(m/1440)+' d ago';};
-  return `<div class="rl-user"><span class="rl-who"><span class="nm">${esc(u.name)}</span><span class="rl-sub"><time datetime="${u.created?new Date(u.created).toISOString():''}">${esc(dt(u.created))}</time>${u.seen&&u.seen-u.created>60000?`<span class="rl-seen">, ${esc(ago(u.seen))}</span>`:''}</span></span>${ed&&!u.mod&&!u.admin?`<button class="kbtn" data-rl-mod="${esc(u.name)}">Make moderator</button>`:''}</div>`;
+  return `<div class="rl-user"><span class="rl-who"><span class="nm">${esc(u.name)}</span><span class="rl-sub"><time datetime="${u.created?new Date(u.created).toISOString():''}">${esc(dt(u.created))}</time>${u.seen&&u.seen-u.created>60000?`<span class="rl-seen">, ${esc(ago(u.seen))}</span>`:''}</span></span>${u.bad&&!u.ban?'<span class="rl-flag">Name flagged</span>':''}${ed&&!u.admin?(u.ban?`<button class="kbtn" data-rl-unban="${esc(u.name)}">Unban</button>`:`<button class="kbtn rl-banb" data-rl-ban="${esc(u.name)}">Ban</button>`):''}</div>`;
 }
 function rolesPaint(msg){
   const d=document.getElementById('roles');if(d.hidden)return;
@@ -11772,6 +11909,12 @@ function rolesPaint(msg){
         ${ed?`<h3>Multiplayer unlocked</h3>${(RL.mpManual||[]).map(n=>`<div class="rl-box mp"><span class="nm">${esc(n)}</span><span class="tg">Unlocked</span><button data-rl-mplock="${esc(n)}" title="Lock again" aria-label="Lock again">×</button></div>`).join('')||'<div class="rl-none">None</div>'}
         <form class="rl-add rl-mpf" autocomplete="off"><input type="text" id="rl-mpname" placeholder="Username" maxlength="24" spellcheck="false" aria-label="Username"><button class="kbtn" type="submit">Unlock multiplayer</button></form>
         <div class="rl-mpmsg rl-msg" role="status"></div>`:''}
+        ${ed?`<h3>Banned</h3><p class="rl-none">Banned accounts can't log in and are signed out everywhere.</p>${(RL.banned||[]).map(n=>`<div class="rl-box mp"><span class="nm">${esc(n)}</span><span class="tg">Banned</span><button data-rl-unban="${esc(n)}" title="Unban" aria-label="Unban">×</button></div>`).join('')||'<div class="rl-none">Nobody</div>'}
+        ${(RL.flagged||[]).length?`<h3>Flagged usernames</h3>${RL.flagged.map(n=>`<div class="rl-box mp"><span class="nm">${esc(n)}</span><button class="kbtn rl-banb" data-rl-ban="${esc(n)}">Ban</button></div>`).join('')}`:''}
+        <div class="rl-banmsg rl-msg" role="status"></div>`:''}
+        ${Array.isArray(RL.gas)?`<h3>Google Script access</h3><p class="rl-none">Only these accounts (and you) can log in or sign up on the Google Script address. Everyone else sees Account not found.</p>${RL.gas.map(n=>`<div class="rl-box mp"><span class="nm">${esc(n)}</span><span class="tg">Allowed</span><button data-rl-gasx="${esc(n)}" title="Remove" aria-label="Remove">×</button></div>`).join('')||'<div class="rl-none">Nobody yet</div>'}
+        <form class="rl-add rl-gasf" autocomplete="off"><input type="text" id="rl-gasname" placeholder="Username" maxlength="24" spellcheck="false" aria-label="Username"><button class="kbtn" type="submit">Allow</button></form>
+        <div class="rl-gasmsg rl-msg" role="status"></div>`:''}
         ${RLS?`<h3>Message</h3><form class="rl-sys" autocomplete="off"><div class="rl-sys-to"><input type="text" id="rl-sys-to" placeholder="Username" maxlength="24" spellcheck="false" aria-label="To">
           <label class="rl-all">Everyone<input type="checkbox" class="switch" id="rl-sys-all"></label></div>
           <textarea id="rl-sys-text" maxlength="1000" placeholder="Message" aria-label="Message"></textarea><button class="kbtn" type="submit">Send</button></form>
@@ -11788,6 +11931,18 @@ async function rolesSet(name,remove){
   let r=null;try{r=await api('/api/roles',{method:'POST',body:JSON.stringify({op:'set',name,role:'moderator',remove:!!remove})});}catch(_){r={error:'conn'};}
   if(r&&r.ok){RL=Object.assign(r,{open:RL&&RL.open});rolesPaint();return;}
   rolesPaint(r&&r.error==='nouser'?'No account named '+name:'Couldn\u2019t change roles');
+}
+/* ban or unban an account (administrators): a banned account can't log in and its sessions stop working */
+async function rolesBan(name,remove){
+  let r=null;try{r=await api('/api/roles',{method:'POST',body:JSON.stringify({op:'ban',name,remove:!!remove,all:!!RLA})});}catch(_){r={error:'conn'};}
+  if(r&&r.ok){if(RLA&&r.all)RLA.list=r.recent;RL=Object.assign({},r,{recent:(r.recent||[]).slice(0,10),open:RL&&RL.open});rolesPaint();return;}
+  rolesPaint();const m=document.querySelector('#roles .rl-banmsg');if(m)m.textContent=r&&r.error==='nouser'?'No account named '+name:r&&r.error==='not allowed'?'Administrators can\u2019t be banned':'Couldn\u2019t change it';
+}
+/* the owner's list of accounts allowed on the Google Script address */
+async function rolesGas(name,remove){
+  let r=null;try{r=await api('/api/roles',{method:'POST',body:JSON.stringify({op:'gas',name,remove:!!remove})});}catch(_){r={error:'conn'};}
+  if(r&&r.ok){RL=Object.assign(r,{open:RL&&RL.open});rolesPaint();return;}
+  rolesPaint();const m=document.querySelector('#roles .rl-gasmsg');if(m)m.textContent=r&&r.error==='nouser'?'No account named '+name:'Couldn\u2019t change it';
 }
 /* Multiplayer and Online unlocked by hand for one account, or locked again */
 async function rolesMp(name,unlock){
@@ -11817,6 +11972,7 @@ async function suggDone(id,how){
 document.addEventListener('click',e=>{
   if(e.target.closest('[data-act-roles]')){e.stopPropagation();openRoles();return;}
   const d=document.getElementById('roles');if(!d||d.hidden||!d.contains(e.target))return;
+  if(RLA&&e.target.classList&&e.target.classList.contains('rla-ov')){rlAllClose();return;}
   const b=e.target.closest('button');if(!b)return;
   if(b.matches('[data-rl-close]')){closeRoles();return;}
   if(b.matches('[data-rl-all]')){rlAllOpen();return;}
@@ -11827,6 +11983,9 @@ document.addEventListener('click',e=>{
   if(b.dataset.rlSk){rlSK=b.dataset.rlSk;rolesPaint();return;}
   if(b.dataset.rlDone){b.closest('.rl-acts').querySelectorAll('button').forEach(x=>x.disabled=true);suggDone(b.dataset.rlDone,b.dataset.how);return;}
   if(b.dataset.rlMplock){b.disabled=true;rolesMp(b.dataset.rlMplock,false);return;}
+  if(b.dataset.rlGasx){b.disabled=true;rolesGas(b.dataset.rlGasx,true);return;}
+  if(b.dataset.rlBan){b.disabled=true;rolesBan(b.dataset.rlBan,false);return;}
+  if(b.dataset.rlUnban){b.disabled=true;rolesBan(b.dataset.rlUnban,true);return;}
 });
 /* a message from the site into one account's inbox, or everyone's */
 document.addEventListener('submit',async e=>{const f=e.target.closest('#roles .rl-sys');if(!f)return;e.preventDefault();
@@ -11839,7 +11998,8 @@ document.addEventListener('submit',async e=>{const f=e.target.closest('#roles .r
   if(m)m.textContent=r&&r.error==='nouser'?'No account named '+who:'Not sent';});
 document.addEventListener('change',e=>{if(e.target.id!=='rl-sys-all')return;const i=document.getElementById('rl-sys-to');if(i)i.disabled=e.target.checked;});
 document.addEventListener('submit',e=>{if(!e.target.closest('#roles .rl-mpf'))return;e.preventDefault();const i=document.getElementById('rl-mpname'),v=i&&i.value.trim().toLowerCase();if(v)rolesMp(v,true);});
-document.addEventListener('submit',e=>{if(!e.target.closest('#roles .rl-add:not(.rl-mpf)'))return;e.preventDefault();const i=document.getElementById('rl-name'),v=i&&i.value.trim().toLowerCase();if(v)rolesSet(v,false);});
+document.addEventListener('submit',e=>{if(!e.target.closest('#roles .rl-gasf'))return;e.preventDefault();const i=document.getElementById('rl-gasname'),v=i&&i.value.trim().toLowerCase();if(v)rolesGas(v,false);});
+document.addEventListener('submit',e=>{if(!e.target.closest('#roles .rl-add:not(.rl-mpf):not(.rl-gasf)'))return;e.preventDefault();const i=document.getElementById('rl-name'),v=i&&i.value.trim().toLowerCase();if(v)rolesSet(v,false);});
 document.addEventListener('keydown',e=>{const d=document.getElementById('roles');if(d&&!d.hidden&&e.key==='Escape'){e.stopPropagation();if(RLA){rlAllClose();return;}closeRoles();}},true);
 async function redeemGuest(code){
   code=String(code||'').trim().toLowerCase();if(!GUEST_RE.test(code))return {error:'bad'};
@@ -12267,7 +12427,7 @@ function trIntro(g){
   const el=g.querySelector('.tr-intro');if(!el)return;el._at=Date.now()+500;
   Promise.race([trFont,new Promise(r=>setTimeout(r,500))]).then(()=>{el._at=Date.now();el.classList.add('go');});
 }
-function playGame(id){
+function playGame(id){if(SAFE)return;
   const g=document.getElementById('games');
   const gm=GAMES.find(x=>x.id===id);
   if(gameLocked(gm)){openGames();return;}
@@ -12717,18 +12877,19 @@ document.addEventListener('pointerdown',e=>{const n=e.target.closest&&e.target.c
   const ed=n.querySelector('.nt');if(!ed)return;e.preventDefault();
   if(ed.isContentEditable){ed.focus();const r=document.createRange();r.selectNodeContents(ed);r.collapse(false);const sel=getSelection();sel.removeAllRanges();sel.addRange(r);}
   else ed.click();},true);
-/* Google's Apps Script copy: once someone has signed in, a popup they can't close sends them to saxonplanner.web.app */
-function gasMove(){if(!ON_GAS||document.getElementById('gasmove'))return;const u='https:'+SLASH2+SITE_URLS.planner.Firebase;
+/* saxonplanner.web.app is retired: a popup nobody can close sends people to atoll.web.app, the address to use now */
+const MOVED_TO='atoll.web.app';
+function gasMove(){if(location.hostname!=='saxonplanner.web.app'||document.getElementById('gasmove'))return;const u='https:'+SLASH2+MOVED_TO+'/';
   const m=document.createElement('div');m.id='gasmove';m.setAttribute('role','alertdialog');m.setAttribute('aria-modal','true');m.setAttribute('aria-labelledby','gasmove-h');
   m.innerHTML='<div class="gm-card"><div class="gm-art">'+art('logo')+'</div><h2 id="gasmove-h">Saxon Planner has moved</h2>'+
-   '<p>This Google Script version will get updates less often from now on. Everything new comes to <b>saxonplanner.web.app</b> first, and it works on every account and computer.</p>'+
-   '<p>Your account, classes and saves are the same there.</p>'+
-   '<a class="hm-btn" id="gasmove-go" href="'+esc(u)+'" target="_top">Go to saxonplanner.web.app</a></div>';
+   '<p>This address is closing. Use <b>'+MOVED_TO+'</b> from now on.</p>'+
+   '<p>Your account, classes and saves are the same there. Just log in again.</p>'+
+   '<a class="hm-btn" id="gasmove-go" href="'+esc(u)+'" target="_top">Go to '+MOVED_TO+'</a></div>';
   document.body.appendChild(m);const go=m.querySelector('#gasmove-go');go.focus({preventScroll:true});
-  go.addEventListener('click',e=>{e.preventDefault();try{window.top.location.href=u;}catch(_){window.open(u,'_blank','noopener');}setTimeout(()=>{try{window.open(u,'_blank','noopener');}catch(_){}} ,1500);});
   /* nothing closes it: Escape and clicks outside the card do nothing */
   m.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();e.stopPropagation();}if(e.key==='Tab'){e.preventDefault();go.focus();}},true);
   m.addEventListener('click',e=>{if(e.target===m)e.stopPropagation();});}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',gasMove);else setTimeout(gasMove,0);
 function sitePickClose(){const m=document.querySelector('.site-pick');if(m)m.remove();}
 document.addEventListener('click',e=>{if(!ON_GAS)return;const a=e.target.closest&&e.target.closest('a[data-site]');if(!a||!SITE_URLS[a.dataset.site])return;
   e.preventDefault();e.stopPropagation();const was=document.querySelector('.site-pick');sitePickClose();if(was&&was.dataset.for===a.dataset.site)return;
