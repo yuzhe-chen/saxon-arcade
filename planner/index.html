@@ -8,7 +8,7 @@ if(name==='withSuccessHandler')return function(f){return runner(f,fail);};
 if(name==='withFailureHandler')return function(f){return runner(ok,f);};
 if(name==='withUserObject')return function(){return runner(ok,fail);};
 return function(){var args=Array.prototype.slice.call(arguments);
-fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({fn:name,args:args})})
+fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({fn:name,args:args,site:location.hostname})})
 .then(function(r){return r.json();})
 .then(function(o){if(o&&o.ok){if(ok)ok(o.result);}else if(fail)fail(new Error(o&&o.error||'failed'));})
 .catch(function(e){if(fail)fail(e);});};}});}
@@ -952,7 +952,7 @@ input.lib-q{width:calc(100% + 2 * var(--reach));margin:0 calc(-1 * var(--reach))
 .su-pop .su-alt:hover,.su-pop .su-alt:focus-visible{background:rgba(242,240,234,.12);text-decoration-color:currentColor}
 .su-row .su-per{width:84px;flex:none}
 .su-row .su-lunch{width:110px;flex:none}.su-row .su-lunch.off{visibility:hidden}
-html.no-games [data-act-games],html.no-games .g-games,html.no-chat [data-v="chat"],html.no-chat .g-chat{display:none!important}
+html.sx-safe .g-sens,html.no-games [data-act-games],html.no-games .g-games,html.no-chat [data-v="chat"],html.no-chat .g-chat{display:none!important}
 .hide-tog{display:inline-flex;align-items:center;gap:6px}
 /* the wide settings buttons (Hide's Open, Administration's Open, Log out) are one size */
 .bardd .row .kbtn.wide,.mmenu .row .kbtn.wide{min-width:92px;justify-content:center;box-sizing:border-box}
@@ -3801,7 +3801,7 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
 <li><b>Clock</b>: a full-screen clock with the current class or lunch and how many minutes until it ends, or when the next period starts. It follows the Green and Gold schedule and early release days.</li>
 <li><b>Meditation</b>: calm scenes that change every minute (or pick one), a breathing guide with Calm, Box and Sleep patterns, a session timer of 1 to 20 minutes or open, and optional soft sound. The controls fade when you leave them alone.</li>
 <li><b>Jumpscare</b>: a dark page that asks Is someone there? Afterwards, Again replays it and Leave goes back.</li>
-<li><b>Crashout</b>: a plush doll to fling around and hit with everything from a pillow to a confetti bomb. It shows once <b>Sensitive pictures</b> is on in Settings, Security, and <b>Show sensitive tools</b> at the bottom of Tools is pressed.</li>
+<li class="g-sens"><b>Crashout</b>: a plush doll to fling around and hit with everything from a pillow to a confetti bomb. It shows once <b>Sensitive pictures</b> is on in Settings, Security, and <b>Show sensitive tools</b> at the bottom of Tools is pressed.</li>
 </ul>
 
 <h3>Resources</h3>
@@ -6676,7 +6676,7 @@ const SITE_URLS={
 const SITE_NAMES={planner:'Saxon Planner',profegpt:'ProfeGPT',interpres:'Interpres',ambicant:'Ambicant'};
 const ON_GAS=/googleusercontent\.com$/.test(location.hostname);
 /* the game-free build (lectern.web.app): no games anywhere */
-const SAFE=!!window.SX_SAFE;if(SAFE)document.documentElement.classList.add('no-games');
+const SAFE=!!window.SX_SAFE;if(SAFE)document.documentElement.classList.add('no-games','sx-safe');
 const SITES={};Object.keys(SITE_URLS).forEach(k=>SITES[k]='https:'+SLASH2+SITE_URLS[k].Firebase);
 /* old ProfeGPT and Interpres addresses in resources open the current sites */
 const sisU=u=>SX.sisterUrl(u,{profegpt:SITES.profegpt.replace(/\/$/,''),interpres:SITES.interpres.replace(/\/$/,'')});
@@ -9442,6 +9442,8 @@ const TOOLS=[['phys','Physics Helper','Paste cells from Google Sheets and get a 
   ['meditation','Meditation','Calm scenes, breathing and a session timer'],
   ['crashout','Crashout','A squishy doll to knock around'],
   ['scare','Jumpscare','Is someone there?']];
+/* the game-free build has no Crashout */
+if(SAFE)TOOLS.splice(TOOLS.findIndex(t=>t[0]==='crashout'),1);
 const TOOL_ART={phys:'graph',gpa:'clipboard',soundboard:'speaker',desmos:'calc',clock:'clock',meditation:'star',crashout:'controller',scare:'moon'};
 var tlBack=false,tlDz=false;
 /* rewards: the referral tree count (everyone who signed up with your code, and everyone they referred, and so on);
@@ -9514,8 +9516,8 @@ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest
 /* sensitive pictures: Crashout stays hidden until Security turns on Sensitive pictures and then the switch at the
    bottom of Tools; Five Nights at Epstein's only needs the button at the bottom of the Games menu */
 const SENS_TOOLS=['crashout'],SENS_GAMES=['fnae'];
-function sensOn(){return !!(state.settings&&state.settings.sensPics);}
-function sensHidden(id){const s=state.settings||{};
+function sensOn(){return !SAFE&&!!(state.settings&&state.settings.sensPics);}
+function sensHidden(id){const s=state.settings||{};if(SAFE&&(SENS_TOOLS.includes(id)||SENS_GAMES.includes(id)))return true;
   if(SENS_TOOLS.includes(id))return !(s.sensPics&&s.sensTools);if(SENS_GAMES.includes(id))return !s.sensGames;return false;}
 function openTools(){
   tlBack=false;if(typeof tlKbHide==='function')tlKbHide();
@@ -10308,7 +10310,7 @@ function secPaint(r,note){
       <div class="pwx-row">${r.pic?'<button type="button" class="pwx-alt" data-pwx="picset">Change</button><button type="button" class="pwx-alt" data-pwx="picoff">Turn off</button>':'<button type="button" class="pwx-alt" data-pwx="picset">Set picture password</button>'}</div></section>
     <section><h3>Two-step login</h3><div class="sec-sw"><p>Asks for your picture password every time you log in.${r.pic?'':' Set a picture password first.'}</p>
       <input type="checkbox" class="switch tfa-sw" ${r.tfa?'checked':''} ${r.pic?'':'disabled'} aria-label="Two-step login"></div></section>
-    <section><div class="sec-sw"><h3>Sensitive pictures</h3><input type="checkbox" class="switch sens-sw" ${state.settings&&state.settings.sensPics?'checked':''} aria-label="Sensitive pictures"></div></section>
+    ${SAFE?'':`<section><div class="sec-sw"><h3>Sensitive pictures</h3><input type="checkbox" class="switch sens-sw" ${state.settings&&state.settings.sensPics?'checked':''} aria-label="Sensitive pictures"></div></section>`}
     <section><h3>Security notices</h3>${r.notices.length?`<ul class="sec-notes">${r.notices.map(([t,m])=>`<li><span>${esc(secDate(t))}</span>${esc(m)}</li>`).join('')}</ul>`:'<p>No security notices yet.</p>'}</section></div>`,true);
 }
 document.addEventListener('click',e=>{const b=e.target.closest('[data-act-sec]');if(!b)return;e.preventDefault();e.stopPropagation();
@@ -12220,6 +12222,9 @@ function rolesPaint(msg){
         ${ed?`<h3>Banned</h3><p class="rl-none">Banned accounts can't log in and are signed out everywhere.</p>${(RL.banned||[]).map(n=>`<div class="rl-box mp"><span class="nm">${esc(n)}</span><span class="tg">Banned</span><button data-rl-unban="${esc(n)}" title="Unban" aria-label="Unban">×</button></div>`).join('')||'<div class="rl-none">Nobody</div>'}
         ${(RL.flagged||[]).length?`<h3>Flagged usernames</h3>${RL.flagged.map(n=>`<div class="rl-box mp"><span class="nm">${esc(n)}</span><button class="kbtn rl-banb" data-rl-ban="${esc(n)}">Ban</button></div>`).join('')}`:''}
         <div class="rl-banmsg rl-msg" role="status"></div>`:''}
+        ${Array.isArray(RL.conv)?`<h3>Convenience access</h3><p class="rl-none">Only these accounts (and you) can log in on saxon-planner.web.app. Everyone else uses atoll.web.app.</p>${RL.conv.map(n=>`<div class="rl-box mp"><span class="nm">${esc(n)}</span><span class="tg">Allowed</span><button data-rl-convx="${esc(n)}" title="Remove" aria-label="Remove">×</button></div>`).join('')||'<div class="rl-none">Nobody yet</div>'}
+        <form class="rl-add rl-convf" autocomplete="off"><input type="text" id="rl-convname" placeholder="Username" maxlength="24" spellcheck="false" aria-label="Username"><button class="kbtn" type="submit">Allow</button></form>
+        <div class="rl-convmsg rl-msg" role="status"></div>`:''}
         ${Array.isArray(RL.gas)?`<h3>Google Script access</h3><p class="rl-none">Only these accounts (and you) can log in or sign up on the Google Script address. Everyone else sees Account not found.</p>${RL.gas.map(n=>`<div class="rl-box mp"><span class="nm">${esc(n)}</span><span class="tg">Allowed</span><button data-rl-gasx="${esc(n)}" title="Remove" aria-label="Remove">×</button></div>`).join('')||'<div class="rl-none">Nobody yet</div>'}
         <form class="rl-add rl-gasf" autocomplete="off"><input type="text" id="rl-gasname" placeholder="Username" maxlength="24" spellcheck="false" aria-label="Username"><button class="kbtn" type="submit">Allow</button></form>
         <div class="rl-gasmsg rl-msg" role="status"></div>`:''}
@@ -12245,6 +12250,12 @@ async function rolesBan(name,remove){
   let r=null;try{r=await api('/api/roles',{method:'POST',body:JSON.stringify({op:'ban',name,remove:!!remove,all:!!RLA})});}catch(_){r={error:'conn'};}
   if(r&&r.ok){if(RLA&&r.all)RLA.list=r.recent;RL=Object.assign({},r,{recent:(r.recent||[]).slice(0,10),open:RL&&RL.open});rolesPaint();return;}
   rolesPaint();const m=document.querySelector('#roles .rl-banmsg');if(m)m.textContent=r&&r.error==='nouser'?'No account named '+name:r&&r.error==='not allowed'?'Administrators can\u2019t be banned':'Couldn\u2019t change it';
+}
+/* the owner's list of accounts with convenience access (saxon-planner.web.app) */
+async function rolesConv(name,remove){
+  let r=null;try{r=await api('/api/roles',{method:'POST',body:JSON.stringify({op:'conv',name,remove:!!remove})});}catch(_){r={error:'conn'};}
+  if(r&&r.ok){RL=Object.assign(r,{open:RL&&RL.open});rolesPaint();return;}
+  rolesPaint();const m=document.querySelector('#roles .rl-convmsg');if(m)m.textContent=r&&r.error==='nouser'?'No account named '+name:'Couldn\u2019t change it';
 }
 /* the owner's list of accounts allowed on the Google Script address */
 async function rolesGas(name,remove){
@@ -12292,6 +12303,7 @@ document.addEventListener('click',e=>{
   if(b.dataset.rlDone){b.closest('.rl-acts').querySelectorAll('button').forEach(x=>x.disabled=true);suggDone(b.dataset.rlDone,b.dataset.how);return;}
   if(b.dataset.rlMplock){b.disabled=true;rolesMp(b.dataset.rlMplock,false);return;}
   if(b.dataset.rlGasx){b.disabled=true;rolesGas(b.dataset.rlGasx,true);return;}
+  if(b.dataset.rlConvx){b.disabled=true;rolesConv(b.dataset.rlConvx,true);return;}
   if(b.dataset.rlBan){b.disabled=true;rolesBan(b.dataset.rlBan,false);return;}
   if(b.dataset.rlUnban){b.disabled=true;rolesBan(b.dataset.rlUnban,true);return;}
 });
@@ -12306,8 +12318,9 @@ document.addEventListener('submit',async e=>{const f=e.target.closest('#roles .r
   if(m)m.textContent=r&&r.error==='nouser'?'No account named '+who:'Not sent';});
 document.addEventListener('change',e=>{if(e.target.id!=='rl-sys-all')return;const i=document.getElementById('rl-sys-to');if(i)i.disabled=e.target.checked;});
 document.addEventListener('submit',e=>{if(!e.target.closest('#roles .rl-mpf'))return;e.preventDefault();const i=document.getElementById('rl-mpname'),v=i&&i.value.trim().toLowerCase();if(v)rolesMp(v,true);});
+document.addEventListener('submit',e=>{if(!e.target.closest('#roles .rl-convf'))return;e.preventDefault();const i=document.getElementById('rl-convname'),v=i&&i.value.trim().toLowerCase();if(v)rolesConv(v,false);});
 document.addEventListener('submit',e=>{if(!e.target.closest('#roles .rl-gasf'))return;e.preventDefault();const i=document.getElementById('rl-gasname'),v=i&&i.value.trim().toLowerCase();if(v)rolesGas(v,false);});
-document.addEventListener('submit',e=>{if(!e.target.closest('#roles .rl-add:not(.rl-mpf):not(.rl-gasf)'))return;e.preventDefault();const i=document.getElementById('rl-name'),v=i&&i.value.trim().toLowerCase();if(v)rolesSet(v,false);});
+document.addEventListener('submit',e=>{if(!e.target.closest('#roles .rl-add:not(.rl-mpf):not(.rl-gasf):not(.rl-convf)'))return;e.preventDefault();const i=document.getElementById('rl-name'),v=i&&i.value.trim().toLowerCase();if(v)rolesSet(v,false);});
 document.addEventListener('keydown',e=>{const d=document.getElementById('roles');if(d&&!d.hidden&&e.key==='Escape'){e.stopPropagation();if(RLA){rlAllClose();return;}closeRoles();}},true);
 async function redeemGuest(code){
   code=String(code||'').trim().toLowerCase();if(!GUEST_RE.test(code))return {error:'bad'};
