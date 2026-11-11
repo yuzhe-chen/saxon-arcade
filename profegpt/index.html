@@ -1059,7 +1059,7 @@ table.md-table tbody td:first-child { color: var(--text-dim); white-space: nowra
 .tilde__meta { display: flex; gap: 14px; font-size: 13px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: var(--text-faint); }
 .tilde__meta span + span::before { content: '·'; margin-right: 14px; }
 .tilde__tools { display: flex; gap: 8px; }
-.tilde__help { width: 36px; padding: 0; font-size: 16px; }
+.tilde__help { gap: 6px; }
 
  
 .tilde__board { display: grid; gap: 6px; width: 100%; max-width: calc(var(--size) * 68px); }
@@ -2249,6 +2249,7 @@ function icon(shape, { size = 18, fill = false, width = 2.2 } = {}) {
     if (part.fill) {
       node.setAttribute('fill', 'currentColor');
       node.setAttribute('stroke', 'none');
+      if (part.evenodd) node.setAttribute('fill-rule', 'evenodd');
     } else {
       node.setAttribute('fill', 'none');
       node.setAttribute('stroke', 'currentColor');
@@ -2283,6 +2284,11 @@ const ICONS = {
   bulb: [
     { d: 'M12 2.6a6.5 6.5 0 0 0-4 11.6c.8.7 1.3 1.5 1.3 2.5v.4h5.4v-.4c0-1 .5-1.8 1.3-2.5A6.5 6.5 0 0 0 12 2.6z', fill: true },
     { d: 'M9.6 20.4h4.8', width: 2.4 },
+  ],
+  
+  
+  info: [
+    { d: 'M12 2.5a9.5 9.5 0 1 0 0 19 9.5 9.5 0 0 0 0-19Zm-1.25 4.6h2.5v2.5h-2.5Zm0 4.1h2.5v6.7h-2.5Z', fill: true, evenodd: true },
   ],
   
   backspace: 'M9 5h10.5A1.5 1.5 0 0 1 21 6.5v11a1.5 1.5 0 0 1-1.5 1.5H9l-6.2-7L9 5Zm3.2 4.4 5.2 5.2m0-5.2-5.2 5.2',
@@ -2858,6 +2864,7 @@ const SPANISH = {
     howEnye: two('La ñ no es una n con adorno: es otra letra, y cuenta como tal.', 'ñ is not an n with a decoration: it is a letter of its own, and scores as one.'),
     enyeTyping: two('En un teclado sin ñ, escribe n y luego ~.', 'On a keyboard without ñ, type n and then ~.'),
     colours: two('Los colores', 'The colours'),
+    info: two('Info', 'Info'),
     close: two('Cerrar', 'Close'),
     howKeys: two(
       'Las vocales con tilde tienen su propia fila en el teclado de la pantalla. En un teclado sin tildes, escribe la vocal y luego un apóstrofo: a y \' dan á, u y " dan ü, n y ~ dan ñ.',
@@ -26376,8 +26383,9 @@ const __import5 = __require("public/js/lib/tilde.js"); const { MAX_GUESSES, answ
  * not with the rest of the site. The Apps Script build, which has no files to
  * fetch, carries them inline and hands them over the same way.
  *
- * What is kept is the day's guesses, whether the hint was used, and the stats,
- * all in this browser's storage. Nothing leaves it: there is no server behind
+ * What is kept is the day's guesses and whether the hint was used: for this
+ * browser session while the game is going, and on the device once it is over,
+ * with the stats. Nothing leaves it: there is no server behind
  * the game, so it plays the same on the Node server, on GitHub Pages and on
  * Apps Script. Storage that is blocked costs only the memory of it.
  */
@@ -26406,17 +26414,20 @@ const IMPERATIVE_PERSONS = { tu: 'tú', usted: 'usted', ustedes: 'ustedes' };
 const FLIP_STEP = 70;
 const FLIP_TIME = 220;
 
-function readStore() {
-  try { return JSON.parse(sessionStorage.getItem(STORE)) ?? {}; } catch { return {}; }
+// A game in progress lives only as long as the browser session, so on a shared
+
+
+function readStore(storage) {
+  try { return JSON.parse(storage.getItem(STORE)) ?? {}; } catch { return {}; }
 }
 
-function writeStore(value) {
-  try { sessionStorage.setItem(STORE, JSON.stringify(value)); } catch { /* blocked: this visit only */ }
+function writeStore(storage, value) {
+  try { storage.setItem(STORE, JSON.stringify(value)); } catch {   }
 }
 
 const still = () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
 
-// The words, loaded once a visit and kept, so coming back to the page is instant.
+
 let loading = null;
 function loadWords() {
   loading ??= Promise.all([Promise.resolve().then(() => __require("public/js/data/tilde-answers.js")), Promise.resolve().then(() => __require("public/js/data/tilde-words.js"))])
@@ -26441,7 +26452,7 @@ function renderTilde(main) {
   let midnight = null;
   let alive = true;
 
-  // A page left open past midnight starts the new puzzle by itself.
+  
   function start() {
     loadWords().then((data) => {
       if (!alive) return;
@@ -26465,7 +26476,7 @@ function renderTilde(main) {
   };
 }
 
-// ---------------------------------------------------------------------------
+
 
 function play(root, { answers, lex }) {
   const number = Math.max(1, puzzleNumber());
@@ -26473,26 +26484,32 @@ function play(root, { answers, lex }) {
   const answer = entry.word;
   const size = letters(answer).length;
 
-  const stored = readStore();
-  let stats = { ...emptyStats(), ...stored.stats };
-  const saved = stored.game?.number === number ? stored.game : null;
+  const device = readStore(localStorage);
+  const session = readStore(sessionStorage);
+  let stats = { ...emptyStats(), ...device.stats };
+  const saved = device.done?.number === number ? device.done
+    : session.game?.number === number ? session.game : null;
   const state = {
     guesses: (saved?.guesses ?? []).filter((guess) => typeof guess === 'string' && letters(guess).length === size).slice(0, MAX_GUESSES),
     hint: Boolean(saved?.hint),
     typing: [],
   };
-  const persist = () => writeStore({ stats, game: { number, guesses: state.guesses, hint: state.hint } });
+  const persist = () => {
+    const game = { number, guesses: state.guesses, hint: state.hint };
+    writeStore(sessionStorage, { game });
+    if (over()) writeStore(localStorage, { stats, done: game });
+  };
   const won = () => state.guesses.at(-1) === answer;
   let timer = null;
   const over = () => won() || state.guesses.length >= MAX_GUESSES;
 
-  // --- the board -----------------------------------------------------------
+  
 
   const rows = Array.from({ length: MAX_GUESSES }, (_, r) => el('div', {
     class: 'tilde__row', role: 'group', 'aria-label': t('tilde.row', { n: r + 1 }),
   }, ...Array.from({ length: size }, () => el('div', { class: 'tile' }))));
   const board = el('div', { class: 'tilde__board', 'aria-label': t('tilde.board') }, ...rows);
-  // The board, the bar over it and the hint are all as wide as the word.
+  
   root.style.setProperty('--size', size);
 
   function paintRow(r, word, { reveal = false } = {}) {
@@ -26519,12 +26536,12 @@ function play(root, { answers, lex }) {
     if (state.guesses.length < MAX_GUESSES) paintRow(state.guesses.length, state.typing.join(''));
   };
 
-  // --- the line under it ---------------------------------------------------
+  
 
   const message = el('p', { class: 'tilde__message', 'aria-live': 'polite' });
   const say = (...parts) => message.replaceChildren(...parts);
 
-  /** "¿Querías decir canción?" — and the word, pressed, goes into the row. */
+   
   function offer(suggestions) {
     const parts = [t('tilde.didYouMean'), ' '];
     suggestions.slice(0, 3).forEach((word, i) => {
@@ -26540,7 +26557,7 @@ function play(root, { answers, lex }) {
     say(...parts);
   }
 
-  // --- the keyboard --------------------------------------------------------
+  
 
   const keys = new Map();
   const keyboard = el('div', { class: 'keys', role: 'group', 'aria-label': t('tilde.keyboard') },
@@ -26552,8 +26569,8 @@ function play(root, { answers, lex }) {
           type: 'button',
           'data-key': key,
           'aria-label': key === 'delete' ? t('tilde.delete') : null,
-          // The keyboard never takes focus, so Enter afterwards still means
-          // "send this guess" rather than "press the last key again".
+          
+          
           onmousedown: (event) => event.preventDefault(),
           onclick: () => press(key),
         }, label);
@@ -26591,7 +26608,7 @@ function play(root, { answers, lex }) {
     const word = state.typing.join('');
     const verdict = check(word, lex);
     if (!verdict.ok) {
-      // Not a word: the turn is kept, and an accent slip is offered its word.
+      
       if (verdict.suggestions.length) offer(verdict.suggestions);
       else say(t('tilde.unknown', { word }));
       return;
@@ -26616,7 +26633,7 @@ function play(root, { answers, lex }) {
     if (target?.closest('input, textarea, select, [contenteditable], .settings')) return;
     const { key } = event;
     if (key === 'Enter') {
-      // Enter on a focused button or link is that button's.
+      
       if (target?.closest('button, a')) return;
       event.preventDefault();
       press('enter');
@@ -26636,7 +26653,7 @@ function play(root, { answers, lex }) {
   }
   document.addEventListener('keydown', onKey);
 
-  // --- the hint ------------------------------------------------------------
+  
 
   const hintBox = el('div', { class: 'tilde__hint', hidden: true });
   const hintButton = el('button', {
@@ -26656,7 +26673,7 @@ function play(root, { answers, lex }) {
       credit(entry.hint));
   }
 
-  // --- the end -------------------------------------------------------------
+  
 
   function finish() {
     keyboard.replaceWith(result());
@@ -26697,7 +26714,7 @@ function play(root, { answers, lex }) {
       el('p', { class: 'tilde__next' }, t('tilde.tomorrow')));
   }
 
-  // --- the side: how to play, and the numbers ---------------------------------
+  
 
   const statsBox = el('section', { class: 'tilde__card tilde__stats' });
 
@@ -26729,15 +26746,15 @@ function play(root, { answers, lex }) {
       el('li', {}, sample('r', 'absent'), el('span', {}, t('tilde.absent')))),
     el('p', { class: 'tilde__info-note' }, t('tilde.howEnye'), ' ', t('tilde.enyeTyping')));
   closeInfo.addEventListener('click', () => info.close());
-  // A tap on the dim backdrop closes it too.
+  
   info.addEventListener('click', (event) => { if (event.target === info) info.close(); });
 
-  // --- put together ----------------------------------------------------------
+  
 
   const help = el('button', {
-    class: 'btn btn--sm tilde__help', type: 'button', 'aria-label': t('tilde.colours'), title: t('tilde.colours'),
+    class: 'btn btn--sm tilde__help', type: 'button', title: t('tilde.colours'),
     onclick: () => info.showModal(),
-  }, 'i');
+  }, icon(ICONS.info, { size: 16 }), t('tilde.info'));
   const bar = el('div', { class: 'tilde__bar-top' },
     el('p', { class: 'tilde__meta' },
       el('span', {}, t('tilde.number', { n: number })),
@@ -26766,9 +26783,9 @@ function play(root, { answers, lex }) {
   };
 }
 
-// ---------------------------------------------------------------------------
 
-/** What the answer is: a verb form's infinitive, tense and person, or a word's kind and meaning. */
+
+ 
 function describe(entry) {
   if (entry.kind !== 'verb') {
     return [el('p', { class: 'tilde__what' },
@@ -26782,18 +26799,18 @@ function describe(entry) {
     return el('p', { class: 'tilde__what' },
       el('strong', { lang: 'es' }, form.lemma),
       el('span', {}, persons.length ? `${tense}, ${persons.join(` ${t('tilde.or')} `)}` : tense),
-      // The meaning once a verb, however many of its tenses the form is.
+      
       glossed.has(form.lemma) ? null : (glossed.add(form.lemma), el('span', { class: 'tilde__gloss', lang: 'en' }, form.gloss)));
   });
 }
 
-/** The hint sentence with a gap as long as the word: "_ _ _ _ _ ayuda." */
+ 
 function blanked(text, size) {
   const [before, after = ''] = text.split('____');
   return [before, el('span', { class: 'tilde__blank', 'aria-label': t('tilde.blank') }, '_'.repeat(size)), after];
 }
 
-/** The same sentence with the word back in, capitalised where it opens it. */
+ 
 function filled(text, word) {
   const [before, after = ''] = text.split('____');
   const opens = /^[¿¡«"“—\s]*$/.test(before);
