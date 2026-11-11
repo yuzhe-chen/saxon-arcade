@@ -13606,7 +13606,9 @@ const MOVED_TO='atoll.web.app';
 const gasSeen=()=>{try{return JSON.parse(localStorage.getItem('sx-moved-ok')||'[]');}catch(_){return [];}};
 const gasWho=()=>(typeof state!=='undefined'&&state.user&&state.user.name)||'';
 const gasLoading=()=>{const v=id=>{const e=document.getElementById(id);return !!(e&&e.getClientRects().length&&getComputedStyle(e).visibility!=='hidden');};
-  return performance.now()<3000||document.documentElement.classList.contains('sx-fb')||v('splash')||v('dataload')||v('spclock');};
+  const sp=document.getElementById('splash'),go=document.getElementById('spgo');
+  return performance.now()<3000||document.documentElement.classList.contains('sx-fb')||!!document.querySelector('#spclock,#spcover')||v('dataload')
+    ||!!(sp&&(sp.classList.contains('clk')||sp.classList.contains('morph')))||!!(go&&go.classList.contains('busy'));};
 function gasMove(){if(location.hostname!=='saxonplanner.web.app'||document.getElementById('gasmove'))return;
   if(gasLoading()){setTimeout(gasMove,500);return;}
   if(gasSeen().includes(gasWho()))return;
