@@ -30,6 +30,15 @@ fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},bod
 .then(function(o){if(o&&o.ok){if(ok)ok(o.result);}else if(fail)fail(new Error(o&&o.error||'failed'));})
 .catch(function(e){if(fail)fail(e);});};}});}
 window.google={script:{run:runner(null,null)}};})();</script>
+<script>/* opened from atoll (framed) with a saved login: from the very first paint the page shows only its background and the
+   sign-in clock at 5:30 (html.sx-fb), never the login page or Home, until the clock sequence takes over. ?framedtest=1 on
+   localhost pretends to be framed. Placed after build-web.py's keep script, which puts atoll's login in storage */
+(function(){try{var f=window.top!==window||(location.hostname==='localhost'&&/[?&]framedtest=1/.test(location.search));
+if(!f||matchMedia('(prefers-reduced-motion: reduce)').matches)return;var t='',th=null;
+try{t=localStorage.getItem('sx-token')||'';th=localStorage.getItem('sx-theme');}catch(e){}
+if(!/^[a-z0-9_.-]{3,24}:[0-9a-f]{64}$/.test(t))return;
+var h=document.documentElement;h.classList.add('sx-fb');h.setAttribute('data-theme',th==='dark'?'dark':'light');
+setTimeout(function(){h.classList.remove('sx-fb');},15000);}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Saxon Planner</title>
@@ -2088,14 +2097,21 @@ nav.tabs .mmenu .mcolors button.kbtn:hover{background:var(--panel);color:var(--f
   border:3px solid #fff;border-right-color:transparent;border-radius:50%;animation:spspin .7s linear infinite}
 /* logging out: the app fades to the login page's own background while vertical bars in the color of the page that was open
    streak across from left to right, speeding up as they go; they come wide and close together at first, then fewer, thinner and
-   further apart, so the effect trails off; the login page's pieces settle in together (the legal links with the form) */
+   further apart, so the effect trails off; the login page's pieces settle in together (the legal links with the form). The
+   bars are sent one by one from script, so while the login page isn't ready yet they keep coming (slower and further apart)
+   instead of stopping; with a gradient page each bar is its slice of the gradient */
 #sxwipe{position:fixed;inset:0;z-index:1700;pointer-events:none;overflow:hidden}
 #sxwipe .wp-bg{position:absolute;inset:0;background:var(--lbg);opacity:0;transition:opacity .62s ease-in-out}
 #sxwipe.go .wp-bg{opacity:1}
 #sxwipe i{position:absolute;top:0;bottom:0;left:0;width:var(--w);background:var(--c);transform:translateX(-100%);
-  transition:transform var(--t) cubic-bezier(.5,0,.9,.45) var(--d)}
-#sxwipe.go i{transform:translateX(100vw)}
+  transition:transform var(--t) cubic-bezier(.5,0,.9,.45)}
+#sxwipe i.go{transform:translateX(100vw)}
 #spclock.solid{background:var(--bg)}
+html.sx-fb,html.sx-fb body{background:var(--bg)}
+html.sx-fb body>:not(#spclock){visibility:hidden}
+html.sx-fb body::after{content:"";position:fixed;z-index:1700;left:50%;top:50%;--r:clamp(64px,min(86vw,560px,60vh,440px) * .38,190px);
+  width:calc(var(--r) * 100 / 46);height:calc(var(--r) * 100 / 46);margin:calc(var(--r) * -50 / 46) 0 0 calc(var(--r) * -50 / 46);
+  background:url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Ccircle cx="50" cy="53" r="46" fill="%23e5a400"/%3E%3Ccircle cx="50" cy="50" r="46" fill="%23ffc800"/%3E%3Ccircle cx="50" cy="50" r="39" fill="%23fffdf5"/%3E%3Crect x="48" y="12.5" width="4" height="9" rx="2" fill="%234b4b4b" transform="rotate(0 50 50)"/%3E%3Crect x="49" y="13" width="2" height="5" rx="1" fill="%23c7c1b0" transform="rotate(30 50 50)"/%3E%3Crect x="49" y="13" width="2" height="5" rx="1" fill="%23c7c1b0" transform="rotate(60 50 50)"/%3E%3Crect x="48" y="12.5" width="4" height="9" rx="2" fill="%234b4b4b" transform="rotate(90 50 50)"/%3E%3Crect x="49" y="13" width="2" height="5" rx="1" fill="%23c7c1b0" transform="rotate(120 50 50)"/%3E%3Crect x="49" y="13" width="2" height="5" rx="1" fill="%23c7c1b0" transform="rotate(150 50 50)"/%3E%3Crect x="48" y="12.5" width="4" height="9" rx="2" fill="%234b4b4b" transform="rotate(180 50 50)"/%3E%3Crect x="49" y="13" width="2" height="5" rx="1" fill="%23c7c1b0" transform="rotate(210 50 50)"/%3E%3Crect x="49" y="13" width="2" height="5" rx="1" fill="%23c7c1b0" transform="rotate(240 50 50)"/%3E%3Crect x="48" y="12.5" width="4" height="9" rx="2" fill="%234b4b4b" transform="rotate(270 50 50)"/%3E%3Crect x="49" y="13" width="2" height="5" rx="1" fill="%23c7c1b0" transform="rotate(300 50 50)"/%3E%3Crect x="49" y="13" width="2" height="5" rx="1" fill="%23c7c1b0" transform="rotate(330 50 50)"/%3E%3Cpath d="M50 50V30" stroke="%233c3c3c" stroke-width="6" stroke-linecap="round" transform="rotate(165 50 50)"/%3E%3Cpath d="M50 50V20" stroke="%233c3c3c" stroke-width="4" stroke-linecap="round" transform="rotate(180 50 50)"/%3E%3Ccircle cx="50" cy="50" r="5.5" fill="%231cb0f6"/%3E%3C/svg%3E') center/100% 100% no-repeat;pointer-events:none}
 #splash.sp-pre :is(.sp-top,.sp-art,.sp-down,.sp-mid>*){opacity:0;transform:translateY(18px);transition:none}
 #splash.sp-settle :is(.sp-top,.sp-art,.sp-down,.sp-mid>*){transition:opacity .4s ease calc(var(--d,0) * 60ms),transform .5s cubic-bezier(.2,.8,.3,1) calc(var(--d,0) * 60ms)}
 #splash .sp-art,#splash .sp-mid>.sp-kicker{--d:1}
@@ -4222,7 +4238,7 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
     <div class="sp-url sp-mv"><a href="https://saxonplanner.web.app/" target="_blank" rel="noopener">saxonplanner.web.app</a><button type="button" data-hm-copy aria-label="Copy link" title="Copy link"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12"/><path d="M5 15H3V3h12v2"/></svg></button><span class="hm-ok" aria-live="polite"></span></div>
     <div class="sp-rule sp-mv"></div>
     <form class="sp-gate" id="spgate" action="#" method="post">
-      <input type="text" id="spuser" name="username" autocomplete="username" placeholder="Username" aria-label="Username" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="24">
+      <input type="text" id="spuser" name="username" autocomplete="username" inputmode="text" placeholder="Username" aria-label="Username" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="24">
       <input type="password" id="spcode" name="password" autocomplete="current-password" placeholder="Password" aria-label="Password" maxlength="200">
       <button type="button" class="sp-forgot" id="spforgot">Forgot my password</button>
       <input type="password" id="spconf" name="confirm-password" autocomplete="new-password" placeholder="Confirm password" aria-label="Confirm password" maxlength="200" hidden>
@@ -11074,21 +11090,36 @@ if(window.SX_REF)sxRefArrived(window.SX_REF);
     const cs=getComputedStyle(html),c1=cs.getPropertyValue('--pri').trim()||'#1cb0f6',c2=cs.getPropertyValue('--pri-dark').trim()||c1;
     const th=html.getAttribute('data-theme');themePref('sx-theme-login');const lbg=getComputedStyle(sp).backgroundColor;
     if(th===null)html.removeAttribute('data-theme');else html.setAttribute('data-theme',th);
-    /* 14 bars: each later one starts a little longer after the last and is a little thinner */
-    let bars='',d=0;const N=14,rnd=(a,b)=>a+Math.random()*(b-a);
-    for(let i=0;i<N;i++){const f=i/(N-1),wd=(16-14.6*f)*rnd(.8,1.2);
-      bars+=`<i style="--c:${i%2?c2:c1};--w:${wd.toFixed(2)}vw;--d:${Math.round(d)}ms;--t:${Math.round(rnd(420,500))}ms"></i>`;d+=14+5.5*i;}
+    /* a gradient page (html.pg2): its stops and their darker shades */
+    const g1=html.classList.contains('pg2')&&cs.getPropertyValue('--pgl').trim(),g2=g1&&(cs.getPropertyValue('--pgld').trim()||g1);
     const w=document.createElement('div');w.id='sxwipe';w.setAttribute('aria-hidden','true');
-    w.style.setProperty('--lbg',lbg);
-    w.innerHTML='<div class="wp-bg"></div>'+bars;
+    w.style.setProperty('--lbg',lbg);w.innerHTML='<div class="wp-bg"></div>';
     document.body.appendChild(w);html.classList.add('sx-leave');void w.offsetWidth;w.classList.add('go');
-    /* once the background has turned and the server has signed out, the login page goes in behind it (same color) */
-    await Promise.all([cap(ready),wait(640)]);
+    /* the bars: the first 14 come quickly, each a little thinner and a little later than the last; while the login page isn't
+       ready the next ones keep coming, thin, slower and further apart; each removes itself once across */
+    const rnd=(a,b)=>a+Math.random()*(b-a),t0=performance.now();let n=0,live=0,next=0,gap=14,on=true;
+    const bar=()=>{const i=n++,f=Math.min(1,i/13),wd=i<14?(16-14.6*f)*rnd(.8,1.2):rnd(1.1,2.2),t=i<14?rnd(420,500):Math.min(820,500+(i-13)*45);
+      const b=document.createElement('i');b.style.setProperty('--w',wd.toFixed(2)+'vw');b.style.setProperty('--t',Math.round(t)+'ms');
+      if(g1){b.style.background=`linear-gradient(90deg,${i%2?g2:g1})`;b.style.backgroundSize='100vw 100%';
+        b.style.backgroundPosition=`${(-f*(100-wd)).toFixed(2)}vw 0`;}
+      else b.style.setProperty('--c',i%2?c2:c1);
+      w.appendChild(b);live++;b.getBoundingClientRect();b.classList.add('go');
+      const end=()=>{if(!b.isConnected)return;b.remove();live--;};b.addEventListener('transitionend',end,{once:true});setTimeout(end,t+150);};
+    const tick=()=>{if(!on)return;const now=performance.now()-t0;
+      if(now>=next){bar();gap=n<14?14+5.5*n:Math.min(230,gap*1.12);next=now+gap;}requestAnimationFrame(tick);};
+    requestAnimationFrame(tick);
+    /* once the background has turned and the server has signed out (at most 2.5 s in all), the login page goes in behind it
+       (same color) and the last bars run out over it */
+    let rd=false;ready.then(()=>{rd=true;},()=>{rd=true;});
+    await wait(640);
+    while(!rd&&performance.now()-t0<2500)await wait(40);
+    on=false;
     reset();setMode(false);show();sp.classList.remove('fadein','unmorph','back','snap','clk','clk-out','sp-settle','out');
     sp.classList.add('sp-pre');html.classList.remove('sx-leave');w.querySelector('.wp-bg').remove();void sp.offsetWidth;
     await wait(40);sp.classList.add('sp-settle');sp.classList.remove('sp-pre');
-    await wait(480);w.remove();
-    await wait(380);sp.classList.remove('sp-settle');
+    for(let k=0;live>0&&k<25;k++)await wait(40);
+    w.remove();
+    await wait(400);sp.classList.remove('sp-settle');
   };
   /* logging in from the form: the picture gives way to a clock, its hands spin from 5:30 PM to 8:10 AM, the words leave and
      the clock's middle cap grows to fill the screen; behind its color the planner is drawn, then it fades away. dataP is the
@@ -11123,14 +11154,22 @@ if(window.SX_REF)sxRefArrived(window.SX_REF);
     const setT=m=>{hh.setAttribute('transform',`rotate(${(165+m*.5)%360} 50 50)`);mh.setAttribute('transform',`rotate(${(180+m*6)%360} 50 50)`);};
     const setPop=(s,o)=>{pop.setAttribute('transform',`translate(50 50) scale(${s}) translate(-50 -50)`);pop.setAttribute('opacity',o);};
     const io=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2,back=t=>{const c=1.6;return 1+(c+1)*Math.pow(t-1,3)+c*Math.pow(t-1,2);};
-    const run=(ms,f)=>new Promise(res=>{const t0=performance.now();const fr=now=>{const t=Math.min(1,(now-t0)/ms);f(t);if(t<1)requestAnimationFrame(fr);else res();};requestAnimationFrame(fr);});
+    /* each frame moves the animation on by at most 40 ms, so a busy page (still loading) pauses it instead of skipping it */
+    const run=(ms,f)=>new Promise(res=>{let el=0,last=performance.now();const fr=now=>{el+=Math.max(0,Math.min(40,now-last));last=now;const t=Math.min(1,el/ms);f(t);if(t<1)requestAnimationFrame(fr);else res();};requestAnimationFrame(fr);});
     let cx,cy,rc;
     setT(0);setPop(.55,0);
     if(!opts.center)sp.classList.add('clk');
     const k=R/46;cx=bx;cy=by;rc=5.5*k;
     pos.setAttribute('transform',`translate(${cx-50*k} ${cy-50*k}) scale(${k})`);
-    await wait(60);
-    await run(340,t=>setPop(.55+.45*back(t),Math.min(1,t*2.5)));
+    if(html.classList.contains('sx-fb')){
+      /* the clock has been on screen since the first paint (html.sx-fb): this one takes its place exactly, then waits for the
+         page to finish loading so the spin isn't cut short by a busy start */
+      setPop(1,1);html.classList.remove('sx-fb');
+      await Promise.race([new Promise(r=>document.readyState==='complete'?r():addEventListener('load',r,{once:true})),wait(2500)]);
+      await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));await wait(150);
+    }else{
+      await wait(60);
+      await run(340,t=>setPop(.55+.45*back(t),Math.min(1,t*2.5)));}
     await wait(50);
     await run(1250,t=>setT(880*io(t)));
     await wait(50);
@@ -11199,6 +11238,9 @@ if(window.SX_REF)sxRefArrived(window.SX_REF);
     if(!r||!r.token)return fail(r&&r.error||'conn');
     try{localStorage.removeItem('sx-ref');}catch(_){}refIn.value='';
     setToken(r.token);state.user=r.user;
+    /* hand the login to the browser's password manager (Chrome offers to save it); ignored where it isn't supported */
+    try{if(window.PasswordCredential&&navigator.credentials&&navigator.credentials.store)
+      navigator.credentials.store(new PasswordCredential({id:name,password:pw,name})).catch(()=>{});}catch(_){}
     resetAccountState();
     state.view='home';try{localStorage.setItem('sx-tab','home');}catch(_){}
     /* a new account: the FAQ button blinks until its "I Can Read" */
@@ -11265,6 +11307,7 @@ if(window.SX_REF)sxRefArrived(window.SX_REF);
        zooms into its cap, and the planner fades in from behind the color. ?framedtest=1 on localhost pretends to be framed */
     let framed=false;try{framed=window.top!==window||(location.hostname==='localhost'&&new URLSearchParams(location.search).get('framedtest')==='1');}catch(_){framed=true;}
     if(matchMedia('(prefers-reduced-motion: reduce)').matches)framed=false;
+    if(!framed)document.documentElement.classList.remove('sx-fb');
     const lp=loadData(),bad=()=>{if(passKey){if(quick){sp.classList.remove('gone');document.documentElement.classList.add('splash-on');}setMode(false);show();fail('conn');}};
     if(framed){
       clockEnter(lp,{center:true,swap:()=>{state.view=quick&&state.view!=='home'?state.view:'home';try{localStorage.setItem('sx-tab',state.view);}catch(_){}
@@ -11277,7 +11320,7 @@ if(window.SX_REF)sxRefArrived(window.SX_REF);
         if(state.settings.tutorialNew)tutSoon();}
       else bad();
     });
-  }else{setMode(!!refStored());show();}
+  }else{document.documentElement.classList.remove('sx-fb');setMode(!!refStored());show();}
   /* arriving through a referral link (signed out): the form opens on Sign up with the code filled in */
   splashRef=r=>{if(passKey||gate.hidden||busy)return;refIn.value=r;if(!signup){setMode(true);focusFirst();}};
 })();
