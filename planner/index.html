@@ -13600,17 +13600,26 @@ document.addEventListener('pointerdown',e=>{const n=e.target.closest&&e.target.c
   const ed=n.querySelector('.nt');if(!ed)return;e.preventDefault();
   if(ed.isContentEditable){ed.focus();const r=document.createRange();r.selectNodeContents(ed);r.collapse(false);const sel=getSelection();sel.removeAllRanges();sel.addRange(r);}
   else ed.click();},true);
-/* saxonplanner.web.app is retired: a popup sends people to atoll.web.app, the address to use now; OK closes it */
+/* saxonplanner.web.app is retired: a popup suggests atoll.web.app, the address to use now. It waits until the loading
+   screen (sign-in clock, splash, data load) is gone, and once an account has closed it, it never comes back for that account. */
 const MOVED_TO='atoll.web.app';
-function gasMove(){if(location.hostname!=='saxonplanner.web.app'||document.getElementById('gasmove'))return;const u='https:'+SLASH2+MOVED_TO+'/';
-  const m=document.createElement('div');m.id='gasmove';m.setAttribute('role','alertdialog');m.setAttribute('aria-modal','true');m.setAttribute('aria-labelledby','gasmove-h');
+const gasSeen=()=>{try{return JSON.parse(localStorage.getItem('sx-moved-ok')||'[]');}catch(_){return [];}};
+const gasWho=()=>(typeof state!=='undefined'&&state.user&&state.user.name)||'';
+const gasLoading=()=>{const v=id=>{const e=document.getElementById(id);return !!(e&&e.getClientRects().length&&getComputedStyle(e).visibility!=='hidden');};
+  return performance.now()<3000||document.documentElement.classList.contains('sx-fb')||v('splash')||v('dataload')||v('spclock');};
+function gasMove(){if(location.hostname!=='saxonplanner.web.app'||document.getElementById('gasmove'))return;
+  if(gasLoading()){setTimeout(gasMove,500);return;}
+  if(gasSeen().includes(gasWho()))return;
+  const u='https:'+SLASH2+MOVED_TO+'/';
+  const m=document.createElement('div');m.id='gasmove';m.setAttribute('role','dialog');m.setAttribute('aria-modal','true');m.setAttribute('aria-labelledby','gasmove-h');
   m.innerHTML='<div class="gm-card"><div class="gm-art">'+art('logo')+'</div><h2 id="gasmove-h">Saxon Planner has moved</h2>'+
-   '<p>This address is closing. Use <b>'+MOVED_TO+'</b> from now on.</p>'+
-   '<p>Your account, classes and saves are the same there. Just log in again.</p>'+
+   '<p>The address to use from now on is <b>'+MOVED_TO+'</b>. Your account, classes and saves are the same there.</p>'+
+   '<p>Moving is entirely optional: this address keeps working too.</p>'+
    '<div class="gm-btns"><a class="hm-btn" id="gasmove-go" href="'+esc(u)+'" target="_top">Go to '+MOVED_TO+'</a><button type="button" class="hm-btn gm-ok" id="gasmove-ok">OK</button></div></div>';
   document.body.appendChild(m);const ok=m.querySelector('#gasmove-ok');
-  /* OK, Escape or a click outside the card closes it and leaves the planner usable here */
-  const close=()=>m.remove();ok.addEventListener('click',close);
+  /* OK, Escape or a click outside the card closes it for good for this account */
+  const close=()=>{m.remove();try{const w=gasWho(),l=gasSeen();if(!l.includes(w))l.push(w);localStorage.setItem('sx-moved-ok',JSON.stringify(l));}catch(_){}};
+  ok.addEventListener('click',close);
   m.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();e.stopPropagation();close();}},true);
   m.addEventListener('click',e=>{if(e.target===m){e.stopPropagation();close();}});}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',gasMove);else setTimeout(gasMove,0);
