@@ -4284,12 +4284,12 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
     <h2 class="sp-title"><span class="l1 sp-mv">Saxon</span><br><span class="l2 sp-mv">Planner</span></h2>
     <div class="sp-url sp-mv"><a href="https://saxonplanner.web.app/" target="_blank" rel="noopener">saxonplanner.web.app</a><button type="button" data-hm-copy aria-label="Copy link" title="Copy link"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12"/><path d="M5 15H3V3h12v2"/></svg></button><span class="hm-ok" aria-live="polite"></span></div>
     <div class="sp-rule sp-mv"></div>
-    <form class="sp-gate" id="spgate" action="#" method="post">
-      <input type="text" id="spuser" name="username" autocomplete="username" inputmode="text" placeholder="Username" aria-label="Username" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="24">
-      <input type="password" id="spcode" name="password" autocomplete="current-password" placeholder="Password" aria-label="Password" maxlength="200">
+    <form class="sp-gate" id="spgate" autocomplete="off" action="#" method="post">
+      <input type="text" id="spuser" placeholder="Username" aria-label="Username" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="24">
+      <input type="password" id="spcode" placeholder="Password" aria-label="Password" maxlength="200">
       <button type="button" class="sp-forgot" id="spforgot">Forgot my password</button>
-      <input type="password" id="spconf" name="confirm-password" autocomplete="new-password" placeholder="Confirm password" aria-label="Confirm password" maxlength="200" hidden>
-      <input type="text" id="spref" autocomplete="off" placeholder="Referral code (optional)" aria-label="Referral code" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="24" hidden>
+      <input type="password" id="spconf" placeholder="Confirm password" aria-label="Confirm password" maxlength="200" hidden>
+      <input type="text" id="spref" placeholder="Referral code (optional)" aria-label="Referral code" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="24" hidden>
       <label class="sp-terms" id="spterms" hidden><input type="checkbox" id="spagree"><span class="sp-box" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span class="sp-tt">I agree to the <button type="button" class="sp-tl" data-legal="terms">Terms and Conditions</button> and I have read the <button type="button" class="sp-tl" data-legal="privacy">Privacy Policy</button>.</span></label>
       <div class="sp-msg" id="spmsg" role="alert"></div>
       <div class="sp-row"><button type="submit" id="spgo">Log in</button><button type="button" class="sp-switch" id="spswitch">Sign up</button></div>
@@ -11261,7 +11261,7 @@ if(window.SX_REF)sxRefArrived(window.SX_REF);
     sw=document.getElementById('spswitch'),msg=document.getElementById('spmsg');
   let signup=false,busy=false;
   const refIn=document.getElementById('spref');
-  const setMode=su=>{signup=su;conf.hidden=!su;code.setAttribute('autocomplete',su?'new-password':'current-password');refIn.hidden=!su;{const tm=document.getElementById('spterms'),lg=document.getElementById('splegal');tm.hidden=!su;lg.hidden=su;if(!su)document.getElementById('spagree').checked=false;}if(su&&!refIn.value)refIn.value=refStored();go.textContent=su?'Sign up':'Log in';document.getElementById('spforgot').hidden=su;sw.textContent=su?'Log in':'Sign up';
+  const setMode=su=>{signup=su;conf.hidden=!su;refIn.hidden=!su;{const tm=document.getElementById('spterms'),lg=document.getElementById('splegal');tm.hidden=!su;lg.hidden=su;if(!su)document.getElementById('spagree').checked=false;}if(su&&!refIn.value)refIn.value=refStored();go.textContent=su?'Sign up':'Log in';document.getElementById('spforgot').hidden=su;sw.textContent=su?'Log in':'Sign up';
     msg.textContent='';conf.value='';};
   const focusFirst=()=>setTimeout(()=>(user.value?code:user).focus(),0);
   const hero=document.getElementById('sphero'),img=sp.querySelector('.sp-img');
@@ -11471,8 +11471,7 @@ if(window.SX_REF)sxRefArrived(window.SX_REF);
     try{localStorage.removeItem('sx-ref');}catch(_){}refIn.value='';
     setToken(r.token);state.user=r.user;
     /* hand the login to the browser's password manager (Chrome offers to save it); ignored where it isn't supported */
-    try{if(window.PasswordCredential&&navigator.credentials&&navigator.credentials.store)
-      navigator.credentials.store(new PasswordCredential({id:name,password:pw,name})).catch(()=>{});}catch(_){}
+
     resetAccountState();
     state.view='home';try{localStorage.setItem('sx-tab','home');}catch(_){}
     /* a new account: the FAQ button blinks until its "I Can Read" */
