@@ -3836,7 +3836,7 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
 <div id="sugg" hidden role="dialog" aria-label="Suggestions"></div>
 <div id="roles" hidden role="dialog" aria-label="Administration"></div>
 <div id="rewards" hidden role="dialog" aria-label="Rewards"></div>
-<div id="dash" hidden role="dialog" aria-label="Dashboard"></div>
+<div id="dash" hidden role="dialog"></div>
 <div id="gwarn" hidden role="dialog" aria-modal="true" aria-label="Playing as a guest"></div>
 
 <template id="docs-tpl">
@@ -4459,7 +4459,7 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
       <button class="mm-row" data-act-docs><i class="mi" data-art="guide"></i><span>Guide</span></button>
       <button class="mm-row" data-theme-toggle role="menuitemcheckbox"><i class="mi" data-art="moon"></i><span>Dark mode</span><i class="mm-sw" aria-hidden="true"></i></button>
       <div class="mm-sep"></div>
-      <button class="mm-row" data-act-dash hidden><i class="mi" data-art="graph"></i><span>Dashboard</span><svg class="mm-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></button>
+      <button class="mm-row" data-act-dash hidden><i class="mi" data-art="graph"></i><span data-dash-name></span><svg class="mm-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></button>
       <button class="mm-row" id="mother" aria-expanded="false" aria-controls="mother-l"><i class="mi" data-art="folder"></i><span>Other</span><svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
       <div class="mm-other" id="mother-l" hidden>
         <a class="mm-row mm-sub" data-site="profegpt" target="_blank" rel="noopener"><i class="mi" data-art="bubble"></i><span>ProfeGPT</span><svg class="mm-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
@@ -11066,7 +11066,9 @@ function render(){
   const isOwn=!!(state.user&&state.user.owner);
   document.querySelectorAll('[data-v="tasks"]').forEach(b=>{if(b.hidden===isOwn)b.hidden=!isOwn;});
   if(state.view==='tasks'&&!isOwn)state.view='calendar';
-  {const on=!!(state.user&&state.user.owner);document.querySelectorAll('[data-act-dash]').forEach(b=>{if(b.hidden===on)b.hidden=!on;});}
+  /* the owner's Dashboard is never named in the page for anyone else: its label is only written in for the owner */
+  {const on=!!(state.user&&state.user.owner);document.querySelectorAll('[data-act-dash]').forEach(b=>{if(b.hidden===on)b.hidden=!on;const n=b.querySelector('[data-dash-name]');if(n)n.textContent=on?'Dashboard':'';});
+   const d=document.getElementById('dash');if(d){if(on)d.setAttribute('aria-label','Dashboard');else d.removeAttribute('aria-label');}}
   const v=state.setup&&state.user?'setup':state.view;
   const homeEl=document.getElementById('v-home'),wasHome=!!(homeEl&&homeEl.classList.contains('on'));
   pgTabs(v);
