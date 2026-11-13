@@ -11270,7 +11270,8 @@ const HM_SITES=[['profegpt','bubble','ProfeGPT'],['interpres','scroll','Interpre
 const HM_JUMP=[['advisory','sticky'],['tools','calc'],['resources','books'],['chat','chat'],['games','controller']];
 const HM_ARROW='<svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
 const hmQgOk=x=>!!(x&&!x.hide&&!gameLocked(x)&&!sensHidden(x.id));
-const hmQgList=()=>((state.settings&&state.settings.quickGames)||[]).filter(id=>hmQgOk(GAMES.find(g=>g.id===id))).slice(0,5);
+/* the instant boot can draw Home before GAMES is defined further down: no quick games on that first frame, they appear on the next draw */
+const hmQgList=()=>{try{return((state.settings&&state.settings.quickGames)||[]).filter(id=>hmQgOk(GAMES.find(g=>g.id===id))).slice(0,5);}catch(_){return[];}};
 function hmQuick(el){
   const q=el.querySelector('#hm-qg');if(!q)return;
   const h=hmQgList().map(id=>`<button type="button" class="hm-site hm-qgb" data-hm-game="${esc(id)}">${esc(GAMES.find(g=>g.id===id).name)}</button>`).join('')+
@@ -12598,7 +12599,9 @@ if(window.SX_REF)sxRefArrived(window.SX_REF);
       sp.classList.add('gone');document.documentElement.classList.remove('splash-on');
       try{localStorage.setItem('sx-tab','home');}catch(_){}
       /* a drawing error must never stop the data from loading */
-      try{render();}catch(e){console.warn('first render failed',e);}
+      /* drawn once this script has finished running (a microtask, still before the first paint), so everything declared
+         further down (GAMES, the chat helpers, ...) exists when Home draws */
+      queueMicrotask(()=>{try{render();}catch(e){console.warn('first render failed',e);}});
     }
     /* opened from atoll (framed, with the saved login it handed over): no login page, the clock sits mid-screen, spins and
        zooms into its cap, and the planner fades in from behind the color. ?framedtest=1 on localhost pretends to be framed */
