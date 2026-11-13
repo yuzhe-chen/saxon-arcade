@@ -1430,6 +1430,7 @@ html.gm-play body>:not(#games):not(#gwarn):not(#gasmove),html.gm-play body>:not(
 #games .tr-intro p{position:absolute;margin:0;padding:0 24px;text-align:center;font-family:'Suez One',Georgia,serif;font-weight:400;opacity:0}
 #games .tr-intro .tr-by{font-size:clamp(18px,2.6vw,26px);color:#cfcfd4;letter-spacing:.02em}
 #games .tr-intro .tr-name{font-size:clamp(40px,7vw,76px);color:#f1e3bd}
+#games .tr-intro.pr .tr-name{font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-weight:800;letter-spacing:-.01em;color:#d8eccf}
 #games .tr-intro.go .tr-by{animation:trby 1.9s ease forwards}
 #games .tr-intro.go .tr-name{animation:trname .5s ease 2.1s forwards}
 @keyframes trby{0%{opacity:0}26%,79%{opacity:1}100%{opacity:0}}
@@ -2162,6 +2163,23 @@ button.hm-site{appearance:none;cursor:pointer}
 .hm-site.hm-qgadd:hover{background:var(--panel2);color:var(--fg2)}
 .hm-site.hm-qgadd:active{transform:none;margin-bottom:0;border-bottom-width:2px}
 .hm-plus{font:700 24px/1 var(--display);margin-top:-2px}
+/* Quick links: the row above Today (hm-site chips, the pencil last) and its editor, which opens under the top bar */
+.hm-ql{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-start}
+a.hm-site.hm-qlb{padding:0 14px 0 16px;text-decoration:none;font:700 15px var(--font-ui)}
+.hm-qlb .hm-qlx,.hm-qledit svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.hm-qlb .hm-qlx{opacity:.5;margin-left:-2px}
+.hm-site.hm-qledit{width:48px;padding:0;justify-content:center;color:var(--fg2)}
+.hm-site.hm-qledit svg{width:18px;height:18px}
+#hm-more .hm-qlsec+.hm-todaysec{margin-top:40px}
+.qov.hm-qlov,.qov.hm-edov{top:var(--pgtop,0px)}
+.hm-qlov .hm-qlbox,.hm-edov .hm-edbox{max-height:calc(100dvh - var(--pgtop,0px) - 40px)}
+.hm-qlnote{margin:0 0 12px;color:var(--fg2);font-size:14px}
+.hm-qlrows{display:flex;flex-direction:column;gap:8px}
+.hm-qlrow{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,3fr);gap:8px}
+.hm-qlrow input{min-width:0}
+.hm-qlmsg{min-height:20px;margin-top:10px;color:var(--red,#e5484d);font-size:14px;font-weight:700}
+.hm-qlbtns{display:flex;justify-content:flex-end;gap:8px;margin-top:6px}
+@media (max-width:520px){.hm-qlrow{grid-template-columns:minmax(0,1fr)}.hm-qlrow+.hm-qlrow{padding-top:8px;border-top:1px solid var(--line)}}
 .hm-qgbox{width:420px;border:2px solid var(--line);border-bottom-width:4px;border-radius:var(--r);max-height:calc(100dvh - 40px);overflow-y:auto;overscroll-behavior:none;color:var(--fg)}
 .hm-qgl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
 .hm-qgi{display:flex;align-items:center;gap:10px;padding:10px 12px;border:2px solid var(--line);border-radius:var(--rs);font:700 15px var(--font-ui);cursor:pointer;min-width:0}
@@ -2190,6 +2208,15 @@ button.hm-site{appearance:none;cursor:pointer}
 .hm-chr .ch-tm{font-size:12.5px;color:var(--faint);font-weight:700;flex:none}
 .hm-padp textarea{display:block;width:100%;box-sizing:border-box;min-height:min(440px,calc(100dvh - 300px));resize:vertical;border:2px solid var(--line);border-radius:var(--rs);background:var(--bg);color:var(--fg);padding:14px 16px;font:600 16px/1.5 var(--font-ui);overscroll-behavior:none}
 .hm-padp textarea:focus{outline:none;border-color:var(--blue)}
+.res-dyngrid{margin-top:16px}
+.res-dyn{position:relative;cursor:pointer}
+.res-card .res-dyn{padding-right:calc(var(--pin,14px) + 34px)}
+.res-dyn .hide-cb{position:absolute;opacity:0;width:1px;height:1px;margin:0;pointer-events:none}
+.res-dyn .hide-box{position:absolute;right:var(--pin,14px);top:50%;transform:translateY(-50%)}
+.res-dyn .hide-cb:focus-visible+.hide-box{outline:2px solid var(--accent);outline-offset:2px}
+.ap-hide.hm-eddyn{grid-template-columns:minmax(0,1fr);margin-top:12px}
+.hm-dynn{margin-left:auto;font:700 12px var(--font-ui);letter-spacing:.06em;text-transform:uppercase;color:var(--fg2)}
+.hm-dynp .muted{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .hm-rgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
 .hm-rcard{appearance:none;display:flex;flex-direction:column;align-items:flex-start;gap:6px;min-height:104px;padding:16px 18px;text-align:left;cursor:pointer;text-decoration:none;
   background:var(--panel);color:var(--fg);border:2px solid var(--line);border-bottom-width:4px;border-radius:var(--r);font-family:var(--font-ui);box-sizing:border-box;min-width:0}
@@ -4227,6 +4254,7 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
         <a role="menuitem" data-site="profegpt" target="_blank" rel="noopener"><i class="mi" data-art="bubble"></i><span>ProfeGPT</span><svg class="mm-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
         <a role="menuitem" data-site="interpres" target="_blank" rel="noopener"><i class="mi" data-art="scroll"></i><span>Interpres</span><svg class="mm-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
         <a role="menuitem" data-site="ambicant" target="_blank" rel="noopener"><i class="mi" data-art="bulb"></i><span>Ambicant</span><svg class="mm-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
+        <a role="menuitem" data-site="departed" target="_blank" rel="noopener"><i class="mi" data-art="train"></i><span>Departed</span><svg class="mm-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
         <a role="menuitem" data-site="planner" target="_blank" rel="noopener"><i class="mi" data-art="logo"></i><span>Planner</span><svg class="mm-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
       </div>
     </div></div>
@@ -4437,6 +4465,7 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
         <a class="mm-row mm-sub" data-site="profegpt" target="_blank" rel="noopener"><i class="mi" data-art="bubble"></i><span>ProfeGPT</span><svg class="mm-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
         <a class="mm-row mm-sub" data-site="interpres" target="_blank" rel="noopener"><i class="mi" data-art="scroll"></i><span>Interpres</span><svg class="mm-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
         <a class="mm-row mm-sub" data-site="ambicant" target="_blank" rel="noopener"><i class="mi" data-art="bulb"></i><span>Ambicant</span><svg class="mm-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
+        <a class="mm-row mm-sub" data-site="departed" target="_blank" rel="noopener"><i class="mi" data-art="train"></i><span>Departed</span><svg class="mm-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
         <a class="mm-row mm-sub" data-site="planner" target="_blank" rel="noopener"><i class="mi" data-art="logo"></i><span>Planner</span><svg class="mm-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
       </div>
       <div class="mm-sep mm-acsep"></div>
@@ -6649,6 +6678,10 @@ star:'<path d="M48 8l11 24 26 3-19 18 5 26-23-13-23 13 5-26-19-18 26-3z" fill="#
 scroll:'<rect x="20" y="16" width="56" height="64" rx="6" fill="#FFF1C9"/><rect x="28" y="30" width="34" height="5" rx="2.5" fill="#E6C27A"/><rect x="28" y="40" width="40" height="5" rx="2.5" fill="#E6C27A"/><rect x="28" y="50" width="28" height="5" rx="2.5" fill="#E6C27A"/><rect x="28" y="60" width="36" height="5" rx="2.5" fill="#E6C27A"/><rect x="12" y="13" width="72" height="12" rx="6" fill="#E5A400"/><rect x="12" y="10" width="72" height="12" rx="6" fill="#FFC800"/><rect x="18" y="13" width="14" height="4" rx="2" fill="#FFE680"/><rect x="12" y="79" width="72" height="12" rx="6" fill="#E5A400"/><rect x="12" y="76" width="72" height="12" rx="6" fill="#FFC800"/><rect x="18" y="79" width="14" height="4" rx="2" fill="#FFE680"/><circle cx="66" cy="71" r="11" fill="#A11D24"/><circle cx="66" cy="68" r="11" fill="#D42A32"/><rect x="60" y="62" width="6" height="4" rx="2" fill="#F2777C"/>',
 bubble:'<g transform="translate(48 48) scale(.33)"><clipPath id="pl1"><path d="M128 0A128 128 0 1 0 -128 0A128 128 0 1 0 128 0Z"/></clipPath><g clip-path="url(#pl1)"><rect x="-130" y="-130" width="260" height="260" fill="#92E4FF"/><rect x="-93.4" y="-134.9" width="81.3" height="79.6" rx="39.8" fill="#78C800"/><rect x="-134.9" y="-86.5" width="79.6" height="86.5" rx="41.5" fill="#78C800"/><rect x="32.9" y="-86.5" width="60.5" height="50.2" rx="25.1" fill="#78C800"/><rect x="57.1" y="-126.3" width="84.8" height="69.2" rx="34.6" fill="#78C800"/><rect x="-6.9" y="-27.7" width="119.4" height="81.3" rx="40.6" fill="#78C800"/><rect x="36.3" y="15.6" width="69.2" height="74.4" rx="34.6" fill="#78C800"/><rect x="-138.4" y="17.3" width="93.4" height="83" rx="41.5" fill="#78C800"/><rect x="-31.1" y="-106.4" width="53.6" height="33.7" rx="16.9" fill="#CCEFFF"/><rect x="-115.9" y="-83.9" width="70.9" height="33.7" rx="16.9" fill="#CCEFFF"/><rect x="-77" y="-61.4" width="54.5" height="33.7" rx="16.9" fill="#CCEFFF"/><rect x="79.6" y="28.5" width="55.4" height="33.7" rx="16.9" fill="#CCEFFF"/><rect x="13.8" y="74.4" width="76.1" height="32.9" rx="16.4" fill="#CCEFFF"/></g></g>',
 gear:'<g fill="#8b8b8b" transform="translate(0 4)"><rect x="41" y="6" width="14" height="22" rx="5"/><rect x="41" y="68" width="14" height="22" rx="5"/><rect x="6" y="41" width="22" height="14" rx="5"/><rect x="68" y="41" width="22" height="14" rx="5"/><rect x="41" y="6" width="14" height="22" rx="5" transform="rotate(45 48 48)"/><rect x="41" y="68" width="14" height="22" rx="5" transform="rotate(45 48 48)"/><rect x="41" y="6" width="14" height="22" rx="5" transform="rotate(-45 48 48)"/><rect x="41" y="68" width="14" height="22" rx="5" transform="rotate(-45 48 48)"/><circle cx="48" cy="48" r="28"/></g><g fill="#afafaf"><rect x="41" y="6" width="14" height="22" rx="5"/><rect x="41" y="68" width="14" height="22" rx="5"/><rect x="6" y="41" width="22" height="14" rx="5"/><rect x="68" y="41" width="22" height="14" rx="5"/><rect x="41" y="6" width="14" height="22" rx="5" transform="rotate(45 48 48)"/><rect x="41" y="68" width="14" height="22" rx="5" transform="rotate(45 48 48)"/><rect x="41" y="6" width="14" height="22" rx="5" transform="rotate(-45 48 48)"/><rect x="41" y="68" width="14" height="22" rx="5" transform="rotate(-45 48 48)"/><circle cx="48" cy="48" r="28"/></g><circle cx="48" cy="50" r="11" fill="#8b8b8b"/><circle cx="48" cy="48" r="11" fill="#e5e5e5"/>',
+train:'<rect x="18" y="80" width="60" height="6" rx="3" fill="#8a9aa5"/><rect x="29" y="70" width="9" height="12" fill="#22304A"/><rect x="58" y="70" width="9" height="12" fill="#16202E"/>'+
+  '<rect x="20" y="12" width="56" height="64" rx="13" fill="#34466A"/><path d="M48 12h15a13 13 0 0 1 13 13v38a13 13 0 0 1-13 13H48z" fill="#22304A"/>'+
+  '<rect x="29" y="22" width="38" height="22" rx="4" fill="#EFE8DA"/><rect x="48" y="22" width="19" height="22" rx="4" fill="#DDD3C0"/><rect x="46" y="22" width="4" height="22" fill="#DDD3C0"/>'+
+  '<rect x="20" y="51" width="56" height="7" fill="#8E2A33"/><circle cx="33" cy="66" r="4.5" fill="#EFE8DA"/><circle cx="63" cy="66" r="4.5" fill="#DDD3C0"/>',
 moon:'<path d="M56 8a40 40 0 1 0 32 58A34 34 0 0 1 56 8z" fill="#ffc800"/><path d="M56 8a40 40 0 0 0-40 40h0a40 40 0 0 0 4 18h0" fill="none"/>'+
   '<path d="M88 66A40 40 0 0 1 16 56c18 14 50 18 72 10z" fill="#e5a400"/><circle cx="34" cy="38" r="6" fill="#e5a400"/><circle cx="48" cy="60" r="4" fill="#e5a400"/><circle cx="28" cy="58" r="3" fill="#e5a400"/>',
 calc:'<rect x="18" y="10" width="60" height="80" rx="12" fill="#7a4fd1"/><rect x="18" y="8" width="60" height="78" rx="12" fill="#a56dff"/>'+
@@ -6701,8 +6734,8 @@ const SITE_URLS={
   planner:{Firebase:'atoll.web.app/',Tinyurl:'tinyurl.com/saxon-planner','Google Script':'script.google.com/macros/s/AKfycbxDk0GrC7XrtoekZdrW4qPsffwxxuG0ujTopOYe5m3rzRPX1GOtbv9-aUtvaXAZlFLW/exec'},
   profegpt:{Firebase:'profegpt.web.app/',Tinyurl:'tinyurl.com/profe-gpt','Google Script':'script.google.com/macros/s/AKfycbzQJSe8rHdR9ZDTmpEfFtOtUaHbirB9jQd0rP8GuOYqA-5MNLCDGZYBfOPirBDVybsObQ/exec'},
   interpres:{Firebase:'interpres.web.app/',Tinyurl:'tinyurl.com/interpres-latin','Google Script':'script.google.com/macros/s/AKfycbyfS0EeA5rlHcOyaDjO88BjaxAes0Zwvsh92wXzPKYgDciVoRuDa2eQXZ_eiJNECofn/exec'},
-  ambicant:{Firebase:'ambicant.web.app/'}};
-const SITE_NAMES={planner:'Saxon Planner',profegpt:'ProfeGPT',interpres:'Interpres',ambicant:'Ambicant'};
+  ambicant:{Firebase:'ambicant.web.app/'},departed:{Firebase:'departed.web.app/'}};
+const SITE_NAMES={planner:'Saxon Planner',profegpt:'ProfeGPT',interpres:'Interpres',ambicant:'Ambicant',departed:'Departed'};
 const ON_GAS=/googleusercontent\.com$/.test(location.hostname);
 /* the game-free build (lectern.web.app): no games anywhere */
 const SAFE=!!window.SX_SAFE;if(SAFE)document.documentElement.classList.add('no-games','sx-safe');
@@ -6710,6 +6743,8 @@ const SITES={};Object.keys(SITE_URLS).forEach(k=>SITES[k]='https:'+SLASH2+SITE_U
 /* old ProfeGPT and Interpres addresses in resources open the current sites */
 const sisU=u=>SX.sisterUrl(u,{profegpt:SITES.profegpt.replace(/\/$/,''),interpres:SITES.interpres.replace(/\/$/,'')});
 function siteLinks(r){(r||document).querySelectorAll('a[data-site]').forEach(a=>{if(SITES[a.dataset.site])a.href=SITES[a.dataset.site];});}
+/* Departed is a game: the game-free build leaves it out of the site menus */
+if(SAFE)document.querySelectorAll('a[data-site="departed"]').forEach(a=>a.remove());
 artFill(document);siteLinks(document);{const sa=document.querySelector('#splash .sp-art');if(sa)sa.innerHTML=heroArt();}
 const LOCAL_ORIGIN='http:'+SLASH2+'localhost:8741';
 /* Schoology screenshots for the iCal link steps (Your Classes and the Guide), redrawn as vector art so they stay sharp at any width */
@@ -7150,6 +7185,7 @@ async function loadData(pre){
     state.settings.pageColors={...(st.pageColors||{})};state.settings.pageFade=!!st.pageFade;['decoOn','sensPics','sensGames','sensTools','footerOff'].forEach(k=>state.settings[k]=!!st[k]);state.settings.pageGrads={...(st.pageGrads||{})};state.settings.noteCols=Array.isArray(st.noteCols)?st.noteCols.slice(0,12):[];
     state.settings.homeView=HV_OPTS.some(([k])=>k===st.homeView)?st.homeView:'pages';state.settings.homePages=Array.isArray(st.homePages)?[...st.homePages]:[];
     state.settings.quickGames=Array.isArray(st.quickGames)?[...st.quickGames]:[];state.settings.homeRes=Array.isArray(st.homeRes)?[...st.homeRes]:[];
+    state.settings.quickLinks=Array.isArray(st.quickLinks)?st.quickLinks.filter(x=>x&&typeof x==='object').map(x=>({n:String(x.n||''),u:String(x.u||'')})).slice(0,4):null;state.settings.dynRes=!!st.dynRes;
     if(fresh.length)saveSettings();
     state.user=d.user||null;
     /* remembered for the next reload, so Home can show at once before the data arrives */
@@ -7269,7 +7305,7 @@ function confetti(x,y){
 }
 async function removeTask(id){try{await api('/api/task/'+encodeURIComponent(id),{method:'DELETE'});}catch(e){console.warn('delete failed',e);}}
 async function saveSettings(){if(!settingsLoaded)return;SX.scrubCourses(COURSES);try{await api('/api/settings',{method:'POST',body:JSON.stringify({colors:state.settings.colors,periods:state.settings.periods,
-  advisoryCourse:state.settings.advisoryCourse||'',courses:COURSES,ical:state.settings.ical||'',fullNames:!!state.settings.fullNames,quickGames:state.settings.quickGames||[],focusMode:!!state.settings.focusMode,pageFade:!!state.settings.pageFade,decoOn:!!state.settings.decoOn,sensPics:!!state.settings.sensPics,sensGames:!!state.settings.sensGames,sensTools:!!state.settings.sensTools,footerOff:!!state.settings.footerOff,pageGrads:state.settings.pageGrads||{},noteCols:state.settings.noteCols||[],pageColors:state.settings.pageColors||{},courseOrder:state.settings.courseOrder||[],homeView:state.settings.homeView||'pages',homePages:state.settings.homePages||[],homeRes:state.settings.homeRes||[],hideGames:!!state.settings.hideGames,hideChat:!!state.settings.hideChat,faqNew:!!state.settings.faqNew,oppStar:state.settings.oppStar||[],oppArch:state.settings.oppArch||[],gamesIntro:!!state.settings.gamesIntro,gameStar:state.settings.gameStar||[],hidePages:state.settings.hidePages||[],tutorialNew:!!state.settings.tutorialNew,rel:state.settings.rel||{},lunch:state.settings.lunch||{},gpa:SX.cleanGpa(state.settings.gpa),gpaYear:SX.cleanGpaYear(state.settings.gpaYear),gpaByYear:!!state.settings.gpaByYear})});}catch(e){console.warn('save failed',e);}}
+  advisoryCourse:state.settings.advisoryCourse||'',courses:COURSES,ical:state.settings.ical||'',fullNames:!!state.settings.fullNames,quickGames:state.settings.quickGames||[],focusMode:!!state.settings.focusMode,pageFade:!!state.settings.pageFade,decoOn:!!state.settings.decoOn,sensPics:!!state.settings.sensPics,sensGames:!!state.settings.sensGames,sensTools:!!state.settings.sensTools,footerOff:!!state.settings.footerOff,pageGrads:state.settings.pageGrads||{},noteCols:state.settings.noteCols||[],pageColors:state.settings.pageColors||{},courseOrder:state.settings.courseOrder||[],homeView:state.settings.homeView||'pages',homePages:state.settings.homePages||[],homeRes:state.settings.homeRes||[],quickLinks:Array.isArray(state.settings.quickLinks)?state.settings.quickLinks:null,dynRes:!!state.settings.dynRes,hideGames:!!state.settings.hideGames,hideChat:!!state.settings.hideChat,faqNew:!!state.settings.faqNew,oppStar:state.settings.oppStar||[],oppArch:state.settings.oppArch||[],gamesIntro:!!state.settings.gamesIntro,gameStar:state.settings.gameStar||[],hidePages:state.settings.hidePages||[],tutorialNew:!!state.settings.tutorialNew,rel:state.settings.rel||{},lunch:state.settings.lunch||{},gpa:SX.cleanGpa(state.settings.gpa),gpaYear:SX.cleanGpaYear(state.settings.gpaYear),gpaByYear:!!state.settings.gpaByYear})});}catch(e){console.warn('save failed',e);}}
 async function saveNote(n){if(STALE.has(n))return;try{await api('/api/advisory',{method:'POST',body:JSON.stringify(n)});}catch(e){console.warn('save failed',e);}}
 /* in-class assignments a week past their date, and sticky notes a week old, are removed by themselves */
 let sweepBusy=false;
@@ -7646,7 +7682,7 @@ function editNote(n,isNew){
   nt.addEventListener('input',()=>noteMark(nt));
   nt._close=close;
   /* picking the note's class keeps it open */
-  const onBlur=ev=>{const to=ev.relatedTarget;if(to&&to.closest&&to.closest('.nsel-dd')&&to.closest('.note')===nt.closest('.note'))return;nt.removeEventListener('blur',onBlur);close(true);};
+  const onBlur=ev=>{const to=ev.relatedTarget;if(to&&to.closest&&to.closest('.nsel-dd,.ncols')&&to.closest('.note')===nt.closest('.note'))return;nt.removeEventListener('blur',onBlur);close(true);};
   nt.addEventListener('blur',onBlur);
   nt.addEventListener('keydown',ev=>{
     if(ev.key==='Enter'&&ev.shiftKey){ev.preventDefault();document.execCommand('insertParagraph');noteMark(nt);}
@@ -7720,9 +7756,26 @@ function ncExtra(n){const id=esc(n.id),cur=ncHex(n.color)?n.color.toLowerCase():
 document.addEventListener('change',e=>{const i=e.target;if(!i.dataset||!i.dataset.ncadd||!rwHas(4))return;
   const n=(state.advisory||[]).find(x=>x.id===i.dataset.ncadd),c=(i.value||'').toLowerCase();if(!n||!ncHex(c))return;
   n.color=c;state.settings.noteCols=[c,...((state.settings.noteCols)||[]).filter(x=>x.toLowerCase()!==c)].slice(0,12);
-  saveSettings();render();saveNote(n);});
+  saveSettings();const ed=ncEditing(n);if(ed){ncPaint(ed.card,n);if(n.text)saveNote(n);ncRefocus(ed.nt);return;}
+  render();saveNote(n);});
+/* a note being written keeps its editor while a colour is picked (an empty new note used to vanish, because the click
+   took the focus and an empty note is dropped when its editor closes): the card is recoloured in place and the
+   caret goes back into the text, as when the class is picked */
+function ncPaint(card,n){
+  card.classList.remove(...[...card.classList].filter(c=>/^nc-/.test(c)));
+  if(NOTE_COLS[n.color])card.classList.add('nc-'+n.color);else if(ncHex(n.color)){card.classList.add('nc-x');card.style.setProperty('--ncx',n.color);}
+  if(!ncHex(n.color))card.style.removeProperty('--ncx');
+  card.querySelectorAll('.ncols [data-ncol]').forEach(x=>x.classList.toggle('on',x.dataset.ncol===n.color));}
+function ncEditing(n){const card=document.querySelector(`.note[data-aid="${CSS.escape(n.id)}"]`),nt=card&&card.querySelector('.nt');
+  return nt&&nt.isContentEditable?{card,nt}:null;}
+function ncRefocus(nt){nt.focus();const r=document.createRange();r.selectNodeContents(nt);r.collapse(false);const s=getSelection();s.removeAllRanges();s.addRange(r);}
+/* the colour buttons never take the focus from a note being written */
+document.addEventListener('mousedown',e=>{const b=e.target.closest&&e.target.closest('button[data-ncol]');if(!b)return;
+  const n=(state.advisory||[]).find(x=>x.id===b.dataset.id);if(n&&ncEditing(n))e.preventDefault();},true);
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-ncol]');if(!b)return;e.preventDefault();e.stopPropagation();
-  const n=(state.advisory||[]).find(x=>x.id===b.dataset.id);if(!n)return;n.color=n.color===b.dataset.ncol?'':b.dataset.ncol;render();saveNote(n);},true);
+  const n=(state.advisory||[]).find(x=>x.id===b.dataset.id);if(!n)return;n.color=n.color===b.dataset.ncol?'':b.dataset.ncol;
+  const ed=ncEditing(n);if(ed){ncPaint(ed.card,n);if(n.text)saveNote(n);ncRefocus(ed.nt);return;}
+  render();saveNote(n);},true);
 function renderAssignments(){
   /* Assignments fills the page; Toggle overdue opens a boxed Overdue column (2/3 and 1/3) and the main list keeps only the rest */
   const td=todayStr(),od=state.asgFilter==='overdue';
@@ -7929,8 +7982,13 @@ function renderResources(){
           :`<button class="res-item" data-act="resopen" data-c="${c.id}" data-id="${esc(it.id)}"><span class="ri-t">${esc(it.title)}</span><span class="ri-s">${esc(it.type==='group'?(it.items||[]).length+' guides':(KIND_LABEL[it.type]||'Reference'))}</span></button>`).join('')}
           ${own(c.id).map(myItemHTML).join('')}</div>
         ${down?'':`<button class="res-add" data-act="resadd" data-c="${c.id}">+ Add resource</button>`}</div>`).join('')}
-    ${orphans.length?`<div class="res-card"><div class="chd"><span class="nm"><span class="cnm">Other</span></span></div><div class="res-list">${orphans.map(myItemHTML).join('')}</div></div>`:''}</div>`;
+    ${orphans.length?`<div class="res-card"><div class="chd"><span class="nm"><span class="cnm">Other</span></span></div><div class="res-list">${orphans.map(myItemHTML).join('')}</div></div>`:''}</div>
+    <div class="res-grid res-dyngrid"><div class="res-card"><label class="res-item res-dyn" title="While one of your classes is in session, Home shows just that class's resources"><span class="ri-t">Dynamic</span><span class="ri-s">Home shows the class in session</span><input type="checkbox" class="hide-cb dynres-cb" id="res-dyn" ${state.settings.dynRes?'checked':''}><span class="hide-box" aria-hidden="true"></span></label></div></div>`;
 }
+/* Dynamic is on Resources and in Edit home: both boxes are the same setting */
+document.addEventListener('change',e=>{if(!e.target.classList||!e.target.classList.contains('dynres-cb')||!state.settings)return;
+  state.settings.dynRes=!!e.target.checked;document.querySelectorAll('.dynres-cb').forEach(x=>{x.checked=state.settings.dynRes;});
+  saveSettings();if(state.view==='home')renderHome();});
 /* ---------- resources people write: per class, documents and links (PDFs too), each private or public ---------- */
 let MYRES=null,LIB=null,libLoading=false;
 const LOCK_ICON='<svg viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>';
@@ -9472,10 +9530,11 @@ const TOOLS=[['phys','Physics Helper','Paste cells from Google Sheets and get a 
   ['clock','Clock','The time, and how long until class ends'],
   ['meditation','Meditation','Calm scenes, breathing and a session timer'],
   ['crashout','Crashout','A squishy doll to knock around'],
-  ['scare','Jumpscare','Is someone there?']];
-/* the game-free build has no Crashout */
-if(SAFE)TOOLS.splice(TOOLS.findIndex(t=>t[0]==='crashout'),1);
-const TOOL_ART={phys:'graph',gpa:'clipboard',soundboard:'speaker',desmos:'calc',clock:'clock',meditation:'star',crashout:'controller',scare:'moon'};
+  ['scare','Jumpscare','Is someone there?'],
+  ['departed','Departed','A daily murder mystery on a train through time']];
+/* the game-free build has no Crashout and no Departed (it opens as a game) */
+if(SAFE)['crashout','departed'].forEach(id=>TOOLS.splice(TOOLS.findIndex(t=>t[0]===id),1));
+const TOOL_ART={phys:'graph',gpa:'clipboard',soundboard:'speaker',desmos:'calc',clock:'clock',meditation:'star',crashout:'controller',scare:'moon',departed:'train'};
 var tlBack=false,tlDz=false;
 /* rewards: the referral tree count (everyone who signed up with your code, and everyone they referred, and so on);
    the owner has every reward */
@@ -9562,7 +9621,7 @@ document.addEventListener('click',e=>{
   if(e.target.closest&&e.target.closest('[data-act-tools]')&&state.user){closeNavMenus();openTools();return;}
   const t=e.target.closest&&e.target.closest('#games [data-tool]');if(!t)return;
   const id=t.dataset.tool;
-  if(id==='soundboard'||id==='meditation'||id==='crashout'){tlBack=true;playGame(id);return;}
+  if(id==='soundboard'||id==='meditation'||id==='crashout'||id==='departed'){tlBack=true;playGame(id);return;}
   closeGames();
   if(id==='desmos'){tlDz=true;openDesmos();return;}
   /* Clock and Jumpscare are pages of their own, opened from here */
@@ -10042,7 +10101,7 @@ function closeDesmos(){const d=document.getElementById('desmos');if(d.hidden)ret
 document.addEventListener('click',e=>{if(e.target.closest('[data-dz-close]'))closeDesmos();});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.getElementById('desmos').hidden){e.stopPropagation();closeDesmos();}},true);
 /* Home: Other websites, quick games and everything below the cards */
-const HM_SITES=[['profegpt','bubble','ProfeGPT'],['interpres','scroll','Interpres'],['ambicant','bulb','Ambicant'],['planner','logo','Planner']];
+const HM_SITES=[['profegpt','bubble','ProfeGPT'],['interpres','scroll','Interpres'],['ambicant','bulb','Ambicant'],['departed','train','Departed'],['planner','logo','Planner']].filter(x=>!(SAFE&&x[0]==='departed'));
 const HM_JUMP=[['advisory','sticky'],['tools','calc'],['resources','books'],['chat','chat'],['games','controller']];
 const HM_ARROW='<svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
 const hmQgOk=x=>!!(x&&!x.hide&&!gameLocked(x)&&!sensHidden(x.id));
@@ -10064,7 +10123,7 @@ function hmMore(el,own,noChat,noGames){
   /* Today: just the two day cards (today framed in its Green or Gold, the next day quieter) and a way to the calendar */
   const di=today.indexOf('<div class="twog dayg">');if(di>=0)today=today.slice(di);
   const fd=isSchoolDay(td)?td:nextSchoolDay(td,true),ft=fd?dayType(fd):null;
-  m.innerHTML=`<section class="hm-sec hm-todaysec"><div class="hm-today${ft?' dt-'+ft:''}">${today}</div>
+  m.innerHTML=qlHTML()+`<section class="hm-sec hm-todaysec"><div class="hm-today${ft?' dt-'+ft:''}">${today}</div>
       <div class="hm-tgo"><button type="button" class="hbtn" data-home-go="calendar">Go to calendar</button></div></section>${state.qaDay?qaHTML():''}`+
     (jump?`<section class="hm-sec hm-jbox"><h2 class="hm-jh">Jump back in</h2><div class="hm-jgrid">${jump}</div></section>`:'');
 }
@@ -10085,6 +10144,43 @@ function hmQgOpen(){
     state.settings.quickGames=cur.slice(0,5);saveSettings();sync();const h=document.getElementById('v-home');if(h)hmQuick(h);});
 }
 function hmQgClose(){const o=document.getElementById('hm-qgp');if(o)o.remove();}
+/* Quick links: up to 4 sites in a row between the top of Home and Today, each player's own (settings.quickLinks,
+   [{n,u}]; null until edited, which shows the defaults). The pencil at the end of the row edits them */
+const QL_MAX=4,QL_DEF=[['Schoology','lms.fcps.edu'],['StudentVUE','sisstudent.fcps.edu/SVUE/PXP2_Login_Student_OVR.aspx?regenerateSessionId=True'],
+  ['Gmail','mail.google.com'],['Google Docs','docs.google.com']].map(([n,u])=>({n,u:'https:'+SLASH2+u}));
+const qlUrl=v=>{v=String(v||'').trim();if(!v)return '';if(!/^[a-z][a-z0-9+.-]*:/i.test(v))v='https:'+SLASH2+v.replace(/^\/+/,'');
+  return /^https?:\/\/[^\s"'<>]+\.[^\s"'<>]+$/i.test(v)&&v.length<=600?v:'';};
+const qlList=()=>{const q=state.settings&&state.settings.quickLinks;return (Array.isArray(q)?q:QL_DEF).filter(x=>x&&x.n&&qlUrl(x.u)).slice(0,QL_MAX);};
+const QL_EXT='<svg class="hm-qlx" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>';
+function qlHTML(){return `<section class="hm-sec hm-qlsec" aria-label="Quick links"><div class="hm-ql">${qlList().map(l=>`<a class="hm-site hm-qlb" href="${esc(qlUrl(l.u))}" target="_blank" rel="noopener"><span>${esc(l.n)}</span>${QL_EXT}</a>`).join('')}`+
+  `<button type="button" class="hm-site hm-qledit" data-act-qledit aria-label="Edit quick links" title="Edit quick links">${PEN_ICON}</button></div></section>`;}
+function qlOpen(){
+  qlClose();hmQgClose();const cur=qlList(),rows=[];for(let i=0;i<QL_MAX;i++)rows.push(cur[i]||{n:'',u:''});
+  const o=document.createElement('div');o.className='qov hm-qgov hm-qlov';o.id='hm-qlp';
+  o.innerHTML=`<div class="qbox hm-qgbox hm-qlbox" role="dialog" aria-modal="true" aria-labelledby="hm-qlh"><div class="faq-top"><div class="qhd" id="hm-qlh">Quick links</div><button class="hbtn faq-x" data-act-qlclose title="Close">×</button></div>
+    <p class="hm-qlnote">Up to ${QL_MAX} links. Leave a row empty to remove it.</p>
+    <div class="hm-qlrows">${rows.map((l,i)=>`<div class="hm-qlrow"><input type="text" class="hm-qln" maxlength="24" placeholder="Name" aria-label="Link ${i+1} name" value="${esc(l.n)}" autocomplete="off"><input type="text" class="hm-qlu" maxlength="600" placeholder="Address" aria-label="Link ${i+1} address" value="${esc(l.u)}" autocomplete="off" spellcheck="false"></div>`).join('')}</div>
+    <div class="hm-qlmsg" role="alert"></div>
+    <div class="hm-qlbtns"><button type="button" class="hbtn" data-act-qldef>Defaults</button><button type="button" class="btn" data-act-qlsave>Save</button></div></div>`;
+  document.body.appendChild(o);
+  o.addEventListener('mousedown',e=>{if(e.target===o)qlClose();});
+  o.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches('input')){e.preventDefault();qlSave();}});
+  const f=o.querySelector('input');if(f)f.focus({preventScroll:true});
+}
+function qlClose(){const o=document.getElementById('hm-qlp');if(o)o.remove();}
+function qlSave(){const o=document.getElementById('hm-qlp');if(!o)return;const out=[];let bad='';
+  o.querySelectorAll('.hm-qlrow').forEach(r=>{const n=r.querySelector('.hm-qln').value.trim().slice(0,24),raw=r.querySelector('.hm-qlu').value.trim(),u=qlUrl(raw);
+    if(!n&&!raw)return;if(!n){bad='Give every link a name.';return;}if(!u){bad='"'+n+'" needs a web address, like docs.google.com';return;}out.push({n,u});});
+  if(bad){o.querySelector('.hm-qlmsg').textContent=bad;return;}
+  state.settings.quickLinks=out.slice(0,QL_MAX);saveSettings();qlClose();if(state.view==='home')renderHome();}
+document.addEventListener('click',e=>{
+  if(e.target.closest('[data-act-qledit]')){qlOpen();return;}
+  if(e.target.closest('[data-act-qlclose]')){qlClose();return;}
+  if(e.target.closest('[data-act-qlsave]')){qlSave();return;}
+  if(e.target.closest('[data-act-qldef]')){const o=document.getElementById('hm-qlp');if(!o)return;
+    o.querySelectorAll('.hm-qlrow').forEach((r,i)=>{const d=QL_DEF[i]||{n:'',u:''};r.querySelector('.hm-qln').value=d.n;r.querySelector('.hm-qlu').value=d.u;});
+    o.querySelector('.hm-qlmsg').textContent='';}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.getElementById('hm-qlp')){e.stopPropagation();qlClose();}},true);
 document.addEventListener('click',e=>{
   if(e.target.closest('[data-act-hmother]')){e.stopPropagation();hmOther();return;}
   if(!e.target.closest('#v-home .hm-ow'))hmOther(false);
@@ -10095,7 +10191,14 @@ document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;if(document.g
 /* what fills the cards area (Appearance: homeView): the page cards, chosen resources, chats, every open assignment or the Notepad */
 const HM_CLOCK=['clock','Clock','The time and the bell schedule'];
 HM_ART.clock=HM_ART.clock||'clock';
-function hmView(noChat){const v=(state.settings&&state.settings.homeView)||'pages';
+/* Resources, Dynamic (settings.dynRes): while one of the player's classes is in session (lunch and passing time don't
+   count) the cards area shows just that class's resources; otherwise Home is as usual. hmDyn is that class's id or '' */
+function hmDyn(){if(!state.user||!state.settings||!state.settings.dynRes||pageHidden('resources'))return '';
+  const k=ckNow();return k&&k.c&&courseById(k.c)?k.c:'';}
+/* Home checks every 30 seconds whether a class started or ended */
+setInterval(()=>{if(state.view!=='home'||!state.settings||!state.settings.dynRes||document.hidden)return;const el=document.getElementById('v-home');
+  if(el&&el.dataset.dyn!==hmDyn())renderHome();},30000);
+function hmView(noChat){if(hmDyn())return 'dynres';const v=(state.settings&&state.settings.homeView)||'pages';
   return ['resources','chat','assignments','notepad'].includes(v)&&!((v==='chat'||v==='notepad')&&noChat)&&!(v==='resources'&&pageHidden('resources'))&&!(v==='assignments'&&pageHidden('assignments'))?v:'pages';}
 let hmResWait=0;
 /* every resource the user can open, by class: built-in ones ('<class>/<id>') and their own or downloaded ones */
@@ -10117,6 +10220,12 @@ function hmMain(el,hv){
   else if(hv==='notepad'){
     if(!m.querySelector('#hm-pad'))m.innerHTML=`<div class="hm-panel hm-padp"><h2 class="hm-ph">${art('notepad')}Notepad</h2><textarea id="hm-pad" aria-label="Notepad" maxlength="20000"></textarea></div>`;
     const ta=m.querySelector('#hm-pad');if(document.activeElement!==ta){const v=padGet();if(ta.value!==v)ta.value=v;}return;}
+  else if(hv==='dynres'){const cid=hmDyn(),c=courseById(cid),all=hmResAll();
+    if(!all){if(!hmResWait){hmResWait=1;const go=()=>{if(RES&&MYRES){hmResWait=0;if(state.view==='home')renderHome();return;}loadResources();setTimeout(go,400);};go();}
+      h=`<div class="hm-panel">${ldHTML()}</div>`;}
+    else{const g=all.find(x=>x.c.id===cid),items=g?g.items:[];
+      h=`<div class="hm-panel hm-dynp"><h2 class="hm-ph">${esc(c?cname(c):'')}<span class="hm-dynn">In class now</span></h2>`+
+        (items.length?`<div class="hm-rgrid">${items.map(hmResCard).join('')}</div>`:`<div class="muted">No resources for this class yet. <button type="button" class="hbtn" data-home-go="resources">Add one</button></div>`)+`</div>`;}}
   else if(hv==='resources'){const all=hmResAll();
     if(!all){if(!hmResWait){hmResWait=1;const go=()=>{if(RES&&MYRES){hmResWait=0;if(state.view==='home')renderHome();return;}loadResources();setTimeout(go,400);};go();}
       h=`<div class="hm-panel">${ldHTML()}</div>`;}
@@ -10157,7 +10266,8 @@ function renderHome(fly){
   const own=!!(state.user&&state.user.owner),noChat=!!(state.user&&state.settings&&state.settings.hideChat);
   const noGames=SAFE||!!(state.user&&state.settings&&state.settings.hideGames);
   const hv=hmView(noChat),pages=hmShown();
-  const sig=(hv==='pages'?pages.map(p=>p[0]).join():'')+'|'+hv;
+  const dyn=hmDyn();el.dataset.dyn=dyn;
+  const sig=(hv==='pages'?pages.map(p=>p[0]).join():'')+'|'+hv+'|'+dyn;
   const held=homeHold||document.documentElement.classList.contains('splash-on');
   if(el.dataset.sig!==sig){
     el.dataset.sig=sig;
@@ -10565,9 +10675,10 @@ function apHomeHTML(hv){const nOn=hmShown().length;return `<div class="ap-hv">${
       <div class="ap-hide ap-hp"${hv==='pages'?'':' hidden'}><div class="ap-hpn">Up to ${HM_MAX} pages (${nOn} chosen)</div>${hpPages().map(([k,n])=>{const on=hpOn(k),off=!on&&nOn>=HM_MAX;return `<label class="hide-it${off?' hp-off':''}"><span>${n}</span><input type="checkbox" class="hide-cb" data-ap-hp="${k}" ${on?'checked':''}${off?' disabled':''}><span class="hide-box" aria-hidden="true"></span></label>`;}).join('')}</div>`;}
 function hmEditOpen(){
   if(!state.user)return;hmQgClose();
-  const o=document.createElement('div');o.className='qov hm-qgov';o.id='hm-qgp';
+  const o=document.createElement('div');o.className='qov hm-qgov hm-edov';o.id='hm-qgp';
   o.innerHTML=`<div class="qbox hm-qgbox hm-edbox" role="dialog" aria-modal="true" aria-labelledby="hm-qgh"><div class="faq-top"><div class="qhd" id="hm-qgh">Home</div><button class="hbtn faq-x" data-act-qgclose title="Close">×</button></div>
-    ${apHomeHTML(state.settings.homeView||'pages')}</div>`;
+    ${apHomeHTML(state.settings.homeView||'pages')}
+    <div class="ap-hide hm-eddyn"><div class="ap-hpn">While one of your classes is in session, Home shows just that class's resources</div><label class="hide-it"><span>Dynamic resources</span><input type="checkbox" class="hide-cb dynres-cb" ${state.settings.dynRes?'checked':''}><span class="hide-box" aria-hidden="true"></span></label></div></div>`;
   document.body.appendChild(o);hpCap(o);
   o.addEventListener('mousedown',e=>{if(e.target===o)hmQgClose();});
 }
@@ -10828,11 +10939,18 @@ function ckSlots(ds){
     const c=COURSES.find(x=>state.settings.periods[x.id]==p);let name='Period '+p,col='var(--faint)';
     if(c){name=cname(c);col=color(c.id);}
     else if(p===4){const ac=courseById(state.settings.advisoryCourse);name='Advisory'+(ac?': '+cname(ac):'');col=ac?color(ac.id):'#888';}
-    const[s,e]=ckSpan(times[p]);out.push({p,name,col,s,e});
-    if(!early&&(p===5||p===6)&&lunch[p]&&LUNCH_TIMES[lunch[p]]){const[ls,le]=ckSpan(LUNCH_TIMES[lunch[p]]);out.push({lunch:1,p,s:ls,e:le});}
+    /* lunch is not part of the class: periods 5 and 6 are split around it (D lunch runs past the bell, so the class
+       ends when lunch starts). Each piece knows the whole class's parts, for the time left and the bar */
+    const[s,e]=ckSpan(times[p]),L=!early&&(p===5||p===6)&&lunch[p]&&LUNCH_TIMES[lunch[p]]?ckSpan(LUNCH_TIMES[lunch[p]]):null;
+    const parts=(L?[[s,Math.min(e,L[0])],[Math.max(s,L[1]),e]]:[[s,e]]).filter(([a,b])=>b>a);
+    parts.forEach(([a,b])=>out.push({p,name,col,c:c?c.id:'',s:a,e:b,parts}));
+    if(L)out.push({lunch:1,p,s:L[0],e:L[1]});
   });
   if(early&&out.length){const last=out[out.length-1];out.push({lunch:1,p:last.p,s:ckMin('12:35'),e:ckMin('12:55')});}
-  return out;}
+  return out.sort((a,b)=>a.s-b.s||(a.lunch?1:0)-(b.lunch?1:0));}
+/* the class in session right now (never during lunch or passing time): its slot, or null */
+function ckNow(now){now=now||new Date();const slots=ckSlots(todayStr());if(!slots)return null;const m=now.getHours()*60+now.getMinutes()+now.getSeconds()/60;
+  return slots.find(x=>!x.lunch&&m>=x.s&&m<x.e)||null;}
 function ckDur(min){const n=Math.max(1,Math.ceil(min));const h=Math.floor(n/60),m=n%60;
   const mm=m+(m===1?' minute':' minutes');return h?h+(h===1?' hour':' hours')+(m?' '+mm:''):mm;}
 function ckStatus(now){
@@ -10841,7 +10959,9 @@ function ckStatus(now){
   const L=slots.find(x=>x.lunch&&m>=x.s&&m<x.e);
   if(L)return{name:'Lunch',col:'var(--gold)',text:'Lunch ends in '+ckDur(L.e-m),pct:(m-L.s)/(L.e-L.s)};
   const cls=slots.filter(x=>!x.lunch),cur=cls.find(x=>m>=x.s&&m<x.e);
-  if(cur)return{name:cur.name,col:cur.col,text:cur.name+' ends in '+ckDur(cur.e-m),pct:(m-cur.s)/(cur.e-cur.s)};
+  if(cur){const ps=cur.parts||[[cur.s,cur.e]],tot=ps.reduce((n,[a,b])=>n+b-a,0),done=ps.reduce((n,[a,b])=>n+Math.min(b-a,Math.max(0,m-a)),0);
+    const more=ps.some(([a])=>a>cur.s);
+    return{name:cur.name,col:cur.col,text:more?'Lunch starts in '+ckDur(cur.e-m):cur.name+' ends in '+ckDur(cur.e-m),pct:tot?done/tot:0};}
   const nx=cls.find(x=>x.s>m);
   if(nx&&(m>=cls[0].s||nx.s-m<=60))return{name:nx.name,col:nx.col,text:'Period '+nx.p+' starts in '+ckDur(nx.s-m)};
   return{text:'No class right now'};}
@@ -10946,7 +11066,7 @@ function render(){
   const isOwn=!!(state.user&&state.user.owner);
   document.querySelectorAll('[data-v="tasks"]').forEach(b=>{if(b.hidden===isOwn)b.hidden=!isOwn;});
   if(state.view==='tasks'&&!isOwn)state.view='calendar';
-  {const on=!!(state.user&&(state.user.owner||isGameAdmin()));document.querySelectorAll('[data-act-dash]').forEach(b=>{if(b.hidden===on)b.hidden=!on;});}
+  {const on=!!(state.user&&state.user.owner);document.querySelectorAll('[data-act-dash]').forEach(b=>{if(b.hidden===on)b.hidden=!on;});}
   const v=state.setup&&state.user?'setup':state.view;
   const homeEl=document.getElementById('v-home'),wasHome=!!(homeEl&&homeEl.classList.contains('on'));
   pgTabs(v);
@@ -12121,11 +12241,13 @@ function trackSend(){
 }
 setInterval(()=>{if(Date.now()-TRK.last>=10*60*1000)trackSend();},60*1000);
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&Date.now()-TRK.last>=60*1000)trackSend();});
-/* ---------- Dashboard (administrators): how many accounts there are and how many signed in lately ---------- */
+/* ---------- Dashboard (the owner only): how many accounts there are and how many signed in lately ---------- */
 let DB=null,dbTimer=0,dbFresh=false;
 /* the last copy shows at once (marked as not yet updated), then the server's numbers replace it; while the Dashboard is
    open it asks again every minute so new sign-ups and visits show up without reopening it */
 async function openDash(){
+  /* the owner's alone (the server refuses everyone else too) */
+  if(!(state.user&&state.user.owner))return;
   const d=document.getElementById('dash');closeNavMenus();d.hidden=false;
   const c=pcGet('dash');DB=c?c.d:null;dbFresh=false;dashPaint();
   clearInterval(dbTimer);dbTimer=setInterval(()=>{if(d.hidden){clearInterval(dbTimer);return;}if(document.visibilityState==='visible')dashLoad();},60000);
@@ -12829,11 +12951,15 @@ function gmLearn(f){const st=f&&f._gr;if(!st||!st.t0)return;const id=f.title,el=
   const known=GAME_BYTES[id]||0;if(st.bytes>=(known||1e6)*.8){const B=lsJSON('sx-gbytes');B[id]=Math.round(((B[id]||st.bytes)+st.bytes)/2);lsPut('sx-gbytes',B);}}
 /* Torah Runner's titles: black, "NicholiVirus presents...", then the name in the game's own font (Suez One), then the
    game fades in. They replace the loading screen, can't be skipped and last 5 seconds at most once the game is ready */
-const TR_INTRO='<div class="gm-load tr-intro"><p class="tr-by">NicholiVirus presents...</p><p class="tr-name">Torah Runner</p></div>';
-let trFont=null;
-function trIntro(g){
-  if(!trFont){const l=document.createElement('link');l.rel='stylesheet';l.href='https:'+SLASH2+'cdn.jsdelivr.net/npm/@fontsource/suez-one@5.1.0/400.css';document.head.appendChild(l);
-    trFont=new Promise(r=>{l.onload=()=>{document.fonts.load('400 40px "Suez One"').then(r,r);};l.onerror=r;});}
+/* Nicholi's games open on the same titles; Pakistan Runner's name is set in the game's own bold sans */
+const NV_INTRO={torahrunner:{name:'Torah Runner',font:'suez-one@5.1.0/400',face:'400 40px "Suez One"'},pakistanrunner:{name:'Pakistan Runner',cls:'pr'}};
+const trIntroHtml=id=>`<div class="gm-load tr-intro${NV_INTRO[id].cls?' '+NV_INTRO[id].cls:''}"><p class="tr-by">NicholiVirus presents...</p><p class="tr-name">${NV_INTRO[id].name}</p></div>`;
+const trFonts={};
+function trIntro(g,id){
+  const nv=NV_INTRO[id]||NV_INTRO.torahrunner;
+  if(nv.font&&!trFonts[id]){const l=document.createElement('link');l.rel='stylesheet';l.href='https:'+SLASH2+'cdn.jsdelivr.net/npm/@fontsource/'+nv.font+'.css';document.head.appendChild(l);
+    trFonts[id]=new Promise(r=>{l.onload=()=>{document.fonts.load(nv.face).then(r,r);};l.onerror=r;});}
+  const trFont=trFonts[id]||Promise.resolve();
   const el=g.querySelector('.tr-intro');if(!el)return;el._at=Date.now()+500;
   Promise.race([trFont,new Promise(r=>setTimeout(r,500))]).then(()=>{el._at=Date.now();el.classList.add('go');});
 }
@@ -12847,9 +12973,9 @@ function playGame(id){if(SAFE)return;
   roomLeaveAll();g._t0=Date.now();
   /* a loading screen covers the frame until the game has started */
   /* Torah Runner opens on its own titles instead of the loading screen (trIntro) */
-  g.innerHTML=(id==='torahrunner'?TR_INTRO:`<div class="gm-load">${bookFlip('gm-llogo')}<div class="gm-lname">${esc((gm?gm.name:id).toLowerCase())}</div><div class="gm-barw"><div class="gm-bar"><i></i></div><div class="gm-lsub">${esc(loadTip())}</div></div></div>`)+`
+  g.innerHTML=(NV_INTRO[id]?trIntroHtml(id):`<div class="gm-load">${bookFlip('gm-llogo')}<div class="gm-lname">${esc((gm?gm.name:id).toLowerCase())}</div><div class="gm-barw"><div class="gm-bar"><i></i></div><div class="gm-lsub">${esc(loadTip())}</div></div></div>`)+`
     <iframe class="gm-frame" allow="fullscreen; gamepad; autoplay" title="${esc(id)}"></iframe>${gm&&!gm.labels.includes('Embed')?'<button class="gm-side" data-gm-side aria-label="Games" title="Games"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>':''}`;
-  if(id==='torahrunner')trIntro(g);
+  if(NV_INTRO[id])trIntro(g,id);
   loadGame(id).then(src=>{const f=g.querySelector('.gm-frame');if(!f)return;
     f.addEventListener('load',()=>{const st=f._gr;st.loaded=true;gmStage(f,'frame');st.t8=setTimeout(()=>{st.late=true;if(st.mode!=='wait'&&!st.asked)gmReveal(f);else gmCheck(f);},8000);st.t20=setTimeout(()=>{if(!st.asked)gmReveal(f);},20000);gmCheck(f);try{watchErrors(f.contentWindow,'game:'+id);f.contentWindow.document.addEventListener('keydown',gamesKey);frameMenus(f);f.contentWindow.focus();}catch(e){reportErr('game-load',e&&e.stack||e);}},{once:true});
     /* testing mode: window.SX_TEST tells the game to start maxed out and not save (lander also gets its TEST_MODE: J skips to the next body) */
@@ -13363,7 +13489,7 @@ XDD_ON.note=(w,v)=>{
   render();saveNote(n);
 };
 document.addEventListener('focusout',e=>{
-  const w=e.target.closest&&e.target.closest('.nsel-dd');if(!w)return;
+  const w=e.target.closest&&e.target.closest('.nsel-dd,.note .ncols');if(!w)return;
   const to=e.relatedTarget;if(to&&w.contains(to))return;
   const card=w.closest('.note'),nt=card&&card.querySelector('.nt');
   if(nt&&nt.isContentEditable&&nt._close&&to!==nt)setTimeout(()=>{if(document.activeElement!==nt&&!w.contains(document.activeElement)&&nt.isContentEditable)nt._close(true);},0);
