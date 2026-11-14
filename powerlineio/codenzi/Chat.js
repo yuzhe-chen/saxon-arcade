@@ -161,7 +161,7 @@ var Chat = function () {
                     e.preventDefault(); break; 
 
                 case 13: // Focus
-                    if (!(UIVisible && isStatsVisible)) {
+                    if (!(UIVisible && $('#statsPanel').is(":visible"))) {
                         if (document.activeElement == chatInput) {
                             chatInput.blur();
                             break
