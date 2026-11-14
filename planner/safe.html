@@ -3418,6 +3418,12 @@ html #v-home .hm-btn.hm-hl,html.pg2 #v-home .hm-btn.hm-hl{background:var(--gold-
 #games .gm-tile:is([data-game="lander"],[data-game="metrica"],[data-game-locked="metrica"]) img{aspect-ratio:auto;height:0;flex:1 1 auto;min-height:220px}
 /* the Krillion picture is wider than its tile: keep the title block in the middle so all of its text shows */
 #games .gm-plain .gm-big{min-height:120px}
+/* Featured and Most played: a 2x2 tile each at the front of the grid, with a small label */
+#games .gm-feat{grid-column:span 2;grid-row:span 2}
+#games .gm-feat img{flex:1 1 auto;aspect-ratio:auto;height:0;min-height:0}
+#games .gm-feat.gm-plain .gm-big{flex:1;font-size:clamp(28px,4vw,46px);min-height:0}
+#games .gm-feat .gm-foot b{font-size:20px}
+#games .gm-flag{position:absolute;left:10px;top:10px;z-index:2;padding:4px 9px;border-radius:999px;background:var(--blue);color:#fff;font:800 10.5px/1.2 var(--font-ui);letter-spacing:.6px;text-transform:uppercase;pointer-events:none}
 :root{--wrap-pt:32px}
 @media (max-width:820px){:root{--wrap-pt:20px}}
 .rdoc .pr-filter .hbtn:not(.on){background:var(--bg)}
@@ -14746,8 +14752,31 @@ function gmFilterQ(){
 }
 document.addEventListener('input',e=>{if(e.target.id==='gm-q'){gmQ=e.target.value;gmFilterQ();}});
 document.addEventListener('keydown',e=>{if(e.target.id==='gm-q'&&e.key==='Escape'&&e.target.value){e.preventDefault();e.stopPropagation();e.target.value='';gmQ='';gmFilterQ();}},true);
+/* Featured (one pick a day, the day turning over at midnight Eastern) and Most played (the game opened most, from everyone's usage counts),
+   each a 2x2 tile with a small label at the front of the grid */
+let GSTAT=null,gstatAsked=false;
+function gmStatsLoad(){
+  if(gstatAsked||!GS)return;gstatAsked=true;
+  try{const c=JSON.parse(sessionStorage.getItem('sx-gstat')||'null');if(c&&Date.now()-c.t<1800000&&Array.isArray(c.top)){GSTAT=c.top;return;}}catch(_){}
+  gsCall('rpcGameStats',passKey||'').then(o=>{GSTAT=(o&&o.top)||[];try{sessionStorage.setItem('sx-gstat',JSON.stringify({t:Date.now(),top:GSTAT}));}catch(_){}
+    const g=document.getElementById('games');if(g&&!g.hidden&&g.querySelector('.gm-pick'))gmRenderPick();}).catch(()=>{});
+}
+function gmFeatured(list){
+  const key=new Date().toLocaleDateString('en-CA',{timeZone:'America/New_York'});let n=0;for(const c of key)n=(n*31+c.charCodeAt(0))>>>0;
+  let pool=list.filter(x=>!gameLocked(x)&&GAME_THUMB[x.id]);if(!pool.length)pool=list.filter(x=>!gameLocked(x));
+  return pool.length?pool[n%pool.length]:null;
+}
+function gmFeatTiles(list,tile){
+  const f=gmFeatured(list),out=[];
+  const big=(x,label)=>tile(x).replace('class="gm-tile','class="gm-tile gm-feat').replace(/<\/button>$/,`<span class="gm-flag">${label}</span></button>`);
+  if(f)out.push(big(f,'Featured'));
+  const top=(GSTAT||[]).map(r=>list.find(x=>x.id===r.id)).find(x=>x&&(!f||x.id!==f.id));
+  if(top)out.push(big(top,'Most played'));
+  return out.join('');
+}
 function gmRenderPick(){
   const g=document.getElementById('games'),pick=g.querySelector('.gm-pick');if(!pick)return;
+  gmStatsLoad();
   const tile=x=>{const tags=`<span class="gm-tags">${x.labels.map(l=>`<i data-l="${esc(l)}">${esc(l)}</i>`).join('')}</span>`;
     const lk=gameLocked(x),cls=lk?' gm-locked':'',dat=lk?`data-game-locked="${x.id}" aria-label="${esc(x.name)}, locked"`:`data-game="${x.id}"`,
       li=lk?`<span class="gm-li">${art('lock')}</span>`:'';
@@ -14757,7 +14786,7 @@ function gmRenderPick(){
   const list=GAMES.filter(x=>!x.hide&&!sensHidden(x.id));
   pick.innerHTML=`<div class="gm-head"><h1 class="gm-h"><span>games</span></h1>
     <button class="gm-x" data-act-gclose aria-label="Close" title="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
-    <section class="gm-sec" data-sec="all">${list.some(gameLocked)?gmLockPanel():''}<input type="text" id="gm-q" readonly data-noauto class="gm-q" placeholder="Search games" aria-label="Search games" autocomplete="off" spellcheck="false" value="${esc(gmQ)}"><div class="gm-grid"><button class="gm-tile gm-add" data-gm-sugg aria-label="Suggest a game" title="Suggest a game"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>${gmSorted(list).map(x=>tile(x).replace(/^<button[^>]*>/,m=>m+gmStar(x))).join('')}</div></section>${gmUnlocked()||SENS_GAMES.length?`<div class="gm-endbar">${gmUnlocked()?'<button class="kbtn" data-gm-replay>Play animation again</button>':''}${SENS_GAMES.length?`<button class="kbtn" data-gm-sens>${state.settings.sensGames?'Hide sensitive games':'Show sensitive games'}</button>`:''}</div>`:''}`;
+    <section class="gm-sec" data-sec="all">${list.some(gameLocked)?gmLockPanel():''}<input type="text" id="gm-q" readonly data-noauto class="gm-q" placeholder="Search games" aria-label="Search games" autocomplete="off" spellcheck="false" value="${esc(gmQ)}"><div class="gm-grid">${gmFeatTiles(list,tile)}<button class="gm-tile gm-add" data-gm-sugg aria-label="Suggest a game" title="Suggest a game"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>${gmSorted(list).map(x=>tile(x).replace(/^<button[^>]*>/,m=>m+gmStar(x))).join('')}</div></section>${gmUnlocked()||SENS_GAMES.length?`<div class="gm-endbar">${gmUnlocked()?'<button class="kbtn" data-gm-replay>Play animation again</button>':''}${SENS_GAMES.length?`<button class="kbtn" data-gm-sens>${state.settings.sensGames?'Hide sensitive games':'Show sensitive games'}</button>`:''}</div>`:''}`;
   gmFilterQ();
   /* the first time an account sees its games unlocked by a referral, the lock bursts open */
   if(gmUnlocked()&&state.user.referred>0&&!state.settings.unlockSeen){state.settings.unlockSeen=true;saveSettings();setTimeout(gmUnlockAnim,350);}
