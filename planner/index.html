@@ -4268,7 +4268,7 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
 <h3>Tools</h3>
 <p>Tools, in the top bar, is a screen of tools. The menu bar hides while one fills the screen; the arrow on the left edge brings you back.</p>
 <ul>
-<li><b>Physics Helper</b>: paste cells copied from Google Sheets, type a unit over any column and it is added after every number in that column. Pick the font and size (6 to 48 on the slider, or 4 to 96 typed), Black, Gray or No borders, Centered, Left or Right alignment, Bold top row and Full width (Times New Roman 12 with black borders to start), then press <b>Copy table</b> and paste into Google Docs. The <b>Equation</b> box types like Desmos: Copy equation gives LaTeX for Docs, Copy as text gives plain text like v₀², and there is an on-screen keyboard. The document icon opens a sidebar of every resource for your Physics class.</li>
+<li><b>Table Formatter</b>: paste cells copied from Google Sheets, type a unit over any column and it is added after every number in that column. Pick the font and size (6 to 48 on the slider, or 4 to 96 typed), Black, Gray or No borders, Centered, Left or Right alignment, Bold top row and Full width (Times New Roman 12 with black borders to start), then press <b>Copy table</b> and paste into Google Docs. The <b>Equation</b> box types like Desmos: Copy equation gives LaTeX for Docs, Copy as text gives plain text like v₀², and there is an on-screen keyboard. The document icon opens a sidebar of every resource for your Physics class.</li>
 <li><b>GPA Calculator</b>: list every class you have taken with its level, credit and letter grade; Honors adds 0.5 and AP, AV, DE and IB add 1, as FCPS does. <b>Add my classes</b> fills in your current classes. The options button next to the grade holds the credit (1 or 0.5), <b>Expunge</b> (leaves a class out) and <b>Pass/Fail</b> (leaves it out unless the grade is F). The totals show Weighted GPA, Unweighted and Credits counted. <b>Add by year</b> sorts classes into Middle school and 9th to 12th grade with a Current year picker and a Subject for each row; rows can be dragged between years. Classes after your current year are prospective (enter the grade you expect) and add a Projected weighted GPA, and the Standard and Advanced Studies diploma credits show below as Fulfilled, On track or Not yet.</li>
 <li><b>Soundboard</b>: sound effects at the press of a button.</li>
 <li><b>Desmos</b>: the Desmos graphing calculator.</li>
@@ -4788,7 +4788,7 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
     </article>
 
     <div class="lp-cards">
-      <div class="lp-card" style="--lp-c:var(--blue)"><i data-art="calc"></i><h3>Tools</h3><p>A GPA calculator that weights classes the FCPS way, Desmos, a clock that counts down the period, a physics table helper and a breathing timer for study breaks.</p></div>
+      <div class="lp-card" style="--lp-c:var(--blue)"><i data-art="calc"></i><h3>Tools</h3><p>A GPA calculator that weights classes the FCPS way, Desmos, a clock that counts down the period, a table formatter and a breathing timer for study breaks.</p></div>
       <div class="lp-card" style="--lp-c:var(--green)"><i data-art="chat"></i><h3>Chat</h3><p>Message friends one on one, or start a group of up to 20. Only people on your friends list can message you directly.</p></div>
       <div class="lp-card" style="--lp-c:var(--orange)"><i data-art="trophy"></i><h3>Rewards</h3><p>Share your link. Each person who signs up with it moves you up a rank and unlocks something new, like custom page colors, colored notes and Crown avatars.</p></div>
     </div>
@@ -10794,7 +10794,7 @@ document.addEventListener('click',e=>{
     gpaRedraw();gpaSave();return;}
 });
 /* the tools screen: like the games screen, one box per tool with a title and a short description */
-const TOOLS=[['phys','Physics Helper','Paste cells from Google Sheets and get a Google Docs table with units'],
+const TOOLS=[['phys','Table Formatter','Paste cells from Google Sheets and get a Google Docs table with units'],
   ['gpa','GPA Calculator','Weighted and unweighted GPA from every class you have taken'],
   ['soundboard','Soundboard','Sound effects at the press of a button'],
   ['desmos','Desmos','The Desmos graphing calculator'],
@@ -10914,7 +10914,7 @@ document.addEventListener('keydown',e=>{const t=e.target;if(e.key!=='Enter'||!t.
   if(k>=0&&k<ns.length-1){ns[k+1].focus();return;}
   const rows=gpaRows();if(!t.value.trim()||rows.length>=120)return;
   const y=(gpaRows()[gpaIdx(t)]||{}).y;t.blur();rows.push(gpaNew(y));gpaRedraw(rows.length-1);});
-/* ---------- Physics Helper sidebar: links to every Physics resource (they open on the Resources page), like the Tasks
+/* ---------- Table Formatter sidebar: links to every Physics resource (they open on the Resources page), like the Tasks
    sidebar; open or closed is remembered on this device (on a phone it covers the page and starts closed) ---------- */
 let tlSideOn=false,tlSideM=false;try{tlSideOn=localStorage.getItem('sx-tlside')==='1';}catch(_){}
 const tlSideShown=()=>oppPhone()?tlSideM:tlSideOn;
@@ -10933,7 +10933,7 @@ function tlSideList(){
   return out.length?out.join(''):'<div class="tl-snone">Nothing yet</div>';
 }
 function tlSideHTML(){const on=tlSideShown();
-  return `<nav class="opp-side tl-side" id="tl-side" aria-label="Physics resources"${on?'':' hidden'}><div class="opp-sh">Physics resources</div><div id="tl-slist" class="tl-slist">${tlSideList()}</div></nav><div class="opp-scrim tl-scrim" data-tlside aria-hidden="true"${on&&oppPhone()?'':' hidden'}></div>`;}
+  return `<nav class="opp-side tl-side" id="tl-side" aria-label="Class resources"${on?'':' hidden'}><div class="opp-sh">Class resources</div><div id="tl-slist" class="tl-slist">${tlSideList()}</div></nav><div class="opp-scrim tl-scrim" data-tlside aria-hidden="true"${on&&oppPhone()?'':' hidden'}></div>`;}
 function tlSide(on){
   if(oppPhone())tlSideM=on;else{tlSideOn=on;try{localStorage.setItem('sx-tlside',on?'1':'0');}catch(_){}}
   const s=document.getElementById('tl-side'),sc=document.querySelector('.tl-scrim'),b=document.querySelector('.tl-sidebtn');
@@ -11022,9 +11022,9 @@ function renderTools(){
     if(tab==='gpa'&&el._gpa!==gpaRows()&&!GPA_DIRTY&&!el.contains(document.activeElement)){el._gpa=gpaRows();gpaRedraw();}
     return;}
   el.dataset.tab=tab;
-  const sb=tab==='phys'?`<button type="button" class="hbtn hb-box opp-sidebtn tl-sidebtn${tlSideShown()?' on':''}" data-tlside aria-controls="tl-side" aria-expanded="${tlSideShown()}" aria-label="Physics resources" title="Physics resources">${TL_DOC_ICON}</button>`:'';
+  const sb=tab==='phys'?`<button type="button" class="hbtn hb-box opp-sidebtn tl-sidebtn${tlSideShown()?' on':''}" data-tlside aria-controls="tl-side" aria-expanded="${tlSideShown()}" aria-label="Class resources" title="Class resources">${TL_DOC_ICON}</button>`:'';
   el.innerHTML=`<div class="tl-root${tab==='phys'?' wide':''}"><div class="cal-head tl-top" style="justify-content:flex-start">${sb}<button class="hbtn" data-tlback>Tools</button>
-      <span class="tl-title">${tab==='phys'?'Physics Helper':tab==='timer'?'Timer':'GPA Calculator'}</span></div>
+      <span class="tl-title">${tab==='phys'?'Table Formatter':tab==='timer'?'Timer':'GPA Calculator'}</span></div>
     ${tab==='phys'?`<div class="tl-body">${tlSideHTML()}<div class="tl-main">${tlPhysicsHTML()}${tlEqHTML()}</div></div>`:tab==='timer'?tmHTML():gpaHTML()}</div>`;
   if(tab==='phys'){tlPaint();tlEqInit();}else if(tab==='timer')tmPaint();else{el._gpa=gpaRows();gpaSum();}
 }
