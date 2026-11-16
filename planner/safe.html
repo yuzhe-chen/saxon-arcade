@@ -12090,11 +12090,13 @@ document.addEventListener('click',e=>{if(!SAFE&&e.target.closest('[data-nonet]')
   /* never at the start: not while signing in (splash), not over "loading data" on a reload, and not in the first 15 s of the page */
   const vis=e=>!!(e&&!e.hidden&&e.getClientRects().length);
   const booting=()=>performance.now()<15000||vis(document.getElementById('splash'))||vis(document.getElementById('dataload'))||!!(state.user&&!settingsLoaded);
-  const busy=()=>booting()?null:[...document.querySelectorAll('#games .gm-load:not(.done):not(.tr-intro),.res-load')].find(e=>e.getClientRects().length);
+  /* a game that is showing but still black: its files keep arriving, or Unity's own figure is under 1 */
+  const blackFrame=()=>{const f=document.querySelector('#games .gm-frame'),st=f&&f._gr;return st&&st.shown&&st.mode==='embed'&&f.getClientRects().length&&((Date.now()-(st.lastB||0)<3000)||(st.unity>0&&st.unity<1))?f:null;};
+  const busy=()=>booting()?null:([...document.querySelectorAll('#games .gm-load:not(.done):not(.tr-intro),.res-load')].find(e=>e.getClientRects().length)||blackFrame());
   setInterval(()=>{if(!window.BookRun)return;const el=busy();
     if(el){if(!since)since=Date.now();
       if(!mine&&!skip&&!BookRun.isOpen()&&Date.now()-since>=5000){
-        const n=el.querySelector('.gm-lname'),label=n?n.textContent.replace(/\b\w/g,m=>m.toUpperCase()):'this page';
+        const n=el.querySelector('.gm-lname'),gmn=el.tagName==='IFRAME'?(GAMES.find(x=>x.id===el.title)||{}).name:'',label=n?n.textContent.replace(/\b\w/g,m=>m.toUpperCase()):(gmn||'this page');
         const secs=lsJSON('sx-loadsecs'),f0=document.querySelector('#games .gm-frame'),known=f0&&f0._gr&&f0._gr.frac;
         mine=true;cur=label;BookRun.offer({mode:'loading',label,expect:secs[label]||(n?10:8),progress:known||null,onClose:()=>{mine=false;skip=true;const f=document.querySelector('#games .gm-frame');if(f)try{f.focus();}catch(_){}}});}}
     else{if(since&&cur){const secs=lsJSON('sx-loadsecs'),s=(Date.now()-since)/1000;secs[cur]=secs[cur]?Math.round((secs[cur]+s)*5)/10:Math.round(s*10)/10;lsPut('sx-loadsecs',secs);cur='';}
@@ -14095,7 +14097,7 @@ async function loadGame(id){
    kept under id|hash and used only when the page asks for that same hash. A fetched file is stored only when its own
    hash matches what the page expects, so an updated game is never served from an old copy. Up to GF_KEEP characters
    in all, the least recently opened go first. Without IndexedDB or a stamp it simply fetches, as before */
-const GAME_VER={"lander":"1684804b21","pipworks":"79e1238ce5","solitaire":"8c505f28ec","geohunter":"c8e9d2ecce","chess":"5c078efb55","gartic":"6f22b9c960","guessbuild":"ec4193b106","imposter":"2c7f34720b","poker":"6c5dc0b563","soundboard":"e07aefc27d","capitalist":"73fea6408d","tinyfishing":"708c08b431","krillion":"e0d5f87312","geodash":"f1196aa413","appel":"80dd5f0087","metrica-wave":"c3df75a336","voteout":"7f793110c6","getaway":"9dda126d83","tag":"8bc7736018","crossyroad":"da8570d413","drivemad":"127bf09cfc","gladihoppers":"87d1b808b0","monkeymart":"4ce25762a3","ovo":"f564966222","stickmanhook":"a5c495f4f5","paperio":"8198023f59","smashkarts":"806875291a","yohoho":"24208763a5","basketballrandom":"175bedac55","houseofhazards":"7b313f0931","snake":"26db80bd41","torahrunner":"118d7d3a3d","pakistanrunner":"4a386dfc67","departed":"a354fdc1d9","retrobowl":"d7ddcc1688","subwaysurfers":"c332af6b02","tunnelrush":"dec240f546","driftboss":"71fad4f513","fnae":"9844ce377d","meditation":"56847adf1b","crashout":"59eaa18662","snowrider":"a692396710","retrobowlcollege":"c5d7abf6a6","powerlineio":"a874292b22"};
+const GAME_VER={"lander":"1684804b21","pipworks":"79e1238ce5","solitaire":"8c505f28ec","geohunter":"c8e9d2ecce","chess":"5c078efb55","gartic":"6f22b9c960","guessbuild":"ec4193b106","imposter":"2c7f34720b","poker":"6c5dc0b563","soundboard":"e07aefc27d","capitalist":"73fea6408d","tinyfishing":"708c08b431","krillion":"e0d5f87312","geodash":"f1196aa413","appel":"80dd5f0087","metrica-wave":"c3df75a336","voteout":"7f793110c6","getaway":"9dda126d83","tag":"8bc7736018","crossyroad":"da8570d413","drivemad":"127bf09cfc","gladihoppers":"87d1b808b0","monkeymart":"4ce25762a3","ovo":"f564966222","stickmanhook":"a5c495f4f5","paperio":"8198023f59","smashkarts":"806875291a","yohoho":"24208763a5","basketballrandom":"175bedac55","houseofhazards":"7b313f0931","snake":"26db80bd41","torahrunner":"118d7d3a3d","pakistanrunner":"4a386dfc67","departed":"a354fdc1d9","retrobowl":"d7ddcc1688","subwaysurfers":"c332af6b02","tunnelrush":"dec240f546","driftboss":"71fad4f513","fnae":"9844ce377d","meditation":"56847adf1b","crashout":"59eaa18662","snowrider":"a692396710","retrobowlcollege":"3ad9da6ab9","powerlineio":"a874292b22","janissarybattles":"6da0602eb4","tag2":"cda72138aa","cookieclicker":"7422c6501f","idlebreakout":"57034162f4"};
 const GF_KEEP=24e6;let gfDbP=null;
 function gfDb(){if(gfDbP)return gfDbP;gfDbP=new Promise((res,rej)=>{try{const q=indexedDB.open('sx-game',1);
   q.onupgradeneeded=()=>{q.result.createObjectStore('f');q.result.createObjectStore('m');};q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error);q.onblocked=()=>rej(0);}catch(e){rej(e);}});
@@ -15010,7 +15012,7 @@ function gmFilled(f){const st=f._gr,now=Date.now();st.answeredAt=st.answeredAt||
   const quiet=now-Math.max(st.lastB||0,st.answeredAt),need=Math.max(lsJSON('sx-gbytes')[f.title]||0,GAME_BYTES[f.title]||0),b=st.bytes||0;
   if(st.unity>=1)return quiet>=400;
   if(need&&b>=need*.9)return quiet>=300;
-  return quiet>=2000||now-st.answeredAt>90000;}
+  return quiet>=2000||now-st.answeredAt>240000;}
 function gmAsked(f){const st=f&&f._gr;if(!st)return;st.asked++;gmStage(f,'asked');
   if(!st.shown){const l=document.querySelector('#games .gm-load');if(l)l.classList.add('data');}}
 function gmReplied(f){const st=f&&f._gr;if(!st)return;st.replied++;if(st.asked===st.replied)st.answeredAt=Date.now();gmStage(f,'replied');gmCheck(f);}
@@ -15024,7 +15026,10 @@ const GAME_BYTES={};
 const lsJSON=k=>{try{return JSON.parse(localStorage.getItem(k)||'{}')||{};}catch(_){return {};}};
 const lsPut=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));}catch(_){}};
 function gmStage(f,k){const st=f&&f._gr;if(!st||st.shown)return;st.stage=Math.max(st.stage||0,GM_STAGES[k]||0);gmPaint(f);}
-function gmBytes(f,m){const st=f&&f._gr;if(!st||st.shown)return;const id=f.title,loaded=Math.max(0,+m.loaded||0);
+function gmBytes(f,m){const st=f&&f._gr;if(!st)return;
+  /* after the game is showing, downloads still arriving mean a black frame: the Book Run watcher reads lastB */
+  if(st.shown){if((+m.loaded||0)>(st.bytes||0)||+m.unity>(st.unity||0))st.lastB=Date.now();st.unity=Math.max(st.unity||0,+m.unity||0);st.bytes=Math.max(st.bytes||0,+m.loaded||0);return;}
+  const id=f.title,loaded=Math.max(0,+m.loaded||0);
   if(loaded>(st.bytes||0)||+m.unity>(st.unity||0))st.lastB=Date.now();st.unity=Math.max(st.unity||0,+m.unity||0);
   st.bytes=Math.max(st.bytes||0,loaded);const need=Math.max(lsJSON('sx-gbytes')[id]||0,GAME_BYTES[id]||0);
   let fr=need?loaded/need:0;if(m.unity>0)fr=Math.max(fr,+m.unity);st.bfrac=Math.max(st.bfrac||0,Math.min(.98,fr));gmPaint(f);gmCheck(f);}
