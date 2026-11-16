@@ -1,0 +1,16 @@
+{
+	"name": "Janissary Battles",
+	"short_name": "Janissary Battles",
+	"description": "RHM Interactive - 2 Player Mini Battles iOS Game",
+	"start_url": "index.html",
+	"display": "fullscreen",
+	"orientation": "landscape",
+	"background_color": "#000000",
+	"icons": [
+		{
+			"src": "icons/janissary-battles-512x512.png",
+			"sizes": "512x512",
+			"type": "image/png"
+		}
+	]
+}
