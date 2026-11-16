@@ -3877,7 +3877,7 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
    Rooms ride their own WebSocket and only work when the Worker's WebSocket does (room().ok false: use rpcRoom). */
 (function () {
   'use strict';
-  var WS_OPEN_MS = 3000, HEARTBEAT_MS = 100000, PONG_MS = 15000, UPGRADE_MS = 5 * 60000, OFF_RETRY_MS = 10 * 60000;
+  var WS_OPEN_MS = 1500, HEARTBEAT_MS = 100000, PONG_MS = 15000, UPGRADE_MS = 5 * 60000, OFF_RETRY_MS = 10 * 60000;
   var S = null; /* state while started */
   var httpGen = 0;
   var presenceFns = [], watchList = [], online = {};
@@ -3919,7 +3919,7 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
   /* while the block memory is active: ask the Worker once; if it really answers, forget the block and take the WebSocket */
   function probeWorker() {
     if (!S || S.mode === 'ws' || S.mode === 'http') return;
-    post('/poll', { t: S.cfg.ticket, cur: '', wait: 0 }, 4000).then(function (r) {
+    post('/poll', { t: S.cfg.ticket, cur: '', wait: 0 }, 1500).then(function (r) {
       if (!S) return;
       if (r.status === 200 && r.body && typeof r.body === 'object') { noteReachable(); S.blockedUntil = 0; log('worker reachable again'); startWs(0); }
       else timer('probe', probeWorker, 10 * 60000);
@@ -4002,7 +4002,7 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
     var gen = S.http.gen, first = true;
     var loop = function () {
       if (!S || !S.http || S.http.gen !== gen) return;
-      post('/poll', { t: S.cfg.ticket, cur: S.http.cur, w: watchList, wait: first ? 0 : undefined }, first ? 8000 : 65000).then(function (r) {
+      post('/poll', { t: S.cfg.ticket, cur: S.http.cur, w: watchList, wait: first ? 0 : undefined }, first ? 1500 : 65000).then(function (r) {
         if (!S || !S.http || S.http.gen !== gen) return;
         if (r.status === 401) return getCfg(true).then(function () { timer('poll', loop, 1000); }, function () { startRtdb(); });
         if (r.status === 429 && r.body && r.body.off) { budgetOff(r.body.retry); return startRtdb(); }
