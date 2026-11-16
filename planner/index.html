@@ -5896,6 +5896,47 @@ function normalizeCourse(input){
     ['eng', /\b(english|eng|literature|lit|composition|writing|journalism|photojournalism|speech|debate|rhetoric|yearbook|esol|reading|seminar|research|creative writing|newspaper)\b/]
   ];
   /* eng, math, sci, ss, wl, art, cte, hpe or other */
+  /* the grade a student is probably in, guessed from their class names (the Dashboard's estimate; nothing is stored).
+     Each recognised class votes for the grades it is usually taken in; a guess needs a little more than one clear vote. */
+  var GRADE_RULES = [
+    [/\b(english|eng|lit(erature)?)\s*9\b|\bgrade\s*9\b|\b9th\b|\bfreshman\b|\bearth (and space )?science\b|\bworld geography\b|\bhuman geography\b/, { 9: 1 }],
+    [/\b(english|eng)\s*10\b|\bgrade\s*10\b|\b10th\b|\bsophomore\b|\bworld history (ii|2)\b|\bap world\b|\bworld (history|studies) (and|&) geography (ii|2)\b/, { 10: 1 }],
+    [/\b(english|eng)\s*11\b|\bgrade\s*11\b|\b11th\b|\bjunior\b|\bap (english )?lang(uage)?\b|\bvirginia (and|&) us history\b|\bva\s*(\/|&|and)?\s*us history\b|\bus history\b|\bapush\b|\bap (us|u\.s\.) history\b|\bap physics 1\b|\bap physics 2\b/, { 11: 1 }],
+    [/\b(english|eng)\s*12\b|\bgrade\s*12\b|\b12th\b|\bsenior\b|\bap (english )?lit(erature)?\b|\b(us|u\.s\.|va|virginia)\s*(and|&)?\s*(va\s*)?government\b|\bap (us |u\.s\. )?gov(ernment)?\b|\bap stat(istics)?\b|\bmultivariable\b|\bap comparative\b/, { 12: 1 }],
+    [/\bpre\s*-?\s*algebra\b|\balgebra\s*(1|i)\b(?!\s*i)|\bintegrated math 1\b|\bphysical science\b|\bhealth\s*(and|&)?\s*pe\s*9\b|\bpe\s*9\b|\bhealth\s*9\b/, { 9: 1 }],
+    [/\bgeometry\b/, { 9: .5, 10: .5 }],
+    [/\balgebra\s*(2|ii)\b|\balgebra\s*2\b/, { 10: .5, 11: .5 }],
+    [/\bpre\s*-?\s*calc(ulus)?\b|\banalysis\b|\bmath analysis\b|\btrig(onometry)?\b/, { 11: .5, 12: .5 }],
+    [/\bap calc(ulus)?\s*bc\b|\bcalc(ulus)?\s*bc\b/, { 11: .5, 12: .5 }],
+    [/\bap calc(ulus)?\s*ab\b|\bcalc(ulus)?\s*ab\b|\bcalculus\b/, { 12: 1 }],
+    [/\bbiology\b/, { 9: .5, 10: .5 }],
+    [/\bap bio(logy)?\b/, { 11: .5, 12: .5 }],
+    [/\bchemistry\b|\bchem\b/, { 10: .5, 11: .5 }],
+    [/\bap chem(istry)?\b/, { 11: .5, 12: .5 }],
+    [/\bphysics\b|\bap physics c\b|\bap env(ironmental)?\b|\banatomy\b/, { 11: .5, 12: .5 }],
+    [/\bap euro(pean)?\b|\bap psych(ology)?\b/, { 10: .4, 11: .3, 12: .3 }],
+    [/\bap (macro|micro)\b|\bap econ(omics)?\b|\beconomics\b|\bpersonal finance\b|\bepf\b/, { 11: .3, 12: .7 }],
+    [/\b(spanish|french|german|latin|chinese|japanese|arabic|italian|russian|korean)\s*(1|i)\b(?!i)/, { 9: .7, 10: .3 }],
+    [/\b(spanish|french|german|latin|chinese|japanese|arabic|italian|russian|korean)\s*(2|ii)\b/, { 9: .4, 10: .6 }],
+    [/\b(spanish|french|german|latin|chinese|japanese|arabic|italian|russian|korean)\s*(3|iii)\b/, { 10: .5, 11: .5 }],
+    [/\b(spanish|french|german|latin|chinese|japanese|arabic|italian|russian|korean)\s*(4|iv)\b/, { 11: .7, 12: .3 }],
+    [/\bap (spanish|french|german|latin|chinese|japanese|italian)\b|\b(spanish|french|german|latin)\s*(5|v)\b/, { 11: .5, 12: .5 }]
+  ];
+  SX.guessGrade = function (names) {
+    var votes = { 9: 0, 10: 0, 11: 0, 12: 0 }, n = 0, g;
+    (names || []).forEach(function (nm) {
+      var t = String(nm || '').toLowerCase().replace(/[^a-z0-9&\/+. -]+/g, ' ').replace(/\s+/g, ' ');
+      for (var i = 0; i < GRADE_RULES.length; i++) if (GRADE_RULES[i][0].test(t)) {
+        var w = GRADE_RULES[i][1]; for (g in w) votes[g] += w[g]; n++; break;
+      }
+    });
+    var best = '', top = 0, sum = 0;
+    for (g in votes) { sum += votes[g]; if (votes[g] > top) { top = votes[g]; best = g; } }
+    /* needs two recognised classes and a clear lead over the next grade */
+    if (n < 2 || top < 1) return '';
+    var second = 0; for (g in votes) if (g !== best && votes[g] > second) second = votes[g];
+    return top - second >= 0.5 ? best : '';
+  };
   SX.courseDivision = function (name) {
     var L = levelWords(name), tries = [L.n, L.raw];
     for (var t = 0; t < tries.length; t++) {
@@ -14635,7 +14676,15 @@ function dashPaint(){
     <p class="db-note">Completed counts only assignments crossed off with a time (not in-class work or events, not banned accounts). Five or more overdue ones crossed off together are counted as cleared in bulk, not completed.${T.untimed?` ${T.untimed} were crossed off before times were kept and aren't counted.`:''}</p>
     ${DB.classes?`<h2 class="db-h">Classes</h2>
     <div class="db-stats">${st(DB.classes.accounts,'Accounts with classes',1)}${st(DB.classes.total,'Classes in all')}${st(DB.classes.accounts?(DB.classes.total/DB.classes.accounts).toFixed(1):'-','Classes per student')}${st(DB.classes.ical,'Linked Schoology')}</div>
+    ${DB.classes.real!=null?`<div class="db-stats">${st(DB.classes.real,'Classes plus assignments or a Schoology link')}${st(DB.classes.accounts?Math.round(DB.classes.real/DB.classes.accounts*100)+'%':'-','Of accounts with classes')}</div>
+    <p class="db-note">The tutorial won't go on until one class is added, so Accounts with classes counts everyone who got through it. The second row counts only accounts that also added assignments of their own or linked Schoology.</p>`:''}
+    ${DB.classes.grades?`<h2 class="db-h">Estimated grade</h2>
+    <p class="db-note">Guessed from class names (English 11, Algebra 2, APUSH and so on). It needs two recognised classes and a clear lead, so some accounts stay unknown.</p>
+    ${list(Object.assign({},DB.classes.grades),['9','10','11','12','?'].filter(k=>DB.classes.grades[k]),k=>k==='?'?'Not sure':'Grade '+k)}`:''}
     <h2 class="db-h">Most common classes</h2>${list(DB.classes.names||{},top(DB.classes.names||{},12))}`:''}
+    ${DB.hosts&&Object.keys(DB.hosts).length?`<h2 class="db-h">Most used address</h2>
+    <p class="db-note">Accounts that opened the planner from each address (an account counts once for every address it used). Counting started today, so it fills in as people visit.</p>
+    ${(()=>{const hk=Object.keys(DB.hosts).sort((a,b)=>DB.hosts[b].accounts-DB.hosts[a].accounts||DB.hosts[b].days-DB.hosts[a].days),hm={};hk.forEach(k=>{hm[k]=DB.hosts[k].accounts;});return list(hm,hk.slice(0,10),k=>k.replace(/\.web\.app$/,'').replace(/^script\.google\.com$/,'Apps Script link'));})()}`:''}
     <h2 class="db-h">Most played games</h2>${list(U.g,tg,gname)}
     <h2 class="db-h">Most clicked buttons</h2>${list(U.c,tc)}
     <h2 class="db-h">Sign-ups by week</h2>
