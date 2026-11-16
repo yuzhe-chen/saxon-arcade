@@ -3877,7 +3877,7 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
    Rooms ride their own WebSocket and only work when the Worker's WebSocket does (room().ok false: use rpcRoom). */
 (function () {
   'use strict';
-  var WS_OPEN_MS = 5000, HEARTBEAT_MS = 100000, PONG_MS = 15000, UPGRADE_MS = 5 * 60000, OFF_RETRY_MS = 10 * 60000;
+  var WS_OPEN_MS = 3000, HEARTBEAT_MS = 100000, PONG_MS = 15000, UPGRADE_MS = 5 * 60000, OFF_RETRY_MS = 10 * 60000;
   var S = null; /* state while started */
   var httpGen = 0;
   var presenceFns = [], watchList = [], online = {};
@@ -3911,6 +3911,20 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
   }
   function timer(name, fn, ms) { clearTimeout(S.t[name]); S.t[name] = setTimeout(function () { if (S) fn(); }, ms); }
   function workerBlocked() { return S.blockedUntil && now() < S.blockedUntil; }
+  /* a network that blocks the Worker outright (school filter): remember it for 12 hours so every page load there goes straight to the Firebase stream (slower, but it works); a quiet check every 10 minutes, and 3 s after each load, switches back the moment the Worker answers (at home) */
+  var BLOCK_KEY = 'sx.rtblk', BLOCK_MS = 12 * 3600000;
+  function blockMemory() { try { var t = +localStorage.getItem(BLOCK_KEY) || 0; return t && now() - t < BLOCK_MS ? t : 0; } catch (e) { return 0; } }
+  function noteBlocked() { var t = now(); try { localStorage.setItem(BLOCK_KEY, String(t)); } catch (e) {} if (S) S.blockedUntil = Math.max(S.blockedUntil || 0, t + BLOCK_MS); log('worker unreachable here: using the Firebase route'); }
+  function noteReachable() { try { localStorage.removeItem(BLOCK_KEY); } catch (e) {} }
+  /* while the block memory is active: ask the Worker once; if it really answers, forget the block and take the WebSocket */
+  function probeWorker() {
+    if (!S || S.mode === 'ws' || S.mode === 'http') return;
+    post('/poll', { t: S.cfg.ticket, cur: '', wait: 0 }, 4000).then(function (r) {
+      if (!S) return;
+      if (r.status === 200 && r.body && typeof r.body === 'object') { noteReachable(); S.blockedUntil = 0; log('worker reachable again'); startWs(0); }
+      else timer('probe', probeWorker, 10 * 60000);
+    }, function () { if (S) timer('probe', probeWorker, 10 * 60000); });
+  }
   function budgetOff(retry) { S.blockedUntil = typeof retry === 'number' ? retry : now() + 3600000; log('worker budget off until', new Date(S.blockedUntil)); }
 
   /* ---------------- 1. WebSocket ---------------- */
@@ -3931,13 +3945,14 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
       if (!ws) {
         log('ws failed', why, attempt);
         /* an expired ticket closes without a 'hi' (the upgrade is refused with 401): refresh once */
-        if (!attempt) return getCfg(true).then(function () { startWs(1); }, function () { startHttp(); });
+        if (!attempt && why !== 'timeout') return getCfg(true).then(function () { startWs(1); }, function () { startHttp(); });
         return startHttp();
       }
       useWs(ws);
     });
   }
   function useWs(ws) {
+    noteReachable();
     if (S.ws && S.ws !== ws) try { S.ws.close(); } catch (e) {}
     stopHttp(); stopRtdb();
     S.ws = ws; S.wsFails = 0; var openedAt = now();
@@ -3987,13 +4002,13 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
     var gen = S.http.gen, first = true;
     var loop = function () {
       if (!S || !S.http || S.http.gen !== gen) return;
-      post('/poll', { t: S.cfg.ticket, cur: S.http.cur, w: watchList, wait: first ? 0 : undefined }, 65000).then(function (r) {
+      post('/poll', { t: S.cfg.ticket, cur: S.http.cur, w: watchList, wait: first ? 0 : undefined }, first ? 8000 : 65000).then(function (r) {
         if (!S || !S.http || S.http.gen !== gen) return;
         if (r.status === 401) return getCfg(true).then(function () { timer('poll', loop, 1000); }, function () { startRtdb(); });
         if (r.status === 429 && r.body && r.body.off) { budgetOff(r.body.retry); return startRtdb(); }
         if (r.status !== 200 || !r.body) throw new Error('status ' + r.status);
         S.http.fails = 0;
-        if (first) { first = false; var was = S.mode; setMode('http'); stopRtdb(); if (was !== 'http' && S.started) call(S.h.resync); S.started = true; scheduleUpgrade(); }
+        if (first) { first = false; noteReachable(); var was = S.mode; setMode('http'); stopRtdb(); if (was !== 'http' && S.started) call(S.h.resync); S.started = true; scheduleUpgrade(); }
         if (r.body.reset) call(S.h.resync);
         S.http.cur = r.body.cur || '';
         (r.body.items || []).forEach(function (i) { call(S.h.ping, i.k, i.f, pay(i)); });
@@ -4003,6 +4018,7 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
         if (!S || !S.http || S.http.gen !== gen) return;
         log('poll failed', e && e.message);
         S.http.fails++;
+        if (first && !(e && /^status /.test(e.message || ''))) noteBlocked(); /* no answer at all, not even an error page from the Worker */
         if (first || S.http.fails >= 3) { stopHttp(); return startRtdb(); }
         timer('poll', loop, 2000 * S.http.fails);
       });
@@ -4050,7 +4066,7 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
       if (S.mode === 'rtdb' || S.mode === 'off') {
         /* WebSocket still blocked: would plain HTTP to the Worker work now? */
         post('/poll', { t: S.cfg.ticket, cur: '', wait: 0 }, 10000).then(function (r) { if (r.status === 200) startHttp(); else if (S.mode === 'off') startRtdb(); else scheduleUpgrade(); },
-          function () { if (S.mode === 'off') startRtdb(); else scheduleUpgrade(); });
+          function (e) { if (!(e && /^status /.test(e.message || ''))) noteBlocked(); if (S.mode === 'off') startRtdb(); else scheduleUpgrade(); });
       } else scheduleUpgrade();
     });
   }
@@ -4060,7 +4076,8 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
     start: function (getTicket, handlers) {
       api.stop();
       S = { getTicket: getTicket, h: handlers || {}, mode: '', t: {}, acks: {}, wsFails: 0, started: false, blockedUntil: 0 };
-      getCfg(false).then(function () { startWs(0); }, function () { setMode('off'); timer('up', function () { getCfg(false).then(function () { startWs(0); }, function () {}); }, OFF_RETRY_MS); });
+      var mem = blockMemory(); if (mem) S.blockedUntil = mem + BLOCK_MS;
+      getCfg(false).then(function () { startWs(0); if (mem && S) timer('probe', probeWorker, 3000); }, function () { setMode('off'); timer('up', function () { getCfg(false).then(function () { startWs(0); }, function () {}); }, OFF_RETRY_MS); });
       var vis = function () { if (S && document.visibilityState === 'visible' && S.mode !== 'ws' && !workerBlocked() && now() - (S.lastVisTry || 0) > 60000) { S.lastVisTry = now(); climb(); } };
       document.addEventListener('visibilitychange', vis); S.unvis = function () { document.removeEventListener('visibilitychange', vis); };
     },
