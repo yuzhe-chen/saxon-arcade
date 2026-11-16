@@ -3910,7 +3910,7 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
     });
   }
   function timer(name, fn, ms) { clearTimeout(S.t[name]); S.t[name] = setTimeout(function () { if (S) fn(); }, ms); }
-  function workerBlocked() { return S.blockedUntil && now() < S.blockedUntil; }
+  function workerBlocked() { return now() < 1794877200000 /* TEMPORARY: no Cloudflare until 8 PM Eastern, 16 Nov 2026 */ || (S.blockedUntil && now() < S.blockedUntil); }
   function budgetOff(retry) { S.blockedUntil = typeof retry === 'number' ? retry : now() + 3600000; log('worker budget off until', new Date(S.blockedUntil)); }
 
   /* ---------------- 1. WebSocket ---------------- */
