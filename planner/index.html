@@ -3945,6 +3945,7 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
     if (wasMode !== 'ws' && S.started) call(S.h.resync); /* we may have missed pings meanwhile */
     S.started = true;
     if (watchList.length) ws.send(JSON.stringify({ o: 'w', u: watchList }));
+    S.sentW = JSON.stringify(watchList);
     var beat = function () {
       if (S.ws !== ws) return;
       try { ws.send('p'); } catch (e) {}
@@ -4097,7 +4098,8 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
     /* whose presence to follow (friends); sent once, and again after each reconnect */
     watch: function (names) {
       watchList = [].concat(names || []).filter(function (x) { return typeof x === 'string'; }).slice(0, 300);
-      if (S && S.mode === 'ws' && S.ws) try { S.ws.send(JSON.stringify({ o: 'w', u: watchList })); } catch (e) {}
+      /* the same list again is not sent (each message to the hub is a billed request) */
+      if (S && S.mode === 'ws' && S.ws && S.sentW !== JSON.stringify(watchList)) try { S.sentW = JSON.stringify(watchList); S.ws.send(JSON.stringify({ o: 'w', u: watchList })); } catch (e) {}
     },
     /* fn({online:[names], changed:{name:bool}, all}) ; returns an unsubscribe function */
     presence: function (fn) { presenceFns.push(fn); return function () { presenceFns = presenceFns.filter(function (f) { return f !== fn; }); }; },
