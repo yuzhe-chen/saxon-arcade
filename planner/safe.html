@@ -3877,7 +3877,7 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
    Rooms ride their own WebSocket and only work when the Worker's WebSocket does (room().ok false: use rpcRoom). */
 (function () {
   'use strict';
-  var WS_OPEN_MS = (Date.now() < 1794877200000 ? 50 : 5000), HEARTBEAT_MS = 100000, /* TEMPORARY: until 8 PM Eastern on 16 Nov 2026 the WebSocket gets 50 ms to open (so pages drop at once to the cheaper routes while the Durable Objects are over their limit); after that it is 5000 again, with no release needed */ PONG_MS = 15000, UPGRADE_MS = 5 * 60000, OFF_RETRY_MS = 10 * 60000;
+  var WS_OPEN_MS = 5000, HEARTBEAT_MS = 100000, PONG_MS = 15000, UPGRADE_MS = 5 * 60000, OFF_RETRY_MS = 10 * 60000;
   var S = null; /* state while started */
   var httpGen = 0;
   var presenceFns = [], watchList = [], online = {};
@@ -3910,7 +3910,7 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
     });
   }
   function timer(name, fn, ms) { clearTimeout(S.t[name]); S.t[name] = setTimeout(function () { if (S) fn(); }, ms); }
-  function workerBlocked() { return now() < 1794877200000 /* TEMPORARY: no Cloudflare until 8 PM Eastern, 16 Nov 2026 */ || (S.blockedUntil && now() < S.blockedUntil); }
+  function workerBlocked() { return S.blockedUntil && now() < S.blockedUntil; }
   function budgetOff(retry) { S.blockedUntil = typeof retry === 'number' ? retry : now() + 3600000; log('worker budget off until', new Date(S.blockedUntil)); }
 
   /* ---------------- 1. WebSocket ---------------- */
