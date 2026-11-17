@@ -14597,16 +14597,32 @@ function trackSend(){
 setInterval(()=>{if(Date.now()-TRK.last>=10*60*1000)trackSend();},60*1000);
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&Date.now()-TRK.last>=60*1000)trackSend();});
 /* ---------- Dashboard (the owner only): how many accounts there are and how many signed in lately ---------- */
-let DB=null,dbTimer=0,dbFresh=false;
+let DB=null,dbTimer=0,dbFresh=false,DBO=null;
+/* the Other section: visit counts the owner's other websites send to Departed's database (counts only, read straight from the page) */
+const OTHER_SITES=[['ambicant','Ambicant'],['jamborine','Jamborine'],['scrapyard','Scrapyard'],['profegpt','ProfeGPT'],['departed','Departed'],['interpres','Interpres']];
+const OTHER_URL='https:'+SLASH2+'departed-rooms-6e8e1e-default-rtdb.firebaseio.com/visits.json';
+async function dashOtherLoad(){
+  try{const c=new AbortController(),t=setTimeout(()=>c.abort(),15000);
+    const r=await fetch(OTHER_URL,{signal:c.signal,cache:'no-store'});clearTimeout(t);
+    if(!r.ok)throw new Error('bad');const j=await r.json()||{};DBO={d:j,at:Date.now()};pcPut('dashOther',DBO);dashPaint();}
+  catch(_){if(!DBO){DBO={error:1};dashPaint();}}
+}
+/* totals for one site: today, the last 7 and 30 UTC days, and all time (days before 2026 are test data) */
+function otherTotals(days){
+  const day=n=>new Date(Date.now()-n*864e5).toISOString().slice(0,10),t=day(0),d7=day(6),d30=day(29),o={today:[0,0],d7:[0,0],d30:[0,0],all:[0,0]};
+  Object.keys(days||{}).forEach(k=>{if(!/^20(2[6-9]|[3-9]\d)-\d\d-\d\d$/.test(k))return;const x=days[k]||{},v=+x.v||0,u=+x.u||0;
+    const add=(a)=>{a[0]+=v;a[1]+=u;};add(o.all);if(k>=d30)add(o.d30);if(k>=d7)add(o.d7);if(k===t)add(o.today);});
+  return o;
+}
 /* the last copy shows at once (marked as not yet updated), then the server's numbers replace it; while the Dashboard is
    open it asks again every minute so new sign-ups and visits show up without reopening it */
 async function openDash(){
   /* the owner's alone (the server refuses everyone else too) */
   if(!(state.user&&state.user.owner))return;
   const d=document.getElementById('dash');closeNavMenus();d.hidden=false;
-  const c=pcGet('dash');DB=c?c.d:null;dbFresh=false;dashPaint();
+  const c=pcGet('dash');DB=c?c.d:null;dbFresh=false;const co=pcGet('dashOther');DBO=co?co.d:null;dashPaint();
   clearInterval(dbTimer);dbTimer=setInterval(()=>{if(d.hidden){clearInterval(dbTimer);return;}if(document.visibilityState==='visible')dashLoad();},60000);
-  dashLoad();
+  dashLoad();dashOtherLoad();
 }
 async function dashLoad(){
   try{const r=await api('/api/roles',{method:'POST',body:JSON.stringify({op:'stats'})});
@@ -14688,7 +14704,12 @@ function dashPaint(){
     <h2 class="db-h">Most played games</h2>${list(U.g,tg,gname)}
     <h2 class="db-h">Most clicked buttons</h2>${list(U.c,tc)}
     <h2 class="db-h">Sign-ups by week</h2>
-    <div class="db-bars">${w.map((n,i)=>`<div class="db-row"><span class="db-d">${esc(wk(i))}</span><span class="db-bar"><i style="width:${Math.round(n/mx*100)}%"></i></span><span class="db-n">${n}</span></div>`).join('')}</div></div>`;
+    <div class="db-bars">${w.map((n,i)=>`<div class="db-row"><span class="db-d">${esc(wk(i))}</span><span class="db-bar"><i style="width:${Math.round(n/mx*100)}%"></i></span><span class="db-n">${n}</span></div>`).join('')}</div>
+    <h2 class="db-h">Other</h2>
+    <p class="db-note">Visits to the other websites, sent by each site (counts only, no ids). Each box shows visits and unique browsers. Days are UTC.</p>
+    ${!DBO?'<div class="db-note">Loading\u2026</div>':DBO.error?'<div class="db-note">Can\'t reach the visit counts right now</div>':OTHER_SITES.map(([k,nm])=>{
+      const days=DBO.d&&DBO.d[k],o=days?otherTotals(days):null,has=o&&o.all[0]+o.all[1]>0,f=a=>a[0]+' / '+a[1];
+      return `<p class="db-note"><b>${esc(nm)}</b>${has?'':' (not collected yet)'}</p>`+(has?`<div class="db-stats">${st(f(o.today),'Today')}${st(f(o.d7),'7 days')}${st(f(o.d30),'30 days')}${st(f(o.all),'All time')}</div>`:'');}).join('')}</div>`;
 }
 document.addEventListener('click',e=>{
   if(e.target.closest&&e.target.closest('[data-act-dash]')){openDash();return;}
