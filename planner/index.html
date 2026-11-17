@@ -686,6 +686,7 @@ html.chat-on .wrap{overflow:hidden;padding-bottom:0}
 .ch-add .kbtn .ch-spin{margin-left:0}
 @media (prefers-reduced-motion: reduce){.ch-spin{animation-duration:2s}}
 .ch-older{appearance:none;border:0;background:none;color:var(--fg2);cursor:pointer;font:700 11px var(--font-ui);letter-spacing:.06em;text-transform:uppercase;align-self:center;padding:4px 8px}
+.ch-comp.sys{opacity:.5;cursor:pointer}.ch-comp.sys>*{pointer-events:none}.ch-comp.sys textarea{background:var(--line)}
 .ch-comp{height:auto;min-height:68px;padding:13px 14px 12px;align-items:flex-end}
 .ch-comp textarea{resize:none;overflow-y:auto;height:42px;min-height:42px;max-height:160px}
 .ch-empty{flex:1;display:flex;align-items:center;justify-content:center;color:var(--fg2);font-size:14px}
@@ -3070,6 +3071,13 @@ svg.ic-pic>*{vector-effect:non-scaling-stroke;stroke-width:2px}
 .db-l{font:700 13px/1.2 var(--font-ui);color:var(--faint);text-transform:uppercase;letter-spacing:.04em}
 .db-p{font:700 15px/1.2 var(--font-ui);color:var(--pri)}
 .db-upd{margin-top:-4px}
+.db-tg{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}.db-tg .kbtn{padding:8px 14px;font-size:13px}
+.db-pl{display:flex;flex-direction:column;gap:6px}
+.db-pr{display:grid;grid-template-columns:minmax(80px,1.4fr) 84px 76px 64px 70px;gap:10px;align-items:center;padding:8px 14px;border:2px solid var(--line);border-bottom-width:3px;border-radius:12px;font:700 14px var(--font-ui);color:var(--fg2)}
+.db-pr b{color:var(--fg);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.db-pr span{text-align:right;white-space:nowrap}
+.db-pr .db-tag{text-align:left;color:var(--faint)}.db-pr .db-tag.g{color:var(--blue-dark)}.db-pr .db-tag.s{color:var(--pri)}.db-pr .db-tag.b{color:var(--fg)}
+.db-pr.hd{border-color:transparent;background:none;font:700 12px var(--font-ui);color:var(--faint);text-transform:uppercase;letter-spacing:.04em;padding-bottom:0}
+@media (max-width:700px){.db-pr{grid-template-columns:1fr 64px 56px 50px;}.db-pr>:nth-child(5){display:none}}
 .db-h{font:700 22px/1.2 var(--display);margin:0 0 12px;color:var(--fg)}
 .db-bars{display:flex;flex-direction:column;gap:6px}
 .db-row{display:grid;grid-template-columns:64px 1fr 40px;gap:10px;align-items:center;font:700 14px var(--font-ui);color:var(--fg2)}
@@ -13386,6 +13394,10 @@ async function chatPoll(){
             const o=CH.sess[x.sid];if(!o||JSON.stringify(o.r)!==JSON.stringify(x.r)||!!o.cancelled!==!!x.cancelled)moved=true;CH.sess[x.sid]=x;});}}
       const sig=JSON.stringify(r.state);if(sig!==CH.sig)moved=true;CH.sig=sig;
       chApplyState(r.state);
+      /* the list says this conversation has something newer than the messages on screen (a stale saved copy or a missed update):
+         load it again from the start, once per newest time */
+      {const cv=id&&chConv(id),cc=id&&CH.conv[id];
+        if(cv&&cc&&cc.loaded&&cv.last>(cc.msgs.reduce((m,x)=>x.pend||x.fail?m:Math.max(m,x.time),0))&&cc.healed!==cv.last){cc.healed=cv.last;cc.loaded=false;cc.syncLast=0;CH.again=true;}}
       CH.quiet=moved?0:q+1;
       chatPaint();chPersist();}
   }catch(e){}
@@ -13729,6 +13741,14 @@ function renderChat(){
 function chFit(){const p=document.querySelector('#v-chat .chp'),w=document.querySelector('.wrap');if(!p||!w||state.view!=='chat')return;
   const top=p.getBoundingClientRect().top-w.getBoundingClientRect().top+w.scrollTop,h=Math.max(420,w.clientHeight-top-28)+'px';if(p.style.height!==h)p.style.height=h;}
 const chBack=()=>`<button class="hbtn navbtn ch-ib ch-bk" data-ch="back" aria-label="Back" title="Back">${CH_I.back}</button>`;
+/* the system chat can't be written in: the box stays but is grayed out, hovering points to Suggestions (a click opens them) */
+function chSysComp(f,sys){
+  if(!f||f.classList.contains('sys')===sys)return;
+  f.classList.toggle('sys',sys);
+  const t=f.querySelector('textarea');
+  if(sys){f.title='You can\'t chat with the system. Send a suggestion instead.';f.setAttribute('data-act-sugg','');t.placeholder='Chatting with the system is off';t.tabIndex=-1;t.blur();}
+  else{f.removeAttribute('title');f.removeAttribute('data-act-sugg');t.placeholder='Message';t.removeAttribute('tabindex');}
+}
 function chatPaint(){
   chatBadge();
   const v=document.getElementById('v-chat'),p=v&&v.querySelector('.chp');if(!p||state.view!=='chat')return;
@@ -13740,7 +13760,7 @@ function chatPaint(){
   const tabs=q('.ch-tabs');tabs.hidden=CH.tabs.length<2||!!pane;
   if(!tabs.hidden)chKeyed(tabs,CH.tabs.map(id=>{const cv=chConv(id);return {k:id,h:`<div class="ch-tab${id===CH.cur?' on':''}" data-ch="tab" data-id="${esc(id)}"><span>${esc(chTitle(id))}</span>${cv&&cv.unread&&id!==CH.cur?'<i class="ch-u"></i>':''}<button data-ch="close" data-id="${esc(id)}" aria-label="Close" title="Close">${CH_I.x}</button></div>`};}));
   q('.ch-pad').hidden=pane!=='pad';q('.ch-ppl').hidden=pane!=='people';
-  q('.ch-ms').hidden=!on;q('.ch-comp').hidden=!on||CH.cur==='inbox';q('.ch-empty').hidden=!!(CH.cur||pane);
+  q('.ch-ms').hidden=!on;q('.ch-comp').hidden=!on;chSysComp(q('.ch-comp'),CH.cur==='inbox');q('.ch-empty').hidden=!!(CH.cur||pane);
   const mh=q('.ch-mh');mh.hidden=!(CH.cur||pane);
   let hd='';
   if(pane==='pad'){
@@ -14597,7 +14617,7 @@ function trackSend(){
 setInterval(()=>{if(Date.now()-TRK.last>=10*60*1000)trackSend();},60*1000);
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&Date.now()-TRK.last>=60*1000)trackSend();});
 /* ---------- Dashboard (the owner only): how many accounts there are and how many signed in lately ---------- */
-let DB=null,dbTimer=0,dbFresh=false,DBO=null;
+let DB=null,dbTimer=0,dbFresh=false,DBO=null;const DBP={g:false,s:false,sort:'last',n:30};
 /* the Other section: visit counts the owner's other websites send to Departed's database (counts only, read straight from the page) */
 const OTHER_SITES=[['ambicant','Ambicant'],['jamborine','Jamborine'],['scrapyard','Scrapyard'],['profegpt','ProfeGPT'],['departed','Departed'],['interpres','Interpres']];
 const OTHER_URL='https:'+SLASH2+'departed-rooms-6e8e1e-default-rtdb.firebaseio.com/visits.json';
@@ -14628,6 +14648,24 @@ async function dashLoad(){
   try{const r=await api('/api/roles',{method:'POST',body:JSON.stringify({op:'stats'})});
     if(r&&r.ok){DB=r;dbFresh=true;dashPaint();pcPut('dash',r);}else if(!DB){DB={error:1};dashPaint();}}
   catch(_){if(!DB){DB={error:1};dashPaint();}else{dbFresh=false;dashPaint();}}
+}
+const DB_KIND={g:['Gamer','g'],s:['Studier','s'],b:['Both','b'],u:['Undecided','']};
+function dashPlayers(){
+  const P=DB.players;if(!P)return '';
+  const now=Date.now(),D=864e5,rate=p=>p[3]/Math.max(1,Math.ceil((now-(p[1]||now))/D));
+  const want=k=>k==='b'?(DBP.g||DBP.s):k==='g'?DBP.g:k==='s'?DBP.s:false;
+  let l=DBP.g||DBP.s?P.filter(p=>want(p[4])):P.slice();
+  const srt={last:(a,b)=>b[2]-a[2],rate:(a,b)=>rate(b)-rate(a)||b[2]-a[2],total:(a,b)=>b[3]-a[3]||b[2]-a[2]};
+  l.sort(srt[DBP.sort]);
+  const ago=t=>{if(!t)return '-';const d=Math.floor((now-t)/D);return d<1?'Today':d===1?'1 day ago':d+' days ago';};
+  const tb=(k,t)=>`<button type="button" class="kbtn${DBP[k]?' on':''}" data-db-t="${k}">${t}</button>`,sb=(k,t)=>`<button type="button" class="kbtn${DBP.sort===k?' on':''}" data-db-s="${k}">${t}</button>`;
+  return `<h2 class="db-h">Players</h2>
+    <div class="db-tg">${tb('g','Gamers')}${tb('s','Studiers')}</div>
+    <div class="db-tg">${sb('last','Last active')}${sb('rate','Visits per day')}${sb('total','Visits in total')}</div>
+    <p class="db-note">${l.length} account${l.length===1?'':'s'}. A visit is the first time an account opens the site on a day.</p>
+    <div class="db-pl"><div class="db-pr hd"><span style="text-align:left">Name</span><span>Last here</span><span>Per day</span><span>Total</span><span style="text-align:left">Label</span></div>${l.slice(0,DBP.n).map(p=>{const k=DB_KIND[p[4]]||DB_KIND.u,show=(p[4]==='g'&&DBP.g)||(p[4]==='s'&&DBP.s)||(p[4]==='b'&&(DBP.g||DBP.s));
+      return `<div class="db-pr"><b>${esc(p[0])}</b><span>${esc(ago(p[2]))}</span><span>${rate(p).toFixed(2)}</span><span>${p[3]}</span><span class="db-tag ${show?k[1]:''}">${show?esc(k[0]):''}</span></div>`;}).join('')}</div>
+    ${l.length>DBP.n?`<div class="db-tg" style="margin-top:12px"><button type="button" class="kbtn" data-db-more>Show more</button></div>`:''}`;
 }
 function closeDash(){const d=document.getElementById('dash');d.hidden=true;d.innerHTML='';clearInterval(dbTimer);}
 function dashPaint(){
@@ -14676,6 +14714,12 @@ function dashPaint(){
   d.innerHTML=`<div class="docs-in">${head}
     <p class="db-note db-upd">${dbFresh?(upd?'Updated '+esc(upd)+'. Refreshes every minute.':''):'Updating\u2026'}</p>
     <div class="db-stats">${st(DB.total,'Accounts',1)}${st(DB.new7,'New this week')}${st(DB.new30,'New this month')}${st(DB.active7,'Active this week')}${st(DB.active30,'Active this month')}</div>
+${(()=>{const K=DB.kinds;if(!K)return '';const tot=K.gamers+K.studiers+K.both+K.undecided,pc=v=>tot?Math.round(v/tot*100)+'%':'-',ks=(v,l)=>`<div class="db-st"><span class="db-v">${esc(pc(v))}</span><span class="db-l">${esc(l)}</span><span class="db-p">${v}</span></div>`;
+      return `<h2 class="db-h">What they use it for</h2>
+    <p class="db-note">Games: saved game progress or a first game opened. Planner: two or more own assignments, a finished assignment, or a linked Schoology. Both means both; undecided means neither yet.</p>
+    <div class="db-stats">${ks(K.gamers,'Games only')}${ks(K.studiers,'Planner only')}${ks(K.both,'Both')}${ks(K.undecided,'Undecided')}</div>
+    <div class="db-stats">${st(Math.max(0,DB.total-DB.active30),'Inactive accounts (30 days)',1)}${st(Math.max(0,DB.total-DB.active7),'Not here this week')}</div>`;})()}
+    ${dashPlayers()}
     <h2 class="db-h">Sign-ups by day</h2>
     <p class="db-note">${jd[13]} today, ${jd.slice(7).reduce((a,b)=>a+b,0)} in the last 7 days</p>
     <div class="db-bars">${jd.map((n,i)=>`<div class="db-row"><span class="db-d">${esc(jl(i))}</span><span class="db-bar"><i style="width:${Math.round(n/jm*100)}%"></i></span><span class="db-n">${n}</span></div>`).join('')}</div>
@@ -14689,7 +14733,7 @@ function dashPaint(){
     <div class="db-stats">${st(T.done||0,'Completed',1)}${st(T.week||0,'Completed this week')}${st(T.onTime||0,'Finished on time')}${st(T.late||0,'Finished late')}${st(pct,'On time rate')}</div>
     <div class="db-stats">${st(Math.max(0,(T.open||0)-(T.overdue||0)),'Still to do')}${st(T.overdue||0,'Overdue, not done')}${st(T.people||0,'Students crossing off')}${st(T.cleared||0,'Cleared in bulk')}</div>
     ${(T.days||[]).length?`<p class="db-note">Crossed off in the last 14 days</p><div class="db-bars">${T.days.map((n,i)=>`<div class="db-row"><span class="db-d">${esc(jl(i))}</span><span class="db-bar"><i style="width:${Math.round(n/Math.max(1,...T.days)*100)}%"></i></span><span class="db-n">${n}</span></div>`).join('')}</div>`:''}
-    <p class="db-note">Completed counts only assignments crossed off with a time (not in-class work or events, not banned accounts). Five or more overdue ones crossed off together are counted as cleared in bulk, not completed.${T.untimed?` ${T.untimed} were crossed off before times were kept and aren't counted.`:''}</p>
+    <p class="db-note">Completed counts assignments crossed off with a time and assignments deleted (${T.deleted||0} of them), since most students delete an assignment to finish it. Not in-class work or events, not banned accounts. Five or more overdue ones removed together are counted as cleared in bulk, not completed.${T.untimed?` ${T.untimed} were crossed off before times were kept and aren't counted.`:''}</p>
     ${DB.classes?`<h2 class="db-h">Classes</h2>
     <div class="db-stats">${st(DB.classes.accounts,'Accounts with classes',1)}${st(DB.classes.total,'Classes in all')}${st(DB.classes.accounts?(DB.classes.total/DB.classes.accounts).toFixed(1):'-','Classes per student')}${st(DB.classes.ical,'Linked Schoology')}</div>
     ${DB.classes.real!=null?`<div class="db-stats">${st(DB.classes.real,'Classes plus assignments or a Schoology link')}${st(DB.classes.accounts?Math.round(DB.classes.real/DB.classes.accounts*100)+'%':'-','Of accounts with classes')}</div>
@@ -14714,6 +14758,8 @@ function dashPaint(){
 document.addEventListener('click',e=>{
   if(e.target.closest&&e.target.closest('[data-act-dash]')){openDash();return;}
   if(e.target.closest&&e.target.closest('[data-db-close]'))closeDash();
+  const t=e.target.closest&&e.target.closest('[data-db-t],[data-db-s],[data-db-more]');
+  if(t&&DB){if(t.dataset.dbT){DBP[t.dataset.dbT]=!DBP[t.dataset.dbT];DBP.n=30;}else if(t.dataset.dbS){DBP.sort=t.dataset.dbS;DBP.n=30;}else DBP.n+=50;dashPaint();}
 });
 document.addEventListener('keydown',e=>{const d=document.getElementById('dash');if(d&&!d.hidden&&e.key==='Escape'){e.stopPropagation();closeDash();}},true);
 async function openRoles(){
