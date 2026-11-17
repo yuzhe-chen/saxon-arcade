@@ -14381,15 +14381,15 @@ function dashPaint(){
   d.innerHTML=`<div class="docs-in">${head}
     <p class="db-note db-upd">${dbFresh?(upd?'Updated '+esc(upd)+'. Refreshes every minute.':''):'Updating\u2026'}</p>
     <div class="db-stats">${st(DB.total,'Accounts',1)}${st(DB.new7,'New this week')}${st(DB.new30,'New this month')}${st(DB.active7,'Active this week')}${st(DB.active30,'Active this month')}</div>
-${(()=>{const K=DB.kinds;if(!K)return '';const tot=K.gamers+K.studiers+K.both+K.undecided,pc=v=>tot?Math.round(v/tot*100)+'%':'-',ks=(v,l)=>`<div class="db-st"><span class="db-v">${esc(pc(v))}</span><span class="db-l">${esc(l)}</span><span class="db-p">${v}</span></div>`;
+<h2 class="db-h">Sign-ups by day</h2>
+    <p class="db-note">${jd[13]} today, ${jd.slice(7).reduce((a,b)=>a+b,0)} in the last 7 days</p>
+    <div class="db-bars">${jd.map((n,i)=>`<div class="db-row"><span class="db-d">${esc(jl(i))}</span><span class="db-bar"><i style="width:${Math.round(n/jm*100)}%"></i></span><span class="db-n">${n}</span></div>`).join('')}</div>
+    ${(()=>{const K=DB.kinds;if(!K)return '';const tot=K.gamers+K.studiers+K.both+K.undecided,pc=v=>tot?Math.round(v/tot*100)+'%':'-',ks=(v,l)=>`<div class="db-st"><span class="db-v">${esc(pc(v))}</span><span class="db-l">${esc(l)}</span><span class="db-p">${v}</span></div>`;
       return `<h2 class="db-h">What they use it for</h2>
     <p class="db-note">Games: saved game progress or a first game opened. Planner: two or more own assignments, a finished assignment, or a linked Schoology. Both means both; undecided means neither yet.</p>
     <div class="db-stats">${ks(K.gamers,'Games only')}${ks(K.studiers,'Planner only')}${ks(K.both,'Both')}${ks(K.undecided,'Undecided')}</div>
     <div class="db-stats">${st(Math.max(0,DB.total-DB.active30),'Inactive accounts (30 days)',1)}${st(Math.max(0,DB.total-DB.active7),'Not here this week')}</div>`;})()}
     ${dashPlayers()}
-    <h2 class="db-h">Sign-ups by day</h2>
-    <p class="db-note">${jd[13]} today, ${jd.slice(7).reduce((a,b)=>a+b,0)} in the last 7 days</p>
-    <div class="db-bars">${jd.map((n,i)=>`<div class="db-row"><span class="db-d">${esc(jl(i))}</span><span class="db-bar"><i style="width:${Math.round(n/jm*100)}%"></i></span><span class="db-n">${n}</span></div>`).join('')}</div>
     ${newb}
     <h2 class="db-h">Visits by time of day</h2>
     <p class="db-note">${lg.length} logins and daily visits in the last 7 days${lg.length?`, busiest around ${hl(pk)}`:''}</p>${cols}
