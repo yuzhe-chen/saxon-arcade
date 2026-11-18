@@ -1,0 +1,1 @@
+Knesset Combat 26, by Nicholi (NicholiVirus/games-for-gunbhir at 523dd69). Copied here so it loads from this arcade like every other game. three.js is MIT, see lib/THREE-LICENSE.

@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Knesset Combat 26'</title>
+<meta name="description" content="A 3D same-keyboard fighting game set in the Knesset plenum. Pick a Prime Minister, unlock the rest.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bungee&family=Rubik:wght@400;600;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<canvas id="view"></canvas>
+<div id="vignette"></div>
+
+<!-- loading -->
+<div id="loading" class="screen show">
+  <div class="logo small"><span class="k">KNESSET</span><span class="c">COMBAT</span><span class="y">26'</span></div>
+  <div class="load-text" id="loadText">Convening the plenum…</div>
+</div>
+
+<!-- title -->
+<div id="title" class="screen">
+  <div class="logo"><span class="k">KNESSET</span><span class="c">COMBAT</span><span class="y">26'</span></div>
+  <div class="heb">קרב הכנסת</div>
+  <div class="press">PRESS <b>ENTER</b> TO CALL THE SESSION TO ORDER</div>
+  <div class="foot">51 fighters · earn coins, recruit them all &nbsp;·&nbsp; P1: WASD + F G R · Q super · AA/DD dash &nbsp;·&nbsp; P2: IJKL + U ; P · O super · JJ/LL dash</div>
+</div>
+
+<!-- main menu -->
+<div id="menu" class="screen">
+  <div class="menu-col">
+    <div class="logo small"><span class="k">KNESSET</span><span class="c">COMBAT</span><span class="y">26'</span></div>
+    <div class="splash" id="splash"></div>
+    <ul class="menu-list" id="menuList"></ul>
+    <div class="menu-desc" id="menuDesc"></div>
+  </div>
+  <div class="mandate-box" id="mandateBox"></div>
+</div>
+
+<!-- generic list screen (difficulty, settings, pause, results options) -->
+<div id="listScreen" class="screen">
+  <button type="button" class="backbtn">◂ BACK</button>
+  <div class="panel center-panel">
+    <h2 id="listTitle"></h2>
+    <div id="listSub" class="sub"></div>
+    <ul class="menu-list compact" id="listItems"></ul>
+    <div class="hint" id="listHint">W/S or ↑/↓ to move · ENTER / F / K to choose · ESC to go back</div>
+  </div>
+</div>
+
+<!-- character select -->
+<div id="select" class="screen">
+  <button type="button" class="backbtn">◂ BACK</button>
+  <div class="sel-head"><span id="selTitle">CHOOSE YOUR CANDIDATE</span><span class="sel-mode" id="selMode"></span></div>
+  <div class="sel-bottom">
+    <div class="sel-panel p1" id="selP1"></div>
+    <div class="sel-center">
+      <div class="sel-grid" id="selGrid"></div>
+      <div class="sel-stage" id="selStage"></div>
+      <div class="hint" id="selHint"></div>
+    </div>
+    <div class="sel-panel p2" id="selP2"></div>
+  </div>
+</div>
+
+<!-- campaign ladder -->
+<div id="ladder" class="screen">
+  <button type="button" class="backbtn">◂ BACK</button>
+  <div class="panel ladder-panel">
+    <h2>ELECTION ARCADE</h2>
+    <div class="sub" id="ladderSub"></div>
+    <div class="ladder-row" id="ladderRow"></div>
+    <div class="ladder-next" id="ladderNext"></div>
+    <div class="ladder-btns" id="ladBtns"></div>
+    <div class="hint">Click FIGHT or press ENTER / F · ESC to withdraw</div>
+  </div>
+</div>
+
+<!-- ending: Prime Minister -->
+<div id="ending" class="screen">
+  <div class="end-top">
+    <div class="end-kicker">THE KNESSET HAS VOTED · 61+ SEATS</div>
+    <div class="end-title">PRIME MINISTER</div>
+    <div class="end-name" id="endName"></div>
+    <div class="end-sub">has cleared all 250 levels and forms the government. Mazal tov!</div>
+  </div>
+  <div class="end-panel panel">
+    <h3>YOUR TERM IN OFFICE</h3>
+    <div class="end-stats" id="endStats"></div>
+    <div class="end-btns" id="endBtns"><button type="button" class="bigbtn">KEEP PLAYING</button><button type="button" class="bigbtn ghost">MAIN MENU</button></div>
+  </div>
+</div>
+
+<!-- chest opening -->
+<div id="chestScreen" class="screen">
+  <div class="chest-top"><div id="chTier" class="ch-tier"></div><div id="chHint" class="ch-hint"></div><div id="chPips" class="ch-pips"></div></div>
+  <div id="chRewards" class="ch-rewards"></div>
+  <div id="chBtns" class="ch-btns"></div>
+</div>
+
+<!-- campaign: 100 levels -->
+<div id="levels" class="screen">
+  <button type="button" class="backbtn">◂ BACK</button>
+  <div class="panel lv-panel">
+    <h2>CAMPAIGN · 250 LEVELS</h2>
+    <div class="sub" id="lvSub"></div>
+    <div class="lv-body">
+      <div class="lv-grid" id="lvGrid"></div>
+      <div class="lv-info sel-panel" id="lvInfo"></div>
+    </div>
+    <div class="hint">Arrows/WASD or click to choose a level · ENTER / click again to fight · C open chests · ESC back</div>
+  </div>
+</div>
+
+<!-- collection -->
+<div id="collection" class="screen">
+  <button type="button" class="backbtn">◂ BACK</button>
+  <div class="col-left panel">
+    <h2>SHOP · SHARDS &amp; UPGRADES</h2>
+    <div class="sub" id="colSub"></div>
+    <div class="shop-tabs" id="shopTabs"></div>
+    <div class="rar-key"><span class="rar r-common">COMMON · 1 ability</span><span class="rar r-rare">RARE · 2</span><span class="rar r-superrare">SUPER RARE · 2</span><span class="rar r-epic">EPIC · 3</span><span class="rar r-elite">ELITE · 3</span><span class="rar r-mythic">MYTHIC · 3 + passive</span><span class="rar r-legendary">LEGENDARY · 3 + passive</span></div>
+    <div class="sel-grid col-grid" id="colGrid"></div>
+    <div class="hint">Click a tab or Q/E to filter · Arrows/WASD or click to select · click again / ENTER to buy or upgrade · C compare · B shard / gold skin · R/P preview gold · ESC back</div>
+  </div>
+  <div class="col-info panel" id="colInfo"></div>
+  <div class="col-lock" id="colLock"></div>
+  <div class="compare" id="compare"></div>
+</div>
+
+<!-- how to play -->
+<div id="howto" class="screen">
+  <button type="button" class="backbtn">◂ BACK</button>
+  <div class="panel howto-panel">
+    <h2>HOW TO PLAY</h2>
+    <div class="howto-grid">
+      <div class="ctl p1c">
+        <h3>PLAYER 1</h3>
+        <table>
+          <tr><td>Move / Jump / Crouch</td><td><kbd>A</kbd><kbd>D</kbd> <kbd>W</kbd> <kbd>S</kbd></td></tr>
+          <tr><td>Punch</td><td><kbd>F</kbd></td></tr>
+          <tr><td>Kick</td><td><kbd>G</kbd></td></tr>
+          <tr><td>Ability 1 · Special</td><td><kbd>R</kbd></td></tr>
+          <tr><td>Ability 2 · Down-Special <small>(Epic+)</small></td><td><kbd>S</kbd> + <kbd>R</kbd></td></tr>
+          <tr><td>Super <small>(Rare+, meter full)</small></td><td><kbd>Q</kbd> <small>(left of W)</small></td></tr>
+          <tr><td>Dash / Backdash</td><td>double-tap <kbd>D</kbd> / <kbd>A</kbd></td></tr>
+        </table>
+      </div>
+      <div class="ctl p2c">
+        <h3>PLAYER 2</h3>
+        <table>
+          <tr><td>Move / Jump / Crouch</td><td><kbd>J</kbd><kbd>L</kbd> <kbd>I</kbd> <kbd>K</kbd> <small>(or arrows)</small></td></tr>
+          <tr><td>Punch</td><td><kbd>U</kbd> or <kbd>Num1</kbd></td></tr>
+          <tr><td>Kick</td><td><kbd>;</kbd> or <kbd>Num2</kbd></td></tr>
+          <tr><td>Ability 1 · Special</td><td><kbd>P</kbd> or <kbd>Num4</kbd></td></tr>
+          <tr><td>Ability 2 · Down-Special <small>(Epic+)</small></td><td><kbd>K</kbd> + <kbd>P</kbd></td></tr>
+          <tr><td>Super <small>(Rare+, meter full)</small></td><td><kbd>O</kbd> <small>(right of I)</small> or <kbd>Num5</kbd></td></tr>
+          <tr><td>Dash / Backdash</td><td>double-tap <kbd>J</kbd> / <kbd>L</kbd> <small>(or arrows)</small></td></tr>
+        </table>
+      </div>
+      <div class="rules">
+        <h3>RARITY &amp; ABILITIES</h3>
+        <ul>
+          <li><span class="rar r-common">COMMON</span> 1 ability (Special) plus a +14% damage and +50 HP perk · 10 shards</li>
+          <li><span class="rar r-rare">RARE</span> 2 abilities (Special + Super) · <span class="coin"></span>200</li>
+          <li><span class="rar r-superrare">SUPER RARE</span> 2 abilities (Special + Super) plus a +3% damage and +20 HP perk · 17 shards</li>
+          <li><span class="rar r-epic">EPIC</span> 3 abilities (Special + Down-Special + Super) · <span class="coin"></span>400</li>
+          <li><span class="rar r-elite">ELITE</span> 3 abilities plus a +40 HP perk · 22 shards</li>
+          <li><span class="rar r-mythic">MYTHIC</span> 3 abilities plus a unique passive · <span class="coin"></span>500 · 25 shards</li>
+          <li><span class="rar r-legendary">LEGENDARY</span> 3 abilities plus a unique passive (Survivor, Iron Will, Momentum, Filibuster) · <span class="coin"></span>600+</li>
+        </ul>
+        <h3 style="margin-top:12px">COINS</h3>
+        <ul>
+          <li>Every match pays <b>coins</b>: showing up, rounds won, wins, perfect rounds, super finishes and a CPU difficulty bonus. Clearing the Election Campaign pays a big bonus.</li>
+          <li>Fighters <b>can't be bought outright</b>. Collect their shards from campaign chests, or buy single shards in the <b>Shop</b>. Coins also pay for upgrades and gold skins.</li>
+          <li>You start with <b>5 free Common fighters</b> — Moshe Sharett, Yigal Allon, Tzipi Livni, Benny Gantz and Yitzhak Navon — so you and a friend can jump straight into Versus. 45 more fighters (including Ben-Gurion) unlock with shards.</li>
+          <li><b>Upgrades:</b> every fighter you own can be ranked up to <b>Rank 5</b> in the Shop. Each rank adds +5% damage, +5% defense and +50 HP. Ranks apply in every mode.</li>
+          <li><b>Campaign · 250 levels:</b> fixed rivals that get tougher. Every 10th level is a boss. First clears pay a big bonus; replays pay 30%.</li>
+          <li><b>🎁 Chest Store:</b> buy chests with coins (150–1,600). Every chest starts with 3 upgrade taps. Bought chests upgrade at 45% per tap (campaign chests 30%), and Lucky chests have 5, 6 or 8 taps.</li>
+          <li><b>Chests:</b> every 2nd campaign win drops a ballot-box chest (boss levels always do), and every 10th win gives a bonus chest 2 tiers better with 5 taps. Tap it 3 times — each tap has a 30% chance to upgrade it, then it opens automatically: Wooden → Silver → Golden → Epic → Mythic → Legendary. Chests give coins and <b>shards</b>.</li>
+          <li><b>✦ Wild Shards:</b> every chest has a 1% chance to drop one. A Wild Shard unlocks any locked fighter of its rarity — use it in the Shop.</li>
+          <li><b>Shards:</b> collect 10 (Common), 15 (Rare), 17 (Super Rare), 20 (Epic), 25 (Mythic) or 30 (Legendary) shards to recruit a leader for free.  You can buy single shards in the Shop with <kbd>B</kbd>.</li>
+          <li><b>Projectile ammo:</b> 3 shots (+1 per upgrade rank, max 6). Mash them all, then they reload together — 1 second per shot — once you're empty.</li>
+          <li><b>Election Night Gold</b> skin: win 3 matches with a fighter, or buy it for <span class="coin"></span>150.</li>
+        </ul>
+        <h3 style="margin-top:12px">THE RULES OF ORDER</h3>
+        <ul>
+          <li><b>Block</b> by holding <b>away</b> from your opponent. Crouch-block (<b>down + away</b>) stops sweeps; jump attacks must be blocked <b>standing</b>.</li>
+          <li>Your <b>Super meter</b> fills based on the <b>damage you deal</b>; blocked hits give nothing. You can only hold block for <b>2.5 seconds</b> before your guard breaks.</li>
+          <li><b>Crouch + Kick</b> is a sweep that knocks down. <b>Punch</b> chains into more punches, a kick, or your Special.</li>
+          <li>Ability 2 types: <b>Uppercut</b> (rising anti-air), <b>Counter</b> (parry stance — strikes back if hit), or a second projectile/charge.</li>
+          <li>Gamepads: D-pad/stick to move, <b>A</b> punch, <b>B</b> kick, <b>X</b> special (hold down for Ability 2), <b>Y</b> super.</li>
+          <li><kbd>ESC</kbd> pauses. <kbd>M</kbd> toggles music.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="hint">ESC / ENTER to go back</div>
+  </div>
+</div>
+
+<!-- fight HUD -->
+<div id="hud">
+  <div class="hud-top">
+    <div class="hp p1">
+      <img class="por" alt="">
+      <div class="hp-body">
+        <div class="nm"></div>
+        <div class="bar"><div class="trail"></div><div class="fill"></div></div>
+        <div class="pips"></div>
+      </div>
+    </div>
+    <div class="timer-wrap"><div class="timer"><span>99</span></div><button type="button" id="pauseBtn" class="pausebtn" title="Pause">❚❚</button></div>
+    <div class="hp p2">
+      <img class="por" alt="">
+      <div class="hp-body">
+        <div class="nm"></div>
+        <div class="bar"><div class="trail"></div><div class="fill"></div></div>
+        <div class="pips"></div>
+      </div>
+    </div>
+  </div>
+  <div class="hud-bottom">
+    <div class="meter-col p1"><div class="meter p1"><div class="mfill"></div><span class="mlabel">SUPER</span><span class="mkey">Q</span></div><div class="ammo p1"></div></div>
+    <div class="meter-col p2"><div class="meter p2"><div class="mfill"></div><span class="mlabel">SUPER</span><span class="mkey">O</span></div><div class="ammo p2"></div></div>
+  </div>
+  <div class="combo p1"></div><div class="combo p2"></div>
+  <div class="callout p1"></div><div class="callout p2"></div>
+</div>
+<div id="banner"><div class="big"></div><div class="sub"></div></div>
+<div id="tutorial"></div>
+<div id="vs">
+  <div class="vs-side l"><img alt=""><div class="vs-name"></div><div class="vs-title"></div></div>
+  <div class="vs-mid">VS</div>
+  <div class="vs-side r"><img alt=""><div class="vs-name"></div><div class="vs-title"></div></div>
+  <div class="vs-skip">press any attack button</div>
+</div>
+<div id="supercut"><img alt=""><div class="sc-text"><div class="sc-who"></div><div class="sc-move"></div></div></div>
+<div id="flash"></div>
+
+<!-- results -->
+<div id="results" class="screen">
+  <div class="panel results-panel">
+    <h2 id="resTitle"></h2>
+    <div class="sub" id="resSub"></div>
+    <div class="res-cols">
+      <div class="res-earn" id="resEarn"></div>
+      <div class="res-unlocks" id="resUnlocks"></div>
+    </div>
+    <ul class="menu-list compact horizontal" id="resMenu"></ul>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="lib/three.min.js"></script>
+<script src="js/roster.js"></script>
+<script src="js/models.js"></script>
+<script src="js/stage.js"></script>
+<script src="js/effects.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/fight.js"></script>
+<script src="js/ai.js"></script>
+<script src="js/game.js"></script>
+</body>
+</html>
