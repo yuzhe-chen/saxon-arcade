@@ -49,10 +49,10 @@ window.google={script:{run:runner(null,null)}};})();</script>
    sign-in clock at 5:30 (html.sx-fb), never the login page or Home, until the clock sequence takes over. ?framedtest=1 on
    localhost pretends to be framed. Placed after build-web.py's keep script, which puts atoll's login in storage */
 (function(){try{
-if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;var t='',th=null;
-try{t=localStorage.getItem('sx-token')||'';th=localStorage.getItem('sx-theme');}catch(e){}
+if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;var t='',th=null,ck=null;
+try{t=localStorage.getItem('sx-token')||'';th=localStorage.getItem('sx-theme');ck=localStorage.getItem('sx-ckstyle');}catch(e){}
 if(!/^[a-z0-9_.-]{3,24}:[0-9a-f]{64}$/.test(t))return;
-var h=document.documentElement;h.classList.add('sx-fb');h.setAttribute('data-theme',th==='dark'?'dark':'light');
+var h=document.documentElement;h.classList.add('sx-fb');h.setAttribute('data-theme',th==='dark'?'dark':'light');if(ck==='night'||ck==='mint'||ck==='rose')h.setAttribute('data-ck',ck);
 setTimeout(function(){h.classList.remove('sx-fb');},15000);}catch(e){}})();</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -1368,8 +1368,6 @@ html.home-on body::before{opacity:1}
 #games{position:fixed;inset:0;z-index:1500;background:#171716;display:flex;flex-direction:column}
 #games[hidden]{display:none}
 /* a game on screen: the planner behind it is skipped (no layout, paint or animation) until the game closes */
-html.gm-play body>:not(#games):not(#gwarn):not(#gasmove):not(header.topbar){content-visibility:hidden}
-html.gm-play body>:not(#games):not(#gwarn):not(#gasmove),html.gm-play body>:not(#games):not(#gwarn):not(#gasmove) *{animation-play-state:paused!important;transition:none!important}
 #games .gm-pick{flex:1;overflow-y:auto;padding:30px;background:#171716;scrollbar-width:none}
 #games .gm-pick::-webkit-scrollbar{display:none}
 #games .gm-sec+.gm-sec{margin-top:34px}
@@ -2286,6 +2284,10 @@ html.sx-fb body>:not(#spclock){visibility:hidden}
 html.sx-fb body::after{content:"";position:fixed;z-index:1700;left:50%;top:50%;--r:clamp(64px,min(86vw,560px,60vh,440px) * .38,190px);
   width:calc(var(--r) * 100 / 46);height:calc(var(--r) * 100 / 46);margin:calc(var(--r) * -50 / 46) 0 0 calc(var(--r) * -50 / 46);
   background:url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Ccircle cx="50" cy="53" r="46" fill="%23e5a400"/%3E%3Ccircle cx="50" cy="50" r="46" fill="%23ffc800"/%3E%3Ccircle cx="50" cy="50" r="39" fill="%23fffdf5"/%3E%3Crect x="48" y="12.5" width="4" height="9" rx="2" fill="%234b4b4b" transform="rotate(0 50 50)"/%3E%3Crect x="49" y="13" width="2" height="5" rx="1" fill="%23c7c1b0" transform="rotate(30 50 50)"/%3E%3Crect x="49" y="13" width="2" height="5" rx="1" fill="%23c7c1b0" transform="rotate(60 50 50)"/%3E%3Crect x="48" y="12.5" width="4" height="9" rx="2" fill="%234b4b4b" transform="rotate(90 50 50)"/%3E%3Crect x="49" y="13" width="2" height="5" rx="1" fill="%23c7c1b0" transform="rotate(120 50 50)"/%3E%3Crect x="49" y="13" width="2" height="5" rx="1" fill="%23c7c1b0" transform="rotate(150 50 50)"/%3E%3Crect x="48" y="12.5" width="4" height="9" rx="2" fill="%234b4b4b" transform="rotate(180 50 50)"/%3E%3Crect x="49" y="13" width="2" height="5" rx="1" fill="%23c7c1b0" transform="rotate(210 50 50)"/%3E%3Crect x="49" y="13" width="2" height="5" rx="1" fill="%23c7c1b0" transform="rotate(240 50 50)"/%3E%3Crect x="48" y="12.5" width="4" height="9" rx="2" fill="%234b4b4b" transform="rotate(270 50 50)"/%3E%3Crect x="49" y="13" width="2" height="5" rx="1" fill="%23c7c1b0" transform="rotate(300 50 50)"/%3E%3Crect x="49" y="13" width="2" height="5" rx="1" fill="%23c7c1b0" transform="rotate(330 50 50)"/%3E%3Cpath d="M50 50V30" stroke="%233c3c3c" stroke-width="6" stroke-linecap="round" transform="rotate(165 50 50)"/%3E%3Cpath d="M50 50V20" stroke="%233c3c3c" stroke-width="4" stroke-linecap="round" transform="rotate(180 50 50)"/%3E%3Ccircle cx="50" cy="50" r="5.5" fill="%231cb0f6"/%3E%3C/svg%3E') center/100% 100% no-repeat;pointer-events:none}
+/* the first-paint clock in the style this device last used (20 referral reward); the head script sets data-ck */
+html.sx-fb[data-ck="night"] body::after{background-image:url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Ccircle cx="50" cy="53" r="46" fill="%238a93a1"/%3E%3Ccircle cx="50" cy="50" r="46" fill="%23c9d0da"/%3E%3Ccircle cx="50" cy="50" r="39" fill="%2316213b"/%3E%3Crect x="48" y="12.5" width="4" height="9" rx="2" fill="%23e8ecf5" transform="rotate(0 50 50)"/%3E%3Crect x="49" y="13" width="2" height="5" rx="1" fill="%234a5878" transform="rotate(30 50 50)"/%3E%3Crect x="49" y="13" width="2" height="5" rx="1" fill="%234a5878" transform="rotate(60 50 50)"/%3E%3Crect x="48" y="12.5" width="4" height="9" rx="2" fill="%23e8ecf5" transform="rotate(90 50 50)"/%3E%3Crect x="49" y="13" width="2" height="5" rx="1" fill="%234a5878" transform="rotate(120 50 50)"/%3E%3Crect x="49" y="13" width="2" height="5" rx="1" fill="%234a5878" transform="rotate(150 50 50)"/%3E%3Crect x="48" y="12.5" width="4" height="9" rx="2" fill="%23e8ecf5" transform="rotate(180 50 50)"/%3E%3Crect x="49" y="13" width="2" height="5" rx="1" fill="%234a5878" transform="rotate(210 50 50)"/%3E%3Crect x="49" y="13" width="2" height="5" rx="1" fill="%234a5878" transform="rotate(240 50 50)"/%3E%3Crect x="48" y="12.5" width="4" height="9" rx="2" fill="%23e8ecf5" transform="rotate(270 50 50)"/%3E%3Crect x="49" y="13" width="2" height="5" rx="1" fill="%234a5878" transform="rotate(300 50 50)"/%3E%3Crect x="49" y="13" width="2" height="5" rx="1" fill="%234a5878" transform="rotate(330 50 50)"/%3E%3Cpath d="M50 50V30" stroke="%23e8ecf5" stroke-width="6" stroke-linecap="round" transform="rotate(165 50 50)"/%3E%3Cpath d="M50 50V20" stroke="%23e8ecf5" stroke-width="4" stroke-linecap="round" transform="rotate(180 50 50)"/%3E%3Ccircle cx="50" cy="50" r="5.5" fill="%233b5bdb"/%3E%3C/svg%3E')}
+html.sx-fb[data-ck="mint"] body::after{background-image:url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Ccircle cx="50" cy="53" r="46" fill="%233fae82"/%3E%3Ccircle cx="50" cy="50" r="46" fill="%236fd6a8"/%3E%3Ccircle cx="50" cy="50" r="39" fill="%23f2fff8"/%3E%3Crect x="48" y="12.5" width="4" height="9" rx="2" fill="%232f5d46" transform="rotate(0 50 50)"/%3E%3Crect x="49" y="13" width="2" height="5" rx="1" fill="%23b4d9c4" transform="rotate(30 50 50)"/%3E%3Crect x="49" y="13" width="2" height="5" rx="1" fill="%23b4d9c4" transform="rotate(60 50 50)"/%3E%3Crect x="48" y="12.5" width="4" height="9" rx="2" fill="%232f5d46" transform="rotate(90 50 50)"/%3E%3Crect x="49" y="13" width="2" height="5" rx="1" fill="%23b4d9c4" transform="rotate(120 50 50)"/%3E%3Crect x="49" y="13" width="2" height="5" rx="1" fill="%23b4d9c4" transform="rotate(150 50 50)"/%3E%3Crect x="48" y="12.5" width="4" height="9" rx="2" fill="%232f5d46" transform="rotate(180 50 50)"/%3E%3Crect x="49" y="13" width="2" height="5" rx="1" fill="%23b4d9c4" transform="rotate(210 50 50)"/%3E%3Crect x="49" y="13" width="2" height="5" rx="1" fill="%23b4d9c4" transform="rotate(240 50 50)"/%3E%3Crect x="48" y="12.5" width="4" height="9" rx="2" fill="%232f5d46" transform="rotate(270 50 50)"/%3E%3Crect x="49" y="13" width="2" height="5" rx="1" fill="%23b4d9c4" transform="rotate(300 50 50)"/%3E%3Crect x="49" y="13" width="2" height="5" rx="1" fill="%23b4d9c4" transform="rotate(330 50 50)"/%3E%3Cpath d="M50 50V30" stroke="%232f5d46" stroke-width="6" stroke-linecap="round" transform="rotate(165 50 50)"/%3E%3Cpath d="M50 50V20" stroke="%232f5d46" stroke-width="4" stroke-linecap="round" transform="rotate(180 50 50)"/%3E%3Ccircle cx="50" cy="50" r="5.5" fill="%2318b58a"/%3E%3C/svg%3E')}
+html.sx-fb[data-ck="rose"] body::after{background-image:url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Ccircle cx="50" cy="53" r="46" fill="%23e0678f"/%3E%3Ccircle cx="50" cy="50" r="46" fill="%23ff94b6"/%3E%3Ccircle cx="50" cy="50" r="39" fill="%23fff5f8"/%3E%3Crect x="48" y="12.5" width="4" height="9" rx="2" fill="%236a3a4c" transform="rotate(0 50 50)"/%3E%3Crect x="49" y="13" width="2" height="5" rx="1" fill="%23eac2cf" transform="rotate(30 50 50)"/%3E%3Crect x="49" y="13" width="2" height="5" rx="1" fill="%23eac2cf" transform="rotate(60 50 50)"/%3E%3Crect x="48" y="12.5" width="4" height="9" rx="2" fill="%236a3a4c" transform="rotate(90 50 50)"/%3E%3Crect x="49" y="13" width="2" height="5" rx="1" fill="%23eac2cf" transform="rotate(120 50 50)"/%3E%3Crect x="49" y="13" width="2" height="5" rx="1" fill="%23eac2cf" transform="rotate(150 50 50)"/%3E%3Crect x="48" y="12.5" width="4" height="9" rx="2" fill="%236a3a4c" transform="rotate(180 50 50)"/%3E%3Crect x="49" y="13" width="2" height="5" rx="1" fill="%23eac2cf" transform="rotate(210 50 50)"/%3E%3Crect x="49" y="13" width="2" height="5" rx="1" fill="%23eac2cf" transform="rotate(240 50 50)"/%3E%3Crect x="48" y="12.5" width="4" height="9" rx="2" fill="%236a3a4c" transform="rotate(270 50 50)"/%3E%3Crect x="49" y="13" width="2" height="5" rx="1" fill="%23eac2cf" transform="rotate(300 50 50)"/%3E%3Crect x="49" y="13" width="2" height="5" rx="1" fill="%23eac2cf" transform="rotate(330 50 50)"/%3E%3Cpath d="M50 50V30" stroke="%236a3a4c" stroke-width="6" stroke-linecap="round" transform="rotate(165 50 50)"/%3E%3Cpath d="M50 50V20" stroke="%236a3a4c" stroke-width="4" stroke-linecap="round" transform="rotate(180 50 50)"/%3E%3Ccircle cx="50" cy="50" r="5.5" fill="%23ff5a92"/%3E%3C/svg%3E')}
 #splash.sp-pre :is(.sp-top,.sp-art,.sp-down,.sp-mid>*){opacity:0;transform:translateY(18px);transition:none}
 #splash.sp-settle :is(.sp-top,.sp-art,.sp-down,.sp-mid>*){transition:opacity .4s ease calc(var(--d,0) * 60ms),transform .5s cubic-bezier(.2,.8,.3,1) calc(var(--d,0) * 60ms)}
 #splash .sp-art,#splash .sp-mid>.sp-kicker{--d:1}
@@ -2855,6 +2857,16 @@ html.pg2 .hm-go{background:linear-gradient(135deg,var(--pgl))}
 @media (prefers-reduced-motion:reduce){html.pg2 #pfade{animation:none}}
 .ch-av.ch-pic{background:none!important;overflow:hidden}
 .ch-av.ch-pic svg{width:100%;height:100%;display:block}
+/* avatar frames (15 referrals): a soft ring around the avatar or the letter badge; the border adds 3 px each side, a matching negative margin keeps the layout the same */
+.ch-av.fr{border:3px solid transparent;box-sizing:content-box;margin:-3px;background-origin:padding-box,border-box;background-clip:padding-box,border-box;background-image:linear-gradient(var(--fri,var(--panel)),var(--fri,var(--panel))),var(--frg)!important}
+.fr-g{--frg:linear-gradient(135deg,#ffe27a,#e5a400)}.fr-s{--frg:linear-gradient(135deg,#f6f8fb,#9aa5b1)}
+.fr-r{--frg:conic-gradient(from 200deg,#ff6b6b,#ffb84d,#ffe14d,#58cc02,#1cb0f6,#a560f0,#ff6b6b)}
+.ap-frs{display:flex;flex-wrap:wrap;gap:14px;margin:6px 0 4px}
+.ap-frb{appearance:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;padding:12px 10px;min-width:84px;background:var(--panel);border:2px solid var(--line);border-bottom-width:4px;border-radius:14px;color:var(--fg);font:700 13px var(--font-ui)}
+.ap-frb .ch-av{width:40px;height:40px;font-size:16px}
+.ap-frb:hover{background:var(--panel2)}.ap-frb.on{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 30%,transparent)}
+.ap-frb.lk{opacity:.55;cursor:default}
+.ap-ckb .ap-ck{width:56px;height:56px;display:block}
 /* ---------- Guide, Suggestions, Administration ---------- */
 #docs .dt-list a,#spdoc .dt-list a{border-left:0;border-radius:10px;padding:7px 12px;font-weight:700;color:var(--fg2)}
 #docs .dt-list .dt-sub a,#spdoc .dt-list .dt-sub a{padding-left:24px}
@@ -3217,6 +3229,26 @@ svg.ic-pic>*{vector-effect:non-scaling-stroke;stroke-width:2px}
 .db-cb i{display:block;width:100%;background:var(--pri);border-radius:6px;min-height:2px}
 .db-cl{font:700 11px/1 var(--font-ui);color:var(--faint);height:11px;white-space:nowrap}
 @media (max-width:700px){#dash .docs-in{padding:20px 16px 40px}.db-st{flex:1 1 40%;min-width:0}}
+/* Dashboard: sections with a sticky sidebar (a strip across the top on phones) */
+#dash .docs-in.db-in{max-width:1240px}
+.db-lay{display:grid;grid-template-columns:200px minmax(0,1fr);gap:32px;align-items:start}
+.db-nav{position:sticky;top:20px;display:flex;flex-direction:column;gap:8px}
+.db-nav .db-nl{width:100%;justify-content:center;text-align:center;padding:10px 14px;font-size:13px}
+.db-main{min-width:0}
+.db-sec{margin-bottom:40px}
+.db-sec>.db-h{margin-top:0}
+.db-h3{font:700 17px/1.2 var(--display);margin:24px 0 10px;color:var(--fg)}
+.db-cols2 .db-cb{position:relative}
+.db-cols2 .db-cb i{position:absolute;left:0;right:0;bottom:0;border-radius:4px;min-height:2px}
+.db-cols2 .db-cb i.all:not(:only-child){background:var(--pri-light,#a4ceff)}
+.db-cols2 .db-cb i.ref{background:var(--pri-dark,var(--pri))}
+.db-cols2{margin-bottom:8px}
+.db-spk{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.db-spark{width:100%;max-width:420px;height:60px;color:var(--pri);display:block}
+.db-spn{font:700 14px/1.6 var(--font-ui);color:var(--fg2);white-space:nowrap}.db-spn b{color:var(--fg);font-size:18px}
+@media (max-width:900px){.db-lay{grid-template-columns:minmax(0,1fr);gap:0}
+  .db-nav{top:0;z-index:6;flex-direction:row;overflow-x:auto;overscroll-behavior:none;background:var(--bg);margin:0 -16px 16px;padding:10px 16px;scrollbar-width:none}
+  .db-nav::-webkit-scrollbar{display:none}.db-nav .db-nl{width:auto;flex:none}}
 /* ---------- Tools page: physics helper and GPA calculator ---------- */
 /* copy buttons: the label stays centered; the check mark makes room only while it shows */
 .btn.tl-copy{gap:0;justify-content:center}.btn.tl-copy.tl-ok svg{margin-left:8px}
@@ -3537,6 +3569,8 @@ html.pg-open:not(.splash-on):has(:is(#games,#desmos,#sugg,#roles,#rewards) :is(.
 .hm-btn.alt{background:var(--bg);color:var(--blue)}
 .hm-btn.alt:hover{background:var(--panel2);color:var(--blue)}
 /* Suggestions on Home stands out (yellow) so people find it */
+.hm-stk{display:inline-flex;flex-direction:column;gap:8px;align-items:stretch}
+.hm-stk .hm-btn{text-align:center;justify-content:center;text-decoration:none}
 html #v-home .hm-btn.hm-hl,html.pg2 #v-home .hm-btn.hm-hl{background:var(--gold-hi);color:#4b3600;border-color:var(--gold-dark);display:inline-flex;align-items:center;gap:6px}
 #v-home .hm-btn.hm-hl svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
 /* secondary buttons carry blue text, as ProfeGPT's do; option groups (tabs) stay gray until chosen */
@@ -3667,13 +3701,6 @@ html #v-home .hm-btn.hm-hl,html.pg2 #v-home .hm-btn.hm-hl{background:var(--gold-
 .site-pick .sp-t{font:800 15px/1.3 var(--font-ui);color:var(--fg);text-align:center;margin-bottom:10px}
 .site-pick .sp-b{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
 .site-pick .sp-b .kbtn{text-decoration:none;white-space:nowrap}
-#gasmove{position:fixed;inset:0;z-index:100000;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:16px;overscroll-behavior:none}
-#gasmove .gm-card{background:var(--panel);border:2px solid var(--line);border-radius:var(--r);box-shadow:0 4px 0 var(--line);max-width:440px;width:100%;padding:28px 24px 24px;text-align:center}
-#gasmove .gm-art{width:72px;height:72px;margin:0 auto 12px}#gasmove .gm-art svg{width:100%;height:100%}
-#gasmove .gm-btns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px}#gasmove .gm-btns .hm-btn{margin-top:0}#gasmove .gm-ok{background:var(--panel);color:var(--text);border:2px solid var(--line);box-shadow:0 4px 0 var(--line);cursor:pointer;font:inherit}
-#gasmove h2{font:700 26px/1.2 var(--display);color:var(--pri);margin:0 0 12px}
-#gasmove p{font:600 15px/1.5 var(--font-ui);color:var(--fg);margin:0 0 10px}
-#gasmove .hm-btn{display:inline-flex;justify-content:center;margin-top:10px;text-decoration:none;width:100%;box-sizing:border-box}
 #dataload{position:fixed;inset:0;z-index:9000;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;overscroll-behavior:none}
 #dataload .res-run{margin:0}
 #dataload .dl-sub{font:700 13px/1.3 var(--font-ui);color:var(--fg2);margin-top:2px}
@@ -4513,6 +4540,9 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
 <li><b>6</b> (Herald): the games you suggest go first in line.</li>
 <li><b>8</b> (Envoy): every suggestion you send goes first in line.</li>
 <li><b>10</b> (Monarch): the Crown avatars.</li>
+<li><b>15</b> (Gilder): gold, silver and rainbow frames around your avatar.</li>
+<li><b>20</b> (Horologist): Night, Mint and Rose looks for the sign-in clock.</li>
+<li><b>25</b> (Laureate): your name in the Thanks list at the end of this guide, if you turn it on in Rewards.</li>
 </ul>
 <p>Class colors are always yours to pick.</p></div>
 
@@ -4543,6 +4573,10 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
 <tr><td data-label="Keys"><kbd>↑</kbd> <kbd>↓</kbd> <kbd>←</kbd> <kbd>→</kbd></td><td data-label="Where">Your Classes table</td><td data-label="What it does">Moves between rows, and between name and period at the edge of the text</td></tr>
 <tr><td data-label="Keys"><kbd>Enter</kbd></td><td data-label="Where">Schoology link box on Your Classes</td><td data-label="What it does">Imports</td></tr>
 </tbody></table>
+
+<div class="g-ref"><h3>Thanks</h3>
+<p>People with 25 or more referrals who chose to be listed.</p>
+<ul id="g-thanks-list"><li>Loading...</li></ul></div>
 </template>
 
 <template id="terms-tpl">
@@ -4651,6 +4685,7 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
 <li><b>Login activity</b>: the time of each login on your account, and of your first visit each day, used for the account's own security notices and for aggregate statistics such as how many people were active this week.</li>
 <li><b>First steps</b>: for an account's first 30 days, whether the tutorial was finished or skipped (and on which step), and when classes, a Schoology link and a first game were first added or opened. Administrators see these only as totals.</li>
 <li><b>Moderation records</b>: for public resources, the approval decision and which moderator made it.</li>
+<li class="g-ref"><b>Thanks list</b>: accounts with 25 referrals can switch on showing their username in the Thanks list at the end of the Guide. It is off unless you turn it on, it shows only your username, and you can turn it off at any time.</li>
 </ul>
 <p>We do not collect your location, contacts, camera or microphone, and we do not read your clipboard except when you press a Copy or Paste button yourself.</p>
 
@@ -7301,7 +7336,7 @@ function normalizeCourse(input){
      u.c created, u.k login times (kept even after logging out), u.v visit times (an account's first page load of each
      day), so someone who stays signed in still counts as active. logins: login times of the last 7 days, visits: the same for visits */
   SX.userStats = function (list, now) {
-    var D = 864e5, out = { ok: true, total: list.length, new7: 0, new30: 0, active7: 0, active30: 0, weeks: [], joins: [], logins: [], visits: [], at: now }, i;
+    var D = 864e5, out = { ok: true, total: list.length, new7: 0, new30: 0, active7: 0, active30: 0, weeks: [], joins: [], refjoins: [], refTotal: 0, logins: [], visits: [], at: now }, i;
     for (i = 0; i < 12; i++) out.weeks.push(0);
     list.forEach(function (u) {
       var c = Number(u.c) || 0, last = c;
@@ -7314,11 +7349,14 @@ function normalizeCourse(input){
       if (last && now - last < 30 * D) out.active30++;
       var w = Math.floor((now - c) / (7 * D));
       if (c && w >= 0 && w < 12) out.weeks[11 - w]++;
-      if (c && now - c < 15 * D) out.joins.push(c);
+      // sign-up times of the last 30 days (and which of them came through a referral); times only, never names
+      if (c && now - c < 30 * D) { out.joins.push(c); if (u.ref) out.refjoins.push(c); }
+      if (u.ref) out.refTotal++;
     });
     out.logins.sort(function (a, b) { return a - b; });
     out.visits.sort(function (a, b) { return a - b; });
     out.joins.sort(function (a, b) { return a - b; });
+    out.refjoins.sort(function (a, b) { return a - b; });
     return out;
   };
   /* Add by year: the year a GPA list is in, a class's subject, and Virginia's diploma credits (8VAC20-131-51) */
@@ -7723,6 +7761,19 @@ const EVENTS=[
 /* each account has its own classes ({id,name,abbr,raw,keys}), loaded with its data */
 let COURSES=[];
 /* saveSettings waits for the account to load: before that COURSES is empty and saving would wipe the saved classes */
+/* the sign-in clock's looks: Classic, and (20 referrals) Night, Mint and Rose. cap is the color that floods the screen at the zoom */
+const CK_STYLES={classic:{n:'Classic',rimS:'#e5a400',rim:'#ffc800',face:'#fffdf5',tb:'#4b4b4b',t:'#c7c1b0',h:'#3c3c3c',cap:'#1cb0f6'},
+  night:{n:'Night',rimS:'#8a93a1',rim:'#c9d0da',face:'#16213b',tb:'#e8ecf5',t:'#4a5878',h:'#e8ecf5',cap:'#3b5bdb'},
+  mint:{n:'Mint',rimS:'#3fae82',rim:'#6fd6a8',face:'#f2fff8',tb:'#2f5d46',t:'#b4d9c4',h:'#2f5d46',cap:'#18b58a'},
+  rose:{n:'Rose',rimS:'#e0678f',rim:'#ff94b6',face:'#fff5f8',tb:'#6a3a4c',t:'#eac2cf',h:'#6a3a4c',cap:'#ff5a92'}};
+/* the clock's face in 100 units, centered on (50,50); hand paths carry the ck-h and ck-m classes the sequence turns */
+function ckFace(key){const c=CK_STYLES[key]||CK_STYLES.classic;
+  const tick=a=>a%90?`<rect x="49" y="13" width="2" height="5" rx="1" fill="${c.t}" transform="rotate(${a} 50 50)"/>`:`<rect x="48" y="12.5" width="4" height="9" rx="2" fill="${c.tb}" transform="rotate(${a} 50 50)"/>`;
+  return `<circle cx="50" cy="53" r="46" fill="${c.rimS}"/><circle cx="50" cy="50" r="46" fill="${c.rim}"/><circle cx="50" cy="50" r="39" fill="${c.face}"/>`+
+    Array.from({length:12},(_,i)=>tick(i*30)).join('')+
+    `<path class="ck-h" d="M50 50V30" stroke="${c.h}" stroke-width="6" stroke-linecap="round"/><path class="ck-m" d="M50 50V20" stroke="${c.h}" stroke-width="4" stroke-linecap="round"/><circle cx="50" cy="50" r="5.5" fill="${c.cap}"/>`;}
+/* the style the clock uses right now: this device's last one (also read by the first-paint script in the head) */
+function ckStyleKey(){let k='classic';try{k=localStorage.getItem('sx-ckstyle')||'classic';}catch(_){}return CK_STYLES[k]?k:'classic';}
 let settingsLoaded=false;
 const DEFAULT_COLORS={eng:'#2b8cff',phys:'#ff3b30',hist:'#a259ff',span:'#ff9500',calc:'#00c48c',latin:'#ff2d87',econ:'#5b6cff'};
 const PALETTE=['#2b8cff','#ff3b30','#a259ff','#ff9500','#00c48c','#ff2d87','#5b6cff','#00bcd4','#ffcc00','#34c759','#ff6b35','#af52de'];
@@ -7854,6 +7905,9 @@ const GS=typeof google!=='undefined'&&google.script&&google.script.run;
 const TOKEN_RE=/^[a-z0-9_.-]{3,24}:[0-9a-f]{64}$/;
 let passKey=getToken();
 const gsRun=(fn,arg,key)=>new Promise((res,rej)=>google.script.run.withSuccessHandler(res).withFailureHandler(rej)[fn](key===undefined?passKey:key,arg));
+/* reads (never writes): a request Google never answers is dropped after 8 s and asked once more, so a page can't wait forever on one stuck call */
+const gsRead=(fn,arg,key)=>{const once=()=>new Promise((res,rej)=>{const t=setTimeout(()=>rej(new Error('timeout')),8000);gsRun(fn,arg,key).then(v=>{clearTimeout(t);res(v);},e=>{clearTimeout(t);rej(e);});});
+  return once().catch(e=>/timeout/.test(String(e&&e.message||e))?once():Promise.reject(e));};
 const gsCall=(fn,...args)=>new Promise((res,rej)=>google.script.run.withSuccessHandler(res).withFailureHandler(rej)[fn](...args));
 function getToken(){
   let t=null;
@@ -7930,15 +7984,15 @@ async function apiRaw(path,opts){
   if(GS){
     const method=(opts&&opts.method)||'GET';
     const body=opts&&opts.body?JSON.parse(opts.body):null;
-    if(path==='/api/data')return gsRun('rpcGetData',obHas()?undefined:DATA_VER||undefined);
-    if(path==='/api/resources')return gsRun('rpcGetResources');
-    if(path==='/api/opps')return gsRun('rpcGetOpps');
-    if(path==='/api/myres'&&method==='GET')return gsRun('rpcListMyRes');
+    if(path==='/api/data')return gsRead('rpcGetData',obHas()?undefined:DATA_VER||undefined);
+    if(path==='/api/resources')return gsRead('rpcGetResources');
+    if(path==='/api/opps')return gsRead('rpcGetOpps');
+    if(path==='/api/myres'&&method==='GET')return gsRead('rpcListMyRes');
     if(path==='/api/myres'&&method==='POST')return gsRun('rpcSaveRes',body);
     if(path==='/api/myres/resync')return gsRun('rpcResyncRes',body);
     if(path.startsWith('/api/myres/'))return gsRun('rpcDeleteRes',decodeURIComponent(path.slice(11)));
     if(path.startsWith('/api/pdf/'))return gsRun('rpcGetPdf',decodeURIComponent(path.slice(9)));
-    if(path==='/api/library')return gsRun('rpcGetLibrary');
+    if(path==='/api/library')return gsRead('rpcGetLibrary');
     if(path==='/api/library/import')return gsRun('rpcImportRes',body);
     if(path==='/api/task'&&method==='POST')return gsRun('rpcSaveTask',body);
     if(path==='/api/tasks'&&method==='POST')return gsRun('rpcTasksBatch',body);
@@ -8157,7 +8211,8 @@ async function loadData(pre){
     const gen=writeGen;
     const d=pre||await api('/api/data');lastLoad=Date.now();
     /* nothing changed since the last load: the server only says so */
-    if(d&&d.same)return true;
+    if(d&&d.same){if(state.user&&'mpLock' in d){const was=mpLocked();state.user.mpLock=!!d.mpLock;state.user.mpUnlocked=d.mpUnlocked!==false;
+      if(was!==mpLocked()){const g=document.getElementById('games');if(g&&!g.hidden&&g.querySelector('.gm-pick'))gmRenderPick();}}return true;}
     /* someone is typing in a box or has a menu open: load again once they're done, so nothing is redrawn under them */
     if(!pre&&uiBusy()){await uiIdle();return loadData();}
     /* a change was sent while this was loading: this copy may be from before it, so wait and load again */
@@ -8208,6 +8263,7 @@ function applyData(d,cached){
     state.settings.pageColors={...(st.pageColors||{})};state.settings.pageFade=!!st.pageFade;['decoOn','sensPics','sensGames','sensTools','footerOff'].forEach(k=>state.settings[k]=!!st[k]);state.settings.pageGrads={...(st.pageGrads||{})};state.settings.noteCols=Array.isArray(st.noteCols)?st.noteCols.slice(0,12):[];
     state.settings.homeChosen=!!st.homeChosen;state.settings.homeView=HV_OPTS.some(([k])=>k===st.homeView)&&(st.homeChosen||st.homeView!=='pages')?st.homeView:'mixed';state.settings.homePages=Array.isArray(st.homePages)?[...st.homePages]:[];
     state.settings.quickGames=Array.isArray(st.quickGames)?[...st.quickGames]:[];state.settings.homeRes=Array.isArray(st.homeRes)?[...st.homeRes]:[];
+    state.settings.clockStyle=CK_STYLES[st.clockStyle]?st.clockStyle:'classic';try{localStorage.setItem('sx-ckstyle',state.settings.clockStyle);}catch(_){}
     state.settings.quickLinks=Array.isArray(st.quickLinks)?st.quickLinks.filter(x=>x&&typeof x==='object').map(x=>({n:String(x.n||''),u:String(x.u||'')})).slice(0,8):null;state.settings.dynRes=!!st.dynRes;
     /* onboarding: mini-tours already seen, and pages that have ever had something added (their example is gone for good) */
     state.settings.seenTips=Array.isArray(st.seenTips)?st.seenTips.filter(x=>typeof x==='string'):[];state.settings.usedPages=Array.isArray(st.usedPages)?st.usedPages.filter(x=>typeof x==='string'):[];
@@ -8341,7 +8397,7 @@ function confetti(x,y){
 async function removeTask(id){try{await api('/api/task/'+encodeURIComponent(id),{method:'DELETE'});}catch(e){console.warn('delete failed',e);}}
 async function saveSettings(){if(!settingsLoaded)return;SX.scrubCourses(COURSES);try{await api('/api/settings',{method:'POST',body:JSON.stringify({colors:state.settings.colors,periods:state.settings.periods,shareClasses:!!state.settings.shareClasses,
   seenTips:state.settings.seenTips||[],usedPages:state.settings.usedPages||[],
-  advisoryCourse:state.settings.advisoryCourse||'',courses:COURSES,ical:state.settings.ical||'',fullNames:!!state.settings.fullNames,quickGames:state.settings.quickGames||[],focusMode:!!state.settings.focusMode,pageFade:!!state.settings.pageFade,decoOn:!!state.settings.decoOn,sensPics:!!state.settings.sensPics,sensGames:!!state.settings.sensGames,sensTools:!!state.settings.sensTools,footerOff:!!state.settings.footerOff,pageGrads:state.settings.pageGrads||{},noteCols:state.settings.noteCols||[],pageColors:state.settings.pageColors||{},courseOrder:state.settings.courseOrder||[],homeView:state.settings.homeView||'mixed',homeChosen:!!state.settings.homeChosen,homePages:state.settings.homePages||[],homeRes:state.settings.homeRes||[],quickLinks:Array.isArray(state.settings.quickLinks)?state.settings.quickLinks:null,dynRes:!!state.settings.dynRes,hideGames:!!state.settings.hideGames,hideChat:!!state.settings.hideChat,faqNew:!!state.settings.faqNew,oppStar:state.settings.oppStar||[],oppArch:state.settings.oppArch||[],gamesIntro:!!state.settings.gamesIntro,gameStar:state.settings.gameStar||[],hidePages:state.settings.hidePages||[],tutorialNew:!!state.settings.tutorialNew,rel:state.settings.rel||{},lunch:state.settings.lunch||{},gpa:SX.cleanGpa(state.settings.gpa),gpaYear:SX.cleanGpaYear(state.settings.gpaYear),gpaByYear:!!state.settings.gpaByYear})});}catch(e){console.warn('save failed',e);}}
+  clockStyle:state.settings.clockStyle||'classic',advisoryCourse:state.settings.advisoryCourse||'',courses:COURSES,ical:state.settings.ical||'',fullNames:!!state.settings.fullNames,quickGames:state.settings.quickGames||[],focusMode:!!state.settings.focusMode,pageFade:!!state.settings.pageFade,decoOn:!!state.settings.decoOn,sensPics:!!state.settings.sensPics,sensGames:!!state.settings.sensGames,sensTools:!!state.settings.sensTools,footerOff:!!state.settings.footerOff,pageGrads:state.settings.pageGrads||{},noteCols:state.settings.noteCols||[],pageColors:state.settings.pageColors||{},courseOrder:state.settings.courseOrder||[],homeView:state.settings.homeView||'mixed',homeChosen:!!state.settings.homeChosen,homePages:state.settings.homePages||[],homeRes:state.settings.homeRes||[],quickLinks:Array.isArray(state.settings.quickLinks)?state.settings.quickLinks:null,dynRes:!!state.settings.dynRes,hideGames:!!state.settings.hideGames,hideChat:!!state.settings.hideChat,faqNew:!!state.settings.faqNew,oppStar:state.settings.oppStar||[],oppArch:state.settings.oppArch||[],gamesIntro:!!state.settings.gamesIntro,gameStar:state.settings.gameStar||[],hidePages:state.settings.hidePages||[],tutorialNew:!!state.settings.tutorialNew,rel:state.settings.rel||{},lunch:state.settings.lunch||{},gpa:SX.cleanGpa(state.settings.gpa),gpaYear:SX.cleanGpaYear(state.settings.gpaYear),gpaByYear:!!state.settings.gpaByYear})});}catch(e){console.warn('save failed',e);}}
 async function saveNote(n){if(STALE.has(n))return;try{await api('/api/advisory',{method:'POST',body:JSON.stringify(n)});}catch(e){console.warn('save failed',e);}}
 /* in-class assignments a week past their date, and sticky notes a week old, are removed by themselves */
 let sweepBusy=false;
@@ -10815,14 +10871,14 @@ var tlBack=false,tlDz=false;
 function rwN(){return state.user?(state.user.owner?99:(state.user.refTree|0)):0;}
 function rwHas(n){return rwN()>=n;}
 /* the rank ladder: referrals needed, rank name, reward */
-const RW_RANKS=[[1,'Scout','Multiplayer games'],[2,'Artisan','Custom colors for pages'],[3,'Alchemist','Gradient colors for pages'],
+const RW_RANKS=[[1,'Scout','Every avatar'],[2,'Artisan','Custom colors for pages'],[3,'Alchemist','Gradient colors for pages'],
   [4,'Curator','Custom colors for to-do items'],[6,'Herald','Priority for the games you suggest'],[8,'Envoy','Priority for every suggestion'],
-  [10,'Monarch','The crown avatars']];
+  [10,'Monarch','The crown avatars'],[15,'Gilder','Avatar frames'],[20,'Horologist','Clock styles'],[25,'Laureate','Your name in the Thanks list']];
 /* a locked reward shows this small chip; it opens Rewards */
 function rwLockHTML(n){return `<button type="button" class="rw-lock" data-act-rewards>${art('lock')}<span>${n} referral${n>1?'s':''}</span></button>`;}
 /* ---------- Rewards: a page under the top bar (like Suggestions). The ranks sit on a winding path that fills up to the
    account's referral count; then the referral link and the people who used it ---------- */
-const RW_ART=['controller','pencil','flask','sticky','bulb','scroll','crown'];
+const RW_ART=['star','pencil','flask','sticky','bulb','scroll','crown','trophy','clock','apple'];
 const RW_CROWN='<g transform="translate(0 2)"><path d="M27 62Q27 30 50 26Q73 30 73 62Z" fill="#ce82ff"/><path d="M50 26Q73 30 73 62H50Z" fill="#b872f5"/><path d="M21 66V36L35.5 51L50 28L64.5 51L79 36V66Z" fill="#ffc800"/><path d="M50 28L64.5 51L79 36V66H50Z" fill="#f5b800"/><circle cx="21" cy="34" r="4.5" fill="#ffc800"/><circle cx="79" cy="34" r="4.5" fill="#f5b800"/><circle cx="50" cy="25" r="5" fill="#ffc800"/><path d="M50 20a5 5 0 0 1 0 10z" fill="#f5b800"/><path d="M50 43L55.5 50.5L50 58L44.5 50.5Z" fill="#1cb0f6"/><path d="M50 43L55.5 50.5L50 58Z" fill="#1899d6"/><rect x="18" y="62" width="64" height="15" rx="5" fill="#e5a400" transform="translate(0 4)"/><rect x="18" y="62" width="64" height="15" rx="5" fill="#ffc800"/><path d="M50 62H77a5 5 0 0 1 5 5V72a5 5 0 0 1-5 5H50Z" fill="#f5b800"/><circle cx="33" cy="69.5" r="3.6" fill="#58cc02"/><circle cx="50" cy="69.5" r="4.4" fill="#ff4b4b"/><circle cx="67" cy="69.5" r="3.6" fill="#58cc02"/><circle cx="48.6" cy="68.1" r="1.3" fill="#ffb3b3"/><rect x="22" y="64.5" width="7" height="2.6" rx="1.3" fill="#ffe680"/><ellipse cx="19.8" cy="32.6" rx="1.3" ry="1.6" fill="#ffe680"/></g>';
 function rwArt(i){return i<0?art('pawn'):i===6?`<svg class="art" viewBox="13 17 74 72" aria-hidden="true" focusable="false">${RW_CROWN}</svg>`:art(RW_ART[i]);}
 const rwRefs=n=>n+' referral'+(n===1?'':'s');
@@ -10856,6 +10912,8 @@ function rewardsHTML(){
     <div class="rw-cols"><div class="rw-info">${HERO}
     <div class="rw-card"><h3 class="rw-h">Your link</h3>
       <div class="rw-ref"><input type="text" id="rw-ref-link" readonly value="${esc(refLink())}" aria-label="Referral link"><button class="btn" data-rw-copy>Copy</button></div></div>
+    <div class="rw-card"><h3 class="rw-h">Thanks list${rwHas(25)?'':rwLockHTML(25)}</h3>
+      ${rwHas(25)?`<div class="sec-sw"><h3 class="ap-fh">Show my name in the Thanks list</h3><input type="checkbox" class="switch" id="rw-thanks" ${u.thanks?'checked':''} aria-label="Show my name in the Thanks list"></div>`:'<p class="rw-none">Names unlock with 25 referrals</p>'}</div>
     <div class="rw-card"><h3 class="rw-h">People you referred${refs.length?` <span class="rw-cnt">${refs.length}</span>`:''}</h3>
       ${refs.length?`<ul class="rw-ppl">${refs.map(p=>`<li><span class="rw-av">${esc(String(p).charAt(0).toUpperCase())}</span><span class="rw-pn">${esc(p)}</span></li>`).join('')}</ul>`:'<p class="rw-none">No one yet</p>'}</div></div>
     <div class="rw-path" style="height:${H}px"><svg class="rw-track" viewBox="0 0 100 ${H}" preserveAspectRatio="none" aria-hidden="true"><path class="bg" d="${track}"/>${fill?`<path class="fg" d="${fill}"/>`:''}</svg>${nodes}</div></div>
@@ -10875,6 +10933,12 @@ document.addEventListener('click',e=>{const d=document.getElementById('rewards')
   const cp=e.target.closest('[data-rw-copy]');
   if(cp){const i=document.getElementById('rw-ref-link');
     (navigator.clipboard?navigator.clipboard.writeText(i.value):Promise.reject()).catch(()=>{i.select();document.execCommand('copy');}).finally(()=>{cp.textContent='Copied';setTimeout(()=>{if(cp.isConnected)cp.textContent='Copy';},1500);});}});
+document.addEventListener('change',async e=>{
+  const t=e.target;if(!t||t.id!=='rw-thanks'||!state.user)return;
+  const on=t.checked,prev=!!state.user.thanks;state.user.thanks=on;
+  let r=null;try{r=await pwRpc('rpcSetThanks',passKey,on);}catch(_){}
+  if(!r||!r.ok){state.user.thanks=prev;t.checked=prev;}
+});
 document.addEventListener('keydown',e=>{const d=document.getElementById('rewards');if(d&&!d.hidden&&e.key==='Escape'){e.stopPropagation();closeRewards();}},true);
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-act-rewards]');if(!b||!state.user)return;e.preventDefault();e.stopPropagation();closeNavMenus();openRewards();},true);
 /* sensitive pictures: Crashout stays hidden until Security turns on Sensitive pictures and then the switch at the
@@ -11719,7 +11783,7 @@ function renderHome(fly){
     el.dataset.sig=sig;
     el.innerHTML=(hv!=='pages'?`<div class="hm-main hm-v-${hv}" id="hm-main"></div>`:`<div class="hm-cards" id="hmcards">${pages.map(([k,n,d],i)=>`<button type="button" class="hm-card" id="hm-${k}" data-home-go="${k}" style="--i:${i}">${art(HM_ART[k],'hm-art')}<span class="hm-tx"><span class="hm-n">${n}</span><span class="hm-d">${d}</span></span></button>`).join('')}</div>`)+`
       <div class="hm-side" id="hmside"><div class="hm-kicker"></div><h2 class="hm-title"><span class="l1">Saxon</span><br><span class="l2">Planner</span></h2><div class="hm-url"><a href="https:${SLASH2}${HM_URL}" target="_blank" rel="noopener">${HM_URL}</a><button type="button" data-hm-copy aria-label="Copy link" title="Copy link"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12"/><path d="M5 15H3V3h12v2"/></svg></button><span class="hm-ok" aria-live="polite"></span></div><div class="hm-rule"></div>
-      <div class="hm-btns"><button type="button" class="hm-btn" id="hm-asg" data-home-go="assignments">See assignments</button><button type="button" class="hm-btn hm-hl" id="hm-sugg" data-act-sugg>Suggestions</button><button type="button" class="hm-btn alt" id="hm-tut" data-act-tut>Tutorial</button><button type="button" class="hm-btn alt" id="hm-faq" data-act="faq">FAQ</button><button type="button" class="hm-btn alt" id="hm-meme" data-act-meme>Meme</button><button type="button" class="hm-btn alt" id="hm-edit" data-act-hmedit>Edit home</button></div>
+      <div class="hm-btns"><button type="button" class="hm-btn" id="hm-asg" data-home-go="assignments">See assignments</button><span class="hm-stk"><button type="button" class="hm-btn hm-hl" id="hm-sugg" data-act-sugg>Suggestions</button><a class="hm-btn hm-hl" id="hm-petition" href="https://docs.google.com/forms/d/e/1FAIpQLScIBV7lT6LqATCCX0gYHK1iQnmViFjntH8kb8gOPnnC1tOseA/viewform?usp=dialog" target="_blank" rel="noopener">Petition</a></span><button type="button" class="hm-btn alt" id="hm-tut" data-act-tut>Tutorial</button><button type="button" class="hm-btn alt" id="hm-faq" data-act="faq">FAQ</button><button type="button" class="hm-btn alt" id="hm-meme" data-act-meme>Meme</button><button type="button" class="hm-btn alt" id="hm-edit" data-act-hmedit>Edit home</button></div>
       <div class="hm-sites" id="hm-row"></div></div>
       <div class="hm-more" id="hm-more"></div>`;
     siteLinks(el);
@@ -11931,8 +11995,11 @@ const VO_AV_N={m:['Lemon','Rocket','Cupcake','Guitar','Cactus','Crown','Umbrella
 /* the crown series (Monarch reward, 10 referrals) */
 VO_AV.c=["<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#ddf4ff\"/><g transform=\"translate(0 2)\">\n<path d=\"M27 62Q27 30 50 26Q73 30 73 62Z\" fill=\"#ce82ff\"/><path d=\"M50 26Q73 30 73 62H50Z\" fill=\"#b872f5\"/>\n<path d=\"M21 66V36L35.5 51L50 28L64.5 51L79 36V66Z\" fill=\"#ffc800\"/><path d=\"M50 28L64.5 51L79 36V66H50Z\" fill=\"#f5b800\"/>\n<circle cx=\"21\" cy=\"34\" r=\"4.5\" fill=\"#ffc800\"/><circle cx=\"79\" cy=\"34\" r=\"4.5\" fill=\"#f5b800\"/><circle cx=\"50\" cy=\"25\" r=\"5\" fill=\"#ffc800\"/><path d=\"M50 20a5 5 0 0 1 0 10z\" fill=\"#f5b800\"/>\n<path d=\"M50 43L55.5 50.5L50 58L44.5 50.5Z\" fill=\"#1cb0f6\"/><path d=\"M50 43L55.5 50.5L50 58Z\" fill=\"#1899d6\"/>\n<rect x=\"18\" y=\"62\" width=\"64\" height=\"15\" rx=\"5\" fill=\"#e5a400\" transform=\"translate(0 4)\"/><rect x=\"18\" y=\"62\" width=\"64\" height=\"15\" rx=\"5\" fill=\"#ffc800\"/><path d=\"M50 62H77a5 5 0 0 1 5 5V72a5 5 0 0 1-5 5H50Z\" fill=\"#f5b800\"/>\n<circle cx=\"33\" cy=\"69.5\" r=\"3.6\" fill=\"#58cc02\"/><circle cx=\"50\" cy=\"69.5\" r=\"4.4\" fill=\"#ff4b4b\"/><circle cx=\"67\" cy=\"69.5\" r=\"3.6\" fill=\"#58cc02\"/>\n<circle cx=\"48.6\" cy=\"68.1\" r=\"1.3\" fill=\"#ffb3b3\"/><rect x=\"22\" y=\"64.5\" width=\"7\" height=\"2.6\" rx=\"1.3\" fill=\"#ffe680\"/><ellipse cx=\"19.8\" cy=\"32.6\" rx=\"1.3\" ry=\"1.6\" fill=\"#ffe680\"/>\n</g></svg>", "<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#f3dfff\"/><g transform=\"translate(50 50) rotate(35) scale(.88) translate(-50 -46)\">\n<rect x=\"45.5\" y=\"30\" width=\"9\" height=\"56\" rx=\"4.5\" fill=\"#ffc800\"/><rect x=\"50\" y=\"30\" width=\"4.5\" height=\"56\" fill=\"#f5b800\"/>\n<rect x=\"43\" y=\"48\" width=\"14\" height=\"5\" rx=\"2.5\" fill=\"#e5a400\"/><rect x=\"43\" y=\"66\" width=\"14\" height=\"5\" rx=\"2.5\" fill=\"#e5a400\"/>\n<circle cx=\"50\" cy=\"89\" r=\"6.5\" fill=\"#ffc800\"/><path d=\"M50 82.5a6.5 6.5 0 0 1 0 13z\" fill=\"#f5b800\"/>\n<path d=\"M36 22Q36 36 50 36Q64 36 64 22Z\" fill=\"#ffc800\"/><path d=\"M50 22H64Q64 36 50 36Z\" fill=\"#f5b800\"/>\n<circle cx=\"50\" cy=\"18\" r=\"12\" fill=\"#ff4b4b\"/><path d=\"M50 6a12 12 0 0 1 0 24z\" fill=\"#ea2b2b\"/><ellipse cx=\"46\" cy=\"15\" rx=\"2.4\" ry=\"3.4\" fill=\"#ff9a9a\" transform=\"rotate(30 46 15)\"/>\n<rect x=\"47.5\" y=\"-6\" width=\"5\" height=\"13\" rx=\"2\" fill=\"#ffc800\"/><rect x=\"43.5\" y=\"-3\" width=\"13\" height=\"4.6\" rx=\"2\" fill=\"#ffc800\"/>\n<rect x=\"47\" y=\"34\" width=\"2.5\" height=\"10\" rx=\"1.25\" fill=\"#ffe680\"/></g></svg>", "<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#fff5d3\"/><circle cx=\"50\" cy=\"62\" r=\"24\" fill=\"#e5a400\" transform=\"translate(0 4)\"/><circle cx=\"50\" cy=\"62\" r=\"24\" fill=\"#ffc800\"/><path d=\"M50 38a24 24 0 0 1 0 48z\" fill=\"#f5b800\"/>\n<path d=\"M26.5 57H73.5Q74.6 62 73.5 67H26.5Q25.4 62 26.5 57Z\" fill=\"#e5a400\"/><path d=\"M45 38.6Q50 37.6 55 38.6V57H45Z\" fill=\"#e5a400\"/>\n<circle cx=\"35\" cy=\"62\" r=\"3\" fill=\"#1cb0f6\"/><circle cx=\"50\" cy=\"62\" r=\"4.2\" fill=\"#ff4b4b\"/><circle cx=\"65\" cy=\"62\" r=\"3\" fill=\"#58cc02\"/><circle cx=\"50\" cy=\"47.5\" r=\"3\" fill=\"#ce82ff\"/>\n<ellipse cx=\"35\" cy=\"73\" rx=\"3\" ry=\"6\" fill=\"#ffe680\" transform=\"rotate(-40 35 73)\"/>\n<rect x=\"45.5\" y=\"12\" width=\"9\" height=\"28\" rx=\"3\" fill=\"#ffc800\"/><rect x=\"50\" y=\"12\" width=\"4.5\" height=\"28\" fill=\"#f5b800\"/><rect x=\"37\" y=\"19\" width=\"26\" height=\"8.5\" rx=\"3\" fill=\"#ffc800\"/><path d=\"M50 19H60a3 3 0 0 1 3 3v2.5a3 3 0 0 1-3 3H50Z\" fill=\"#f5b800\"/>\n<circle cx=\"50\" cy=\"23.25\" r=\"2.8\" fill=\"#ff4b4b\"/><rect x=\"47.5\" y=\"29\" width=\"2.4\" height=\"7\" rx=\"1.2\" fill=\"#ffe680\"/></svg>", "<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#ffdfe0\"/><path d=\"M27 78V34Q27 16 50 12Q73 16 73 34V78Z\" fill=\"#e5a400\" transform=\"translate(0 4)\"/>\n<path d=\"M27 78V34Q27 16 50 12Q73 16 73 34V78Z\" fill=\"#ffc800\"/><path d=\"M50 12Q73 16 73 34V78H50Z\" fill=\"#f5b800\"/>\n<path d=\"M34 62V36Q34 24 50 20Q66 24 66 36V62Z\" fill=\"#ff4b4b\"/><path d=\"M50 20Q66 24 66 36V62H50Z\" fill=\"#ea2b2b\"/>\n<path d=\"M50 30L56 38L50 46L44 38Z\" fill=\"#ffc800\"/><path d=\"M50 30L56 38L50 46Z\" fill=\"#f5b800\"/>\n<circle cx=\"50\" cy=\"10\" r=\"5\" fill=\"#ffc800\"/><path d=\"M50 5a5 5 0 0 1 0 10z\" fill=\"#f5b800\"/>\n<ellipse cx=\"39\" cy=\"34\" rx=\"2\" ry=\"5\" fill=\"#ff9a9a\" transform=\"rotate(25 39 34)\"/>\n<rect x=\"21\" y=\"60\" width=\"8\" height=\"28\" rx=\"3\" fill=\"#e5a400\"/><rect x=\"71\" y=\"60\" width=\"8\" height=\"28\" rx=\"3\" fill=\"#e5a400\"/>\n<rect x=\"16\" y=\"54\" width=\"18\" height=\"9\" rx=\"4.5\" fill=\"#ffc800\"/><rect x=\"66\" y=\"54\" width=\"18\" height=\"9\" rx=\"4.5\" fill=\"#f5b800\"/>\n<rect x=\"28\" y=\"64\" width=\"44\" height=\"12\" rx=\"3\" fill=\"#e5a400\" transform=\"translate(0 4)\"/><rect x=\"28\" y=\"64\" width=\"44\" height=\"12\" rx=\"3\" fill=\"#ffc800\"/><path d=\"M50 64H69a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3H50Z\" fill=\"#f5b800\"/>\n<rect x=\"27\" y=\"56\" width=\"46\" height=\"11\" rx=\"5.5\" fill=\"#ff4b4b\"/><path d=\"M50 56H67.5a5.5 5.5 0 0 1 0 11H50Z\" fill=\"#ea2b2b\"/><rect x=\"31\" y=\"58\" width=\"8\" height=\"3\" rx=\"1.5\" fill=\"#ff9a9a\"/>\n<circle cx=\"50\" cy=\"71\" r=\"2.6\" fill=\"#1cb0f6\"/></svg>", "<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#f3dfff\"/><g transform=\"translate(0 4)\" stroke-linejoin=\"round\"><path d=\"M18 70L25 52L33 60L39 40L45 54L50 22L55 54L61 40L67 60L75 52L82 70Q50 56 18 70Z\" fill=\"#c3ced6\" stroke=\"#c3ced6\" stroke-width=\"5\"/><path d=\"M50 22L55 54L61 40L67 60L75 52L82 70Q66 62 50 61Z\" fill=\"#aebbc5\" stroke=\"#aebbc5\" stroke-width=\"5\"/>\n<path d=\"M14 72Q50 52 86 72Q86 80 80 80Q50 64 20 80Q14 80 14 72Z\" fill=\"#8a9aa5\" transform=\"translate(0 4)\"/>\n<path d=\"M14 72Q50 52 86 72Q86 80 80 80Q50 64 20 80Q14 80 14 72Z\" fill=\"#e9eef2\"/><path d=\"M50 62Q68 63 86 72Q86 80 80 80Q66 70 50 69Z\" fill=\"#d3dde3\"/>\n<path d=\"M50 30Q57 40 50 50Q43 40 50 30Z\" fill=\"#ff86d0\"/><path d=\"M50 30Q57 40 50 50Z\" fill=\"#f56cc0\"/><ellipse cx=\"48\" cy=\"38\" rx=\"1.3\" ry=\"3\" fill=\"#ffd0ee\"/>\n<circle cx=\"39\" cy=\"44\" r=\"3.4\" fill=\"#1cb0f6\"/><circle cx=\"61\" cy=\"44\" r=\"3.4\" fill=\"#1899d6\"/><circle cx=\"25\" cy=\"55\" r=\"2.8\" fill=\"#ff86d0\"/><circle cx=\"75\" cy=\"55\" r=\"2.8\" fill=\"#f56cc0\"/>\n<circle cx=\"27\" cy=\"72\" r=\"2.2\" fill=\"#1cb0f6\"/><circle cx=\"38.5\" cy=\"67.5\" r=\"2.4\" fill=\"#ff86d0\"/><circle cx=\"50\" cy=\"66\" r=\"2.8\" fill=\"#1cb0f6\"/><circle cx=\"61.5\" cy=\"67.5\" r=\"2.4\" fill=\"#ff86d0\"/><circle cx=\"73\" cy=\"72\" r=\"2.2\" fill=\"#1cb0f6\"/>\n<rect x=\"22\" y=\"70\" width=\"8\" height=\"2.4\" rx=\"1.2\" fill=\"#ffffff\" transform=\"rotate(-22 26 71)\"/></g></svg>", "<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#ddf4ff\"/><circle cx=\"50\" cy=\"64\" r=\"20\" fill=\"none\" stroke=\"#e5a400\" stroke-width=\"9\" transform=\"translate(0 4)\"/>\n<circle cx=\"50\" cy=\"64\" r=\"20\" fill=\"none\" stroke=\"#ffc800\" stroke-width=\"9\"/><path d=\"M50 44a20 20 0 0 1 0 40\" fill=\"none\" stroke=\"#f5b800\" stroke-width=\"9\"/>\n<path d=\"M33.5 58a18 18 0 0 1 4-8\" fill=\"none\" stroke=\"#ffe680\" stroke-width=\"3\" stroke-linecap=\"round\"/>\n<path d=\"M38 40H62L58 48H42Z\" fill=\"#ffc800\"/><path d=\"M50 40H62L58 48H50Z\" fill=\"#f5b800\"/>\n<path d=\"M33 26L41 16H59L67 26L50 46Z\" fill=\"#1cb0f6\"/><path d=\"M41 16H59L67 26H33Z\" fill=\"#84d8ff\"/><path d=\"M45 16H55L57 26H43Z\" fill=\"#bfeaff\"/><path d=\"M50 46L67 26H57Z\" fill=\"#1899d6\"/><path d=\"M50 46L43 26H33Z\" fill=\"#49c0f8\"/>\n<path d=\"M76 14l1.6 4.4 4.4 1.6-4.4 1.6-1.6 4.4-1.6-4.4-4.4-1.6 4.4-1.6z\" fill=\"#ffffff\"/></svg>", "<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#d7ffb8\"/><g transform=\"translate(0 2)\"><path d=\"M33 86Q33 74 50 74Q67 74 67 86Z\" fill=\"#e5a400\" transform=\"translate(0 4)\"/><path d=\"M33 86Q33 74 50 74Q67 74 67 86Z\" fill=\"#ffc800\"/><path d=\"M50 74Q67 74 67 86H50Z\" fill=\"#f5b800\"/>\n<rect x=\"45.5\" y=\"50\" width=\"9\" height=\"26\" fill=\"#e5a400\"/><ellipse cx=\"50\" cy=\"63\" rx=\"8\" ry=\"4.5\" fill=\"#ffc800\"/><path d=\"M50 58.5a8 4.5 0 0 1 0 9z\" fill=\"#f5b800\"/>\n<path d=\"M27 20H73Q73 52 50 54Q27 52 27 20Z\" fill=\"#ffc800\"/><path d=\"M50 20H73Q73 52 50 54Z\" fill=\"#f5b800\"/>\n<rect x=\"25\" y=\"16\" width=\"50\" height=\"8\" rx=\"4\" fill=\"#e5a400\" transform=\"translate(0 3)\"/><rect x=\"25\" y=\"16\" width=\"50\" height=\"8\" rx=\"4\" fill=\"#ffc800\"/><path d=\"M50 16H71a4 4 0 0 1 0 8H50Z\" fill=\"#f5b800\"/>\n<circle cx=\"38\" cy=\"35\" r=\"3.6\" fill=\"#ff4b4b\"/><circle cx=\"50\" cy=\"39\" r=\"4.8\" fill=\"#1cb0f6\"/><circle cx=\"62\" cy=\"35\" r=\"3.6\" fill=\"#ea2b2b\"/><circle cx=\"48.5\" cy=\"37.5\" r=\"1.5\" fill=\"#bfeaff\"/>\n<ellipse cx=\"33\" cy=\"32\" rx=\"2\" ry=\"5\" fill=\"#ffe680\" transform=\"rotate(-8 33 32)\"/></g></svg>", "<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#fff5d3\"/><path d=\"M22 18H78V46Q78 74 50 88Q22 74 22 46Z\" fill=\"#e5a400\" transform=\"translate(0 4)\"/><path d=\"M22 18H78V46Q78 74 50 88Q22 74 22 46Z\" fill=\"#ffc800\"/><path d=\"M50 18H78V46Q78 74 50 88Z\" fill=\"#f5b800\"/>\n<path d=\"M29 25H71V46Q71 68 50 80Q29 68 29 46Z\" fill=\"#1cb0f6\"/><path d=\"M50 25H71V46Q71 68 50 80Z\" fill=\"#1899d6\"/>\n<path d=\"M50 30Q59 41 50 56Q41 41 50 30Z\" fill=\"#ffc800\"/><path d=\"M50 30Q59 41 50 56Z\" fill=\"#f5b800\"/>\n<path d=\"M48 54Q37 56 34 47Q32 39 38 39Q42 40 41 45Q41 50 48 50Z\" fill=\"#ffc800\"/><path d=\"M52 54Q63 56 66 47Q68 39 62 39Q58 40 59 45Q59 50 52 50Z\" fill=\"#f5b800\"/>\n<rect x=\"39\" y=\"52\" width=\"22\" height=\"5\" rx=\"2.5\" fill=\"#ffc800\"/><path d=\"M50 52H58.5a2.5 2.5 0 0 1 0 5H50Z\" fill=\"#f5b800\"/>\n<path d=\"M46 57H54L52 66H48Z\" fill=\"#ffc800\"/><path d=\"M50 57H54L52 66H50Z\" fill=\"#f5b800\"/>\n<ellipse cx=\"35\" cy=\"34\" rx=\"2\" ry=\"5\" fill=\"#bfeaff\" transform=\"rotate(20 35 34)\"/></svg>", "<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#ddf4ff\"/><rect x=\"49\" y=\"4\" width=\"3\" height=\"20\" rx=\"1.5\" fill=\"#4b4b4b\"/><path d=\"M52 6L70 10.5L52 15Z\" fill=\"#ff4b4b\"/><path d=\"M52 10.5H70L52 15Z\" fill=\"#ea2b2b\"/>\n<rect x=\"31\" y=\"38\" width=\"38\" height=\"50\" rx=\"2\" fill=\"#8a9aa5\" transform=\"translate(0 0)\"/><rect x=\"31\" y=\"38\" width=\"38\" height=\"48\" fill=\"#bfcad2\"/><rect x=\"50\" y=\"38\" width=\"19\" height=\"48\" fill=\"#a6b4bd\"/>\n<path d=\"M26 22H36V30H45V22H55V30H64V22H74V40H26Z\" fill=\"#8a9aa5\" transform=\"translate(0 3)\"/><path d=\"M26 22H36V30H45V22H55V30H64V22H74V40H26Z\" fill=\"#bfcad2\"/><path d=\"M50 22H55V30H64V22H74V40H50Z\" fill=\"#a6b4bd\"/>\n<rect x=\"35\" y=\"50\" width=\"8\" height=\"4\" rx=\"2\" fill=\"#d9e1e6\"/><rect x=\"58\" y=\"60\" width=\"8\" height=\"4\" rx=\"2\" fill=\"#bfcad2\"/><rect x=\"36\" y=\"66\" width=\"7\" height=\"4\" rx=\"2\" fill=\"#d9e1e6\"/>\n<rect x=\"45.5\" y=\"46\" width=\"9\" height=\"13\" rx=\"4.5\" fill=\"#4b4b4b\"/>\n<path d=\"M41 86V76Q41 67 50 67Q59 67 59 76V86Z\" fill=\"#8b5a2b\"/><path d=\"M50 67Q59 67 59 76V86H50Z\" fill=\"#6e4522\"/><circle cx=\"54\" cy=\"78\" r=\"1.4\" fill=\"#ffc800\"/>\n<rect x=\"28\" y=\"86\" width=\"44\" height=\"5\" rx=\"2.5\" fill=\"#8a9aa5\"/><rect x=\"29\" y=\"25\" width=\"4\" height=\"8\" rx=\"2\" fill=\"#d9e1e6\"/></svg>", "<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#f3dfff\"/><rect x=\"26\" y=\"22\" width=\"48\" height=\"56\" fill=\"#f7dfa8\"/><rect x=\"26\" y=\"22\" width=\"24\" height=\"56\" fill=\"#fff5d3\"/>\n<rect x=\"34\" y=\"34\" width=\"32\" height=\"3.5\" rx=\"1.75\" fill=\"#e8c37e\"/><rect x=\"34\" y=\"42\" width=\"32\" height=\"3.5\" rx=\"1.75\" fill=\"#e8c37e\"/><rect x=\"34\" y=\"50\" width=\"22\" height=\"3.5\" rx=\"1.75\" fill=\"#e8c37e\"/>\n<rect x=\"20\" y=\"14\" width=\"60\" height=\"12\" rx=\"6\" fill=\"#d9a54f\" transform=\"translate(0 3)\"/><rect x=\"20\" y=\"14\" width=\"60\" height=\"12\" rx=\"6\" fill=\"#f7dfa8\"/><path d=\"M50 14H74a6 6 0 0 1 0 12H50Z\" fill=\"#e8c37e\"/>\n<rect x=\"20\" y=\"74\" width=\"60\" height=\"12\" rx=\"6\" fill=\"#d9a54f\" transform=\"translate(0 3)\"/><rect x=\"20\" y=\"74\" width=\"60\" height=\"12\" rx=\"6\" fill=\"#f7dfa8\"/><path d=\"M50 74H74a6 6 0 0 1 0 12H50Z\" fill=\"#e8c37e\"/>\n<rect x=\"24\" y=\"17\" width=\"10\" height=\"3\" rx=\"1.5\" fill=\"#fff5d3\"/>\n<path d=\"M58 70L54 90L60 86L63 92L66 72Z\" fill=\"#c81e1e\"/><path d=\"M66 70L72 88L66 86L64 92L60 72Z\" fill=\"#ea2b2b\"/>\n<circle cx=\"63\" cy=\"66\" r=\"11\" fill=\"#ff4b4b\"/><path d=\"M63 55a11 11 0 0 1 0 22z\" fill=\"#ea2b2b\"/><circle cx=\"63\" cy=\"66\" r=\"6.5\" fill=\"none\" stroke=\"#c81e1e\" stroke-width=\"2\"/>\n<path d=\"M58.5 69V63L61 65.5L63 61.5L65 65.5L67.5 63V69Z\" fill=\"#c81e1e\"/></svg>", "<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#d7ffb8\"/><path d=\"M24 38L37 20H63L76 38L50 82Z\" fill=\"#c81e1e\" transform=\"translate(0 4)\"/>\n<path d=\"M24 38L37 20H63L76 38L50 82Z\" fill=\"#ff4b4b\"/><path d=\"M37 20H63L57 38H43Z\" fill=\"#ff7878\"/><path d=\"M24 38L37 20L43 38Z\" fill=\"#ff6161\"/><path d=\"M63 20L76 38H57Z\" fill=\"#ea2b2b\"/>\n<path d=\"M43 38H57L50 82Z\" fill=\"#ff6161\"/><path d=\"M57 38H76L50 82Z\" fill=\"#ea2b2b\"/>\n<path d=\"M42 24H52L49 30H40Z\" fill=\"#ff9a9a\"/>\n<path d=\"M78 18l2 5.5 5.5 2-5.5 2-2 5.5-2-5.5-5.5-2 5.5-2z\" fill=\"#ffffff\"/><path d=\"M22 62l1.4 3.6 3.6 1.4-3.6 1.4-1.4 3.6-1.4-3.6-3.6-1.4 3.6-1.4z\" fill=\"#ffffff\"/></svg>", "<svg viewBox=\"0 0 100 100\"><rect width=\"100\" height=\"100\" fill=\"#ffe7c2\"/><g transform=\"translate(50 50) scale(.86) rotate(-12) translate(-51 -46)\">\n<path d=\"M28 38H62V72L45 63L28 72Z\" fill=\"#8a49c9\" transform=\"translate(0 4)\"/><path d=\"M28 38H62V72L45 63L28 72Z\" fill=\"#ce82ff\"/><path d=\"M45 38H62V72L45 63Z\" fill=\"#b872f5\"/>\n<path d=\"M37 56V47L40.5 51L45 44L49.5 51L53 47V56Z\" fill=\"#ffc800\"/><path d=\"M45 44L49.5 51L53 47V56H45Z\" fill=\"#f5b800\"/>\n<rect x=\"14\" y=\"30\" width=\"60\" height=\"7\" rx=\"3.5\" fill=\"#e5a400\" transform=\"translate(0 3)\"/><rect x=\"14\" y=\"30\" width=\"60\" height=\"7\" rx=\"3.5\" fill=\"#ffc800\"/>\n<rect x=\"9\" y=\"28\" width=\"7\" height=\"11\" rx=\"2.5\" fill=\"#e5a400\"/>\n<path d=\"M66 33.5L88 18Q93 33.5 88 49Z\" fill=\"#ffc800\"/><path d=\"M66 33.5H90.5Q90.5 42 88 49Z\" fill=\"#f5b800\"/><ellipse cx=\"88\" cy=\"33.5\" rx=\"4\" ry=\"15.5\" fill=\"#e5a400\"/>\n<rect x=\"28\" y=\"38\" width=\"34\" height=\"4\" fill=\"#e5a400\"/><rect x=\"20\" y=\"31.5\" width=\"14\" height=\"2.2\" rx=\"1.1\" fill=\"#ffe680\"/></g></svg>"];
 VO_AV_N.c=['Crown','Sceptre','Orb','Throne','Tiara','Ring','Goblet','Shield','Tower','Seal','Gem','Trumpet'];
-const avSvg=id=>{const m=/^([mac])(\d{1,2})$/.exec(id||'');return m&&VO_AV[m[1]][+m[2]]||'';};
-const avName=id=>{const m=/^([mac])(\d{1,2})$/.exec(id||'');return m&&VO_AV_N[m[1]][+m[2]]||'';};
+/* a shown avatar is 'm3', 'm3.g' (with a frame: g gold, s silver, r rainbow; the 15 referral reward) or '.g' (letter in a frame) */
+const avSvg=id=>{const m=/^([mac])(\d{1,2})(?:\.[gsr])?$/.exec(id||'');return m&&VO_AV[m[1]][+m[2]]||'';};
+const avFr=id=>{const m=/\.([gsr])$/.exec(id||'');return m?m[1]:'';};
+const AV_FR=[['g','Gold'],['s','Silver'],['r','Rainbow']];
+const avName=id=>{const m=/^([mac])(\d{1,2})(?:\.[gsr])?$/.exec(id||'');return m&&VO_AV_N[m[1]][+m[2]]||'';};
 let chAvs={};
 const AP_PAGES=[['courses','Courses'],['calendar','Calendar'],['advisory','To-Do'],['assignments','Assignments'],['resources','Resources'],['tools','Tools'],
   ['tasks','Tasks'],['chat','Chat'],['news','News'],['games','Games'],['guide','Guide']];
@@ -11940,12 +12007,38 @@ const hiddenPages=()=>{const h=new Set((state.settings&&state.settings.hidePages
 const pageHidden=k=>!!state.user&&hiddenPages().has(k);
 /* the avatar pictures (Crown, Modern, Antiques) as tiles; shown in Settings, Appearance and in the picker from a pencil on your own picture in chat */
 function apAvHTML(){
-  const mine=(state.user&&state.user.av)||'',crown=rwHas(10);
-  const tile=id=>`<button type="button" class="ap-av${mine===id?' on':''}" data-ap-av="${id}" aria-pressed="${mine===id}" aria-label="${id?esc(avName(id)):'No avatar, just your first letter'}" title="${id?esc(avName(id)):'No avatar'}">${id?avSvg(id):`<span class="ap-none">${esc(state.user.name.slice(0,1))}</span>`}</button>`;
-  return `<h4 class="ap-crh">Crown${crown?'':rwLockHTML(10)}</h4><div class="ap-avs">${VO_AV.c.map((_,i)=>crown?tile('c'+i):`<button type="button" class="ap-av ap-lk" data-act-rewards aria-label="Locked"><span>?</span>${art('lock')}</button>`).join('')}</div>
+  /* every avatar is the first referral's reward: with none, the tiles are locked and the account shows its first letter */
+  const open=rwHas(1),mine=open?((state.user&&state.user.av)||''):'',crown=rwHas(10);
+  const lockTile=()=>`<button type="button" class="ap-av ap-lk" data-act-rewards aria-label="Locked, avatars unlock with your first referral"><span>?</span>${art('lock')}</button>`;
+  const note=open?'':`<div class="ap-avnote">${art('lock')}<span>Avatars unlock with your first referral</span><button type="button" class="rw-lock" data-act-rewards>1 referral</button></div>`;
+  const tile=id=>!open&&id?lockTile():`<button type="button" class="ap-av${mine===id?' on':''}" data-ap-av="${id}" aria-pressed="${mine===id}" aria-label="${id?esc(avName(id)):'No avatar, just your first letter'}" title="${id?esc(avName(id)):'No avatar'}">${id?avSvg(id):`<span class="ap-none">${esc(state.user.name.slice(0,1))}</span>`}</button>`;
+  return `${note}<h4 class="ap-crh">Crown${crown?'':rwLockHTML(10)}</h4><div class="ap-avs">${VO_AV.c.map((_,i)=>crown?tile('c'+i):`<button type="button" class="ap-av ap-lk" data-act-rewards aria-label="Locked"><span>?</span>${art('lock')}</button>`).join('')}</div>
       <h4>Modern</h4><div class="ap-avs">${tile('')}${VO_AV.m.map((_,i)=>tile('m'+i)).join('')}</div>
-      <h4>Antiques</h4><div class="ap-avs">${VO_AV.a.map((_,i)=>tile('a'+i)).join('')}</div>`;
+      <h4>Antiques</h4><div class="ap-avs">${VO_AV.a.map((_,i)=>tile('a'+i)).join('')}</div>${apFrHTML()}`;
 }
+/* frames: gold, silver and rainbow rings, the 15 referral reward; the preview shows your own avatar (or first letter) in each */
+function apFrHTML(){
+  const u=state.user,fr=u.fr||'',has=rwHas(15);
+  const prev=f=>{const sv=avSvg(u.av),c=f?' fr fr-'+f:'';
+    return sv?`<span class="ch-av ch-pic${c}">${sv}</span>`:`<span class="ch-av${c}" style="background:hsl(${chHue(u.name)} 45% 42%);--fri:hsl(${chHue(u.name)} 45% 42%)">${esc(u.name.slice(0,1))}</span>`;};
+  const tile=([f,n])=>has?`<button type="button" class="ap-frb${fr===f?' on':''}" data-ap-fr="${f}" aria-pressed="${fr===f}" aria-label="${f?n+' frame':'No frame'}">${prev(f)}<span>${n}</span></button>`:`<button type="button" class="ap-frb lk" data-act-rewards aria-label="Locked, frames unlock with 15 referrals">${prev(f)}<span>${n}</span></button>`;
+  return `<h4 class="ap-crh">Frame${has?'':rwLockHTML(15)}</h4>${has?'':`<div class="ap-avnote">${art('lock')}<span>Frames unlock with 15 referrals</span></div>`}<div class="ap-frs">${[['','None']].concat(AV_FR).map(tile).join('')}</div>`;
+}
+/* clock styles (20 referrals): Classic stays free; the picker shows each face at 5:30 */
+function ckPrev(key){return `<svg class="ap-ck" viewBox="0 0 100 100" aria-hidden="true">${ckFace(key).replace('class="ck-h"','class="ck-h" transform="rotate(165 50 50)"').replace('class="ck-m"','class="ck-m" transform="rotate(180 50 50)"')}</svg>`;}
+function apCkHTML(){
+  const has=rwHas(20),cur=(state.settings&&CK_STYLES[state.settings.clockStyle])?state.settings.clockStyle:'classic';
+  const tile=k=>has||k==='classic'?`<button type="button" class="ap-frb ap-ckb${cur===k?' on':''}" data-ap-ck="${k}" aria-pressed="${cur===k}" aria-label="${CK_STYLES[k].n} clock">${ckPrev(k)}<span>${CK_STYLES[k].n}</span></button>`
+    :`<button type="button" class="ap-frb ap-ckb lk" data-act-rewards aria-label="Locked, clock styles unlock with 20 referrals">${ckPrev(k)}<span>${CK_STYLES[k].n}</span></button>`;
+  return `${has?'':`<div class="ap-avnote">${art('lock')}<span>Clock styles unlock with 20 referrals</span><button type="button" class="rw-lock" data-act-rewards>20 referrals</button></div>`}<div class="ap-frs">${Object.keys(CK_STYLES).map(tile).join('')}</div>`;
+}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('#pwx [data-ap-ck]');if(!b||!state.user)return;
+  const k=b.dataset.apCk;if(!CK_STYLES[k]||(k!=='classic'&&!rwHas(20)))return;
+  e.preventDefault();e.stopPropagation();state.settings.clockStyle=k;try{localStorage.setItem('sx-ckstyle',k);}catch(_){}
+  document.querySelectorAll('#pwx [data-ap-ck]').forEach(x=>{const on=x.dataset.apCk===k;x.classList.toggle('on',on);x.setAttribute('aria-pressed',String(on));});
+  saveSettings();
+},true);
 function apOpen(note){
   if(!state.user)return;
   pwx={mode:'appear',seq:[]};
@@ -11962,6 +12055,7 @@ function apOpen(note){
     <section><div class="sec-sw"><h3 class="ap-fh">Footer</h3><input type="checkbox" class="switch" id="ap-foot" ${state.settings.footerOff?'':'checked'} aria-label="Footer"></div></section>
     <section><h3>Avatar</h3><p>Shown next to your name in Chat.</p>
       ${apAvHTML()}</section>
+    <section><h3>Clock</h3>${apCkHTML()}</section>
     <div class="pwx-msg" role="alert">${note?esc(note):''}</div></div>`,true);
 }
 document.addEventListener('click',async e=>{
@@ -11969,14 +12063,26 @@ document.addEventListener('click',async e=>{
   if(o){e.preventDefault();e.stopPropagation();state.setOpen=false;closeNavMenus();renderSetdd();apOpen();return;}
   const b=e.target.closest('#pwx [data-ap-av],#chav-ov [data-ap-av]');if(!b||!state.user)return;
   const id=b.dataset.apAv,prev=state.user.av||'';
-  state.user.av=id;chAvs[state.user.name]=id;
+  state.user.av=id;chAvs[state.user.name]=id+(state.user.fr?'.'+state.user.fr:'');
   document.querySelectorAll('#pwx [data-ap-av],#chav-ov [data-ap-av]').forEach(x=>{const on=x.dataset.apAv===id;x.classList.toggle('on',on);x.setAttribute('aria-pressed',String(on));});
   if(state.view==='chat'){const l=document.querySelector('#v-chat .ch-msgs');if(l)l._r=null;render();}
   const inPop=!!b.closest('#chav-ov');if(inPop)setTimeout(chAvClose,160);
   let r=null;try{r=await pwRpc('rpcAvatar',passKey,id);}catch(_){}
-  if(!r||!r.ok){state.user.av=prev;chAvs[state.user.name]=prev;
+  if(!r||!r.ok){state.user.av=prev;chAvs[state.user.name]=prev+(state.user.fr?'.'+state.user.fr:'');
     if(state.view==='chat'){const l=document.querySelector('#v-chat .ch-msgs');if(l)l._r=null;render();}
     if(inPop)chFail('Avatar: '+PWX_ERR.conn,null);else apOpen(PWX_ERR.conn);}
+},true);
+/* picking a frame (15 referrals): shows at once, saved on the server, put back if the server says no */
+document.addEventListener('click',async e=>{
+  const b=e.target.closest('#pwx [data-ap-fr],#chav-ov [data-ap-fr]');if(!b||!state.user)return;
+  e.preventDefault();e.stopPropagation();
+  const f=b.dataset.apFr||'',prev=state.user.fr||'',me=state.user.name,put=x=>{state.user.fr=x;chAvs[me]=(state.user.av||'')+(x?'.'+x:'');if(!state.user.av&&!x)delete chAvs[me];};
+  put(f);
+  document.querySelectorAll('#pwx [data-ap-fr],#chav-ov [data-ap-fr]').forEach(x=>{const on=(x.dataset.apFr||'')===f;x.classList.toggle('on',on);x.setAttribute('aria-pressed',String(on));});
+  if(state.view==='chat'){const l=document.querySelector('#v-chat .ch-msgs');if(l)l._r=null;render();}
+  let r=null;try{r=await pwRpc('rpcAvatarFrame',passKey,f);}catch(_){}
+  if(!r||!r.ok){put(prev);if(state.view==='chat'){const l=document.querySelector('#v-chat .ch-msgs');if(l)l._r=null;render();}
+    if(document.getElementById('chav-ov'))chFail('Frame: '+PWX_ERR.conn,null);else apOpen(PWX_ERR.conn);}
 },true);
 /* the pencil on your own picture in a conversation opens the same picker in a small window */
 function chAvClose(){const o=document.getElementById('chav-ov');if(o)o.remove();}
@@ -12755,12 +12861,7 @@ if(window.SX_REF)sxRefArrived(window.SX_REF);
     const R=Math.max(64,Math.min(Math.min(bw,bh)*.38,190));
     /* a round wall clock in 100 units, centered on (50,50): a gold rim with a darker bottom edge, a cream face, 12 ticks
        (longer at 12, 3, 6 and 9), dark hands and a blue cap; the cap's blue is the color that fills the screen */
-    const tick=a=>a%90?`<rect x="49" y="13" width="2" height="5" rx="1" fill="#c7c1b0" transform="rotate(${a} 50 50)"/>`:`<rect x="48" y="12.5" width="4" height="9" rx="2" fill="#4b4b4b" transform="rotate(${a} 50 50)"/>`;
-    const CLOCK='<circle cx="50" cy="53" r="46" fill="#e5a400"/><circle cx="50" cy="50" r="46" fill="#ffc800"/><circle cx="50" cy="50" r="39" fill="#fffdf5"/>'+
-      Array.from({length:12},(_,i)=>tick(i*30)).join('')+
-      '<path class="ck-h" d="M50 50V30" stroke="#3c3c3c" stroke-width="6" stroke-linecap="round"/>'+
-      '<path class="ck-m" d="M50 50V20" stroke="#3c3c3c" stroke-width="4" stroke-linecap="round"/>'+
-      '<circle cx="50" cy="50" r="5.5" fill="#1cb0f6"/>';
+    const CKS=ckStyleKey(),CLOCK=ckFace(CKS);
     const ov=document.createElement('div');ov.id='spclock';ov.setAttribute('aria-hidden','true');if(opts.center)ov.classList.add('solid');
     ov.innerHTML=`<svg viewBox="0 0 ${W} ${H}"><g class="ck-pos"><g class="ck-pop">${CLOCK}</g></g></svg>`;
     document.body.appendChild(ov);
@@ -12794,7 +12895,7 @@ if(window.SX_REF)sxRefArrived(window.SX_REF);
     const far=Math.max(Math.hypot(cx,cy),Math.hypot(W-cx,cy),Math.hypot(cx,H-cy),Math.hypot(W-cx,H-cy)),sEnd=far/rc*1.04,lnE=Math.log(sEnd);
     await run(700,t=>{const s=Math.exp(lnE*(t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2));
       svg.setAttribute('viewBox',`${cx-cx/s} ${cy-cy/s} ${W/s} ${H/s}`);});
-    const cov=document.createElement('div');cov.id='spcover';cov.setAttribute('aria-hidden','true');document.body.appendChild(cov);ov.remove();
+    const cov=document.createElement('div');cov.id='spcover';cov.setAttribute('aria-hidden','true');cov.style.background=CK_STYLES[CKS].cap;document.body.appendChild(cov);ov.remove();
     if(ok===null){const wt=setTimeout(()=>cov.classList.add('wait'),250);await dataP.catch(()=>{});clearTimeout(wt);cov.classList.remove('wait');}
     if(!ok){
       /* the data didn't come: back to the form */
@@ -13167,7 +13268,7 @@ var PG_TOURS={
   tools:{ov:'#games .tl-pick',steps:[{s:'#games .tl-pick [data-tool="timer"]',p:'Focus timer for studying'},{s:'#games .tl-pick [data-tool="gpa"]',p:'Work out your GPA'},{s:'#games .tl-pick [data-tool="desmos"]',p:'Graph with Desmos'}]},
   timer:{here:()=>!state.setup&&state.view==='tools'&&state.toolTab==='timer'&&document.getElementById('games').hidden,
     steps:[{s:ptUp('#v-tools [data-tm-mode="count"]'),p:'Focus and breaks, or a countdown'},{s:'#v-tools .tm-go',p:'Start and pause'},{s:'#v-tools .tm-set',p:'Set your minutes',at:'down'}]},
-  games:{ov:'#games .gm-pick:not(.tl-pick)',steps:[{s:'#games #gm-q',p:'Search every game'},{s:'#games .gm-tile[data-game]',p:'Click one to play'},{s:ptUp('#games #gm-ref-link'),p:'Share to unlock multiplayer'}]}};
+  games:{ov:'#games .gm-pick:not(.tl-pick)',steps:[{s:'#games #gm-q',p:'Search every game'},{s:'#games .gm-tile[data-game]',p:'Click one to play'}]}};
 var tipSeen=k=>(state.settings.seenTips||[]).includes(k);
 var ptHere=k=>PG_TOURS[k].here?PG_TOURS[k].here():PG_TOURS[k].ov?!document.getElementById('games').hidden&&!!document.querySelector(PG_TOURS[k].ov):!state.setup&&state.view===k&&!pgOpenNow();
 /* the page just drawn (or Tools / Games opened): its tour, once per account */
@@ -13226,6 +13327,9 @@ function pageUsed(k){return (state.settings.usedPages||[]).includes(k);}
 function pageUse(k){if(!state.user||!settingsLoaded||pageUsed(k))return;state.settings.usedPages=(state.settings.usedPages||[]).concat(k);saveSettings();}
 
 /* ---------- guide: the book button (top bar, phone menu, opening screen) opens and closes it; Esc or × closes ---------- */
+/* the Thanks list at the end of the Guide: usernames of accounts with 25 referrals that switched it on (a small cached read) */
+function thanksFill(){const ul=document.getElementById('g-thanks-list');if(!ul)return;
+  Promise.resolve(pwRpc('rpcThanks',(typeof passKey!=='undefined'&&passKey)||'')).then(r=>{const a=(r&&r.names)||[];ul.innerHTML=a.length?a.map(n=>`<li>${esc(n)}</li>`).join(''):'<li>No names yet</li>';}).catch(()=>{ul.innerHTML='<li>Could not load this right now</li>';});}
 function openDocs(){
   const d=document.getElementById('docs'),tpl=document.getElementById('docs-tpl');
   if(!d.firstChild)d.innerHTML=`<div class="docs-in"><button class="hbtn navbtn res-x" data-docs-close title="Close" aria-label="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button><div class="res-head"><div class="rh-text"><span class="rh-art">${art('guide')}</span><span class="rc">Saxon Planner</span><span class="rt">Guide</span></div></div><div class="docs-body"><nav class="docs-toc" aria-label="Contents"></nav><div class="rdoc udoc">${tpl.innerHTML}</div></div></div>`,docsToc(d);
@@ -13236,7 +13340,7 @@ function openDocs(){
   /* the book button while the Guide is open closes it */
   if(!d.hidden){if(typeof closeNavMenus==='function')closeNavMenus();closeDocs();return;}
   docsFocus=document.activeElement;
-  d.hidden=false;d.scrollTop=0;
+  d.hidden=false;d.scrollTop=0;thanksFill();
   /* modal: the page behind can't scroll, take focus or be reached by keys; the Guide takes the focus so Space,
      PageDown and the arrows scroll it */
   document.documentElement.classList.add('docs-open');
@@ -13319,8 +13423,9 @@ const chConv=id=>CH.state&&CH.state.convs.find(c=>c.id===id);
 const chOther=id=>id.startsWith('d:')?id.slice(2).split('|').find(n=>n!==me())||'':'';
 const chTitle=id=>{const c=CH.conv[id],cv=chConv(id);return (c&&c.info&&c.info.title)||(cv&&cv.title)||chOther(id)||'Group';};
 const chHue=n=>{let h=0;for(const ch of String(n))h=(h*31+ch.charCodeAt(0))%360;return h;};
-const chAv=(n,grp)=>!grp&&avSvg(chAvs[n])?`<span class="ch-av ch-pic">${avSvg(chAvs[n])}</span>`:chAvL(n,grp);
-const chAvL=(n,grp)=>`<span class="ch-av" style="background:hsl(${grp?210:chHue(n)} 45% 42%)">${grp?CH_I.group:esc(String(n).slice(0,1))}</span>`;
+const chAv=(n,grp)=>{if(grp)return chAvL(n,grp);const v=chAvs[n],fr=avFr(v),sv=avSvg(v);
+  return sv?`<span class="ch-av ch-pic${fr?' fr fr-'+fr:''}">${sv}</span>`:chAvL(n,grp,fr);};
+const chAvL=(n,grp,fr)=>{const bg=`hsl(${grp?210:chHue(n)} 45% 42%)`;return `<span class="ch-av${fr?' fr fr-'+fr:''}" style="background:${bg}${fr?';--fri:'+bg:''}">${grp?CH_I.group:esc(String(n).slice(0,1))}</span>`;};
 /* the inbox: messages from the site itself, shown with the site's logo */
 const chSysAv=()=>`<span class="ch-av ch-sys">${art('logo')}</span>`;
 /* a group's logo: its color and emoji ("#rrggbb|emoji" in the list, color and emoji in the conversation's info) */
@@ -14497,20 +14602,16 @@ if(SAFE)GAMES.length=0;
 /* the picker is one list (no sections); the labels stay on each tile */
 const GAME_SECTIONS=[['Singleplayer','Singleplayer'],['Social','Social'],['Multiplayer','Multiplayer'],['Online','Online']];
 const gmInSec=(x,lab)=>lab==='Online'?x.labels.includes('Online'):x.labels.includes(lab)&&!x.labels.includes('Online');
-/* referrals: Multiplayer and Online games stay locked until someone signs up with the account's referral link (guests:
-   always locked); Social games never lock, even the Online ones. The server refuses their rooms too (SX.MP_GAMES) */
-const mpLocked=()=>!(state.user&&state.user.mpUnlocked!==false);
+/* Multiplayer is open to everyone. The owner's Lock multiplayer switch (Administration) is an emergency valve: while it is on,
+   an account with no referral sees the Multiplayer and Online tiles locked and the server refuses its rooms. Social games never lock */
+const mpLocked=()=>!!(state.user&&state.user.mpLock&&state.user.mpUnlocked===false);
 const gameLocked=x=>!!(x&&(x.labels.includes('Multiplayer')||x.labels.includes('Online'))&&!x.labels.includes('Social')&&mpLocked());
 const HOSTED_URL='https:'+SLASH2+'script.google.com/macros/s/AKfycbxDk0GrC7XrtoekZdrW4qPsffwxxuG0ujTopOYe5m3rzRPX1GOtbv9-aUtvaXAZlFLW/exec';
 const refLink=()=>state.user?'https:'+SLASH2+HM_URL+'/?ref='+encodeURIComponent(state.user.refCode||state.user.name):'';
 const LOCK_SVG=art('lock');
 function gmLockPanel(){
-  if(!state.user)return `<div class="gm-lock" id="gm-lock"><span class="gm-lock-i">${LOCK_SVG}</span><div class="gm-lock-t"><b>Multiplayer is locked</b>
-    <p>Multiplayer and Online games need an account. Sign up, then share your referral link. When one person signs up with it, they unlock.</p></div>
-    <div class="gm-ref"><button class="gm-ref-copy" data-gm-signup>Sign up</button></div></div>`;
-  return `<div class="gm-lock" id="gm-lock"><span class="gm-lock-i">${LOCK_SVG}</span><div class="gm-lock-t"><b>Multiplayer is locked</b>
-    <p>Share your referral link. When one other person signs up with it, Multiplayer and Online games unlock for you.</p></div>
-    <div class="gm-ref"><input type="text" id="gm-ref-link" readonly value="${esc(refLink())}" aria-label="Referral link"><button class="gm-ref-copy" data-ref-copy>Copy</button></div></div>`;
+  return `<div class="gm-lock" id="gm-lock"><span class="gm-lock-i">${LOCK_SVG}</span><div class="gm-lock-t"><b>Multiplayer is paused</b>
+    <p>Multiplayer and Online games are resting for a little while and will be back soon.</p></div></div>`;
 }
 /* picker thumbnails: screenshots of each game (webp, base64url so the page never contains a double slash) */
 const GAME_THUMB={};
@@ -14656,7 +14757,7 @@ function trackSend(){
 setInterval(()=>{if(Date.now()-TRK.last>=10*60*1000)trackSend();},60*1000);
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&Date.now()-TRK.last>=60*1000)trackSend();});
 /* ---------- Dashboard (the owner only): how many accounts there are and how many signed in lately ---------- */
-let DB=null,dbTimer=0,dbFresh=false,DBO=null;const DBP={g:false,s:false,sort:'last',n:30};
+let DB=null,dbTimer=0,dbFresh=false,DBO=null;const DBP={g:false,s:false,sort:'last',n:30,sec:'overview'};
 /* the Other section: visit counts the owner's other websites send to Departed's database (counts only, read straight from the page) */
 const OTHER_SITES=[['ambicant','Ambicant'],['jamborine','Jamborine'],['scrapyard','Scrapyard'],['profegpt','ProfeGPT'],['departed','Departed'],['interpres','Interpres']];
 const OTHER_URL='https:'+SLASH2+'departed-rooms-6e8e1e-default-rtdb.firebaseio.com/visits.json';
@@ -14723,7 +14824,7 @@ function dashPaint(){
   const cols=`<div class="db-cols">${hrs.map((n,h)=>`<div class="db-col" title="${hl(h)}: ${n}"><span class="db-cb"><i style="height:${Math.round(n/hm*100)}%"></i></span><span class="db-cl">${h%3===0?hl(h):''}</span></div>`).join('')}</div>`;
   const dayl=i=>new Date(t0.getTime()-(6-i)*864e5).toLocaleDateString([],{weekday:'short'});
   const half=(a,b)=>a+b?Math.round((b-a)/Math.max(1,a)*100):0;
-  const trend=half(days.slice(0,3).reduce((a,b)=>a+b,0),days.slice(4).reduce((a,b)=>a+b,0));
+  const trend=half(days.slice(0,3).reduce((a,b)=>a+b,0),days.slice(3,6).reduce((a,b)=>a+b,0));
   const pk=hrs.indexOf(Math.max(...hrs));
   const T=DB.tasks||{},U=DB.usage||{c:{},g:{}};
   const top=(m,n)=>Object.keys(m||{}).sort((a,b)=>m[b]-m[a]).slice(0,n);
@@ -14733,67 +14834,96 @@ function dashPaint(){
   const UC={};Object.keys(U.c||{}).forEach(k=>{const m=k.match(/^(.+?)((Singleplayer|Multiplayer|Social|Online|Embed)+)$/),n=m?'Open game: '+m[1]:k;UC[n]=(UC[n]||0)+U.c[k];});U.c=UC;
   const tc=top(U.c,10),tg=top(U.g,10);
   const pct=T.timed?Math.round(T.onTime/T.timed*100)+'%':'-';
-  /* sign-ups for each of the last 14 days, in this device's days */
-  const jd=Array(14).fill(0);(DB.joins||[]).forEach(t=>{const di=13-Math.floor((t0.getTime()+864e5-1-t)/864e5);if(di>=0&&di<14)jd[di]++;});
-  const jm=Math.max(1,...jd),jl=i=>new Date(t0.getTime()-(13-i)*864e5).toLocaleDateString([],{month:'short',day:'numeric'});
+  /* sign-ups for each of the last 30 days, in this device's days: all of them, and the ones that came through a referral */
+  const ND=30,jd=Array(ND).fill(0),rd=Array(ND).fill(0),dix=t=>ND-1-Math.floor((t0.getTime()+864e5-1-t)/864e5);
+  (DB.joins||[]).forEach(t=>{const di=dix(t);if(di>=0&&di<ND)jd[di]++;});
+  (DB.refjoins||[]).forEach(t=>{const di=dix(t);if(di>=0&&di<ND)rd[di]++;});
+  const dl=(i,n)=>new Date(t0.getTime()-(n-1-i)*864e5).toLocaleDateString([],{month:'short',day:'numeric'});
+  const sumA=(a,f,t)=>a.slice(f,t).reduce((x,y)=>x+y,0),nf=v=>typeof v==='number'?v.toLocaleString():v;
+  const chg=(a,b)=>b?Math.round((a-b)/b*100):(a?100:0),chgT=(a,b)=>{const c=chg(a,b);return c>0?'Up '+c+'%':c<0?'Down '+(-c)+'%':'Level'};
+  const j7=sumA(jd,ND-7,ND),j7p=sumA(jd,ND-14,ND-7),j30=sumA(jd,0,ND);
+  const r7=sumA(rd,ND-7,ND),r7p=sumA(rd,ND-14,ND-7),r30=sumA(rd,0,ND),rTot=DB.refTotal||0,rBest=Math.max(0,...rd),rBi=rd.indexOf(rBest);
+  /* a column chart: the light column is all sign-ups that day, the dark one the part that came through a referral */
+  const colsTwo=(tot,part)=>{const m=Math.max(1,...tot);return `<div class="db-cols db-cols2" style="grid-template-columns:repeat(${tot.length},1fr)">${tot.map((n,i)=>`<div class="db-col" title="${esc(dl(i,tot.length))}: ${n} sign-up${n===1?'':'s'}${part?', '+part[i]+' through referrals':''}"><span class="db-cb"><i class="all" style="height:${Math.round(n/m*100)}%"></i>${part?`<i class="ref" style="height:${Math.round(part[i]/m*100)}%"></i>`:''}</span><span class="db-cl">${i%5===4||i===0?esc(dl(i,tot.length)):''}</span></div>`).join('')}</div>`;};
+  const cum=[];{let run=Math.max(0,rTot-r30);rd.forEach(n=>{run+=n;cum.push(run);});}
+  const cmx=Math.max(...cum),cmn=Math.min(...cum);
+  const spark=`<svg class="db-spark" viewBox="0 0 300 60" preserveAspectRatio="none" role="img" aria-label="Accounts through referrals, adding up over 30 days"><polyline fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke" points="${cum.map((v,i)=>(i/(ND-1)*300).toFixed(1)+','+(56-(cmx===cmn?0:(v-cmn)/(cmx-cmn)*52)).toFixed(1)).join(' ')}"/></svg>`;
   /* new players: what accounts made in the last 30 days did first */
   const NB=DB.newbies,np=(v)=>NB&&NB.n?Math.round(v/NB.n*100)+'%':'-';
-  const nst=(v,l)=>`<div class="db-st"><span class="db-v">${esc(String(v))}</span><span class="db-l">${esc(l)}</span><span class="db-p">${esc(np(v))}</span></div>`;
+  const nst=(v,l)=>`<div class="db-st"><span class="db-v">${esc(nf(v))}</span><span class="db-l">${esc(l)}</span><span class="db-p">${esc(np(v))}</span></div>`;
   const tutEnded=NB?NB.tutDone+NB.tutSkip:0;
-  const newb=!NB?'':`<h2 class="db-h">New players</h2>
-    <p class="db-note">${NB.n} account${NB.n===1?'':'s'} made in the last 30 days. Percentages are of all of them.</p>
+  const newb=!NB?'<div class="db-note">Nothing yet</div>':`<p class="db-note">${nf(NB.n)} account${NB.n===1?'':'s'} made in the last 30 days. Percentages are of all of them.</p>
     <div class="db-stats">${st(NB.n,'New players',1)}${nst(NB.tutDone,'Finished the tutorial')}${nst(NB.tutSkip,'Skipped the tutorial')}${nst(NB.tutOpen,'Tutorial not ended yet')}</div>
     <div class="db-stats">${nst(NB.classes,'Added classes')}${nst(NB.ical,'Linked Schoology')}${nst(NB.gamesFirst,'Went straight to games')}${nst(NB.gamesAny,'Opened a game')}</div>
     <div class="db-stats">${nst(NB.back,'Came back later')}${nst(NB.nothing,'No classes or games yet')}</div>
     ${NB.tutOld?`<p class="db-note">${NB.tutOld} ended the tutorial before finish and skip were told apart, so they're in neither.</p>`:''}
     <p class="db-note">Straight to games: opened a game (outside the tutorial) before adding any classes. Came back later: visited or logged in 12 hours or more after signing up.</p>
-    <h2 class="db-h">Where they skip the tutorial</h2>${tutEnded&&NB.tutSkip?list(NB.skipAt,top(NB.skipAt,10)):'<div class="db-note">Nobody has skipped it yet</div>'}
-    <h2 class="db-h">First game new players open</h2>${list(NB.firstGame||{},top(NB.firstGame||{},8),gname)}`;
+    <h3 class="db-h3">Where they skip the tutorial</h3>${tutEnded&&NB.tutSkip?list(NB.skipAt,top(NB.skipAt,10)):'<div class="db-note">Nobody has skipped it yet</div>'}
+    <h3 class="db-h3">First game they open</h3>${list(NB.firstGame||{},top(NB.firstGame||{},8),gname)}`;
   const upd=DB.at?new Date(DB.at).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}):'';
-  d.innerHTML=`<div class="docs-in">${head}
-    <p class="db-note db-upd">${dbFresh?(upd?'Updated '+esc(upd)+'. Refreshes every minute.':''):'Updating\u2026'}</p>
-    <div class="db-stats">${st(DB.total,'Accounts',1)}${st(DB.new7,'New this week')}${st(DB.new30,'New this month')}${st(DB.active7,'Active this week')}${st(DB.active30,'Active this month')}</div>
-<h2 class="db-h">Sign-ups by day</h2>
-    <p class="db-note">${jd[13]} today, ${jd.slice(7).reduce((a,b)=>a+b,0)} in the last 7 days</p>
-    <div class="db-bars">${jd.map((n,i)=>`<div class="db-row"><span class="db-d">${esc(jl(i))}</span><span class="db-bar"><i style="width:${Math.round(n/jm*100)}%"></i></span><span class="db-n">${n}</span></div>`).join('')}</div>
-    ${(()=>{const K=DB.kinds;if(!K)return '';const tot=K.gamers+K.studiers+K.both+K.undecided,pc=v=>tot?Math.round(v/tot*100)+'%':'-',ks=(v,l)=>`<div class="db-st"><span class="db-v">${esc(pc(v))}</span><span class="db-l">${esc(l)}</span><span class="db-p">${v}</span></div>`;
-      return `<h2 class="db-h">What they use it for</h2>
+  const kindsHTML=(()=>{const K=DB.kinds;if(!K)return '';const tot=K.gamers+K.studiers+K.both+K.undecided,pc=v=>tot?Math.round(v/tot*100)+'%':'-',ks=(v,l)=>`<div class="db-st"><span class="db-v">${esc(pc(v))}</span><span class="db-l">${esc(l)}</span><span class="db-p">${nf(v)}</span></div>`;
+    return `<h3 class="db-h3">What they use it for</h3>
     <p class="db-note">Games: saved game progress or a first game opened. Planner: two or more own assignments, a finished assignment, or a linked Schoology. Both means both; undecided means neither yet.</p>
-    <div class="db-stats">${ks(K.gamers,'Games only')}${ks(K.studiers,'Planner only')}${ks(K.both,'Both')}${ks(K.undecided,'Undecided')}</div>
-    <div class="db-stats">${st(Math.max(0,DB.total-DB.active30),'Inactive accounts (30 days)',1)}${st(Math.max(0,DB.total-DB.active7),'Not here this week')}</div>`;})()}
-    ${dashPlayers()}
-    ${newb}
-    <h2 class="db-h">Visits by time of day</h2>
-    <p class="db-note">${lg.length} logins and daily visits in the last 7 days${lg.length?`, busiest around ${hl(pk)}`:''}</p>${cols}
-    <h2 class="db-h">Visits this week</h2>
-    <p class="db-note">${lg.length?(trend>0?`Up ${trend}% from the start of the week`:trend<0?`Down ${-trend}% from the start of the week`:'Steady through the week'):'No visits yet'}</p>
-    <div class="db-bars">${days.map((n,i)=>`<div class="db-row"><span class="db-d">${esc(dayl(i))}</span><span class="db-bar"><i style="width:${Math.round(n/dm*100)}%"></i></span><span class="db-n">${n}</span></div>`).join('')}</div>
-    <h2 class="db-h">Assignments</h2>
-    <div class="db-stats">${st(T.done||0,'Completed',1)}${st(T.week||0,'Completed this week')}${st(T.onTime||0,'Finished on time')}${st(T.late||0,'Finished late')}${st(pct,'On time rate')}</div>
-    <div class="db-stats">${st(Math.max(0,(T.open||0)-(T.overdue||0)),'Still to do')}${st(T.overdue||0,'Overdue, not done')}${st(T.people||0,'Students crossing off')}${st(T.cleared||0,'Cleared in bulk')}</div>
-    ${(T.days||[]).length?`<p class="db-note">Crossed off in the last 14 days</p><div class="db-bars">${T.days.map((n,i)=>`<div class="db-row"><span class="db-d">${esc(jl(i))}</span><span class="db-bar"><i style="width:${Math.round(n/Math.max(1,...T.days)*100)}%"></i></span><span class="db-n">${n}</span></div>`).join('')}</div>`:''}
-    <p class="db-note">Completed counts assignments crossed off with a time and assignments deleted (${T.deleted||0} of them), since most students delete an assignment to finish it. Not in-class work or events, not banned accounts. Five or more overdue ones removed together are counted as cleared in bulk, not completed.${T.untimed?` ${T.untimed} were crossed off before times were kept and aren't counted.`:''}</p>
-    ${DB.classes?`<h2 class="db-h">Classes</h2>
-    <div class="db-stats">${st(DB.classes.accounts,'Accounts with classes',1)}${st(DB.classes.total,'Classes in all')}${st(DB.classes.accounts?(DB.classes.total/DB.classes.accounts).toFixed(1):'-','Classes per student')}${st(DB.classes.ical,'Linked Schoology')}</div>
-    ${DB.classes.real!=null?`<div class="db-stats">${st(DB.classes.real,'Classes plus assignments or a Schoology link')}${st(DB.classes.accounts?Math.round(DB.classes.real/DB.classes.accounts*100)+'%':'-','Of accounts with classes')}</div>
-    <p class="db-note">The tutorial won't go on until one class is added, so Accounts with classes counts everyone who got through it. The second row counts only accounts that also added assignments of their own or linked Schoology.</p>`:''}
-    ${DB.classes.grades?`<h2 class="db-h">Estimated grade</h2>
-    <p class="db-note">Guessed from class names (English 11, Algebra 2, APUSH and so on). It needs two recognised classes and a clear lead, so some accounts stay unknown.</p>
-    ${list(Object.assign({},DB.classes.grades),['9','10','11','12','?'].filter(k=>DB.classes.grades[k]),k=>k==='?'?'Not sure':'Grade '+k)}`:''}
-    <h2 class="db-h">Most common classes</h2>${list(DB.classes.names||{},top(DB.classes.names||{},12))}`:''}
-    ${DB.hosts&&Object.keys(DB.hosts).length?`<h2 class="db-h">Most used address</h2>
-    <p class="db-note">Accounts that opened the planner from each address (an account counts once for every address it used). Counting started today, so it fills in as people visit.</p>
-    ${(()=>{const hk=Object.keys(DB.hosts).sort((a,b)=>DB.hosts[b].accounts-DB.hosts[a].accounts||DB.hosts[b].days-DB.hosts[a].days),hm={};hk.forEach(k=>{hm[k]=DB.hosts[k].accounts;});return list(hm,hk.slice(0,10),k=>k.replace(/\.web\.app$/,'').replace(/^script\.google\.com$/,'Apps Script link'));})()}`:''}
-    <h2 class="db-h">Most played games</h2>${list(U.g,tg,gname)}
-    <h2 class="db-h">Most clicked buttons</h2>${list(U.c,tc)}
-    <h2 class="db-h">Sign-ups by week</h2>
-    <div class="db-bars">${w.map((n,i)=>`<div class="db-row"><span class="db-d">${esc(wk(i))}</span><span class="db-bar"><i style="width:${Math.round(n/mx*100)}%"></i></span><span class="db-n">${n}</span></div>`).join('')}</div>
-    <h2 class="db-h">Other</h2>
-    <p class="db-note">Visits to the other websites, sent by each site (counts only, no ids). Each box shows visits and unique browsers. Days are UTC.</p>
-    ${!DBO?'<div class="db-note">Loading\u2026</div>':DBO.error?'<div class="db-note">Can\'t reach the visit counts right now</div>':OTHER_SITES.map(([k,nm])=>{
+    <div class="db-stats">${ks(K.gamers,'Games only')}${ks(K.studiers,'Planner only')}${ks(K.both,'Both')}${ks(K.undecided,'Undecided')}</div>`;})();
+  /* addresses: atoll.web.app (opened through the shared link) and saxonplanner.web.app (the direct address) are told apart */
+  const hostHTML=(()=>{if(!DB.hosts||!Object.keys(DB.hosts).length)return '<div class="db-note">Nothing yet</div>';
+    const HN={'saxonplanner.web.app':'saxonplanner, first degree','atoll.web.app':'atoll, second degree','saxon-planner.web.app':'saxon-planner, direct or before atoll was counted','script.google.com':'Apps Script link'};
+    const hk=Object.keys(DB.hosts).sort((a,b)=>DB.hosts[b].accounts-DB.hosts[a].accounts||DB.hosts[b].days-DB.hosts[a].days),hm={};hk.forEach(k=>{hm[k]=DB.hosts[k].accounts;});
+    return `<p class="db-note">Accounts that opened the planner from each address (an account counts once for every address it used). Visits through atoll.web.app are counted as atoll from Nov 19; before that they show under saxon-planner.</p>`+list(hm,hk.slice(0,10),k=>HN[k]||k.replace(/\.web\.app$/,''));})();
+  const otherHTML=!DBO?'<div class="db-note">Loading…</div>':DBO.error?'<div class="db-note">Can\'t reach the visit counts right now</div>':OTHER_SITES.map(([k,nm])=>{
       const days=DBO.d&&DBO.d[k],o=days?otherTotals(days):null,has=o&&o.all[0]+o.all[1]>0,f=a=>a[0]+' / '+a[1];
-      return `<p class="db-note"><b>${esc(nm)}</b>${has?'':' (not collected yet)'}</p>`+(has?`<div class="db-stats">${st(f(o.today),'Today')}${st(f(o.d7),'7 days')}${st(f(o.d30),'30 days')}${st(f(o.all),'All time')}</div>`:'');}).join('')}</div>`;
+      return `<p class="db-note"><b>${esc(nm)}</b>${has?'':' (not collected yet)'}</p>`+(has?`<div class="db-stats">${st(f(o.today),'Today')}${st(f(o.d7),'7 days')}${st(f(o.d30),'30 days')}${st(f(o.all),'All time')}</div>`:'');}).join('');
+  const SEC=[['overview','Overview'],['signups','Sign-ups'],['referrals','Referrals'],['visits','Visits'],['newcomers','Newcomers'],['players','Players'],['games','Games'],['sites','Sites'],['assignments','Assignments'],['classes','Classes']];
+  const nav=`<nav class="db-nav" aria-label="Dashboard sections">${SEC.map(([k,n])=>`<button type="button" class="kbtn db-nl${DBP.sec===k?' on':''}" data-db-go="${k}"${DBP.sec===k?' aria-current="true"':''}>${n}</button>`).join('')}</nav>`;
+  const sec=(k,h,body)=>`<section class="db-sec" id="db-${k}"><h2 class="db-h">${h}</h2>${body}</section>`;
+  const body=[
+    sec('overview','Overview',`<div class="db-stats">${st(nf(DB.total),'Accounts',1)}${st(nf(DB.new7),'New this week')}${st(nf(DB.new30),'New this month')}${st(nf(DB.active7),'Active this week')}${st(nf(DB.active30),'Active this month')}</div>
+      <div class="db-stats">${st(nf(Math.max(0,DB.total-DB.active7)),'Not here this week')}${st(nf(Math.max(0,DB.total-DB.active30)),'Inactive for 30 days')}</div>
+      <p class="db-note">Signing up counts as being active, so a brand new account is active for the first week and month.</p>${kindsHTML}`),
+    sec('signups','Sign-ups',`<p class="db-note">${jd[ND-1]} today, ${nf(j7)} in the last 7 days (${chgT(j7,j7p)} on the 7 days before), ${nf(j30)} in 30 days. Days are this device's days.</p>
+      ${colsTwo(jd,null)}
+      <h3 class="db-h3">By week</h3><p class="db-note">Each bar is a 7 day window, labeled with the day it ends.</p>
+      <div class="db-bars">${w.map((n,i)=>`<div class="db-row"><span class="db-d">${esc(wk(i))}</span><span class="db-bar"><i style="width:${Math.round(n/mx*100)}%"></i></span><span class="db-n">${n}</span></div>`).join('')}</div>`),
+    sec('referrals','Referrals',`<p class="db-note">Accounts that signed up through a referral link, by day. The light column is all sign-ups that day, the dark one the part that came through a referral.</p>
+      <div class="db-stats">${st(nf(rTot),'Through referrals',1)}${st(DB.total?Math.round(rTot/DB.total*100)+'%':'-','Of all accounts')}${st(r30,'Last 30 days')}${st(j30?Math.round(r30/j30*100)+'%':'-','Of new accounts')}</div>
+      <div class="db-stats">${st(r7,'This week')}${st(r7p,'Week before')}${st(chgT(r7,r7p),'Change')}${st(rBest?rBest+' on '+dl(rBi,ND):'-','Best day')}</div>
+      ${colsTwo(jd,rd)}
+      <h3 class="db-h3">Adding up</h3><div class="db-spk">${spark}<span class="db-spn"><b>${nf(cum[0])}</b> 30 days ago<br><b>${nf(cum[ND-1])}</b> now</span></div>`),
+    sec('visits','Visits',`<p class="db-note">${lg.length} logins and daily visits in the last 7 days${lg.length?`, busiest around ${hl(pk)}`:''}. A visit is the first time an account opens the site on a day.</p>${cols}
+      <h3 class="db-h3">This week</h3>
+      <p class="db-note">${lg.length?(trend>0?`Up ${trend}% over the last 3 full days against the 3 before them`:trend<0?`Down ${-trend}% over the last 3 full days against the 3 before them`:'Steady over the last 3 full days'):'No visits yet'}. Today is still in progress.</p>
+      <div class="db-bars">${days.map((n,i)=>`<div class="db-row"><span class="db-d">${esc(dayl(i))}</span><span class="db-bar"><i style="width:${Math.round(n/dm*100)}%"></i></span><span class="db-n">${n}</span></div>`).join('')}</div>
+      <h3 class="db-h3">Most clicked buttons</h3>${list(U.c,tc)}`),
+    sec('newcomers','Newcomers',newb),
+    sec('players','Players',dashPlayers().replace(/^\s*<h2 class="db-h">Players<\/h2>/,'')),
+    sec('games','Games',`<h3 class="db-h3">Most played</h3>${list(U.g,tg,gname)}`),
+    sec('sites','Sites',`<h3 class="db-h3">Addresses</h3>${hostHTML}<h3 class="db-h3">Other websites</h3><p class="db-note">Visits to the other websites, sent by each site (counts only, no ids). Each box shows visits and unique browsers. Days are UTC.</p>${otherHTML}`),
+    sec('assignments','Assignments',`<div class="db-stats">${st(nf(T.done||0),'Completed',1)}${st(nf(T.week||0),'Completed this week')}${st(nf(T.onTime||0),'Finished on time')}${st(nf(T.late||0),'Finished late')}${st(pct,'On time rate')}</div>
+      <div class="db-stats">${st(nf(Math.max(0,(T.open||0)-(T.overdue||0))),'Still to do')}${st(nf(T.overdue||0),'Overdue, not done')}${st(nf(T.people||0),'Students crossing off')}${st(nf(T.cleared||0),'Cleared in bulk')}</div>
+      ${(T.days||[]).length?`<h3 class="db-h3">Crossed off, last 14 days</h3><div class="db-bars">${T.days.map((n,i)=>`<div class="db-row"><span class="db-d">${esc(dl(i,T.days.length))}</span><span class="db-bar"><i style="width:${Math.round(n/Math.max(1,...T.days)*100)}%"></i></span><span class="db-n">${n}</span></div>`).join('')}</div>`:''}
+      <p class="db-note">Completed counts assignments crossed off with a time and assignments deleted (${nf(T.deleted||0)} of them), since most students delete an assignment to finish it. Not in-class work or events, not banned accounts. Five or more overdue ones removed together are counted as cleared in bulk, not completed.${T.untimed?` ${T.untimed} were crossed off before times were kept and aren't counted.`:''}</p>`),
+    sec('classes','Classes',DB.classes?`<div class="db-stats">${st(nf(DB.classes.accounts),'Accounts with classes',1)}${st(nf(DB.classes.total),'Classes in all')}${st(DB.classes.accounts?(DB.classes.total/DB.classes.accounts).toFixed(1):'-','Classes per student')}${st(nf(DB.classes.ical),'Linked Schoology')}</div>
+      ${DB.classes.real!=null?`<div class="db-stats">${st(nf(DB.classes.real),'Classes plus assignments or a Schoology link')}${st(DB.classes.accounts?Math.round(DB.classes.real/DB.classes.accounts*100)+'%':'-','Of accounts with classes')}</div>
+      <p class="db-note">The tutorial won't go on until one class is added, so Accounts with classes counts everyone who got through it. The second row counts only accounts that also added assignments of their own or linked Schoology.</p>`:''}
+      ${DB.classes.grades?`<h3 class="db-h3">Estimated grade</h3>
+      <p class="db-note">Guessed from class names (English 11, Algebra 2, APUSH and so on). It needs two recognised classes and a clear lead, so some accounts stay unknown.</p>
+      ${list(Object.assign({},DB.classes.grades),['9','10','11','12','?'].filter(k=>DB.classes.grades[k]),k=>k==='?'?'Not sure':'Grade '+k)}`:''}
+      <h3 class="db-h3">Most common classes</h3>${list(DB.classes.names||{},top(DB.classes.names||{},12))}`:'<div class="db-note">Nothing yet</div>')
+  ].join('');
+  d.innerHTML=`<div class="docs-in db-in">${head}
+    <p class="db-note db-upd">${dbFresh?(upd?'Updated '+esc(upd)+'. Refreshes every minute.':''):'Updating…'}</p>
+    <div class="db-lay">${nav}<div class="db-main">${body}</div></div></div>`;
 }
+/* the sidebar: a click scrolls to the section (below the strip on phones, to the very top for Overview); scrolling lights the section in view */
+const dashOff=()=>{const n=document.querySelector('#dash .db-nav');return matchMedia('(max-width:900px)').matches&&n?n.offsetHeight+8:16;};
+function dashSpy(){const d=document.getElementById('dash');if(!d||d.hidden)return;const secs=[...d.querySelectorAll('.db-sec')];if(!secs.length)return;
+  const top=d.getBoundingClientRect().top,off=dashOff()+60;let cur=secs[0].id;secs.forEach(x=>{if(x.getBoundingClientRect().top-top<=off)cur=x.id;});
+  if(d.scrollTop+d.clientHeight>=d.scrollHeight-4)cur=secs[secs.length-1].id;const k=cur.replace(/^db-/,'');
+  if(DBP.sec!==k){DBP.sec=k;d.querySelectorAll('.db-nl').forEach(b=>{const on=b.dataset.dbGo===k;b.classList.toggle('on',on);if(on){b.setAttribute('aria-current','true');const nv=b.parentElement;if(nv&&nv.scrollWidth>nv.clientWidth)nv.scrollLeft=b.offsetLeft-16;}else b.removeAttribute('aria-current');});}}
+document.addEventListener('scroll',e=>{if(e.target&&e.target.id==='dash')dashSpy();},true);
+document.addEventListener('click',e=>{const g=e.target.closest&&e.target.closest('[data-db-go]');if(!g)return;const d=document.getElementById('dash'),el=d&&d.querySelector('#db-'+g.dataset.dbGo);if(!el)return;
+  const y=g.dataset.dbGo==='overview'?0:el.getBoundingClientRect().top-d.getBoundingClientRect().top+d.scrollTop-dashOff();
+  d.scrollTo({top:Math.max(0,y),behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});});
 document.addEventListener('click',e=>{
   if(e.target.closest&&e.target.closest('[data-act-dash]')){openDash();return;}
   if(e.target.closest&&e.target.closest('[data-db-close]'))closeDash();
@@ -14921,7 +15051,8 @@ function rolesPaint(msg){
         <h3>Moderators</h3>${RL.moderators.map(n=>box(n,'mod')).join('')||'<div class="rl-none">None</div>'}
         ${ed?`<form class="rl-add" autocomplete="off"><input type="text" id="rl-name" placeholder="Username" maxlength="24" spellcheck="false" aria-label="Username"><button class="kbtn" type="submit">Add moderator</button></form>`:''}
         <div class="rl-msg" role="status">${esc(msg||'')}</div>
-        ${ed?`<h3>Multiplayer unlocked</h3>${(RL.mpManual||[]).map(n=>`<div class="rl-box mp"><span class="nm">${esc(n)}</span><span class="tg">Unlocked</span><button data-rl-mplock="${esc(n)}" title="Lock again" aria-label="Lock again">×</button></div>`).join('')||'<div class="rl-none">None</div>'}
+        ${ed&&state.user&&state.user.owner?`<h3>Multiplayer</h3><div class="rl-box mp mpsw"><span class="nm">Lock multiplayer</span><span class="tg">${RL.mpLock?'On':'Off'}</span><button class="kbtn${RL.mpLock?' on':''}" data-rl-mplockall aria-pressed="${!!RL.mpLock}">${RL.mpLock?'Turn off':'Turn on'}</button></div>`:''}
+        ${ed?`<h3>Exceptions</h3>${(RL.mpManual||[]).map(n=>`<div class="rl-box mp"><span class="nm">${esc(n)}</span><span class="tg">Unlocked</span><button data-rl-mplock="${esc(n)}" title="Lock again" aria-label="Lock again">×</button></div>`).join('')||'<div class="rl-none">None</div>'}
         <form class="rl-add rl-mpf" autocomplete="off"><input type="text" id="rl-mpname" placeholder="Username" maxlength="24" spellcheck="false" aria-label="Username"><button class="kbtn" type="submit">Unlock multiplayer</button></form>
         <div class="rl-mpmsg rl-msg" role="status"></div>`:''}
         ${ed?`<h3>Banned</h3><p class="rl-none">Banned accounts can't log in and are signed out everywhere.</p>${(RL.banned||[]).map(n=>`<div class="rl-box mp"><span class="nm">${esc(n)}</span><span class="tg">Banned</span><button data-rl-unban="${esc(n)}" title="Unban" aria-label="Unban">×</button></div>`).join('')||'<div class="rl-none">Nobody</div>'}
@@ -14978,6 +15109,14 @@ async function rolesGas(name,remove){
   if(r&&r.ok){RL=Object.assign(r,{open:RL&&RL.open});rolesPaint();return;}
   RL=was;rolesPaint();const m=document.querySelector('#roles .rl-gasmsg');if(m)m.textContent=r&&r.error==='nouser'?'No account named '+name:'Couldn\u2019t change it';
 }
+/* the owner's emergency valve: Lock multiplayer on or off for everyone with no referral (the server refuses their rooms) */
+async function rolesMpAll(on){
+  const was=RL;if(RL){RL=Object.assign({},RL,{mpLock:on});rolesPaint();}
+  let r=null;try{r=await api('/api/roles',{method:'POST',body:JSON.stringify({op:'mpLock',on:!!on})});}catch(_){r={error:'conn'};}
+  if(r&&r.ok){if(state.user)state.user.mpLock=!!on;try{pcPut('roles',{RL,RLS});}catch(_){}return;}
+  RL=was;rolesPaint();const m=document.querySelector('#roles .rl-mpmsg');if(m)m.textContent='Couldn\u2019t change it';
+}
+document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('#roles [data-rl-mplockall]'))rolesMpAll(!(RL&&RL.mpLock));});
 /* Multiplayer and Online unlocked by hand for one account, or locked again */
 async function rolesMp(name,unlock){
   const was=rlLie('mpManual',name,!unlock);
@@ -15229,31 +15368,6 @@ document.addEventListener('keydown',e=>{const b=e.target.closest&&e.target.close
 document.addEventListener('click',e=>{const b=e.target.closest('[data-hm-game]');if(!b)return;
   const id=b.dataset.hmGame,x=GAMES.find(g=>g.id===id);
   openGames();if(x&&!(typeof gameLocked==='function'&&gameLocked(x)))playGame(id);});
-/* ---------- unlock animation: the screen dims, a padlock drops in, shakes, bursts into pieces with rays behind it,
-   and the Multiplayer and Online tiles lose their locks. Plays once per account, and again from the button under the games ---------- */
-const gmUnlocked=()=>!!(state.user&&!mpLocked());
-const UL_LOCK='<svg viewBox="0 0 96 96" aria-hidden="true"><g class="ul-shackle"><path d="M30 44V30a18 18 0 0 1 36 0v14" fill="none" stroke="#afafaf" stroke-width="9" stroke-linecap="round"/></g>'+
-  '<g class="ul-body"><rect x="18" y="44" width="60" height="46" rx="12" fill="#e5a400"/><rect x="18" y="40" width="60" height="46" rx="12" fill="#ffc800"/>'+
-  '<circle cx="48" cy="58" r="7" fill="#4b4b4b"/><rect x="45" y="60" width="6" height="14" rx="3" fill="#4b4b4b"/></g></svg>';
-function gmUnlockAnim(){
-  const g=document.getElementById('games');if(!g||g.hidden||g.querySelector('.ul-ov'))return;
-  /* the tiles that unlock show their lock again until the burst */
-  const tiles=[...g.querySelectorAll('.gm-pick .gm-tile[data-game]')].filter(t=>{const x=GAMES.find(y=>y.id===t.dataset.game);
-    return x&&(x.labels.includes('Multiplayer')||x.labels.includes('Online'))&&!x.labels.includes('Social');});
-  tiles.forEach(t=>{t.classList.add('gm-locked','ul-was');if(!t.querySelector('.gm-li')){const l=document.createElement('span');l.className='gm-li ul-li';l.innerHTML=art('lock');t.appendChild(l);}});
-  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const ov=document.createElement('div');ov.className='ul-ov';ov.setAttribute('aria-hidden','true');
-  let bits='';for(let i=0;i<14;i++){const a=i/14*360+(i%2?9:-9),d=170+(i%3)*70;bits+=`<i class="ul-bit" style="--a:${a}deg;--d:${d}px;--r:${(i%2?1:-1)*(200+i*37)}deg;--s:${0.7+(i%4)*0.18}"></i>`;}
-  ov.innerHTML=`<div class="ul-rays"></div><div class="ul-ring"></div>${bits}<div class="ul-lock">${UL_LOCK}</div><div class="ul-txt">Multiplayer unlocked</div>`;
-  g.appendChild(ov);
-  const burst=()=>{tiles.forEach((t,i)=>setTimeout(()=>{t.classList.add('ul-free');t.classList.remove('gm-locked');
-    const l=t.querySelector('.ul-li');if(l)setTimeout(()=>l.remove(),450);},120+i*70));};
-  if(reduce){burst();setTimeout(()=>ov.remove(),1600);return;}
-  setTimeout(burst,1650);
-  setTimeout(()=>{ov.classList.add('out');},3600);
-  setTimeout(()=>{ov.remove();tiles.forEach(t=>t.classList.remove('ul-was','ul-free'));},4200);
-}
-document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('#games [data-gm-replay]')){g_scrollTop();gmUnlockAnim();}});
 function g_scrollTop(){const p=document.querySelector('#games .gm-pick');if(p)p.scrollIntoView({block:'start'});const g=document.getElementById('games');if(g)g.scrollTop=0;}
 /* search: hides the games whose name doesn't match; the text stays while the list redraws */
 let gmQ='';
@@ -15311,11 +15425,10 @@ function gmRenderPick(){
   const list=GAMES.filter(x=>!x.hide&&!sensHidden(x.id));
   pick.innerHTML=`<div class="gm-head"><h1 class="gm-h"><span>games</span></h1>
     <button class="gm-x" data-act-gclose aria-label="Close" title="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
-    <section class="gm-sec" data-sec="all">${list.some(gameLocked)?gmLockPanel():''}<input type="text" id="gm-q" readonly data-noauto class="gm-q" placeholder="Search games" aria-label="Search games" autocomplete="off" spellcheck="false" value="${esc(gmQ)}"><div class="gm-grid"><button class="gm-tile gm-add" data-gm-sugg aria-label="Suggest a game" title="Suggest a game"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>${gmFeatTiles(list,tile)}${gmSorted(list).map(x=>tile(x).replace(/^<button[^>]*>/,m=>m+gmStar(x))).join('')}</div></section>${gmUnlocked()||SENS_GAMES.length?`<div class="gm-endbar">${gmUnlocked()?'<button class="kbtn" data-gm-replay>Play animation again</button>':''}${SENS_GAMES.length?`<button class="kbtn" data-gm-sens>${state.settings.sensGames?'Hide sensitive games':'Show sensitive games'}</button>`:''}</div>`:''}`;
+    <section class="gm-sec" data-sec="all">${list.some(gameLocked)?gmLockPanel():''}<input type="text" id="gm-q" readonly data-noauto class="gm-q" placeholder="Search games" aria-label="Search games" autocomplete="off" spellcheck="false" value="${esc(gmQ)}"><div class="gm-grid"><button class="gm-tile gm-add" data-gm-sugg aria-label="Suggest a game" title="Suggest a game"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>${gmFeatTiles(list,tile)}${gmSorted(list).map(x=>tile(x).replace(/^<button[^>]*>/,m=>m+gmStar(x))).join('')}</div></section>${SENS_GAMES.length?`<div class="gm-endbar">${SENS_GAMES.length?`<button class="kbtn" data-gm-sens>${state.settings.sensGames?'Hide sensitive games':'Show sensitive games'}</button>`:''}</div>`:''}`;
   {const big=[...pick.querySelectorAll('.gm-tile:is([data-game="lander"],[data-game="krillion"])')];if(big[0])big[0].classList.add('gm-tr');if(big[1])big[1].classList.add('gm-tl');}
   gmFilterQ();
   /* the first time an account sees its games unlocked by a referral, the lock bursts open */
-  if(gmUnlocked()&&state.user.referred>0&&!state.settings.unlockSeen){state.settings.unlockSeen=true;saveSettings();setTimeout(gmUnlockAnim,350);}
 }
 /* the + tile: a small popup for suggesting a game; it goes to the same review list as Suggestions */
 function gmSuggOpen(){
@@ -15631,14 +15744,17 @@ const ROOM_OPS=['create','join','send','poll','leave','state'];
 const RTC_CFG={iceServers:[{urls:'stun:stun.l.google.com:19302'}]};
 const roomStats={server:0,polls:0,dcIn:0,dcOut:0};window.__roomStats=roomStats;
 const rooms=new Map(); /* code -> session, for the game now in the frame */
+/* a room refused while the owner's Lock multiplayer switch is on: a short, friendly line */
+function mpPausedToast(){const t=document.getElementById('undo-toast');if(t)t.remove();const d=document.createElement('div');d.id='undo-toast';d.className='undo-toast';d.setAttribute('role','alert');
+  d.innerHTML='<span>Multiplayer is resting for a little while</span>';document.body.appendChild(d);setTimeout(()=>{if(d.isConnected)d.remove();},6000);}
 function roomCall(op,args){
   roomStats.server++;if(op==='poll')roomStats.polls++;
   /* creating or joining carries the session: Multiplayer games need an account with multiplayer unlocked */
   const gate=op==='create'||op==='join';
-  if(GS)return new Promise(res=>google.script.run.withSuccessHandler(r=>res(r&&typeof r==='object'?r:{ok:false,error:'conn'}))
+  if(GS)return new Promise(res=>google.script.run.withSuccessHandler(r=>{if(r&&r.error==='locked')mpPausedToast();res(r&&typeof r==='object'?r:{ok:false,error:'conn'});})
     .withFailureHandler(()=>res({ok:false,error:'conn'})).rpcRoom(op,args,gate?passKey:''));
   return fetch('/api/room',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(gate?{op,args,k:passKey}:{op,args})})
-    .then(r=>r.json()).catch(()=>({ok:false,error:'conn'}));
+    .then(r=>r.json()).then(r=>{if(r&&r.error==='locked')mpPausedToast();return r;}).catch(()=>({ok:false,error:'conn'}));
 }
 const pnum=id=>Number(String(id).slice(1))||0;
 const rmid=()=>Math.random().toString(36).slice(2,10)+Date.now().toString(36);
@@ -16165,7 +16281,6 @@ document.getElementById('games').addEventListener('click',e=>{
   const cp=e.target.closest('[data-ref-copy]');
   if(cp){const i=document.getElementById('gm-ref-link');
     (navigator.clipboard?navigator.clipboard.writeText(i.value):Promise.reject()).catch(()=>{i.select();document.execCommand('copy');}).finally(()=>{cp.textContent='Copied';setTimeout(()=>{if(cp.isConnected)cp.textContent='Copy';},1500);});return;}
-  if(e.target.closest('[data-gm-signup]')){closeGames();const s=document.getElementById('spswitch');if(s&&s.textContent.trim()==='Sign up')s.click();return;}
   const b=e.target.closest('[data-game]');if(b)playGame(b.dataset.game);
 });
 document.addEventListener('keydown',e=>{if(e.key!=='Escape')return;const m=document.querySelector('#games .gm-fmenu');
@@ -16204,31 +16319,6 @@ document.addEventListener('pointerdown',e=>{const n=e.target.closest&&e.target.c
   const ed=n.querySelector('.nt');if(!ed)return;e.preventDefault();
   if(ed.isContentEditable){ed.focus();const r=document.createRange();r.selectNodeContents(ed);r.collapse(false);const sel=getSelection();sel.removeAllRanges();sel.addRange(r);}
   else ed.click();},true);
-/* saxonplanner.web.app is retired: a popup suggests atoll.web.app, the address to use now. It waits until the loading
-   screen (sign-in clock, splash, data load) is gone, and once an account has closed it, it never comes back for that account. */
-const MOVED_TO='atoll.web.app';
-const gasSeen=()=>{try{return JSON.parse(localStorage.getItem('sx-moved-ok')||'[]');}catch(_){return [];}};
-const gasWho=()=>(typeof state!=='undefined'&&state.user&&state.user.name)||'';
-const gasLoading=()=>{const v=id=>{const e=document.getElementById(id);return !!(e&&e.getClientRects().length&&getComputedStyle(e).visibility!=='hidden');};
-  const sp=document.getElementById('splash'),go=document.getElementById('spgo');
-  return performance.now()<3000||document.documentElement.classList.contains('sx-fb')||!!document.querySelector('#spclock,#spcover')||v('dataload')
-    ||!!(sp&&(sp.classList.contains('clk')||sp.classList.contains('morph')))||!!(go&&go.classList.contains('busy'));};
-function gasMove(){if(location.hostname!=='saxonplanner.web.app'||document.getElementById('gasmove'))return;
-  if(gasLoading()){setTimeout(gasMove,500);return;}
-  if(gasSeen().includes(gasWho()))return;
-  const u='https:'+SLASH2+MOVED_TO+'/';
-  const m=document.createElement('div');m.id='gasmove';m.setAttribute('role','dialog');m.setAttribute('aria-modal','true');m.setAttribute('aria-labelledby','gasmove-h');
-  m.innerHTML='<div class="gm-card"><div class="gm-art">'+art('logo')+'</div><h2 id="gasmove-h">Saxon Planner has moved</h2>'+
-   '<p>The address to use from now on is <b>'+MOVED_TO+'</b>. Your account, classes and saves are the same there.</p>'+
-   '<p>Moving is entirely optional: this address keeps working too.</p>'+
-   '<div class="gm-btns"><a class="hm-btn" id="gasmove-go" href="'+esc(u)+'" target="_top">Go to '+MOVED_TO+'</a><button type="button" class="hm-btn gm-ok" id="gasmove-ok">OK</button></div></div>';
-  document.body.appendChild(m);const ok=m.querySelector('#gasmove-ok');
-  /* OK, Escape or a click outside the card closes it for good for this account */
-  const close=()=>{m.remove();try{const w=gasWho(),l=gasSeen();if(!l.includes(w))l.push(w);localStorage.setItem('sx-moved-ok',JSON.stringify(l));}catch(_){}};
-  ok.addEventListener('click',close);
-  m.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();e.stopPropagation();close();}},true);
-  m.addEventListener('click',e=>{if(e.target===m){e.stopPropagation();close();}});}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',gasMove);else setTimeout(gasMove,0);
 function sitePickClose(){const m=document.querySelector('.site-pick');if(m)m.remove();}
 document.addEventListener('click',e=>{if(!ON_GAS)return;const a=e.target.closest&&e.target.closest('a[data-site]');if(!a||!SITE_URLS[a.dataset.site])return;
   e.preventDefault();e.stopPropagation();const was=document.querySelector('.site-pick');sitePickClose();if(was&&was.dataset.for===a.dataset.site)return;
