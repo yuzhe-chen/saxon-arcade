@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#f4e9cd" />
+    <script>
+      if (/^\/s(\/|$)/.test(location.pathname)) {
+        try {
+          history.replaceState(null, '', location.pathname);
+        } catch (x) {}
+        location.replace('/');
+      }
+    </script>
+    <link rel="icon" type="image/svg+xml" href="./assets/farflung-mark-16-VYWgBJz3.svg" />
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+    <link rel="preload" href="./assets/VT323-Regular-EhPR265H.woff2" as="font" type="font/woff2" crossorigin fetchpriority="high" />
+    <script>
+      window.farflungWorld = (function (url) {
+        var text = fetch(url).then(function (answer) {
+          if (!answer.ok) throw new Error('could not load ' + url + ': ' + answer.status);
+          return answer.text();
+        });
+        text.catch(function () {});
+        return { url: url, text: text };
+      })('./assets/world-5b177ce10e0c.json');
+    </script>
+    <script>
+      window.farflungDays = (function (folder, now, site) {
+        var two = function (n) {
+          return (n < 10 ? '0' : '') + n;
+        };
+        var asked = {};
+        ['index', now.getFullYear() + '-' + two(now.getMonth() + 1) + '-' + two(now.getDate())].forEach(function (name) {
+          var path = folder + '/' + name + '.json';
+          var text = fetch(site + path, { cache: 'no-cache' }).then(function (answer) {
+            if (!answer.ok) throw new Error('could not load ' + path + ': ' + answer.status);
+            return answer.text();
+          });
+          text.catch(function () {});
+          asked[path] = text;
+        });
+        return asked;
+      })('days/1', new Date(), './');
+    </script>
+    <link rel="preconnect" href="https://tiles.openfreemap.org" crossorigin />
+    <title>Farflung Geography Game - Play the Daily Map Quiz</title>
+    <link rel="canonical" href="https://farflung.game/" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebPage",
+            "@id": "https://farflung.game/#page",
+            "url": "https://farflung.game/",
+            "name": "Farflung Geography Game - Play the Daily Map Quiz",
+            "isPartOf": { "@id": "https://farflung.game/#site" },
+            "about": { "@id": "https://farflung.game/#game" }
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://farflung.game/#site",
+            "url": "https://farflung.game/",
+            "name": "Farflung",
+            "alternateName": ["Farflung Game", "farflung.game"],
+            "publisher": { "@id": "https://farflung.game/#maker" },
+            "inLanguage": "en"
+          },
+          {
+            "@type": "Organization",
+            "@id": "https://farflung.game/#maker",
+            "name": "Farflung",
+            "legalName": "Farflung LLC",
+            "url": "https://farflung.game/",
+            "logo": "https://farflung.game/apple-touch-icon.png",
+            "email": "hello@farflung.game",
+            "sameAs": ["https://www.instagram.com/playfarflung/", "https://x.com/playfarflung", "https://www.tiktok.com/@playfarflung", "https://www.reddit.com/r/farflung/"]
+          },
+          {
+            "@type": "VideoGame",
+            "@id": "https://farflung.game/#game",
+            "url": "https://farflung.game/",
+            "name": "Farflung",
+            "alternateName": ["Farflung Game", "Farflung geography game"],
+            "publisher": { "@id": "https://farflung.game/#maker" },
+            "description": "Play Farflung, the official daily geography game. Pin a country for each of five prompts in this free online map quiz. Rarer answers take you further.",
+            "image": "https://farflung.game/share.png",
+            "genre": ["Geography", "Trivia"],
+            "gamePlatform": "Web browser",
+            "applicationCategory": "Game",
+            "operatingSystem": "Any",
+            "playMode": "SinglePlayer",
+            "inLanguage": "en",
+            "isAccessibleForFree": true,
+            "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+          }
+        ]
+      }
+    </script>
+    <meta name="description" content="Play Farflung, the official daily geography game. Pin a country for each of five prompts in this free online map quiz. Rarer answers take you further." />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Farflung" />
+    <meta property="og:title" content="Farflung Geography Game - Play the Daily Map Quiz" />
+    <meta property="og:description" content="Play Farflung, the official daily geography game. Pin a country for each of five prompts in this free online map quiz. Rarer answers take you further." />
+    <meta property="og:url" content="https://farflung.game/" />
+    <meta property="og:image" content="https://farflung.game/share.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Farflung, the daily expedition: a printed chart of the world inside a ruled border, the name in a cartouche, and a red pin inked on a lone island in the South Atlantic." />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@playfarflung" />
+    <meta name="twitter:title" content="Farflung Geography Game - Play the Daily Map Quiz" />
+    <meta name="twitter:description" content="Play Farflung, the official daily geography game. Pin a country for each of five prompts in this free online map quiz. Rarer answers take you further." />
+    <meta name="twitter:image" content="https://farflung.game/share.png" />
+    <meta name="twitter:image:alt" content="Farflung, the daily expedition: a printed chart of the world inside a ruled border, the name in a cartouche, and a red pin inked on a lone island in the South Atlantic." />
+    <style>#shell{--edge:12px;--sat:env(safe-area-inset-top,0px);--sar:env(safe-area-inset-right,0px);--sab:env(safe-area-inset-bottom,0px);--sal:env(safe-area-inset-left,0px);z-index:50;background:linear-gradient(var(--sheet,#f4e9cd) 0 0) 5px 5px / calc(100% - 10px) calc(100% - 10px) no-repeat, var(--desk,#573923);place-content:center;justify-items:center;gap:20px;display:grid;position:fixed;inset:0}#root:not(:empty)~#shell{display:none}#shell:before{content:"";top:calc(var(--edge) + var(--sat) - 2px);right:calc(var(--edge) + var(--sar) - 2px);bottom:calc(var(--edge) + var(--sab) - 2px);left:calc(var(--edge) + var(--sal) - 2px);border:2px solid var(--ink,#2b2118);position:absolute}@supports (width:round(down, 1px, 1px)){@media (aspect-ratio>=3/2) and (height>=600px){#shell{--world-w:round(down, (100dvh - 2 * var(--edge) - var(--sat) - var(--sab)) / .6789, 1px);--page-w:clamp(340px, 100vw - 2 * var(--edge) - var(--sal) - var(--sar) - var(--world-w), 560px);--plate-w:min(100vw, var(--world-w) + var(--page-w) + 2 * var(--edge) + var(--sal) + var(--sar));--stage-l:round(down, (100vw - var(--plate-w)) / 2, 1px);--shut-l:round(down, var(--page-w) / 2, 1px);--shut-r:calc(var(--page-w) - var(--shut-l));background-position:calc(var(--stage-l) + var(--shut-l) + 5px) 5px;background-size:calc(var(--plate-w) - var(--shut-l) - var(--shut-r) - 10px) calc(100% - 10px)}#shell:before{left:calc(var(--stage-l) + var(--shut-l) + var(--edge) + var(--sal) - 2px);right:calc(100vw - var(--stage-l) - var(--plate-w) + var(--shut-r) + var(--edge) + var(--sar) - 2px)}}}#shell>*{animation:.3s steps(3,end) .55s backwards shell-in}@keyframes shell-in{0%{opacity:0}}#shell svg{fill:none;width:104px;height:104px;stroke:var(--ink,#2b2118);display:block;overflow:visible}#shell rect,#shell circle:last-child{fill:var(--ink,#2b2118);stroke:none}#shell path{fill:var(--sheet,#f4e9cd);stroke-width:.7px;stroke-linejoin:round}#shell path:first-child{fill:var(--accent-fill,#c0362d)}#shell g:last-of-type{transform-origin:26px 26px;animation:2.2s cubic-bezier(.45,0,.55,1) .55s infinite backwards shell-swing}@keyframes shell-swing{0%,to{transform:rotate(-34deg)}22%{transform:rotate(21deg)}44%{transform:rotate(-13deg)}64%{transform:rotate(8deg)}82%{transform:rotate(-4deg)}92%{transform:rotate(0)}}#shell p{letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2,#6a583f);margin:0;font:15px/1 VT323,VT323 Fallback,ui-monospace,SF Mono,Menlo,monospace}#shell.is-old{z-index:100;display:grid!important}#shell.is-old g:last-of-type{animation:none}#shell.is-old p{text-align:center;white-space:pre-line;max-width:18em;padding:0 24px;line-height:1.25}#shell button{letter-spacing:.08em;text-transform:uppercase;min-height:44px;color:var(--ink,#2b2118);background:var(--sheet,#f4e9cd);border:1px solid var(--ink,#2b2118);cursor:pointer;padding:0 24px;font:18px/1 VT323,VT323 Fallback,ui-monospace,SF Mono,Menlo,monospace}@media (prefers-reduced-motion:reduce){#shell>*{animation:0s .55s backwards shell-in!important}#shell g:last-of-type{animation:none!important}}</style>
+    <noscript>
+      <style>#root,#shell{display:none}html{height:auto}body{overflow:visible}#name-card[hidden],#no-script{max-width:36em;margin:0 auto;padding:0 16px;display:block}#name-card[hidden]{padding-top:40px}#no-script{text-align:center;color:var(--ink-2,#6a583f);margin-block:20px 28px}#no-script p{margin:0}#faq[hidden]{box-sizing:border-box;padding:0 16px 48px;display:flex}</style>
+    </noscript>
+    <script type="module" crossorigin src="./assets/index-mF_5wo8d.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-6errDnuA.css">
+    <meta name="farflung-data-source" content="api">
+    <meta name="farflung-commit" content="4fcfacdf27dd1b2c273f6e17f3f3e617e931e14c">
+    <meta name="farflung-rules" content="91968eb348b2c67160843e35c7938fb4d3aedb21ef8fe9f5dc3fa83241281584">
+    <meta name="farflung-plus-terms" content="plus-2026-11-18/ff-plus-us-2026-11-18">
+    <meta name="farflung-build" content="81250e6782eb0c00">
+  </head>
+  <body>
+    <div id="root"></div>
+    <div id="shell">
+      <svg viewBox="0 0 52 52" aria-hidden="true">
+        <circle cx="26" cy="26" r="24" />
+        <circle cx="26" cy="26" r="20" stroke-dasharray="1 2.6" />
+        <g>
+          <rect x="25.5" y="4" width="1" height="5" />
+          <rect x="25.5" y="6" width="1" height="3" transform="rotate(45 26 26)" />
+          <rect x="25.5" y="4" width="1" height="5" transform="rotate(90 26 26)" />
+          <rect x="25.5" y="6" width="1" height="3" transform="rotate(135 26 26)" />
+          <rect x="25.5" y="4" width="1" height="5" transform="rotate(180 26 26)" />
+          <rect x="25.5" y="6" width="1" height="3" transform="rotate(225 26 26)" />
+          <rect x="25.5" y="4" width="1" height="5" transform="rotate(270 26 26)" />
+          <rect x="25.5" y="6" width="1" height="3" transform="rotate(315 26 26)" />
+        </g>
+        <g>
+          <path d="M26 9 L30 26 L22 26 Z" />
+          <path d="M26 43 L30 26 L22 26 Z" />
+        </g>
+        <circle cx="26" cy="26" r="2.5" />
+      </svg>
+      <p role="status">Charting the world</p>
+    </div>
+    <script>
+      (function () {
+        if ([].findLastIndex && window.AbortSignal && AbortSignal.timeout) return;
+        var fill = function (on, name, value) {
+          if (!(name in on)) Object.defineProperty(on, name, { value: value, writable: true, configurable: true });
+        };
+        var at = function (n) {
+          n = Math.trunc(n) || 0;
+          if (n < 0) n += this.length;
+          return n < 0 || n >= this.length ? undefined : this[n];
+        };
+        fill(Array.prototype, 'findLastIndex', function (test, that) {
+          for (var i = this.length - 1; i >= 0; i--) if (test.call(that, this[i], i, this)) return i;
+          return -1;
+        });
+        fill(Array.prototype, 'findLast', function (test, that) {
+          for (var i = this.length - 1; i >= 0; i--) {
+            var value = this[i];
+            if (test.call(that, value, i, this)) return value;
+          }
+        });
+        fill(Array.prototype, 'at', at);
+        fill(String.prototype, 'at', at);
+        fill(Object, 'hasOwn', function (o, key) {
+          return Object.prototype.hasOwnProperty.call(o, key);
+        });
+        if (window.AbortSignal)
+          fill(AbortSignal, 'timeout', function (ms) {
+            var controller = new AbortController();
+            setTimeout(function () {
+              controller.abort(new DOMException('signal timed out', 'TimeoutError'));
+            }, ms);
+            return controller.signal;
+          });
+        var shell = document.getElementById('shell');
+        var game = document.getElementById('root');
+        var line = shell.querySelector('p');
+        var said = line.textContent;
+        var go = document.createElement('button');
+        go.type = 'button';
+        go.textContent = 'Continue';
+        shell.className = 'is-old';
+        line.textContent = 'Parts of Farflung need a newer browser.\nUpdate this one, or try another.';
+        shell.appendChild(go);
+        game.inert = true;
+        go.onclick = function () {
+          shell.className = '';
+          line.textContent = said;
+          shell.removeChild(go);
+          game.inert = false;
+        };
+      })();
+    </script>
+    <div id="name-card" class="ff-wordmark" hidden>
+      <h1 class="ff-wordmark-name">Farflung<span class="ff-wordmark-said"> - Daily Geography Game</span></h1>
+      <div class="ff-wordmark-tag">The daily expedition</div>
+      <div class="ff-wordmark-sub">Five prompts. Pin a country. Rarer answers travel further.</div>
+    </div>
+    <noscript>
+      <div id="no-script">
+        <p>Farflung needs JavaScript to play.</p>
+      </div>
+    </noscript>
+    <section id="faq" class="faq" aria-labelledby="faq-name" hidden>
+      <ol class="faq-steps">
+        <li>
+          <svg viewBox="0 0 96 64" aria-hidden="true">
+            <rect class="d-card" x="14" y="5" width="68" height="34" />
+            <path class="d-ink" d="M22 13h40v4H22zm0 8h52v4H22zm0 8h28v4H22z" />
+            <path class="d-red" d="M21 48h8v8h-8z" />
+            <path class="d-pip" d="M33 48h8v8h-8zm12 0h8v8h-8zm12 0h8v8h-8zm12 0h8v8h-8z" />
+          </svg>
+          <p>Five prompts.</p>
+        </li>
+        <li>
+          <svg viewBox="0 0 96 64" aria-hidden="true">
+            <rect class="d-sea" x="4" y="4" width="88" height="56" />
+            <path class="d-land" d="M18 50 14 36l8-12 14-6 16-4 14 6 12-2 6 12-6 14-12 8-20 2-16 2Z" />
+            <g transform="translate(34 14) scale(2)">
+              <path class="d-ink" d="M5 0h6v1h1v1h1v1h1v5h-1v1h-1v1h-1v2h-1v2H9v1H7v-1H6v-2H5v-2H4V9H3V8H2V3h1V2h1V1h1Z" />
+              <path class="d-red" d="M5 1h6v1h1v1h1v5h-1v1h-1v1h-1v2H9v2H7v-2H6v-2H5V9H4V8H3V3h1V2h1Z" />
+              <path class="d-sheet" d="M7 3h2v1h1v2H9v1H7V6H6V4h1Z" />
+            </g>
+          </svg>
+          <p>Pin a country.</p>
+        </li>
+        <li>
+          <svg viewBox="0 0 96 64" aria-hidden="true">
+            <path class="d-route" d="M5 52h89" />
+            <path class="d-ink" d="M2 49h6v6H2zm10-27h2v30h-2zm13 0h2v30h-2zm16 0h2v30h-2zm20 0h2v30h-2zm24 0h2v30h-2z" />
+            <rect class="d-flag is-tourist" x="14" y="22" width="7" height="6" />
+            <rect class="d-flag is-traveller" x="27" y="22" width="7" height="6" />
+            <rect class="d-flag is-wayfarer" x="43" y="22" width="7" height="6" />
+            <rect class="d-flag is-uncharted" x="63" y="22" width="7" height="6" />
+            <rect class="d-flag is-farflung" x="87" y="22" width="7" height="6" />
+          </svg>
+          <p>Rarer answers travel further.</p>
+        </li>
+      </ol>
+      <div class="faq-intro">
+        <h2>What is Farflung?</h2>
+        <p>Farflung is a free daily geography game, a quiz you answer on a map of the world. Each day’s expedition is five prompts, and for each you pin one country on the map. Every prompt has several right answers, and rarer answers take you further: for a country where German is an official language, Germany counts, but Belgium carries you much further.</p>
+      </div>
+      <h2 id="faq-name">Farflung FAQ</h2>
+      <div class="faq-qs">
+        <div class="faq-q">
+          <h3>What does farflung mean?</h3>
+          <p>Farflung describes a place a great distance away, or something spread over a very large area: a farflung island, a farflung family. It’s far and flung, as in thrown a long way. In the game, Farflung is also the top rarity, and every prompt has at least one gem: a surprising answer with that rarity.</p>
+        </div>
+        <div class="faq-q">
+          <h3>How do I play Farflung?</h3>
+          <p>Open farflung.game in a browser on your phone or computer and press Play Daily Expedition. You can play online as a guest, with nothing to download. Read the prompt, tap the map to place your pin on a country, and press Drop pin. Take your time over each prompt, or choose a 60 second clock in Difficulty. How to play has the full rules.</p>
+        </div>
+        <div class="faq-q">
+          <h3>Is farflung.game the official Farflung?</h3>
+          <p>Yes. Farflung is published by Farflung LLC, and farflung.game is its official home. A site elsewhere that uses the name is not this game, and its prompts, answers and rulings are not ours. The official accounts are @playfarflung on Instagram, TikTok and X, and r/farflung on Reddit.</p>
+        </div>
+        <div class="faq-q">
+          <h3>Is there another Farflung game?</h3>
+          <p>Yes, Learn Countries. It names a country, and you tap it on the map. Play a region or the whole world, and try to beat your best time. Open Games in the menu, or go to farflung.game/learn-countries.</p>
+        </div>
+        <div class="faq-q">
+          <h3>Is there a Farflung unlimited mode?</h3>
+          <p>Not yet. There will be one eventually, and themed packs come first.</p>
+        </div>
+        <div class="faq-q">
+          <h3>When does a new daily expedition open?</h3>
+          <p>At midnight, your local time.</p>
+        </div>
+        <div class="faq-q">
+          <h3>Why do some answers take me further?</h3>
+          <p>The rarer an answer, the further it takes you. Each is Common, Uncommon, Rare or Elusive, by how seldom it comes to mind, and a few of the least expected are Farflung, which go furthest of all. A pin on a country that doesn’t fit the prompt is a miss.</p>
+          <p class="faq-rarities" aria-hidden="true"><span class="is-tourist">Common</span> <span class="is-traveller">Uncommon</span> <span class="is-wayfarer">Rare</span> <span class="is-uncharted">Elusive</span> <span class="is-farflung">Farflung</span></p>
+        </div>
+        <div class="faq-q">
+          <h3>What if my answer should have counted?</h3>
+          <p>Tell us from camp: “Should something else count?” under a card’s answers opens a short form. Sign in, pick the country and say why. If the claim is upheld, the answer is added and pins already on it count. We reply in the game within a week, and the rules we decide by are on the rulings page.</p>
+        </div>
+        <div class="faq-q">
+          <h3>Will there be a mobile app?</h3>
+          <p>Yes, we plan to add a mobile app. Until then, you can play Farflung in a browser on your phone or computer.</p>
+        </div>
+      </div>
+      <nav class="faq-links" aria-label="More about Farflung">
+        <a href="/how-to-play/" target="_blank">How to play</a> <a href="/about/" target="_blank">About</a> <a href="/blog/" target="_blank">Blog</a> <a href="/rulings/" target="_blank">Rulings</a> <a href="/privacy/" target="_blank">Privacy</a>
+      </nav>
+    </section>
+  <script>(function(){function c(){var b=a.contentDocument||(a.contentWindow&&a.contentWindow.document);if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a5cb35ee4c17d695',t:'MTc5NTA0OTMyMA=='};var l=window.parent.location,o;try{o=new URL(l.origin).origin}catch(e){try{o=new URL(new URL(l.href).origin).origin}catch(e){o=''}}var u='/cdn-cgi/challenge-platform/scripts/jsd/main.js?ray=a5cb35ee4c17d695',a=document.createElement('script');a.src=o?new URL(u,o).href:u;document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

@@ -1,0 +1,5 @@
+/*! Third-party terms: see THIRD-PARTY-NOTICES.txt in this distribution. */
+
+!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="8853443e-f339-5744-ae84-42c908bca64f")}catch(e){}}();
+import{ca as e,da as t,fi as n}from"./index-mF_5wo8d.js";var r=e();function i(e){let{r:i}=e,a=n(i.modifiers);return(0,r.jsxs)(r.Fragment,{children:[(0,r.jsx)(`span`,{className:`fr-place`,children:e.place}),(0,r.jsxs)(`span`,{className:`fr-who`,children:[(0,r.jsx)(`span`,{children:i.nickname??`You`}),a?(0,r.jsxs)(r.Fragment,{children:[(0,r.jsx)(`b`,{className:`fr-stars`,title:`Played harder`,"aria-hidden":`true`,children:a}),(0,r.jsx)(`span`,{className:`ff-said`,children:`played harder`})]}):null,i.late?(0,r.jsx)(`span`,{className:`fr-late`,children:`Late`}):null,i.nickname===null&&e.note?(0,r.jsx)(`span`,{className:`fr-near`,children:e.note}):null]}),(0,r.jsx)(`span`,{className:`fr-km`,children:t(i.km)})]})}export{i as t};
+//# debugId=8853443e-f339-5744-ae84-42c908bca64f

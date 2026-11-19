@@ -1,0 +1,5 @@
+/*! Third-party terms: see THIRD-PARTY-NOTICES.txt in this distribution. */
+
+!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="be51ef8a-5162-55ea-b133-857488110079")}catch(e){}}();
+import{Vr as e,Wa as t,_n as n}from"./index-mF_5wo8d.js";import{forgetRedealt as r,playedOther as i}from"./redeal-DfTmexF-.js";async function a(r,a){let o=a.store===void 0?t():a.store,s=n(r,o);if(!s)return o&&e(o).includes(r)?`ready`:`wait`;let c;try{c=await a.deck()}catch{return`wait`}return c&&(s===`unplayed`||i(r,c,o))?`ready`:`wait`}function o(e,i,a,o=t()){if(n(e,o)!==`old`)return!0;let s=i?.map(e=>e.id);return!s||!r(e,s,o)?!1:(a?.(),!0)}function s(e,t){return a(e,{deck:async()=>{let n=t.again(e),r=await t.deck(e).catch(()=>null);return r||n(),r?.map(e=>e.id)??null}})}export{o as letGoFirst,s as playAgain,a as playChanged};
+//# debugId=be51ef8a-5162-55ea-b133-857488110079

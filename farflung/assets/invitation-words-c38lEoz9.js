@@ -1,0 +1,5 @@
+/*! Third-party terms: see THIRD-PARTY-NOTICES.txt in this distribution. */
+
+!function(){try{var e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:{},n=(new e.Error).stack;n&&(e._sentryDebugIds=e._sentryDebugIds||{},e._sentryDebugIds[n]="eca9d28f-a136-5bff-9288-c2b540765577")}catch(e){}}();
+import{i as e}from"./learn-souvenirs-B6x6PvCe.js";function t(t){return t.kind!==`open`&&t.kind!==`resume`&&t.kind!==`done`?null:{date:e(new Date(`${t.day}T12:00:00Z`),`short`,{day:!0,utc:!0}),expedition:t.expedition}}function n(e){return e.kind===`open`?`Play Expedition #${e.expedition}`:e.kind===`resume`?`Resume Expedition #${e.expedition}`:null}var r=`farflung can’t be reached · try again soon`,i={offline:`you’re offline · it opens once you’re back`,lost:r,unavailable:r,limited:`too many tries · wait a minute`,lapsed:r,moved:r,refused:r},a=e=>e!==`offline`&&e!==`limited`;export{a as i,n,t as r,i as t};
+//# debugId=eca9d28f-a136-5bff-9288-c2b540765577
