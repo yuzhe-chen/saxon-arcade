@@ -11581,7 +11581,7 @@ function hmResAll(){
 function hmResCard(it){const c=courseById(it.c),top=`<span class="hm-rc"><span class="sq" style="background:${esc(color(it.c))}"></span>${esc(c?cname(c):'')}</span><span class="hm-rt">${esc(it.title)}</span>`;
   return it.url?`<a class="hm-rcard" href="${esc(sisU(it.url))}" target="_blank" rel="noopener">${top}</a>`
     :`<button type="button" class="hm-rcard" ${it.my?`data-act="myopen"`:`data-act="resopen" data-c="${esc(it.c)}"`} data-id="${esc(it.id)}">${top}</button>`;}
-const MX_KEYS=['courses','calendar','advisory','resources','tools'],HM_PERM='lander';
+const MX_KEYS=['courses','resources','tools'],HM_PERM='lander';
 function mxTile(x,cls,flag,sub){const th=GAME_THUMB[x.id];
   return `<button type="button" class="mx-gt ${cls}" data-hm-game="${esc(x.id)}">${th?`<img alt="" src="${thumbSrc(x.id)}">`:`<span class="mx-plain">${esc(x.name)}</span>`}${flag?`<span class="mx-flag">${flag}</span>`:''}<span class="mx-gf"><b>${esc(x.name)}</b>${sub?`<span>${sub}</span>`:`<span class="mx-tags">${x.labels.filter(l=>l!=='Embed').map(esc).join(', ')}</span>`}</span></button>`;}
 function mxGames(){
