@@ -428,7 +428,7 @@ function switchToMobile() {
     //Rotate game to portrait for mobile
     const rotateGameMobileHtml = `
     <div jsname="ar2wLb" class="t6jjTb">
-        <img class="xAAoNb" src="https://fonts.gstatic.com/s/i/short-term/release/googlesymbols/screen_rotation/default/48px.svg" alt="Rotate device to portrait">
+        <img class="xAAoNb" src="ext/fonts.gstatic.com/s/i/short-term/release/googlesymbols/screen_rotation/default/48px.svg" alt="Rotate device to portrait">
     </div>
     `;
 
