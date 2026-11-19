@@ -2864,6 +2864,11 @@ html.pg2 .hm-go{background:linear-gradient(135deg,var(--pgl))}
 .ap-frs{display:flex;flex-wrap:wrap;gap:14px;margin:6px 0 4px}
 .ap-frb{appearance:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;padding:12px 10px;min-width:84px;background:var(--panel);border:2px solid var(--line);border-bottom-width:4px;border-radius:14px;color:var(--fg);font:700 13px var(--font-ui)}
 .ap-frb .ch-av{width:40px;height:40px;font-size:16px}
+.ap-avnote{display:flex;align-items:center;gap:10px;margin:0 0 12px;font:700 14px/1.3 var(--font-ui);color:var(--fg2);flex-wrap:wrap}
+.ap-avnote svg{width:20px;height:20px;flex:none}
+.ap-avnote .rw-lock{margin-left:auto}
+.ap-frb svg{width:40px;height:40px;flex:none}
+.ap-crh .rw-lock{margin-left:10px;vertical-align:middle}
 .ap-frb:hover{background:var(--panel2)}.ap-frb.on{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 30%,transparent)}
 .ap-frb.lk{opacity:.55;cursor:default}
 .ap-ckb .ap-ck{width:56px;height:56px;display:block}
@@ -3570,6 +3575,13 @@ html.pg-open:not(.splash-on):has(:is(#games,#desmos,#sugg,#roles,#rewards) :is(.
 .hm-btn.alt:hover{background:var(--panel2);color:var(--blue)}
 /* Suggestions on Home stands out (yellow) so people find it */
 .hm-stk{display:inline-flex;flex-direction:column;gap:8px;align-items:stretch}
+/* Mixed: the buttons are as wide as the Courses button. See assignments takes a row, Suggestions and Petition share the next,
+   and Tutorial, FAQ, Meme and Edit home split the last one into four equal parts */
+html #v-home[data-hv=mixed] .hm-btns:not(.hm-tutonly){display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;width:100%}
+html #v-home[data-hv=mixed] .hm-btns:not(.hm-tutonly)>.hm-btn#hm-asg{grid-column:1/-1;justify-content:center;text-align:center}
+html #v-home[data-hv=mixed] .hm-btns:not(.hm-tutonly)>.hm-stk{grid-column:1/-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+html #v-home[data-hv=mixed] .hm-btns:not(.hm-tutonly)>.hm-btn:not(#hm-asg){padding-left:6px;padding-right:6px;font-size:12px;white-space:nowrap;min-width:0;justify-content:center;text-align:center}
+html #v-home[data-hv=mixed] .hm-btns:not(.hm-tutonly) .hm-stk .hm-btn{width:100%;box-sizing:border-box}
 .hm-stk .hm-btn{text-align:center;justify-content:center;text-decoration:none}
 html #v-home .hm-btn.hm-hl,html.pg2 #v-home .hm-btn.hm-hl{background:var(--gold-hi);color:#4b3600;border-color:var(--gold-dark);display:inline-flex;align-items:center;gap:6px}
 #v-home .hm-btn.hm-hl svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
@@ -7767,7 +7779,7 @@ const CK_STYLES={classic:{n:'Classic',rimS:'#e5a400',rim:'#ffc800',face:'#fffdf5
   mint:{n:'Mint',rimS:'#3fae82',rim:'#6fd6a8',face:'#f2fff8',tb:'#2f5d46',t:'#b4d9c4',h:'#2f5d46',cap:'#18b58a'},
   rose:{n:'Rose',rimS:'#e0678f',rim:'#ff94b6',face:'#fff5f8',tb:'#6a3a4c',t:'#eac2cf',h:'#6a3a4c',cap:'#ff5a92'}};
 /* the clock's face in 100 units, centered on (50,50); hand paths carry the ck-h and ck-m classes the sequence turns */
-function ckFace(key){const c=CK_STYLES[key]||CK_STYLES.classic;
+function ckStyleFace(key){const c=CK_STYLES[key]||CK_STYLES.classic;
   const tick=a=>a%90?`<rect x="49" y="13" width="2" height="5" rx="1" fill="${c.t}" transform="rotate(${a} 50 50)"/>`:`<rect x="48" y="12.5" width="4" height="9" rx="2" fill="${c.tb}" transform="rotate(${a} 50 50)"/>`;
   return `<circle cx="50" cy="53" r="46" fill="${c.rimS}"/><circle cx="50" cy="50" r="46" fill="${c.rim}"/><circle cx="50" cy="50" r="39" fill="${c.face}"/>`+
     Array.from({length:12},(_,i)=>tick(i*30)).join('')+
@@ -11693,14 +11705,14 @@ function mxGames(){
   gmStatsLoad();
   /* two featured at a time: the pinned one (selected for its week) and the rotating daily pick */
   const pin=FEAT_PIN&&Date.now()<FEAT_PIN.until?list.find(x=>x.id===FEAT_PIN.id):null,rot=gmRotating(list,pin);
-  const fe=[pin,rot].filter(Boolean),used=new Set(fe.map(x=>x.id)),perm=list.find(x=>x.id===HM_PERM&&!used.has(x.id));if(perm)used.add(perm.id);
+  const fe=[pin,rot].filter(Boolean),used=new Set(fe.map(x=>x.id));
   const pop=(GSTAT||[]).map(r=>list.find(x=>x.id===r.id)).filter(x=>x&&!used.has(x.id));
   for(const x of list){if(pop.length>=4)break;if(!used.has(x.id)&&!pop.includes(x)&&GAME_THUMB[x.id])pop.push(x);}
   const left=pin?Math.max(1,Math.ceil((FEAT_PIN.until-Date.now())/864e5)):0;
   return `<div class="mx-games"><div class="mx-gh"><h2 class="hm-ph">Games</h2><button type="button" class="btn mx-all" data-home-go="games">All games</button></div>
     <div class="mx-fe">${fe.map(x=>mxTile(x,'mx-big','Featured',x===pin&&left?left+' day'+(left===1?'':'s')+' left':'')).join('')}</div>
     <div class="mx-lab">Most played</div><div class="mx-pop">${pop.slice(0,4).map(x=>mxTile(x,'mx-sq','','')).join('')}</div>
-    ${perm?`<div class="mx-lab">Always here</div>${mxTile(perm,'mx-sq','','')}`:''}</div>`;
+</div>`;
 }
 function mxNavHTML(){
   const pick=hmShown().filter(p=>MX_KEYS.includes(p[0])),pages=pick.length?pick:HM_PAGES.filter(p=>MX_KEYS.includes(p[0]));
@@ -12020,12 +12032,12 @@ function apAvHTML(){
 function apFrHTML(){
   const u=state.user,fr=u.fr||'',has=rwHas(15);
   const prev=f=>{const sv=avSvg(u.av),c=f?' fr fr-'+f:'';
-    return sv?`<span class="ch-av ch-pic${c}">${sv}</span>`:`<span class="ch-av${c}" style="background:hsl(${chHue(u.name)} 45% 42%);--fri:hsl(${chHue(u.name)} 45% 42%)">${esc(u.name.slice(0,1))}</span>`;};
+    return sv?`<span class="ch-av ch-pic${c}">${sv}</span>`:`<span class="ch-av${c}" style="background-color:hsl(${chHue(u.name)} 45% 42%);--fri:hsl(${chHue(u.name)} 45% 42%)">${esc(u.name.slice(0,1))}</span>`;};
   const tile=([f,n])=>has?`<button type="button" class="ap-frb${fr===f?' on':''}" data-ap-fr="${f}" aria-pressed="${fr===f}" aria-label="${f?n+' frame':'No frame'}">${prev(f)}<span>${n}</span></button>`:`<button type="button" class="ap-frb lk" data-act-rewards aria-label="Locked, frames unlock with 15 referrals">${prev(f)}<span>${n}</span></button>`;
   return `<h4 class="ap-crh">Frame${has?'':rwLockHTML(15)}</h4>${has?'':`<div class="ap-avnote">${art('lock')}<span>Frames unlock with 15 referrals</span></div>`}<div class="ap-frs">${[['','None']].concat(AV_FR).map(tile).join('')}</div>`;
 }
 /* clock styles (20 referrals): Classic stays free; the picker shows each face at 5:30 */
-function ckPrev(key){return `<svg class="ap-ck" viewBox="0 0 100 100" aria-hidden="true">${ckFace(key).replace('class="ck-h"','class="ck-h" transform="rotate(165 50 50)"').replace('class="ck-m"','class="ck-m" transform="rotate(180 50 50)"')}</svg>`;}
+function ckPrev(key){return `<svg class="ap-ck" viewBox="0 0 100 100" aria-hidden="true">${ckStyleFace(key).replace('class="ck-h"','class="ck-h" transform="rotate(165 50 50)"').replace('class="ck-m"','class="ck-m" transform="rotate(180 50 50)"')}</svg>`;}
 function apCkHTML(){
   const has=rwHas(20),cur=(state.settings&&CK_STYLES[state.settings.clockStyle])?state.settings.clockStyle:'classic';
   const tile=k=>has||k==='classic'?`<button type="button" class="ap-frb ap-ckb${cur===k?' on':''}" data-ap-ck="${k}" aria-pressed="${cur===k}" aria-label="${CK_STYLES[k].n} clock">${ckPrev(k)}<span>${CK_STYLES[k].n}</span></button>`
@@ -12861,7 +12873,7 @@ if(window.SX_REF)sxRefArrived(window.SX_REF);
     const R=Math.max(64,Math.min(Math.min(bw,bh)*.38,190));
     /* a round wall clock in 100 units, centered on (50,50): a gold rim with a darker bottom edge, a cream face, 12 ticks
        (longer at 12, 3, 6 and 9), dark hands and a blue cap; the cap's blue is the color that fills the screen */
-    const CKS=ckStyleKey(),CLOCK=ckFace(CKS);
+    const CKS=ckStyleKey(),CLOCK=ckStyleFace(CKS);
     const ov=document.createElement('div');ov.id='spclock';ov.setAttribute('aria-hidden','true');if(opts.center)ov.classList.add('solid');
     ov.innerHTML=`<svg viewBox="0 0 ${W} ${H}"><g class="ck-pos"><g class="ck-pop">${CLOCK}</g></g></svg>`;
     document.body.appendChild(ov);
