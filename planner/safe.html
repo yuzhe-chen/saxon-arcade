@@ -45,11 +45,11 @@ fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},bod
 .then(function(o){if(o&&o.ok){if(ok)ok(o.result);}else if(fail)fail(new Error(o&&o.error||'failed'));})
 .catch(function(e){if(fail)fail(e);});};}});}
 window.google={script:{run:runner(null,null)}};})();</script>
-<script>/* opened from atoll (framed) with a saved login: from the very first paint the page shows only its background and the
+<script>/* opened with a saved login (a reload, or from atoll framed): from the very first paint the page shows only its background and the
    sign-in clock at 5:30 (html.sx-fb), never the login page or Home, until the clock sequence takes over. ?framedtest=1 on
    localhost pretends to be framed. Placed after build-web.py's keep script, which puts atoll's login in storage */
-(function(){try{var f=window.top!==window||(location.hostname==='localhost'&&/[?&]framedtest=1/.test(location.search));
-if(!f||matchMedia('(prefers-reduced-motion: reduce)').matches)return;var t='',th=null;
+(function(){try{
+if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;var t='',th=null;
 try{t=localStorage.getItem('sx-token')||'';th=localStorage.getItem('sx-theme');}catch(e){}
 if(!/^[a-z0-9_.-]{3,24}:[0-9a-f]{64}$/.test(t))return;
 var h=document.documentElement;h.classList.add('sx-fb');h.setAttribute('data-theme',th==='dark'?'dark':'light');
@@ -1307,8 +1307,20 @@ html.home-on body::before{opacity:1}
 .mx-gf b{font:800 15px/1.2 var(--font-ui);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .mx-gf span{font:700 12px/1.2 var(--font-ui);opacity:.85;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .mx-flag{position:absolute;top:10px;left:10px;background:var(--pri);color:#fff;font:800 12px/1 var(--font-ui);letter-spacing:.06em;text-transform:uppercase;padding:6px 10px;border-radius:999px}
+/* Quick links: a box with a 2 by 2 grid, each link with its website's own icon */
+.hm-qlhd{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 16px}
+#hm-more .hm-qlsec .hm-qlh{margin:0}
+.hm-qlg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.hm-qlt{position:relative;display:flex;align-items:center;gap:12px;min-height:84px;padding:14px 44px 14px 14px;background:var(--bg);border:2px solid var(--line);border-bottom-width:4px;border-radius:var(--rs);color:var(--fg);text-decoration:none;min-width:0}
+.hm-qlt:hover{background:var(--panel2)}
+.hm-qlf{flex:none;width:40px;height:40px;object-fit:contain;border-radius:10px;background:#fff;padding:4px;box-sizing:border-box}
+.hm-qln{font:700 17px/1.2 var(--display);letter-spacing:-0.01em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.hm-jbox .hm-qlt .hm-go{width:28px;height:28px;top:50%;right:12px;transform:translateY(-50%)}
+.hm-jbox .hm-qlt .hm-go svg{width:14px;height:14px}
+.hm-qlsec .hm-qlhd .hm-qledit{min-height:38px;width:42px}
+.hm-qlg{grid-auto-rows:1fr}
 /* Quick links (left) and Other websites (right, a box like Jump back in) side by side */
-#hm-more .hm-qrow{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:start;margin-top:56px}
+#hm-more .hm-qrow{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:stretch;margin-top:56px}
 #hm-more .hm-qrow>.hm-sec.hm-sec{margin-top:0}
 #hm-more .hm-qlh{margin:0 0 16px;font:600 22px/1.15 var(--display);letter-spacing:-0.01em;color:var(--fg)}
 .hm-osbox .hm-jgrid{grid-template-columns:repeat(auto-fit,minmax(130px,1fr))}
@@ -3525,6 +3537,15 @@ html #v-home .hm-btn.hm-hl,html.pg2 #v-home .hm-btn.hm-hl{background:var(--gold-
 #v-home .hm-btn.hm-hl svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
 /* secondary buttons carry blue text, as ProfeGPT's do; option groups (tabs) stay gray until chosen */
 .hbtn:not(.on),.kbtn:not(.on),.hbtn:not(.on):hover,.kbtn:not(.on):hover,.lib-rv:not(.on),.lib-rv:not(.on):hover{color:var(--blue)}
+/* Approve in the review queue is a solid button: white text stays white (the blue-text rule above must not reach it) */
+.rl-q .kbtn.rl-ok:not(.on),.rl-q .kbtn.rl-ok:not(.on):hover{color:#fff}
+/* the Review count: a round badge in the page color, number centered, a soft ring that pings while something waits */
+.lib-rv .n{position:relative;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;min-width:22px;height:22px;padding:0 6px;margin:-3px -4px -3px 0;border-radius:999px;
+  background:var(--pri);color:#fff;font:800 12px/1 var(--font-ui);letter-spacing:0;text-align:center;font-variant-numeric:tabular-nums}
+.lib-rv .n::after{content:"";position:absolute;inset:0;border-radius:inherit;border:2px solid var(--pri);opacity:0;animation:rvping 2.2s ease-out infinite;pointer-events:none}
+.lib-rv.on .n{background:var(--pri-dark,var(--pri))}
+@keyframes rvping{0%{transform:scale(1);opacity:.7}70%,100%{transform:scale(1.9);opacity:0}}
+@media (prefers-reduced-motion:reduce){.lib-rv .n::after{animation:none}}
 :is([data-cv],[data-ap-hv],[data-act="rel"],[data-ch="sscls"],[data-act="asgf"],[data-act="resview"],[data-sugg-kind],[data-rl-sk],[data-act="oppfield"],[data-act="keyunit"],[data-act="prcat"],[data-act="resf"],.navbtn,.res-x,[data-act="syncreq"],[data-act="myresync"]):not(.on){color:var(--fg2)!important}
 .res-list:empty{display:none}
 /* every screenshot the same shape; the labels may wrap under the name without squeezing it */
@@ -3561,6 +3582,7 @@ html #v-home .hm-btn.hm-hl,html.pg2 #v-home .hm-btn.hm-hl{background:var(--gold-
 :root[data-theme="dark"] #games .mx{--bg:#131f24;--sf:#131f24;--box:#202f36;--box2:#37464f;--fg:#f1f7fb;--fg2:#8799a3;--line:#37464f;--grid:rgba(255,255,255,.05);--hatch:rgba(255,255,255,.06);--gnd:#202f36;--acc:#4b9af3;--acc2:#3c81db;--accfg:#ffffff}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #games .mx{--bg:#131f24;--sf:#131f24;--box:#202f36;--box2:#37464f;--fg:#f1f7fb;--fg2:#8799a3;--line:#37464f;--grid:rgba(255,255,255,.05);--hatch:rgba(255,255,255,.06);--gnd:#202f36;--acc:#4b9af3;--acc2:#3c81db;--accfg:#ffffff}}
 /* phone: every tile one size, so the list keeps its order */
+@media (min-width:701px){#games .gm-grid .gm-tr{grid-column:span 2 / -1;grid-row:1 / span 2}#games .gm-grid .gm-tl{grid-column:1 / span 2}}
 @media (max-width:700px){#games .gm-tile:is([data-game="lander"],[data-game="krillion"]){grid-column:auto;grid-row:auto}
   #games .gm-tile:is([data-game="lander"],[data-game="krillion"]) img{aspect-ratio:4/3;height:auto;flex:none;min-height:0}
   #games .gm-tile:is([data-game="lander"],[data-game="krillion"]) .gm-foot b{font-size:15px}}
@@ -11523,8 +11545,12 @@ const qlUrl=v=>{v=String(v||'').trim();if(!v)return '';if(!/^[a-z][a-z0-9+.-]*:/
   return /^https?:\/\/[^\s"'<>]+\.[^\s"'<>]+$/i.test(v)&&v.length<=600?v:'';};
 const qlList=()=>{const q=state.settings&&state.settings.quickLinks;return (Array.isArray(q)?q:QL_DEF).filter(x=>x&&x.n&&qlUrl(x.u)).slice(0,QL_MAX);};
 const QL_EXT='<svg class="hm-qlx" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>';
-function qlHTML(){return `<section class="hm-sec hm-qlsec" aria-label="Quick links"><h2 class="hm-jh hm-qlh">Quick links</h2><div class="hm-ql">${qlList().map(l=>`<a class="hm-site hm-qlb" href="${esc(qlUrl(l.u))}" target="_blank" rel="noopener"><span>${esc(l.n)}</span>${QL_EXT}</a>`).join('')}`+
-  `<button type="button" class="hm-site hm-qledit" data-act-qledit aria-label="Edit quick links" title="Edit quick links">${PEN_ICON}</button></div></section>`;}
+const QL_GLOBE='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA5NiA5NiI+PGNpcmNsZSBjeD0iNDYuNSIgY3k9IjQ3IiByPSIzNCIgZmlsbD0iI0FGQUZBRiIvPjxjaXJjbGUgY3g9IjQ0IiBjeT0iNDQiIHI9IjM0IiBmaWxsPSIjRTVFNUU1Ii8+PHBhdGggZD0iTTIzLjMgMzQuOVEyNCAzMCAyOC4zIDI3LjVMMzMuNyAyNC41UTM4IDIyIDQyLjYgMjMuOUw0My40IDI0LjFRNDggMjYgNDYuMSAzMC42TDQ1LjkgMzEuNFE0NCAzNiAzOS40IDM3LjlMMzguNiAzOC4xUTM0IDQwIDMyLjEgNDQuNkwzMS45IDQ1LjRRMzAgNTAgMjYgNDdMMjYgNDdRMjIgNDQgMjIuNyAzOS4xWiIgZmlsbD0iI0NEQ0RDRCIvPjxwYXRoIGQ9Ik01MC42IDUxUTUwIDQ2IDU0LjcgNDQuNEw1Ny4zIDQzLjZRNjIgNDIgNjUuNSA0NS41TDY2LjUgNDYuNVE3MCA1MCA2Ny44IDU0LjVMNjQuMiA2MS41UTYyIDY2IDU3LjQgNjQuMUw1Ni42IDYzLjlRNTIgNjIgNTEuNCA1N1oiIGZpbGw9IiNDRENEQ0QiLz48cGF0aCBkPSJNNTcuOCAyMi40UTU2IDIwIDU4LjkgMTkuNEw2My4xIDE4LjZRNjYgMTggNjcuNSAyMC42TDcwLjUgMjUuNFE3MiAyOCA2OSAyOEw2NSAyOFE2MiAyOCA2MC4yIDI1LjZaIiBmaWxsPSIjQ0RDRENEIi8+PC9zdmc+';
+function qlHost(u){try{return new URL(qlUrl(u)).hostname;}catch(_){return '';}}
+function qlHTML(){return `<section class="hm-sec hm-jbox hm-qlsec" aria-label="Quick links"><div class="hm-qlhd"><h2 class="hm-jh hm-qlh">Quick links</h2><button type="button" class="hm-site hm-qledit" data-act-qledit aria-label="Edit quick links" title="Edit quick links">${PEN_ICON}</button></div>
+  <div class="hm-qlg">${qlList().map(l=>{const h=qlHost(l.u);return `<a class="hm-qlt" href="${esc(qlUrl(l.u))}" target="_blank" rel="noopener"><img class="hm-qlf" alt="" width="40" height="40" loading="lazy" referrerpolicy="no-referrer" src="${h?'https://'+esc(h)+'/favicon.ico':QL_GLOBE}"><span class="hm-qln">${esc(l.n)}</span><span class="hm-go" aria-hidden="true">${HM_ARROW}</span></a>`;}).join('')}</div></section>`;}
+/* a link whose icon can't be found shows the gray and white globe */
+document.addEventListener('error',e=>{const t=e.target;if(t&&t.tagName==='IMG'&&t.classList&&t.classList.contains('hm-qlf')&&t.src!==QL_GLOBE){t.src=QL_GLOBE;}},true);
 function qlOpen(){
   qlClose();hmQgClose();const cur=qlList(),rows=[];for(let i=0;i<QL_MAX;i++)rows.push(cur[i]||{n:'',u:''});
   const o=document.createElement('div');o.className='qov hm-qgov hm-qlov';o.id='hm-qlp';
@@ -12366,7 +12392,7 @@ function nobarSync(){const g=document.getElementById('games'),d=document.getElem
 {const mo=new MutationObserver(nobarSync);['games','desmos','v-clock'].forEach(id=>{const e=document.getElementById(id);if(e)mo.observe(e,{attributes:true,attributeFilter:['hidden','class'],childList:true});});}
 /* ---------- render root ---------- */
 /* signed in but the account's data hasn't arrived yet (a reload): show the loading screen, never empty pages */
-function dataWait(){const on=!!(state.user&&!settingsLoaded);let d=document.getElementById('dataload');
+function dataWait(){const on=!!(state.user&&!settingsLoaded)&&!document.documentElement.classList.contains('sx-fb')&&!document.querySelector('#spclock,#spcover');let d=document.getElementById('dataload');
   /* the moment the signed-in planner is usable (performance mark, for measuring boots) */
   if(!on&&state.user&&!dataWait.m){dataWait.m=1;try{performance.mark('sx-ready');}catch(_){}}
   if(on&&!d){d=document.createElement('div');d.id='dataload';d.setAttribute('role','status');d.innerHTML=resRunHTML()+'<div class="dl-sub">'+esc(loadTip())+'</div>';document.body.appendChild(d);
@@ -12887,6 +12913,7 @@ if(window.SX_REF)sxRefArrived(window.SX_REF);
     /* opened from atoll (framed, with the saved login it handed over): no login page, the clock sits mid-screen, spins and
        zooms into its cap, and the planner fades in from behind the color. ?framedtest=1 on localhost pretends to be framed */
     let framed=false;try{framed=window.top!==window||(location.hostname==='localhost'&&new URLSearchParams(location.search).get('framedtest')==='1');}catch(_){framed=true;}
+    framed=true;/* every start with a saved session (a reload) plays the sign-in clock */
     if(matchMedia('(prefers-reduced-motion: reduce)').matches)framed=false;
     if(!framed)document.documentElement.classList.remove('sx-fb');
     /* the starter page (web-shell.py) may have asked for the data already: use its answer instead of asking again */
@@ -14491,7 +14518,7 @@ async function loadGame(id){
    kept under id|hash and used only when the page asks for that same hash. A fetched file is stored only when its own
    hash matches what the page expects, so an updated game is never served from an old copy. Up to GF_KEEP characters
    in all, the least recently opened go first. Without IndexedDB or a stamp it simply fetches, as before */
-const GAME_VER={"lander":"1684804b21","pipworks":"79e1238ce5","solitaire":"8c505f28ec","geohunter":"c8e9d2ecce","chess":"5c078efb55","gartic":"6f22b9c960","guessbuild":"ec4193b106","imposter":"2c7f34720b","poker":"6c5dc0b563","soundboard":"e07aefc27d","capitalist":"73fea6408d","tinyfishing":"708c08b431","krillion":"e0d5f87312","geodash":"f1196aa413","appel":"80dd5f0087","metrica-wave":"c3df75a336","voteout":"7f793110c6","getaway":"9dda126d83","tag":"8bc7736018","crossyroad":"da8570d413","drivemad":"127bf09cfc","gladihoppers":"87d1b808b0","monkeymart":"4ce25762a3","ovo":"f564966222","stickmanhook":"a5c495f4f5","paperio":"8198023f59","smashkarts":"806875291a","yohoho":"24208763a5","basketballrandom":"175bedac55","houseofhazards":"7b313f0931","snake":"c5420e56c9","torahrunner":"118d7d3a3d","knessetcombat":"2729a1592b","doom":"4f3b061ac7","papaspizzeria":"ded7417f7e","papasburgeria":"aedcee9463","papaswingeria":"b9b6139c9d","papastacomia":"5f69931ad8","papaspancakeria":"4baa264d88","pakistanrunner":"4a386dfc67","departed":"a354fdc1d9","retrobowl":"d7ddcc1688","subwaysurfers":"c332af6b02","tunnelrush":"dec240f546","driftboss":"71fad4f513","fnae":"9844ce377d","meditation":"56847adf1b","crashout":"59eaa18662","snowrider":"a692396710","retrobowlcollege":"3ad9da6ab9","powerlineio":"a874292b22","janissarybattles":"6da0602eb4","tag2":"cda72138aa","cookieclicker":"7422c6501f","idlebreakout":"57034162f4","cards":"c70d832a86"};
+const GAME_VER={"lander":"1684804b21","pipworks":"79e1238ce5","solitaire":"8c505f28ec","geohunter":"c8e9d2ecce","chess":"5c078efb55","gartic":"6f22b9c960","guessbuild":"ec4193b106","imposter":"2c7f34720b","poker":"6c5dc0b563","soundboard":"e07aefc27d","capitalist":"73fea6408d","tinyfishing":"708c08b431","krillion":"e0d5f87312","geodash":"f1196aa413","appel":"80dd5f0087","metrica-wave":"c3df75a336","voteout":"7f793110c6","getaway":"9dda126d83","tag":"8bc7736018","crossyroad":"da8570d413","drivemad":"127bf09cfc","gladihoppers":"87d1b808b0","monkeymart":"4ce25762a3","ovo":"f564966222","stickmanhook":"a5c495f4f5","paperio":"8198023f59","smashkarts":"806875291a","yohoho":"24208763a5","basketballrandom":"175bedac55","houseofhazards":"7b313f0931","snake":"c5420e56c9","torahrunner":"118d7d3a3d","knessetcombat":"2729a1592b","doom":"4f3b061ac7","papaspizzeria":"ded7417f7e","papasburgeria":"aedcee9463","papaswingeria":"b9b6139c9d","papastacomia":"5f69931ad8","papaspancakeria":"4baa264d88","pakistanrunner":"4a386dfc67","departed":"a354fdc1d9","retrobowl":"d7ddcc1688","subwaysurfers":"c332af6b02","tunnelrush":"dec240f546","driftboss":"71fad4f513","fnae":"9844ce377d","meditation":"56847adf1b","crashout":"59eaa18662","snowrider":"a692396710","retrobowlcollege":"3ad9da6ab9","powerlineio":"a874292b22","janissarybattles":"6da0602eb4","tag2":"cda72138aa","cookieclicker":"7422c6501f","idlebreakout":"57034162f4","farflung":"3024edef2b","cards":"c70d832a86"};
 const GF_KEEP=24e6;let gfDbP=null;
 function gfDb(){if(gfDbP)return gfDbP;gfDbP=new Promise((res,rej)=>{try{const q=indexedDB.open('sx-game',1);
   q.onupgradeneeded=()=>{q.result.createObjectStore('f');q.result.createObjectStore('m');};q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error);q.onblocked=()=>rej(0);}catch(e){rej(e);}});
@@ -15270,7 +15297,8 @@ function gmRenderPick(){
   const list=GAMES.filter(x=>!x.hide&&!sensHidden(x.id));
   pick.innerHTML=`<div class="gm-head"><h1 class="gm-h"><span>games</span></h1>
     <button class="gm-x" data-act-gclose aria-label="Close" title="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
-    <section class="gm-sec" data-sec="all">${list.some(gameLocked)?gmLockPanel():''}<input type="text" id="gm-q" readonly data-noauto class="gm-q" placeholder="Search games" aria-label="Search games" autocomplete="off" spellcheck="false" value="${esc(gmQ)}"><div class="gm-grid">${gmFeatTiles(list,tile)}<button class="gm-tile gm-add" data-gm-sugg aria-label="Suggest a game" title="Suggest a game"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>${gmSorted(list).map(x=>tile(x).replace(/^<button[^>]*>/,m=>m+gmStar(x))).join('')}</div></section>${gmUnlocked()||SENS_GAMES.length?`<div class="gm-endbar">${gmUnlocked()?'<button class="kbtn" data-gm-replay>Play animation again</button>':''}${SENS_GAMES.length?`<button class="kbtn" data-gm-sens>${state.settings.sensGames?'Hide sensitive games':'Show sensitive games'}</button>`:''}</div>`:''}`;
+    <section class="gm-sec" data-sec="all">${list.some(gameLocked)?gmLockPanel():''}<input type="text" id="gm-q" readonly data-noauto class="gm-q" placeholder="Search games" aria-label="Search games" autocomplete="off" spellcheck="false" value="${esc(gmQ)}"><div class="gm-grid"><button class="gm-tile gm-add" data-gm-sugg aria-label="Suggest a game" title="Suggest a game"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>${gmFeatTiles(list,tile)}${gmSorted(list).map(x=>tile(x).replace(/^<button[^>]*>/,m=>m+gmStar(x))).join('')}</div></section>${gmUnlocked()||SENS_GAMES.length?`<div class="gm-endbar">${gmUnlocked()?'<button class="kbtn" data-gm-replay>Play animation again</button>':''}${SENS_GAMES.length?`<button class="kbtn" data-gm-sens>${state.settings.sensGames?'Hide sensitive games':'Show sensitive games'}</button>`:''}</div>`:''}`;
+  {const big=[...pick.querySelectorAll('.gm-tile:is([data-game="lander"],[data-game="krillion"])')];if(big[0])big[0].classList.add('gm-tr');if(big[1])big[1].classList.add('gm-tl');}
   gmFilterQ();
   /* the first time an account sees its games unlocked by a referral, the lock bursts open */
   if(gmUnlocked()&&state.user.referred>0&&!state.settings.unlockSeen){state.settings.unlockSeen=true;saveSettings();setTimeout(gmUnlockAnim,350);}
