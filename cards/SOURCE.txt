@@ -1,0 +1,1 @@
+Card art for Trading Cards (Saxon Planner). Parts are photo cut-outs from Wikimedia Commons, credits in assets/parts/credits.json and catalog.json. Fonts Big Shoulders Display and Instrument Sans are OFL. Copied from the Scrapyard project.
