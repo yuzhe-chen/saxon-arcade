@@ -7821,8 +7821,8 @@ const SITE_URLS={
   planner:{Firebase:'atoll.web.app/',Tinyurl:'tinyurl.com/saxon-planner','Google Script':'script.google.com/macros/s/AKfycbxDk0GrC7XrtoekZdrW4qPsffwxxuG0ujTopOYe5m3rzRPX1GOtbv9-aUtvaXAZlFLW/exec'},
   profegpt:{Firebase:'profegpt.web.app/',Tinyurl:'tinyurl.com/profe-gpt','Google Script':'script.google.com/macros/s/AKfycbzQJSe8rHdR9ZDTmpEfFtOtUaHbirB9jQd0rP8GuOYqA-5MNLCDGZYBfOPirBDVybsObQ/exec'},
   interpres:{Firebase:'interpres.web.app/',Tinyurl:'tinyurl.com/interpres-latin','Google Script':'script.google.com/macros/s/AKfycbyfS0EeA5rlHcOyaDjO88BjaxAes0Zwvsh92wXzPKYgDciVoRuDa2eQXZ_eiJNECofn/exec'},
-  ambicant:{Firebase:'ambicant.web.app/'},departed:{Firebase:'departed.web.app/'},jamborine:{Firebase:'jamborine.web.app/'},stonks:{Firebase:'brrr.web.app/'},scrapyard:{Firebase:'scrapyard-expo.web.app/'},driftglass:{Firebase:'drift-glass.web.app/'}};
-const SITE_NAMES={planner:'Saxon Planner',profegpt:'ProfeGPT',interpres:'Interpres',ambicant:'Ambicant',departed:'Departed',jamborine:'Jamborine',stonks:'Stonks',scrapyard:'Scrapyard',driftglass:'Driftglass'};
+  ambicant:{Firebase:'ambicant.web.app/'},departed:{Firebase:'departed.web.app/'},jamborine:{Firebase:'jamborine.web.app/'},stonks:{Firebase:'brrr.web.app/'},scrapyard:{Firebase:'scrapyard-expo.web.app/'}};
+const SITE_NAMES={planner:'Saxon Planner',profegpt:'ProfeGPT',interpres:'Interpres',ambicant:'Ambicant',departed:'Departed',jamborine:'Jamborine',stonks:'Stonks',scrapyard:'Scrapyard'};
 const ON_GAS=/googleusercontent\.com$/.test(location.hostname);
 /* the game-free build (lectern.web.app): no games anywhere */
 const SAFE=!!window.SX_SAFE;if(SAFE)document.documentElement.classList.add('no-games','sx-safe');
@@ -11727,7 +11727,7 @@ function closeDesmos(){const d=document.getElementById('desmos');if(d.hidden)ret
 document.addEventListener('click',e=>{if(e.target.closest('[data-dz-close]'))closeDesmos();});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.getElementById('desmos').hidden){e.stopPropagation();closeDesmos();}},true);
 /* Home: Other websites, quick games and everything below the cards */
-const HM_SITES=[['profegpt','bubble','ProfeGPT'],['interpres','scroll','Interpres'],['ambicant','bulb','Ambicant'],['departed','train','Departed'],['jamborine','controller','Jamborine'],['stonks','graph','Stonks'],['scrapyard','gear','Scrapyard'],['driftglass','globe','Driftglass'],['planner','logo','Planner']].filter(x=>!(SAFE&&(x[0]==='departed'||x[0]==='jamborine')));
+const HM_SITES=[['profegpt','bubble','ProfeGPT'],['interpres','scroll','Interpres'],['ambicant','bulb','Ambicant'],['departed','train','Departed'],['jamborine','controller','Jamborine'],['stonks','graph','Stonks'],['scrapyard','gear','Scrapyard'],['planner','logo','Planner']].filter(x=>!(SAFE&&(x[0]==='departed'||x[0]==='jamborine')));
 const HM_JUMP=[['advisory','sticky'],['tools','calc'],['resources','books'],['chat','chat'],['games','controller']];
 const HM_ARROW='<svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
 const hmQgOk=x=>!!(x&&!x.hide&&!gameLocked(x)&&!sensHidden(x.id));
