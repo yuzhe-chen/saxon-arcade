@@ -1272,6 +1272,46 @@ html.home-on body::before{opacity:1}
   /* on a phone the cards drop into their own space below the title instead of falling across it */
   .hm-cards{overflow:clip;padding-top:24px;margin-top:-24px}}
 @media (prefers-reduced-motion: reduce){.hm-card.fly{animation:hmfade .4s ease both;animation-delay:0s}}
+
+/* ---------- Home: Mixed (planner on the left half, games on the right), the websites row, the big Tutorial button ---------- */
+#v-home .hm-main.hm-v-mixed{max-width:none;width:100%;justify-self:stretch}
+.mx{display:grid;grid-template-columns:minmax(150px,.75fr) minmax(0,1fr) minmax(0,1.35fr);gap:16px;align-items:start}
+.mx-plan{display:flex;flex-direction:column;gap:10px}
+.mx-nav{appearance:none;display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:12px 14px;background:var(--panel);border:2px solid var(--line);border-bottom-width:4px;border-radius:var(--r);cursor:pointer;color:var(--fg);font-family:var(--font-ui)}
+.mx-nav:hover{background:var(--panel2)}
+.mx-nav .mx-art{width:34px;height:34px;flex:none}
+.mx-nt{display:flex;flex-direction:column;min-width:0}
+.mx-nt b{font-weight:800;font-size:16px;line-height:1.2}
+.mx-nt span{font-size:13px;color:var(--faint);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mx-asg{max-height:calc(100dvh - 200px);overflow-y:auto;overscroll-behavior:none;min-width:0}
+.mx-asg .panel.asglist{background:transparent;padding:0;margin:0}
+.mx-games{display:flex;flex-direction:column;gap:12px;min-width:0}
+.mx-gh{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.mx-gh .hm-ph{margin:0}
+.mx-all{white-space:nowrap;padding:12px 22px}
+.mx-lab{font:800 13px/1 var(--font-ui);letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-top:4px}
+.mx-pop{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.mx-gt{appearance:none;position:relative;display:block;padding:0;overflow:hidden;cursor:pointer;text-align:left;color:#fff;background:var(--panel2);border:2px solid var(--line);border-bottom-width:4px;border-radius:var(--r);min-width:0}
+.mx-gt:hover{border-color:var(--pri)}
+.mx-gt img{display:block;width:100%;object-fit:cover}
+.mx-big img{aspect-ratio:2/1}
+.mx-sq img{aspect-ratio:4/3}
+.mx-plain{display:flex;align-items:center;justify-content:center;aspect-ratio:4/3;padding:12px;font:700 20px/1.1 var(--display);color:var(--fg);text-align:center}
+.mx-big .mx-plain{aspect-ratio:2/1}
+.mx-gf{position:absolute;left:0;right:0;bottom:0;display:flex;flex-direction:column;gap:2px;padding:8px 12px;background:rgba(15,15,20,.62)}
+.mx-gf b{font:800 15px/1.2 var(--font-ui);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mx-gf span{font:700 12px/1.2 var(--font-ui);opacity:.85;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mx-flag{position:absolute;top:10px;left:10px;background:var(--pri);color:#fff;font:800 12px/1 var(--font-ui);letter-spacing:.06em;text-transform:uppercase;padding:6px 10px;border-radius:999px}
+#v-home[data-hv=mixed] #hm-row{display:none}
+.hm-sitesec{margin-bottom:10px}
+.hm-os{gap:10px}
+.hm-os .hm-oi svg{width:28px;height:28px;flex:none}
+.hm-os .hm-oi{text-decoration:none;color:var(--fg)}
+.hm-btns.hm-tutonly{display:block}
+.hm-edap{margin-top:18px;padding-top:16px;border-top:2px solid var(--line);display:flex}
+.hm-btn.hm-tutbig{width:100%;min-height:68px;font-size:19px;padding:18px 28px}
+@media (max-width:1280px){.mx{grid-template-columns:minmax(0,1fr) minmax(0,1.2fr)}.mx-games{grid-column:1/-1}.mx-pop{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media (max-width:760px){.mx{grid-template-columns:minmax(0,1fr)}.mx-asg{max-height:none}.mx-pop{grid-template-columns:repeat(2,minmax(0,1fr))}}
 /* Desmos: the graphing calculator full screen, closed with × or Esc */
 #desmos{position:fixed;inset:0;z-index:1500;background:#171716;display:flex;flex-direction:column;animation:hmfade .25s ease both}
 #desmos[hidden]{display:none}
@@ -7425,8 +7465,8 @@ const SITE_URLS={
   planner:{Firebase:'atoll.web.app/',Tinyurl:'tinyurl.com/saxon-planner','Google Script':'script.google.com/macros/s/AKfycbxDk0GrC7XrtoekZdrW4qPsffwxxuG0ujTopOYe5m3rzRPX1GOtbv9-aUtvaXAZlFLW/exec'},
   profegpt:{Firebase:'profegpt.web.app/',Tinyurl:'tinyurl.com/profe-gpt','Google Script':'script.google.com/macros/s/AKfycbzQJSe8rHdR9ZDTmpEfFtOtUaHbirB9jQd0rP8GuOYqA-5MNLCDGZYBfOPirBDVybsObQ/exec'},
   interpres:{Firebase:'interpres.web.app/',Tinyurl:'tinyurl.com/interpres-latin','Google Script':'script.google.com/macros/s/AKfycbyfS0EeA5rlHcOyaDjO88BjaxAes0Zwvsh92wXzPKYgDciVoRuDa2eQXZ_eiJNECofn/exec'},
-  ambicant:{Firebase:'ambicant.web.app/'},departed:{Firebase:'departed.web.app/'},jamborine:{Firebase:'jamborine.web.app/'}};
-const SITE_NAMES={planner:'Saxon Planner',profegpt:'ProfeGPT',interpres:'Interpres',ambicant:'Ambicant',departed:'Departed',jamborine:'Jamborine'};
+  ambicant:{Firebase:'ambicant.web.app/'},departed:{Firebase:'departed.web.app/'},jamborine:{Firebase:'jamborine.web.app/'},stonks:{Firebase:'brrr.web.app/'},scrapyard:{Firebase:'scrapyard-expo.web.app/'}};
+const SITE_NAMES={planner:'Saxon Planner',profegpt:'ProfeGPT',interpres:'Interpres',ambicant:'Ambicant',departed:'Departed',jamborine:'Jamborine',stonks:'Stonks',scrapyard:'Scrapyard'};
 const ON_GAS=/googleusercontent\.com$/.test(location.hostname);
 /* the game-free build (lectern.web.app): no games anywhere */
 const SAFE=!!window.SX_SAFE;if(SAFE)document.documentElement.classList.add('no-games','sx-safe');
@@ -8036,13 +8076,13 @@ function applyData(d,cached){
     state.settings={colors:{...DEFAULT_COLORS,...(st.colors||{})},periods:{...(st.periods||{})},
       advisoryCourse:st.advisoryCourse||'',ical:st.ical||'',fullNames:!!st.fullNames,hideGames:!!st.hideGames,hideChat:!!st.hideChat,faqNew:!!st.faqNew,oppStar:[...(st.oppStar||[])],oppArch:[...(st.oppArch||[])],gamesIntro:!!st.gamesIntro,gameStar:[...(st.gameStar||[])],hidePages:[...(st.hidePages||[])],tutorialNew:!!st.tutorialNew,lunch:{...(st.lunch||{})},rel:{...(st.rel||{})},gpa:GPA_DIRTY&&state.settings&&Array.isArray(state.settings.gpa)?state.settings.gpa:SX.cleanGpa(st.gpa),gpaYear:GPA_DIRTY&&state.settings?state.settings.gpaYear:SX.cleanGpaYear(st.gpaYear),gpaByYear:GPA_DIRTY&&state.settings?!!state.settings.gpaByYear:!!st.gpaByYear};
     /* Home: quick games and what fills the cards area */
-    state.settings.quickGames=Array.isArray(st.quickGames)?st.quickGames.slice(0,5):[];state.settings.homeView=st.homeView||'pages';
+    state.settings.quickGames=Array.isArray(st.quickGames)?st.quickGames.slice(0,5):[];state.settings.homeView=st.homeView||'mixed';
     state.settings.homePages=Array.isArray(st.homePages)?[...st.homePages]:[];state.settings.homeRes=Array.isArray(st.homeRes)?st.homeRes.slice(0,12):[];
     state.settings.shareClasses=!!st.shareClasses;
     state.settings.focusMode=!!st.focusMode;state.settings.courseOrder=Array.isArray(st.courseOrder)?st.courseOrder.filter(x=>typeof x==='string'):[];
     state.calcmap=d.calcmap||{};
     state.settings.pageColors={...(st.pageColors||{})};state.settings.pageFade=!!st.pageFade;['decoOn','sensPics','sensGames','sensTools','footerOff'].forEach(k=>state.settings[k]=!!st[k]);state.settings.pageGrads={...(st.pageGrads||{})};state.settings.noteCols=Array.isArray(st.noteCols)?st.noteCols.slice(0,12):[];
-    state.settings.homeView=HV_OPTS.some(([k])=>k===st.homeView)?st.homeView:'pages';state.settings.homePages=Array.isArray(st.homePages)?[...st.homePages]:[];
+    state.settings.homeChosen=!!st.homeChosen;state.settings.homeView=HV_OPTS.some(([k])=>k===st.homeView)&&(st.homeChosen||st.homeView!=='pages')?st.homeView:'mixed';state.settings.homePages=Array.isArray(st.homePages)?[...st.homePages]:[];
     state.settings.quickGames=Array.isArray(st.quickGames)?[...st.quickGames]:[];state.settings.homeRes=Array.isArray(st.homeRes)?[...st.homeRes]:[];
     state.settings.quickLinks=Array.isArray(st.quickLinks)?st.quickLinks.filter(x=>x&&typeof x==='object').map(x=>({n:String(x.n||''),u:String(x.u||'')})).slice(0,4):null;state.settings.dynRes=!!st.dynRes;
     /* onboarding: mini-tours already seen, and pages that have ever had something added (their example is gone for good) */
@@ -8177,7 +8217,7 @@ function confetti(x,y){
 async function removeTask(id){try{await api('/api/task/'+encodeURIComponent(id),{method:'DELETE'});}catch(e){console.warn('delete failed',e);}}
 async function saveSettings(){if(!settingsLoaded)return;SX.scrubCourses(COURSES);try{await api('/api/settings',{method:'POST',body:JSON.stringify({colors:state.settings.colors,periods:state.settings.periods,shareClasses:!!state.settings.shareClasses,
   seenTips:state.settings.seenTips||[],usedPages:state.settings.usedPages||[],
-  advisoryCourse:state.settings.advisoryCourse||'',courses:COURSES,ical:state.settings.ical||'',fullNames:!!state.settings.fullNames,quickGames:state.settings.quickGames||[],focusMode:!!state.settings.focusMode,pageFade:!!state.settings.pageFade,decoOn:!!state.settings.decoOn,sensPics:!!state.settings.sensPics,sensGames:!!state.settings.sensGames,sensTools:!!state.settings.sensTools,footerOff:!!state.settings.footerOff,pageGrads:state.settings.pageGrads||{},noteCols:state.settings.noteCols||[],pageColors:state.settings.pageColors||{},courseOrder:state.settings.courseOrder||[],homeView:state.settings.homeView||'pages',homePages:state.settings.homePages||[],homeRes:state.settings.homeRes||[],quickLinks:Array.isArray(state.settings.quickLinks)?state.settings.quickLinks:null,dynRes:!!state.settings.dynRes,hideGames:!!state.settings.hideGames,hideChat:!!state.settings.hideChat,faqNew:!!state.settings.faqNew,oppStar:state.settings.oppStar||[],oppArch:state.settings.oppArch||[],gamesIntro:!!state.settings.gamesIntro,gameStar:state.settings.gameStar||[],hidePages:state.settings.hidePages||[],tutorialNew:!!state.settings.tutorialNew,rel:state.settings.rel||{},lunch:state.settings.lunch||{},gpa:SX.cleanGpa(state.settings.gpa),gpaYear:SX.cleanGpaYear(state.settings.gpaYear),gpaByYear:!!state.settings.gpaByYear})});}catch(e){console.warn('save failed',e);}}
+  advisoryCourse:state.settings.advisoryCourse||'',courses:COURSES,ical:state.settings.ical||'',fullNames:!!state.settings.fullNames,quickGames:state.settings.quickGames||[],focusMode:!!state.settings.focusMode,pageFade:!!state.settings.pageFade,decoOn:!!state.settings.decoOn,sensPics:!!state.settings.sensPics,sensGames:!!state.settings.sensGames,sensTools:!!state.settings.sensTools,footerOff:!!state.settings.footerOff,pageGrads:state.settings.pageGrads||{},noteCols:state.settings.noteCols||[],pageColors:state.settings.pageColors||{},courseOrder:state.settings.courseOrder||[],homeView:state.settings.homeView||'mixed',homeChosen:!!state.settings.homeChosen,homePages:state.settings.homePages||[],homeRes:state.settings.homeRes||[],quickLinks:Array.isArray(state.settings.quickLinks)?state.settings.quickLinks:null,dynRes:!!state.settings.dynRes,hideGames:!!state.settings.hideGames,hideChat:!!state.settings.hideChat,faqNew:!!state.settings.faqNew,oppStar:state.settings.oppStar||[],oppArch:state.settings.oppArch||[],gamesIntro:!!state.settings.gamesIntro,gameStar:state.settings.gameStar||[],hidePages:state.settings.hidePages||[],tutorialNew:!!state.settings.tutorialNew,rel:state.settings.rel||{},lunch:state.settings.lunch||{},gpa:SX.cleanGpa(state.settings.gpa),gpaYear:SX.cleanGpaYear(state.settings.gpaYear),gpaByYear:!!state.settings.gpaByYear})});}catch(e){console.warn('save failed',e);}}
 async function saveNote(n){if(STALE.has(n))return;try{await api('/api/advisory',{method:'POST',body:JSON.stringify(n)});}catch(e){console.warn('save failed',e);}}
 /* in-class assignments a week past their date, and sticky notes a week old, are removed by themselves */
 let sweepBusy=false;
@@ -11329,7 +11369,7 @@ function closeDesmos(){const d=document.getElementById('desmos');if(d.hidden)ret
 document.addEventListener('click',e=>{if(e.target.closest('[data-dz-close]'))closeDesmos();});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.getElementById('desmos').hidden){e.stopPropagation();closeDesmos();}},true);
 /* Home: Other websites, quick games and everything below the cards */
-const HM_SITES=[['profegpt','bubble','ProfeGPT'],['interpres','scroll','Interpres'],['ambicant','bulb','Ambicant'],['departed','train','Departed'],['jamborine','controller','Jamborine'],['planner','logo','Planner']].filter(x=>!(SAFE&&(x[0]==='departed'||x[0]==='jamborine')));
+const HM_SITES=[['profegpt','bubble','ProfeGPT'],['interpres','scroll','Interpres'],['ambicant','bulb','Ambicant'],['departed','train','Departed'],['jamborine','controller','Jamborine'],['stonks','graph','Stonks'],['scrapyard','gear','Scrapyard'],['planner','logo','Planner']].filter(x=>!(SAFE&&(x[0]==='departed'||x[0]==='jamborine')));
 const HM_JUMP=[['advisory','sticky'],['tools','calc'],['resources','books'],['chat','chat'],['games','controller']];
 const HM_ARROW='<svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
 const hmQgOk=x=>!!(x&&!x.hide&&!gameLocked(x)&&!sensHidden(x.id));
@@ -11341,6 +11381,8 @@ function hmQuick(el){
     '<button type="button" class="hm-site hm-qgadd" data-act-hmqg><span class="hm-plus">+</span><span>Add quick games</span></button>';
   if(q.innerHTML!==h)q.innerHTML=h;
 }
+/* every site in one row, with its icon and name, just above the quick links */
+function sitesRowHTML(){return `<section class="hm-sec hm-sitesec" aria-label="Other websites"><div class="hm-ql hm-os">${HM_SITES.map(([k,a,n])=>`<a class="hm-site hm-oi" data-site="${k}" target="_blank" rel="noopener">${art(a)}<span>${n}</span></a>`).join('')}</div></section>`;}
 function hmMore(el,own,noChat,noGames){
   const m=el.querySelector('#hm-more');if(!m)return;
   const td=todayStr(),dt=dayType(td),open=state.tasks.filter(t=>!t.done&&taskMode(t)==='hw'&&modeOk(t));
@@ -11351,8 +11393,9 @@ function hmMore(el,own,noChat,noGames){
     return `<button type="button" class="hm-jt" data-home-go="${k}">${art(a,'hm-jart')}<span class="hm-jn">${esc(p[1])}</span><span class="hm-jd">${esc(p[2])}</span><span class="hm-go" aria-hidden="true">${HM_ARROW}</span></button>`;}).join('');
   /* Today: just the two day cards (today framed in its Green or Gold, the next day quieter) and a way to the calendar */
   const di=today.indexOf('<div class="twog dayg">');if(di>=0)today=today.slice(di);
+  setTimeout(()=>siteLinks(m),0);
   const fd=isSchoolDay(td)?td:nextSchoolDay(td,true),ft=fd?dayType(fd):null;
-  m.innerHTML=qlHTML()+`<section class="hm-sec hm-todaysec"><div class="hm-today${ft?' dt-'+ft:''}">${today}</div>
+  m.innerHTML=sitesRowHTML()+qlHTML()+`<section class="hm-sec hm-todaysec"><div class="hm-today${ft?' dt-'+ft:''}">${today}</div>
       <div class="hm-tgo"><button type="button" class="hbtn" data-home-go="calendar">Go to calendar</button></div></section>${state.qaDay?qaHTML():''}${ssHomeHTML()}`+
     (jump?`<section class="hm-sec hm-jbox"><h2 class="hm-jh">Jump back in</h2><div class="hm-jgrid">${jump}</div></section>`:'');
 }
@@ -11427,8 +11470,8 @@ function hmDyn(){if(!state.user||!state.settings||!state.settings.dynRes||pageHi
 /* Home checks every 30 seconds whether a class started or ended */
 setInterval(()=>{if(state.view!=='home'||!state.settings||!state.settings.dynRes||document.hidden)return;const el=document.getElementById('v-home');
   if(el&&el.dataset.dyn!==hmDyn())renderHome();},30000);
-function hmView(noChat){if(hmDyn())return 'dynres';const v=(state.settings&&state.settings.homeView)||'pages';
-  return ['resources','chat','assignments','notepad'].includes(v)&&!((v==='chat'||v==='notepad')&&noChat)&&!(v==='resources'&&pageHidden('resources'))&&!(v==='assignments'&&pageHidden('assignments'))?v:'pages';}
+function hmView(noChat){if(hmDyn())return 'dynres';const v=(state.settings&&state.settings.homeView)||'mixed';
+  return ['resources','chat','assignments','notepad','mixed'].includes(v)&&!((v==='chat'||v==='notepad')&&noChat)&&!(v==='resources'&&pageHidden('resources'))&&!(v==='assignments'&&pageHidden('assignments'))?v:'pages';}
 let hmResWait=0;
 /* every resource the user can open, by class: built-in ones ('<class>/<id>') and their own or downloaded ones */
 function hmResAll(){
@@ -11439,9 +11482,31 @@ function hmResAll(){
 function hmResCard(it){const c=courseById(it.c),top=`<span class="hm-rc"><span class="sq" style="background:${esc(color(it.c))}"></span>${esc(c?cname(c):'')}</span><span class="hm-rt">${esc(it.title)}</span>`;
   return it.url?`<a class="hm-rcard" href="${esc(sisU(it.url))}" target="_blank" rel="noopener">${top}</a>`
     :`<button type="button" class="hm-rcard" ${it.my?`data-act="myopen"`:`data-act="resopen" data-c="${esc(it.c)}"`} data-id="${esc(it.id)}">${top}</button>`;}
+const MX_KEYS=['courses','calendar','advisory','resources','tools'],HM_PERM='lander';
+function mxTile(x,cls,flag,sub){const th=GAME_THUMB[x.id];
+  return `<button type="button" class="mx-gt ${cls}" data-hm-game="${esc(x.id)}">${th?`<img alt="" src="${thumbSrc(x.id)}">`:`<span class="mx-plain">${esc(x.name)}</span>`}${flag?`<span class="mx-flag">${flag}</span>`:''}<span class="mx-gf"><b>${esc(x.name)}</b>${sub?`<span>${sub}</span>`:`<span class="mx-tags">${x.labels.filter(l=>l!=='Embed').map(esc).join(', ')}</span>`}</span></button>`;}
+function mxGames(){
+  let list;try{list=GAMES.filter(x=>!x.hide&&!sensHidden(x.id)&&!gameLocked(x));}catch(_){setTimeout(()=>{if(state.view==='home')renderHome();},800);return '<div class="mx-games"></div>';}
+  gmStatsLoad();
+  const f=gmFeatured(list),used=new Set(f?[f.id]:[]),perm=list.find(x=>x.id===HM_PERM&&!used.has(x.id));if(perm)used.add(perm.id);
+  const pop=(GSTAT||[]).map(r=>list.find(x=>x.id===r.id)).filter(x=>x&&!used.has(x.id));
+  for(const x of list){if(pop.length>=4)break;if(!used.has(x.id)&&!pop.includes(x)&&GAME_THUMB[x.id])pop.push(x);}
+  const left=FEAT_PIN&&f&&f.id===FEAT_PIN.id?Math.max(1,Math.ceil((FEAT_PIN.until-Date.now())/864e5)):0;
+  return `<div class="mx-games"><div class="mx-gh"><h2 class="hm-ph">Games</h2><button type="button" class="btn mx-all" data-home-go="games">All games</button></div>
+    ${f?mxTile(f,'mx-big','Featured',left?left+' day'+(left===1?'':'s')+' left':''):''}
+    <div class="mx-lab">Most played</div><div class="mx-pop">${pop.slice(0,4).map(x=>mxTile(x,'mx-sq','','')).join('')}</div>
+    ${perm?`<div class="mx-lab">Always here</div>${mxTile(perm,'mx-big','','')}`:''}</div>`;
+}
+function mxPlanner(){
+  const pick=hmShown().filter(p=>MX_KEYS.includes(p[0])),pages=pick.length?pick:HM_PAGES.filter(p=>MX_KEYS.includes(p[0]));
+  const ts=state.tasks.filter(t=>!t.done&&taskMode(t)==='hw').sort((a,b)=>(a.date||'9')<(b.date||'9')?-1:1);
+  return `<div class="mx"><div class="mx-plan">${pages.map(([k,n,d])=>`<button type="button" class="mx-nav" data-home-go="${k}">${art(HM_ART[k],'mx-art')}<span class="mx-nt"><b>${n}</b><span>${d}</span></span></button>`).join('')}</div>
+    <div class="hm-panel mx-asg"><h2 class="hm-ph">Assignments</h2><div class="panel asglist">${ts.length?ts.map(t=>taskHTML(t,true)).join(''):'<div class="muted">'+cheer()+'</div>'}</div></div>${mxGames()}</div>`;
+}
 function hmMain(el,hv){
   const m=el.querySelector('#hm-main');if(!m)return;let h='';
-  if(hv==='assignments'){const ts=state.tasks.filter(t=>!t.done&&taskMode(t)==='hw').sort((a,b)=>(a.date||'9')<(b.date||'9')?-1:1);
+  if(hv==='mixed'){h=mxPlanner();}
+  else if(hv==='assignments'){const ts=state.tasks.filter(t=>!t.done&&taskMode(t)==='hw').sort((a,b)=>(a.date||'9')<(b.date||'9')?-1:1);
     h=`<div class="hm-panel"><h2 class="hm-ph">Assignments</h2><div class="panel asglist">${ts.length?ts.map(t=>taskHTML(t,true)).join(''):'<div class="muted">'+cheer()+'</div>'}</div></div>`;}
   else if(hv==='chat'){const st=CH&&CH.state;
     if(!st)setTimeout(()=>{if(state.view==='home')renderHome();},1200);
@@ -11496,18 +11561,21 @@ function renderHome(fly){
   const noGames=SAFE||!!(state.user&&state.settings&&state.settings.hideGames);
   const hv=hmView(noChat),pages=hmShown();
   const dyn=hmDyn();el.dataset.dyn=dyn;
-  const sig=(hv==='pages'?pages.map(p=>p[0]).join():'')+'|'+hv+'|'+dyn;
+  const tn=state.settings&&state.settings.tutorialNew?'t':'';
+  const sig=(hv==='pages'?pages.map(p=>p[0]).join():'')+'|'+hv+'|'+dyn+'|'+tn;
   const held=homeHold||document.documentElement.classList.contains('splash-on');
   if(el.dataset.sig!==sig){
     el.dataset.sig=sig;
     el.innerHTML=(hv!=='pages'?`<div class="hm-main hm-v-${hv}" id="hm-main"></div>`:`<div class="hm-cards" id="hmcards">${pages.map(([k,n,d],i)=>`<button type="button" class="hm-card" id="hm-${k}" data-home-go="${k}" style="--i:${i}">${art(HM_ART[k],'hm-art')}<span class="hm-tx"><span class="hm-n">${n}</span><span class="hm-d">${d}</span></span></button>`).join('')}</div>`)+`
       <div class="hm-side" id="hmside"><div class="hm-kicker"></div><h2 class="hm-title"><span class="l1">Saxon</span><br><span class="l2">Planner</span></h2><div class="hm-url"><a href="https:${SLASH2}${HM_URL}" target="_blank" rel="noopener">${HM_URL}</a><button type="button" data-hm-copy aria-label="Copy link" title="Copy link"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12"/><path d="M5 15H3V3h12v2"/></svg></button><span class="hm-ok" aria-live="polite"></span></div><div class="hm-rule"></div>
       <div class="hm-btns"><button type="button" class="hm-btn" id="hm-asg" data-home-go="assignments">See assignments</button><button type="button" class="hm-btn hm-hl" id="hm-sugg" data-act-sugg>Suggestions</button><button type="button" class="hm-btn alt" id="hm-tut" data-act-tut>Tutorial</button><button type="button" class="hm-btn alt" id="hm-faq" data-act="faq">FAQ</button><button type="button" class="hm-btn alt" id="hm-meme" data-act-meme>Meme</button><button type="button" class="hm-btn alt" id="hm-edit" data-act-hmedit>Edit home</button></div>
-      <div class="hm-sites" id="hm-row"><div class="hm-ow"><button type="button" class="hm-site" id="hm-other" data-act-hmother aria-expanded="false">${art('folder')}<span>Other websites</span><svg class="hm-chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button><div class="hm-opop" hidden>${HM_SITES.map(([k,a,n])=>`<a class="hm-oi" data-site="${k}" target="_blank" rel="noopener">${art(a)}<span>${n}</span></a>`).join('')}</div></div></div></div>
+      <div class="hm-sites" id="hm-row"></div></div>
       <div class="hm-more" id="hm-more"></div>`;
     siteLinks(el);
+    if(tn){const b=el.querySelector('.hm-btns');if(b){b.classList.add('hm-tutonly');b.innerHTML='<button type="button" class="hm-btn hm-hl hm-tutbig" id="hm-tut" data-act-tut>Start the tutorial</button>';}}
     fly=true;
   }
+  el.dataset.hv=hv;
   {const k=el.querySelector('.hm-kicker');if(k)k.textContent=fmtLong(todayStr());}
   hmQuick(el);hmMain(el,hv);hmMore(el,own,noChat,noGames);
   fitHomeGuide();
@@ -11722,7 +11790,7 @@ const pageHidden=k=>!!state.user&&hiddenPages().has(k);
 function apOpen(note){
   if(!state.user)return;
   pwx={mode:'appear',seq:[]};
-  const h=hiddenPages(),own=!!state.user.owner,mine=state.user.av||'',hv=state.settings.homeView||'pages',crown=rwHas(10);
+  const h=hiddenPages(),own=!!state.user.owner,mine=state.user.av||'',hv=state.settings.homeView||'mixed',crown=rwHas(10);
   const pages=AP_PAGES.filter(([k])=>k!=='tasks'||(own&&document.querySelector('[data-v="tasks"]')));
   const tile=id=>`<button type="button" class="ap-av${mine===id?' on':''}" data-ap-av="${id}" aria-pressed="${mine===id}" aria-label="${id?esc(avName(id)):'No avatar, just your first letter'}" title="${id?esc(avName(id)):'No avatar'}">${id?avSvg(id):`<span class="ap-none">${esc(state.user.name.slice(0,1))}</span>`}</button>`;
   pwxShow(`<div class="sec"><h2>Appearance</h2>
@@ -11891,7 +11959,7 @@ document.addEventListener('change',e=>{if(e.target.id!=='ap-foot'||!state.user)r
   state.settings.footerOff=!e.target.checked;footSync();saveSettings();});
 /* Appearance, Home: what Home shows (homeView), and with Pages, which page cards (homePages; empty means every page
    that isn't hidden) */
-const HV_OPTS=[['pages','Pages'],['resources','Resources'],['chat','Chat'],['assignments','Assignments'],['notepad','Notepad']];
+const HV_OPTS=[['mixed','Mixed'],['pages','Pages'],['resources','Resources'],['chat','Chat'],['assignments','Assignments'],['notepad','Notepad']];
 const hpPages=()=>{const a=AP_PAGES.filter(([k])=>k!=='tasks'||(state.user&&state.user.owner));
   return a;};
 const hpOn=k=>hmShown().some(p=>p[0]===k);
@@ -11906,15 +11974,17 @@ function hmEditOpen(){
   if(!state.user)return;hmQgClose();
   const o=document.createElement('div');o.className='qov hm-qgov hm-edov';o.id='hm-qgp';
   o.innerHTML=`<div class="qbox hm-qgbox hm-edbox" role="dialog" aria-modal="true" aria-labelledby="hm-qgh"><div class="faq-top"><div class="qhd" id="hm-qgh">Home</div><button class="hbtn navbtn faq-x" data-act-qgclose title="Close" aria-label="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
-    ${apHomeHTML(state.settings.homeView||'pages')}
-    <div class="ap-hide hm-eddyn"><div class="ap-hpn">While one of your classes is in session, Home shows just that class's resources</div><label class="hide-it"><span>Dynamic resources</span><input type="checkbox" class="hide-cb dynres-cb" ${state.settings.dynRes?'checked':''}><span class="hide-box" aria-hidden="true"></span></label></div></div>`;
+    ${apHomeHTML(state.settings.homeView||'mixed')}
+    <div class="ap-hide hm-eddyn"><div class="ap-hpn">While one of your classes is in session, Home shows just that class's resources</div><label class="hide-it"><span>Dynamic resources</span><input type="checkbox" class="hide-cb dynres-cb" ${state.settings.dynRes?'checked':''}><span class="hide-box" aria-hidden="true"></span></label></div>
+    <div class="hm-edap"><button type="button" class="hbtn" data-hm-appear>Appearance settings</button></div></div>`;
   document.body.appendChild(o);hpCap(o);
   o.addEventListener('mousedown',e=>{if(e.target===o)hmQgClose();});
 }
 document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('[data-act-hmedit]'))hmEditOpen();});
+document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('[data-hm-appear]')){hmQgClose();goSettings('appearance');}});
 document.addEventListener('click',e=>{
   const b=e.target.closest&&e.target.closest(':is(#pwx,#hm-qgp) [data-ap-hv]');if(!b||!state.user)return;
-  const k=b.dataset.apHv,box=b.closest('#pwx,#hm-qgp');state.settings.homeView=k;
+  const k=b.dataset.apHv,box=b.closest('#pwx,#hm-qgp');state.settings.homeView=k;state.settings.homeChosen=true;
   box.querySelectorAll('[data-ap-hv]').forEach(x=>{const on=x===b;x.classList.toggle('on',on);x.setAttribute('aria-pressed',String(on));});
   const g=box.querySelector('.ap-hp');if(g)g.hidden=k!=='pages';
   render();saveSettings();
@@ -12615,7 +12685,7 @@ if(window.SX_REF)sxRefArrived(window.SX_REF);
     state.view='home';try{localStorage.setItem('sx-tab','home');}catch(_){}
     /* a new account: the FAQ button blinks until its "I Can Read" */
     /* and it lands on Home, where the tutorial starts once the login page is gone (Your Classes comes in the tutorial) */
-    const su=signup,newAcct=()=>{if(su){state.settings.faqNew=true;state.settings.tutorialNew=true;saveSettings();obStart();}};
+    const su=signup,newAcct=()=>{if(su){state.settings.faqNew=true;state.settings.tutorialNew=true;saveSettings();}};
     /* the data usually came with the reply (r.data), so it is in hand at once; the clock plays either way */
     const dataP=loadData(r.data).then(ok=>{if(ok)newAcct();return ok;});
     if(matchMedia('(prefers-reduced-motion: reduce)').matches){
@@ -12826,7 +12896,6 @@ function obResume(){
   if(!state.user||OB.u===state.user.name)return;OB.u=state.user.name;
   let r=null;try{r=JSON.parse(localStorage.getItem('sx-ob')||'null');}catch(_){}
   if(r&&r.u===state.user.name&&OB_PH.includes(r.ph)){state.setup=true;state.setupAuto=false;state.suPhase=r.ph;OB.i=Math.max(0,Math.min(OB_TOUR.length-1,+r.i||0));return;}
-  if(state.settings.tutorialNew){state.setup=true;state.setupAuto=false;state.suPhase='tour';OB.i=0;}
 }
 /* from the start (after sign up, or the Tutorial button): the classes and link already saved fill phases 2 and 3 */
 function obStart(){
@@ -12899,7 +12968,7 @@ function obFinish(how){
   render();saveSettings();const w=document.querySelector('.wrap');if(w)w.scrollTop=0;
 }
 /* after sign up the login page fades into the tour (already drawn behind it) */
-function tutSoon(){if(state.user&&state.settings.tutorialNew&&!state.suPhase)obStart();}
+function tutSoon(){}   /* the tutorial no longer starts by itself: Home shows a big Tutorial button until it is done */
 
 /* ---- each page's own tour, the first time it opens: the spotlight walks through the few controls that matter there,
    with Skip and Next in its box (Esc skips). Once per page per account (settings.seenTips); Tutorial plays them again ---- */
@@ -14160,7 +14229,7 @@ async function loadGame(id){
    kept under id|hash and used only when the page asks for that same hash. A fetched file is stored only when its own
    hash matches what the page expects, so an updated game is never served from an old copy. Up to GF_KEEP characters
    in all, the least recently opened go first. Without IndexedDB or a stamp it simply fetches, as before */
-const GAME_VER={"lander":"1684804b21","pipworks":"79e1238ce5","solitaire":"8c505f28ec","geohunter":"c8e9d2ecce","chess":"5c078efb55","gartic":"6f22b9c960","guessbuild":"ec4193b106","imposter":"2c7f34720b","poker":"6c5dc0b563","soundboard":"e07aefc27d","capitalist":"73fea6408d","tinyfishing":"708c08b431","krillion":"e0d5f87312","geodash":"f1196aa413","appel":"80dd5f0087","metrica-wave":"c3df75a336","voteout":"7f793110c6","getaway":"9dda126d83","tag":"8bc7736018","crossyroad":"da8570d413","drivemad":"127bf09cfc","gladihoppers":"87d1b808b0","monkeymart":"4ce25762a3","ovo":"f564966222","stickmanhook":"a5c495f4f5","paperio":"8198023f59","smashkarts":"806875291a","yohoho":"24208763a5","basketballrandom":"175bedac55","houseofhazards":"7b313f0931","snake":"26db80bd41","torahrunner":"118d7d3a3d","pakistanrunner":"4a386dfc67","departed":"a354fdc1d9","retrobowl":"d7ddcc1688","subwaysurfers":"c332af6b02","tunnelrush":"dec240f546","driftboss":"71fad4f513","fnae":"9844ce377d","meditation":"56847adf1b","crashout":"59eaa18662","snowrider":"a692396710","retrobowlcollege":"3ad9da6ab9","powerlineio":"a874292b22","janissarybattles":"6da0602eb4","tag2":"cda72138aa","cookieclicker":"7422c6501f","idlebreakout":"57034162f4"};
+const GAME_VER={"lander":"1684804b21","pipworks":"79e1238ce5","solitaire":"8c505f28ec","geohunter":"c8e9d2ecce","chess":"5c078efb55","gartic":"6f22b9c960","guessbuild":"ec4193b106","imposter":"2c7f34720b","poker":"6c5dc0b563","soundboard":"e07aefc27d","capitalist":"73fea6408d","tinyfishing":"708c08b431","krillion":"e0d5f87312","geodash":"f1196aa413","appel":"80dd5f0087","metrica-wave":"c3df75a336","voteout":"7f793110c6","getaway":"9dda126d83","tag":"8bc7736018","crossyroad":"da8570d413","drivemad":"127bf09cfc","gladihoppers":"87d1b808b0","monkeymart":"4ce25762a3","ovo":"f564966222","stickmanhook":"a5c495f4f5","paperio":"8198023f59","smashkarts":"806875291a","yohoho":"24208763a5","basketballrandom":"175bedac55","houseofhazards":"7b313f0931","snake":"c5420e56c9","torahrunner":"118d7d3a3d","knessetcombat":"2729a1592b","pakistanrunner":"4a386dfc67","departed":"a354fdc1d9","retrobowl":"d7ddcc1688","subwaysurfers":"c332af6b02","tunnelrush":"dec240f546","driftboss":"71fad4f513","fnae":"9844ce377d","meditation":"56847adf1b","crashout":"59eaa18662","snowrider":"a692396710","retrobowlcollege":"3ad9da6ab9","powerlineio":"a874292b22","janissarybattles":"6da0602eb4","tag2":"cda72138aa","cookieclicker":"7422c6501f","idlebreakout":"57034162f4"};
 const GF_KEEP=24e6;let gfDbP=null;
 function gfDb(){if(gfDbP)return gfDbP;gfDbP=new Promise((res,rej)=>{try{const q=indexedDB.open('sx-game',1);
   q.onupgradeneeded=()=>{q.result.createObjectStore('f');q.result.createObjectStore('m');};q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error);q.onblocked=()=>rej(0);}catch(e){rej(e);}});
@@ -14900,9 +14969,12 @@ function gmStatsLoad(){
   if(gstatAsked||!GS)return;gstatAsked=true;
   try{const c=JSON.parse(sessionStorage.getItem('sx-gstat')||'null');if(c&&Date.now()-c.t<1800000&&Array.isArray(c.top)){GSTAT=c.top;return;}}catch(_){}
   gsCall('rpcGameStats',passKey||'').then(o=>{GSTAT=(o&&o.top)||[];try{sessionStorage.setItem('sx-gstat',JSON.stringify({t:Date.now(),top:GSTAT}));}catch(_){}
-    const g=document.getElementById('games');if(g&&!g.hidden&&g.querySelector('.gm-pick'))gmRenderPick();}).catch(()=>{});
+    const g=document.getElementById('games');if(g&&!g.hidden&&g.querySelector('.gm-pick'))gmRenderPick();if(state.view==='home')renderHome();}).catch(()=>{});
 }
+/* a pinned Featured game: shown for its week, then the daily pick takes over again */
+const FEAT_PIN={id:'knessetcombat',until:Date.parse('2026-11-25T05:00:00Z')};
 function gmFeatured(list){
+  if(FEAT_PIN&&Date.now()<FEAT_PIN.until){const x=list.find(y=>y.id===FEAT_PIN.id);if(x&&!gameLocked(x))return x;}
   const key=new Date().toLocaleDateString('en-CA',{timeZone:'America/New_York'});let n=0;for(const c of key)n=(n*31+c.charCodeAt(0))>>>0;
   let pool=list.filter(x=>!gameLocked(x)&&GAME_THUMB[x.id]);if(!pool.length)pool=list.filter(x=>!gameLocked(x));
   return pool.length?pool[n%pool.length]:null;
