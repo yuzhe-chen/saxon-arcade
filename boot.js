@@ -18,7 +18,9 @@ var PARTS={
 "getaway/Build/323862927f75a9b36201c486bc3975d5.data":[4,5236721],
 "drivemad/webapp/index.data":[2,2931903],
 "houseofhazards/Build/HouseOfHazardsTwoPlayerGames.data.unityweb":[5,7003513],
-"houseofhazards/Build/HouseOfHazardsTwoPlayerGames.wasm.code.unityweb":[4,5830245]
+"houseofhazards/Build/HouseOfHazardsTwoPlayerGames.wasm.code.unityweb":[4,5830245],
+"tanukisunset/tanuki_sunset.data.unityweb":[32,49167945],
+"tanukisunset/tanuki_sunset.wasm.code.unityweb":[4,5302672]
 };
 SX.parts=PARTS;
 function def(o,k,get,set){try{Object.defineProperty(o,k,{configurable:true,enumerable:true,get:get,set:set});return true;}catch(e){return false;}}
