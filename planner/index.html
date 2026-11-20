@@ -16026,7 +16026,10 @@ function gearMenu(){if(document.getElementById('gearmenu')){gearClose();return;}
   const g=document.getElementById('mgear');if(!g||!state.user)return;
   const m=document.createElement('div');m.id='gearmenu';m.className='gearmenu';m.setAttribute('role','menu');
   m.innerHTML=SET_CATS().map(([k,n])=>`<button type="button" role="menuitem" data-gear="${k}"><b>${esc(n)}</b><span>${esc(GEAR_DESC[k]||'')}</span></button>`).join('');
-  document.body.appendChild(m);const r=g.getBoundingClientRect();m.style.top=(r.bottom+8)+'px';m.style.right=Math.max(8,innerWidth-r.right)+'px';
+  document.body.appendChild(m);
+  /* the Settings row sits in the three-lines menu, which closes when it is clicked, so by now its box is empty: sit under whichever of the row, the three-lines button or the gear is actually on screen, and never off the left edge */
+  const an=[g,document.getElementById('menubtn'),document.getElementById('gearbtn')].find(x=>x&&x.getBoundingClientRect().width>0),r=an?an.getBoundingClientRect():{bottom:56,right:innerWidth-8};
+  m.style.top=(r.bottom+8)+'px';m.style.right=Math.min(Math.max(8,innerWidth-r.right),Math.max(8,innerWidth-m.offsetWidth-8))+'px';
   g.setAttribute('aria-expanded','true');g.classList.add('dd-open');}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#gearmenu [data-gear]');
   if(b){const k=b.dataset.gear;gearClose();goSettings(k);return;}
