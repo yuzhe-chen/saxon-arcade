@@ -3612,6 +3612,8 @@ html #v-home .hm-btn.hm-hl,html.pg2 #v-home .hm-btn.hm-hl{background:var(--gold-
 /* Featured and Most played: a 2x2 tile each at the front of the grid, with a small label */
 #games .gm-hot{grid-column:span 2;background:var(--panel);border:2px solid var(--line);border-bottom-width:4px;border-radius:var(--r);padding:14px 14px 16px;min-width:0}
 #games .gm-hot[hidden]{display:none}
+#games .gm-hot1{grid-column:span 1}
+#games .gm-hot1 .gm-hotg{grid-template-columns:minmax(0,1fr)}
 #games .gm-hotg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 #games .gm-hotg .gm-tile{min-width:0;margin:0}
 #games .gm-flag{position:absolute;right:10px;left:auto;top:10px;z-index:2;padding:4px 9px;border-radius:999px;background:var(--blue);color:#fff;font:800 10.5px/1.2 var(--font-ui);letter-spacing:.6px;text-transform:uppercase;pointer-events:none}
@@ -8514,7 +8516,7 @@ function applyData(d,cached){
     state.settings.focusMode=!!st.focusMode;state.settings.courseOrder=Array.isArray(st.courseOrder)?st.courseOrder.filter(x=>typeof x==='string'):[];
     state.calcmap=d.calcmap||{};
     state.settings.pageColors={...(st.pageColors||{})};state.settings.pageFade=!!st.pageFade;['decoOn','sensPics','sensGames','sensTools','footerOff'].forEach(k=>state.settings[k]=!!st[k]);state.settings.pageGrads={...(st.pageGrads||{})};state.settings.noteCols=Array.isArray(st.noteCols)?st.noteCols.slice(0,12):[];
-    state.settings.homeChosen=!!st.homeChosen;state.settings.homeView=HV_OPTS.some(([k])=>k===st.homeView)&&(st.homeChosen||st.homeView!=='pages')?st.homeView:'mixed';state.settings.homePages=Array.isArray(st.homePages)?[...st.homePages]:[];
+    state.settings.lastGame=/^[a-z0-9-]{1,30}$/.test(st.lastGame||'')?st.lastGame:'';state.settings.homeChosen=!!st.homeChosen;state.settings.homeView=HV_OPTS.some(([k])=>k===st.homeView)&&(st.homeChosen||st.homeView!=='pages')?st.homeView:'mixed';state.settings.homePages=Array.isArray(st.homePages)?[...st.homePages]:[];
     state.settings.quickGames=Array.isArray(st.quickGames)?[...st.quickGames]:[];state.settings.homeRes=Array.isArray(st.homeRes)?[...st.homeRes]:[];
     state.settings.clockStyle=CK_STYLES[st.clockStyle]?st.clockStyle:'classic';try{localStorage.setItem('sx-ckstyle',state.settings.clockStyle);}catch(_){}
     state.settings.quickLinks=Array.isArray(st.quickLinks)?st.quickLinks.filter(x=>x&&typeof x==='object').map(x=>({n:String(x.n||''),u:String(x.u||'')})).slice(0,8):null;state.settings.dynRes=!!st.dynRes;
@@ -8650,7 +8652,7 @@ function confetti(x,y){
 async function removeTask(id){try{await api('/api/task/'+encodeURIComponent(id),{method:'DELETE'});}catch(e){console.warn('delete failed',e);}}
 async function saveSettings(){if(!settingsLoaded)return;SX.scrubCourses(COURSES);try{await api('/api/settings',{method:'POST',body:JSON.stringify({colors:state.settings.colors,periods:state.settings.periods,shareClasses:!!state.settings.shareClasses,
   seenTips:state.settings.seenTips||[],usedPages:state.settings.usedPages||[],
-  clockStyle:state.settings.clockStyle||'classic',advisoryCourse:state.settings.advisoryCourse||'',courses:COURSES,ical:state.settings.ical||'',fullNames:!!state.settings.fullNames,quickGames:state.settings.quickGames||[],focusMode:!!state.settings.focusMode,pageFade:!!state.settings.pageFade,decoOn:!!state.settings.decoOn,sensPics:!!state.settings.sensPics,sensGames:!!state.settings.sensGames,sensTools:!!state.settings.sensTools,footerOff:!!state.settings.footerOff,pageGrads:state.settings.pageGrads||{},noteCols:state.settings.noteCols||[],pageColors:state.settings.pageColors||{},courseOrder:state.settings.courseOrder||[],homeView:state.settings.homeView||'mixed',homeChosen:!!state.settings.homeChosen,homePages:state.settings.homePages||[],homeRes:state.settings.homeRes||[],quickLinks:Array.isArray(state.settings.quickLinks)?state.settings.quickLinks:null,dynRes:!!state.settings.dynRes,hideGames:!!state.settings.hideGames,hideChat:!!state.settings.hideChat,faqNew:!!state.settings.faqNew,oppStar:state.settings.oppStar||[],oppArch:state.settings.oppArch||[],gamesIntro:!!state.settings.gamesIntro,gameStar:state.settings.gameStar||[],hidePages:state.settings.hidePages||[],tutorialNew:!!state.settings.tutorialNew,rel:state.settings.rel||{},lunch:state.settings.lunch||{},gpa:SX.cleanGpa(state.settings.gpa),gpaYear:SX.cleanGpaYear(state.settings.gpaYear),gpaByYear:!!state.settings.gpaByYear})});}catch(e){console.warn('save failed',e);}}
+  lastGame:state.settings.lastGame||'',clockStyle:state.settings.clockStyle||'classic',advisoryCourse:state.settings.advisoryCourse||'',courses:COURSES,ical:state.settings.ical||'',fullNames:!!state.settings.fullNames,quickGames:state.settings.quickGames||[],focusMode:!!state.settings.focusMode,pageFade:!!state.settings.pageFade,decoOn:!!state.settings.decoOn,sensPics:!!state.settings.sensPics,sensGames:!!state.settings.sensGames,sensTools:!!state.settings.sensTools,footerOff:!!state.settings.footerOff,pageGrads:state.settings.pageGrads||{},noteCols:state.settings.noteCols||[],pageColors:state.settings.pageColors||{},courseOrder:state.settings.courseOrder||[],homeView:state.settings.homeView||'mixed',homeChosen:!!state.settings.homeChosen,homePages:state.settings.homePages||[],homeRes:state.settings.homeRes||[],quickLinks:Array.isArray(state.settings.quickLinks)?state.settings.quickLinks:null,dynRes:!!state.settings.dynRes,hideGames:!!state.settings.hideGames,hideChat:!!state.settings.hideChat,faqNew:!!state.settings.faqNew,oppStar:state.settings.oppStar||[],oppArch:state.settings.oppArch||[],gamesIntro:!!state.settings.gamesIntro,gameStar:state.settings.gameStar||[],hidePages:state.settings.hidePages||[],tutorialNew:!!state.settings.tutorialNew,rel:state.settings.rel||{},lunch:state.settings.lunch||{},gpa:SX.cleanGpa(state.settings.gpa),gpaYear:SX.cleanGpaYear(state.settings.gpaYear),gpaByYear:!!state.settings.gpaByYear})});}catch(e){console.warn('save failed',e);}}
 async function saveNote(n){if(STALE.has(n))return;try{await api('/api/advisory',{method:'POST',body:JSON.stringify(n)});}catch(e){console.warn('save failed',e);}}
 /* in-class assignments a week past their date, and sticky notes a week old, are removed by themselves */
 let sweepBusy=false;
@@ -15797,7 +15799,10 @@ function gmFeatTiles(list,tile){
   if(f)out.push(big(f,'Featured'));
   const top=(GSTAT||[]).map(r=>list.find(x=>x.id===r.id)).find(x=>x&&(!f||x.id!==f.id));
   if(top)out.push(big(top,'Most played'));
-  return out.length?`<div class="gm-hot"><div class="gm-hotg">${out.join('')}</div></div>`:'';
+  /* the game this account played last gets its own small box beside it (it drops under on narrow screens) */
+  const lg=state.settings&&state.settings.lastGame,lx=lg&&list.find(x=>x.id===lg),taken=new Set([f&&f.id,top&&top.id]);
+  const last=lx&&!taken.has(lx.id)?`<div class="gm-hot gm-hot1"><div class="gm-hotg">${big(lx,'Last played')}</div></div>`:'';
+  return (out.length?`<div class="gm-hot"><div class="gm-hotg">${out.join('')}</div></div>`:'')+last;
 }
 function gmRenderPick(){
   const g=document.getElementById('games'),pick=g.querySelector('.gm-pick');if(!pick)return;
@@ -16098,6 +16103,7 @@ function playGame(id,sure){if(SAFE)return;
   if(gm&&gm.modes){metricaPick(gm);return;}
   if(gmParent(id))metricaLast=id;
   trackGame(id);firstStep({e:'game',id});
+  if(state.user&&gm&&!gm.modes&&state.settings.lastGame!==id){state.settings.lastGame=id;try{saveSettings();}catch(_){}}
   roomLeaveAll();g._t0=Date.now();
   /* the save is asked for now, alongside the game's file, so it's there when the game asks */
   gamePrefetchSave(id);try{localStorage.setItem('sx-glast',id);}catch(_){}
