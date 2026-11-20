@@ -474,7 +474,10 @@ input[type=color]::-webkit-color-swatch{border:none}
 .undo-toast .kbtn:hover{background:var(--accent);color:var(--accent-fg)}
 html.faq-open,html.faq-open body,html.faq-open .wrap{overflow:hidden!important;overscroll-behavior:none}
 .faq-box{overscroll-behavior:contain;width:620px;max-height:calc(100vh - 40px);overflow-y:auto}
-.faq-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.faq-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+/* the title shares a line with the close button: its margin moves to the row, and its bottom padding (the button's 4 px ledge minus its 2 px top border) puts the text on the middle of the button's light face, where the X sits */
+.qbox .faq-top .qhd{margin-bottom:0;padding-bottom:2px}
+.faq-top{margin-bottom:12px}
 .abs-box{max-width:560px;width:100%;display:flex;flex-direction:column;gap:10px}
 .abs-row{display:flex;flex-wrap:wrap;gap:8px}
 .abs-box .fl{margin:6px 0 0}
@@ -508,8 +511,11 @@ section.view{display:none}
 .rl-box.admin .tg{color:var(--danger)}
 .rl-box.mod{background:color-mix(in srgb,var(--green) 18%,var(--panel));border-color:var(--green)}
 .rl-box.mod .tg{color:var(--green)}
-.rl-box button{appearance:none;border:0;background:none;color:var(--fg2);cursor:pointer;font-size:16px;line-height:1;padding:2px 4px}
-.rl-box button:hover{color:var(--fg)}
+/* every button on the Administration page is as tall as the username boxes beside them (42 px) */
+#roles .kbtn{min-height:42px;box-sizing:border-box}
+.rl-box.mpsw{padding-top:6px;padding-bottom:6px}
+.rl-box button:not(.kbtn){appearance:none;border:0;background:none;color:var(--fg2);cursor:pointer;font-size:16px;line-height:1;padding:2px 4px}
+.rl-box button:not(.kbtn):hover{color:var(--fg)}
 .rl-add{display:flex;gap:8px;margin-top:12px}.rl-add input{flex:1;min-width:0}
 .rl-msg{font-size:12.5px;color:var(--danger);margin-top:6px;min-height:1em}
 .rl-sys{display:flex;flex-direction:column;gap:8px}
@@ -806,13 +812,15 @@ mark.sx-flag{background:color-mix(in srgb, var(--danger) 30%, transparent);color
 /* resource editor */
 #resed[hidden]{display:none}
 .re-ov{align-items:flex-start;overflow-y:auto}
-.re-box{--rin:18px;width:760px;display:flex;flex-direction:column;gap:12px;margin:4vh 0}
+.re-box{--rin:18px;--rgap:12px;width:760px;display:flex;flex-direction:column;gap:var(--rgap);margin:4vh 0}
 .re-top,.re-ctl{padding-left:var(--rin)}
 /* the editor's close button stays in view while the editor scrolls */
-.re-box>.re-x{position:sticky;top:8px;align-self:flex-end;margin-bottom:-47px;z-index:5}
+.re-box>.re-x{position:sticky;top:8px;align-self:flex-end;margin-bottom:calc(-44px - var(--rgap));z-index:5}
 .re-top{padding-right:52px}
 .re-box input[type=text]{padding-left:var(--rin);padding-right:var(--rin)}
-.re-top{display:flex;align-items:baseline;gap:12px;min-width:0}
+.re-top{display:flex;align-items:center;min-height:44px;min-width:0}
+/* the title and the class name share a baseline; the bottom padding (the close button's 4 px ledge minus its 2 px top border) centres them on the button's light face, where the X sits */
+.re-tt{display:flex;align-items:baseline;gap:12px;min-width:0;padding-bottom:2px}
 .re-box .qhd{margin:0;flex:none}
 .re-cls{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--fg2);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .re-fld{position:relative;background:var(--input)}
@@ -1276,15 +1284,7 @@ html.home-on body::before{opacity:1}
 /* ---------- Home: Mixed (planner on the left half, games on the right), the websites row, the big Tutorial button ---------- */
 #v-home .hm-main.hm-v-mixed{max-width:none;width:100%;justify-self:stretch}
 .mx{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}
-#hmside .mx-plan{align-self:stretch;margin-top:22px;text-align:left}
 @media (min-width:761px){html #v-home[data-hv=mixed].on{grid-template-columns:minmax(0,1fr) minmax(0,2fr);column-gap:24px}html #v-home[data-hv=mixed] .hm-side{max-width:none;align-items:flex-start;text-align:left}html #v-home[data-hv=mixed] .hm-btns{justify-content:flex-start}.mx-asg{max-height:calc(100dvh - 190px)}}
-.mx-plan{display:flex;flex-direction:column;gap:10px}
-.mx-nav{appearance:none;display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:12px 14px;background:var(--panel);border:2px solid var(--line);border-bottom-width:4px;border-radius:var(--r);cursor:pointer;color:var(--fg);font-family:var(--font-ui)}
-.mx-nav:hover{background:var(--panel2)}
-.mx-nav .mx-art{width:34px;height:34px;flex:none}
-.mx-nt{display:flex;flex-direction:column;min-width:0}
-.mx-nt b{font-weight:800;font-size:16px;line-height:1.2}
-.mx-nt span{font-size:13px;color:var(--faint);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .mx-asg{max-height:calc(100dvh - 200px);overflow-y:auto;overscroll-behavior:none;min-width:0}
 .mx-asg .panel.asglist{background:transparent;padding:0;margin:0}
 .mx-games{display:flex;flex-direction:column;gap:12px;min-width:0}
@@ -9704,7 +9704,7 @@ function closeResEditor(){RE=null;const ov=document.getElementById('resed');if(o
 function reShell(){
   const ov=document.getElementById('resed');
   ov.innerHTML=`<div class="qbox re-box"><button class="hbtn navbtn res-x re-x" data-re="cancel" title="Close" aria-label="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
-    <div class="re-top"><span class="qhd">${RE.id?'Edit resource':'New resource'}</span><span class="re-cls">${esc((k=>k?cname(k):RE.courseName)(RE.author?courseById(RE.course):SX.matchCourse(RE.courseName||'',COURSES)))}</span></div>
+    <div class="re-top"><span class="re-tt"><span class="qhd">${RE.id?'Edit resource':'New resource'}</span><span class="re-cls">${esc((k=>k?cname(k):RE.courseName)(RE.author?courseById(RE.course):SX.matchCourse(RE.courseName||'',COURSES)))}</span></span></div>
     ${RE.id?'':`<div class="hgroup re-types"><button class="hbtn ${RE.type==='doc'?'on':''}" data-re="type" data-t="doc">Document</button>
       <button class="hbtn ${RE.type==='link'?'on':''}" data-re="type" data-t="link">Link</button></div>`}
     <div class="re-fld"><div class="re-bd" id="re-title-bd"></div><input type="text" id="re-title" placeholder="Title" maxlength="120" autocomplete="off"></div>
@@ -11952,7 +11952,7 @@ function hmResAll(){
 function hmResCard(it){const c=courseById(it.c),top=`<span class="hm-rc"><span class="sq" style="background:${esc(color(it.c))}"></span>${esc(c?cname(c):'')}</span><span class="hm-rt">${esc(it.title)}</span>`;
   return it.url?`<a class="hm-rcard" href="${esc(sisU(it.url))}" target="_blank" rel="noopener">${top}</a>`
     :`<button type="button" class="hm-rcard" ${it.my?`data-act="myopen"`:`data-act="resopen" data-c="${esc(it.c)}"`} data-id="${esc(it.id)}">${top}</button>`;}
-const MX_KEYS=['courses','resources','tools'],HM_PERM='lander';
+const HM_PERM='lander';
 function mxTile(x,cls,flag,sub){const th=GAME_THUMB[x.id];
   return `<button type="button" class="mx-gt ${cls}" data-hm-game="${esc(x.id)}">${th?`<img alt="" src="${thumbSrc(x.id)}">`:`<span class="mx-plain">${esc(x.name)}</span>`}${flag?`<span class="mx-flag">${flag}</span>`:''}<span class="mx-gf"><b>${esc(x.name)}</b>${sub?`<span>${sub}</span>`:`<span class="mx-tags">${x.labels.filter(l=>l!=='Embed').map(esc).join(', ')}</span>`}</span></button>`;}
 function mxGames(){
@@ -11969,21 +11969,9 @@ function mxGames(){
     <div class="mx-lab">Most played</div><div class="mx-pop">${pop.slice(0,4).map(x=>mxTile(x,'mx-sq','','')).join('')}</div>
 </div>`;
 }
-function mxNavHTML(){
-  const pick=hmShown().filter(p=>MX_KEYS.includes(p[0])),pages=pick.length?pick:HM_PAGES.filter(p=>MX_KEYS.includes(p[0]));
-  return pages.map(([k,n,d])=>`<button type="button" class="mx-nav" data-home-go="${k}">${art(HM_ART[k],'mx-art')}<span class="mx-nt"><b>${n}</b><span>${d}</span></span></button>`).join('');
-}
 function mxPlanner(){
   const ts=state.tasks.filter(t=>!t.done&&taskMode(t)==='hw').sort((a,b)=>(a.date||'9')<(b.date||'9')?-1:1);
   return `<div class="mx"><div class="hm-panel mx-asg"><h2 class="hm-ph">Assignments</h2><div class="panel asglist">${ts.length?ts.map(t=>taskHTML(t,true)).join(''):'<div class="muted">'+cheer()+'</div>'}</div></div>${mxGames()}</div>`;
-}
-/* Mixed: the five page buttons sit in the left column under the title buttons */
-function mxSide(el,hv){
-  const side=el.querySelector('#hmside');if(!side)return;let box=side.querySelector('.mx-plan');
-  const on=hv==='mixed'&&!(state.settings&&state.settings.tutorialNew);
-  if(!on){if(box)box.remove();return;}
-  if(!box){box=document.createElement('div');box.className='mx-plan';const row=side.querySelector('#hm-row');side.insertBefore(box,row||null);}
-  const h=mxNavHTML();if(box.dataset.h!==h){box.innerHTML=h;box.dataset.h=h;}
 }
 function hmMain(el,hv){
   const m=el.querySelector('#hm-main');if(!m)return;let h='';
@@ -12059,7 +12047,7 @@ function renderHome(fly){
   }
   el.dataset.hv=hv;
   {const k=el.querySelector('.hm-kicker');if(k)k.textContent=fmtLong(todayStr());}
-  hmQuick(el);hmMain(el,hv);mxSide(el,hv);hmMore(el,own,noChat,noGames);
+  hmQuick(el);hmMain(el,hv);hmMore(el,own,noChat,noGames);
   fitHomeGuide();
   /* behind the login page the cards wait; homeFly drops them in once it's gone */
   if(held){el.querySelectorAll('.hm-card').forEach(c=>{c.classList.add('wait');c.classList.remove('fly');});return;}
@@ -15595,13 +15583,14 @@ const guestReply=r=>{if(r&&typeof r==='object'&&r.used){newGuestId();return '';}
 /* a game's saves go out at most every 1.5 s: a burst of saves (some games save on every jump) is one request with the
    latest copy, sent in order. Leaving the game or the page sends what is waiting at once, and a load gets it too */
 const gmSaveQ=new Map(),gmSent=new Map();let gmSaveT=0,gmSaveRun=Promise.resolve();
-/* every 8 s at most, a copy already saved is not sent again, and a save the server is too busy for waits for the next round */
-function gameSaveSoon(id,data){if(gmSent.get(id)===data&&!gmSaveQ.has(id))return;gmSaveQ.set(id,data);if(!gmSaveT)gmSaveT=setTimeout(gameSaveFlush,8000);}
+/* a copy already saved is not sent again, and a save the server is too busy for waits 20 to 30 s before it tries again */
+/* each save is a spreadsheet write of the whole copy under the one script lock, so a big save waits longer: 8 s up to 8 KB, then 0.3 ms per character (45 s at the 150 KB limit) */
+function gameSaveSoon(id,data){if(gmSent.get(id)===data&&!gmSaveQ.has(id))return;gmSaveQ.set(id,data);if(!gmSaveT)gmSaveT=setTimeout(gameSaveFlush,Math.min(45000,Math.max(8000,String(data).length*0.3)));}
 function gameSaveFlush(){clearTimeout(gmSaveT);gmSaveT=0;if(!gmSaveQ.size)return gmSaveRun;const q=[...gmSaveQ];gmSaveQ.clear();
   /* this device keeps the newest copy at once (not on every save a game makes: only when they go out) */
   if(!(isGameAdmin()&&gameTest()))q.forEach(([id,d])=>{const dv=gsDev(id);gsDevPut(id,d,dv?dv.s:(gmSent.has(id)?gmSent.get(id):'\u0000'));});
   return gmSaveRun=gmSaveRun.then(()=>Promise.all(q.map(([id,d])=>gameSave(id,d).then(()=>{gmSent.set(id,d);const dv=gsDev(id);if(!dv||dv.d===d)gsDevPut(id,d,d);}).catch(err=>{
-    if(err&&err.busy){if(!gmSaveQ.has(id))gmSaveQ.set(id,d);if(!gmSaveT)gmSaveT=setTimeout(gameSaveFlush,8000);}
+    if(err&&err.busy){if(!gmSaveQ.has(id))gmSaveQ.set(id,d);if(!gmSaveT)gmSaveT=setTimeout(gameSaveFlush,20000+Math.random()*10000);}
     else console.warn('game save failed',err);}))));}
 addEventListener('pagehide',gameSaveFlush);
 document.addEventListener('visibilitychange',()=>{if(document.hidden)gameSaveFlush();});
