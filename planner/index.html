@@ -3612,7 +3612,6 @@ html #v-home .hm-btn.hm-hl,html.pg2 #v-home .hm-btn.hm-hl{background:var(--gold-
 /* Featured and Most played: a 2x2 tile each at the front of the grid, with a small label */
 #games .gm-hot{grid-column:span 2;background:var(--panel);border:2px solid var(--line);border-bottom-width:4px;border-radius:var(--r);padding:14px 14px 16px;min-width:0}
 #games .gm-hot[hidden]{display:none}
-#games .gm-hotl{font:800 12px/1.4 var(--font-ui);letter-spacing:.08em;text-transform:uppercase;color:var(--fg2);margin:0 0 10px}
 #games .gm-hotg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 #games .gm-hotg .gm-tile{min-width:0;margin:0}
 #games .gm-flag{position:absolute;right:10px;left:auto;top:10px;z-index:2;padding:4px 9px;border-radius:999px;background:var(--blue);color:#fff;font:800 10.5px/1.2 var(--font-ui);letter-spacing:.6px;text-transform:uppercase;pointer-events:none}
@@ -15798,7 +15797,7 @@ function gmFeatTiles(list,tile){
   if(f)out.push(big(f,'Featured'));
   const top=(GSTAT||[]).map(r=>list.find(x=>x.id===r.id)).find(x=>x&&(!f||x.id!==f.id));
   if(top)out.push(big(top,'Most played'));
-  return out.length?`<div class="gm-hot"><div class="gm-hotl">Jump in</div><div class="gm-hotg">${out.join('')}</div></div>`:'';
+  return out.length?`<div class="gm-hot"><div class="gm-hotg">${out.join('')}</div></div>`:'';
 }
 function gmRenderPick(){
   const g=document.getElementById('games'),pick=g.querySelector('.gm-pick');if(!pick)return;
