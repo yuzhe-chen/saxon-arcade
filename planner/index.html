@@ -3610,6 +3610,11 @@ html #v-home .hm-btn.hm-hl,html.pg2 #v-home .hm-btn.hm-hl{background:var(--gold-
 /* the Krillion picture is wider than its tile: keep the title block in the middle so all of its text shows */
 #games .gm-plain .gm-big{min-height:120px}
 /* Featured and Most played: a 2x2 tile each at the front of the grid, with a small label */
+#games .gm-hot{grid-column:span 2;background:var(--panel);border:2px solid var(--line);border-bottom-width:4px;border-radius:var(--r);padding:14px 14px 16px;min-width:0}
+#games .gm-hot[hidden]{display:none}
+#games .gm-hotl{font:800 12px/1.4 var(--font-ui);letter-spacing:.08em;text-transform:uppercase;color:var(--fg2);margin:0 0 10px}
+#games .gm-hotg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+#games .gm-hotg .gm-tile{min-width:0;margin:0}
 #games .gm-flag{position:absolute;right:10px;left:auto;top:10px;z-index:2;padding:4px 9px;border-radius:999px;background:var(--blue);color:#fff;font:800 10.5px/1.2 var(--font-ui);letter-spacing:.6px;text-transform:uppercase;pointer-events:none}
 :root{--wrap-pt:32px}
 @media (max-width:820px){:root{--wrap-pt:20px}}
@@ -13757,7 +13762,8 @@ async function chatPoll(){
   CH.inflight=true;CH.again=false;
   try{
     const id=onPage&&!CH.pane&&CH.cur&&!chTmp(CH.cur)?CH.cur:null,c=id&&chC(id);
-    const r=await chatApi('sync',id?{id,since:c.loaded?c.syncLast||0:0}:{});
+    /* a check Google never answers is dropped after 9 s, so the next one can run (one stuck call must not freeze chat) */
+    const r=await Promise.race([chatApi('sync',id?{id,since:c.loaded?c.syncLast||0:0}:{}),new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),9000))]);
     if(r&&r.state){CH.lastSync=Date.now();let moved=false;
       if(id&&r.open){if(r.open.error==='noconv')chDrop(id);
         else if(r.open.messages){/* only messages this page didn't have count as news (ones it already got in a ping, or sent itself, come back once) */
@@ -14854,13 +14860,19 @@ const GAMES=[
   {id:'crossyroad',name:'Crossy Road',labels:['Singleplayer','Embed']},
   {id:'lander',name:'Lander',labels:['Singleplayer']},
   {id:'geohunter',name:'Geobowl',labels:['Singleplayer']},
-  /* Departed: the owner's own daily murder mystery on a train through time (departed.web.app), shown in a frame */
-  {id:'departed',name:'Departed',labels:['Singleplayer']},
-  /* the owner's other sites that are games, each shown in a frame like Departed: Jamborine (party games for a room), Stonks (a trading game), Scrapyard Trading (the Scrapyard cards, with fusing and trading) and Scrapyard (the card game itself) */
-  {id:'jamborine',name:'Jamborine',labels:['Social']},
-  {id:'stonks',name:'Stonks',labels:['Singleplayer']},
-  {id:'cards',name:'Scrapyard Trading',labels:['Social']},
-  {id:'scrapyard',name:'Scrapyard',labels:['Social']},
+  {id:'cookieclicker',name:"Cookie Clicker",labels:['Singleplayer','Embed']},
+  {id:'idlebreakout',name:"Idle Breakout",labels:['Singleplayer','Embed']},
+  {id:'janissarybattles',name:"Janissary Battles",labels:['Singleplayer','Embed']},
+  {id:'retrobowl',name:'Retro Bowl',labels:['Singleplayer','Embed']},
+  {id:'retrobowlcollege',name:"Retro Bowl College",labels:['Singleplayer','Embed']},
+  {id:'driftboss',name:'Drift Boss',labels:['Singleplayer','Embed']},
+  {id:'tanukisunset',name:'Tanuki Sunset',labels:['Singleplayer','Embed']},
+  {id:'paperio',name:'Paper.io 2',labels:['Multiplayer','Embed','Online']},
+  {id:'gladihoppers',name:'Gladihoppers',labels:['Singleplayer','Embed']},
+  {id:'stickmanhook',name:'Stickman Hook',labels:['Singleplayer','Embed']},
+  {id:'monkeymart',name:'Monkey Mart',labels:['Singleplayer','Embed']},
+  {id:'tag',name:'Tag',labels:['Multiplayer','Embed']},
+  {id:'tag2',name:"Tag 2",labels:['Singleplayer','Embed']},
   {id:'getaway',name:'Getaway Shootout',labels:['Multiplayer','Embed']},
   {id:'krillion',name:'Krillion',labels:['Singleplayer']},
   {id:'capitalist',name:'Tycoon Simulator',labels:['Singleplayer']},
@@ -14873,13 +14885,8 @@ const GAMES=[
   {id:'appel',name:'Metrica: Platformer',labels:['Multiplayer'],hide:true},
   {id:'metrica-wave',name:'Metrica: Wave',labels:['Multiplayer'],hide:true},
   {id:'metrica-mixed',name:'Metrica: Mixed',labels:['Multiplayer'],hide:true},
-  {id:'tag',name:'Tag',labels:['Multiplayer','Embed']},
   {id:'solitaire',name:'Solitaire',labels:['Singleplayer']},
-  {id:'gladihoppers',name:'Gladihoppers',labels:['Singleplayer','Embed']},
-  {id:'monkeymart',name:'Monkey Mart',labels:['Singleplayer','Embed']},
-  {id:'stickmanhook',name:'Stickman Hook',labels:['Singleplayer','Embed']},
   {id:'ovo',name:'OvO',labels:['Singleplayer','Embed']},
-  {id:'paperio',name:'Paper.io 2',labels:['Multiplayer','Embed','Online']},
   {id:'smashkarts',name:'Smash Karts',labels:['Multiplayer','Embed','Online']},
   {id:'yohoho',name:'YoHoHo.io',labels:['Multiplayer','Embed','Online']},
   {id:'basketballrandom',name:'Basketball Random',labels:['Multiplayer','Embed']},
@@ -14888,27 +14895,22 @@ const GAMES=[
   {id:'torahrunner',name:'Torah Runner',labels:['Singleplayer','Embed']},
   {id:'knessetcombat',name:'Knesset Combat',labels:['Singleplayer','Embed']},
   {id:'farflung',name:'Farflung',labels:['Singleplayer','Embed']},
-  {id:'tanukisunset',name:'Tanuki Sunset',labels:['Singleplayer','Embed']},
   {id:'extraplot',name:'Extraplot',labels:['Singleplayer']},
   {id:'doom',name:'Doom',labels:['Singleplayer','Embed']},
   {id:'papaspizzeria',name:"Papa's Pizzeria",labels:['Singleplayer','Embed']},
   {id:'papasburgeria',name:"Papa's Burgeria",labels:['Singleplayer','Embed']},
+  {id:'stonks',name:'Stonks',labels:['Singleplayer']},
+  /* Departed: the owner's own daily murder mystery on a train through time (departed.web.app), shown in a frame */
+  {id:'departed',name:'Departed',labels:['Singleplayer']},
   {id:'papaswingeria',name:"Papa's Wingeria",labels:['Singleplayer','Embed']},
   {id:'papastacomia',name:"Papa's Taco Mia",labels:['Singleplayer','Embed']},
   {id:'papaspancakeria',name:"Papa's Pancakeria",labels:['Singleplayer','Embed']},
   {id:'pakistanrunner',name:'Pakistan Runner',labels:['Singleplayer','Embed']},
-  {id:'retrobowl',name:'Retro Bowl',labels:['Singleplayer','Embed']},
   {id:'subwaysurfers',name:'Subway Surfers',labels:['Singleplayer','Embed']},
   {id:'tunnelrush',name:'Tunnel Rush',labels:['Singleplayer','Embed']},
-  {id:'driftboss',name:'Drift Boss',labels:['Singleplayer','Embed']},
   {id:'fnae',name:"Five Nights at Epstein's",labels:['Singleplayer','Embed']},
   {id:'snowrider',name:"Snow Rider 3D",labels:['Singleplayer','Embed']},
-  {id:'retrobowlcollege',name:"Retro Bowl College",labels:['Singleplayer','Embed']},
   {id:'powerlineio',name:"Powerline.io",labels:['Singleplayer','Embed']},
-  {id:'janissarybattles',name:"Janissary Battles",labels:['Singleplayer','Embed']},
-  {id:'tag2',name:"Tag 2",labels:['Singleplayer','Embed']},
-  {id:'cookieclicker',name:"Cookie Clicker",labels:['Singleplayer','Embed']},
-  {id:'idlebreakout',name:"Idle Breakout",labels:['Singleplayer','Embed']},
   {id:'gartic',name:'Gartic Phone',labels:['Social','Online']},
   {id:'guessbuild',name:'Guess the Drawing',labels:['Social','Online']},
   {id:'imposter',name:'Imposter',labels:['Social']},
@@ -14916,7 +14918,11 @@ const GAMES=[
   {id:'voteout',name:'Votesout',labels:['Social','Online']},
   {id:'soundboard',name:'Soundboard',labels:['Social']},
   {id:'meditation',name:'Meditation',labels:['Singleplayer'],hide:true},
-  {id:'crashout',name:'Crashout',labels:['Singleplayer'],hide:true}];
+  {id:'crashout',name:'Crashout',labels:['Singleplayer'],hide:true},
+  /* the owner's other sites that are games, each shown in a frame like Departed: Jamborine (party games for a room), Stonks (a trading game), Scrapyard Trading (the Scrapyard cards, with fusing and trading) and Scrapyard (the card game itself) */
+  {id:'jamborine',name:'Jamborine',labels:['Social']},
+  {id:'scrapyard',name:'Scrapyard',labels:['Social']},
+  {id:'cards',name:'Scrapyard Trading',labels:['Social']}];
 if(SAFE)GAMES.length=0;
 /* the picker is one list (no sections); the labels stay on each tile */
 const GAME_SECTIONS=[['Singleplayer','Singleplayer'],['Social','Social'],['Multiplayer','Multiplayer'],['Online','Online']];
@@ -15753,6 +15759,7 @@ function g_scrollTop(){const p=document.querySelector('#games .gm-pick');if(p)p.
 let gmQ='';
 function gmFilterQ(){
   const g=document.getElementById('games'),q=gmQ.trim().toLowerCase();if(!g)return;let n=0;
+  g.querySelectorAll('.gm-hot').forEach(x=>{x.hidden=!!q;});
   g.querySelectorAll('.gm-pick .gm-tile').forEach(t=>{const id=t.dataset.game||t.dataset.gameLocked;
     if(!id){t.hidden=!!q;return;}const x=GAMES.find(y=>y.id===id),hit=!q||(x?x.name:id).toLowerCase().includes(q);t.hidden=!hit;if(hit)n++;});
   let e=g.querySelector('.gm-none');if(q&&!n){if(!e){e=document.createElement('div');e.className='gm-none';const gr=g.querySelector('.gm-pick .gm-grid');if(gr)gr.after(e);}if(e)e.textContent='No games match "'+gmQ.trim()+'"';}else if(e)e.remove();
@@ -15791,7 +15798,7 @@ function gmFeatTiles(list,tile){
   if(f)out.push(big(f,'Featured'));
   const top=(GSTAT||[]).map(r=>list.find(x=>x.id===r.id)).find(x=>x&&(!f||x.id!==f.id));
   if(top)out.push(big(top,'Most played'));
-  return out.join('');
+  return out.length?`<div class="gm-hot"><div class="gm-hotl">Jump in</div><div class="gm-hotg">${out.join('')}</div></div>`:'';
 }
 function gmRenderPick(){
   const g=document.getElementById('games'),pick=g.querySelector('.gm-pick');if(!pick)return;
