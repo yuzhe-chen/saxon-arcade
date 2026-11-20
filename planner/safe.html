@@ -2618,7 +2618,8 @@ svg.bk-book .bk-p2{animation:bkp2 5s cubic-bezier(.5,0,.4,1) infinite}
 .lib-rt{font-weight:800;font-size:15.5px}
 .lib-rt:hover{color:var(--blue)}
 .lib-done{font-weight:800;color:var(--faint)}
-.gearmenu{position:fixed;z-index:1400;min-width:240px;max-width:calc(100vw - 16px);background:var(--bg);border:2px solid var(--line);border-bottom-width:4px;border-radius:var(--r);padding:6px;display:flex;flex-direction:column;gap:2px}
+/* above the top bar even when a page is open (the bar is raised to 1550 then; the menu hangs off the bar's menu and would hide behind it) */
+.gearmenu{position:fixed;z-index:1700;min-width:240px;max-width:calc(100vw - 16px);background:var(--bg);border:2px solid var(--line);border-bottom-width:4px;border-radius:var(--r);padding:6px;display:flex;flex-direction:column;gap:2px}
 .gearmenu button{appearance:none;border:0;background:none;color:var(--fg);cursor:pointer;text-align:left;padding:10px 12px;border-radius:12px;display:flex;flex-direction:column;gap:2px;font-family:var(--font-ui)}
 .gearmenu button:hover{background:var(--panel2)}
 .gearmenu b{font:800 14px/1.2 var(--font-ui)}
@@ -3256,6 +3257,62 @@ svg.ic-pic>*{vector-effect:non-scaling-stroke;stroke-width:2px}
 .db-cols2{margin-bottom:8px}
 .db-spk{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
 .db-spark{width:100%;max-width:420px;height:60px;color:var(--pri);display:block}
+/* Dashboard (redesign): figures, cards and charts. Light and dark both come from the theme colors */
+.db-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:12px;margin:0 0 16px}
+.db-k{display:flex;flex-direction:column;gap:3px;padding:14px 16px;border:2px solid var(--line);border-bottom-width:4px;border-radius:16px;background:var(--bg);min-width:0}
+.db-k.big{border-color:var(--pri)}
+.db-kv{font:700 34px/1.05 var(--display);color:var(--fg)}.db-k.big .db-kv{color:var(--pri)}
+.db-kl{font:700 12px/1.25 var(--font-ui);color:var(--faint);text-transform:uppercase;letter-spacing:.05em}
+.db-ks{font:600 13px/1.3 var(--font-ui);color:var(--fg2)}
+.db-dl{font:800 13px/1.3 var(--font-ui);color:var(--fg2)}.db-dl.up{color:var(--green)}.db-dl.down{color:var(--red-dark)}
+.db-card{padding:16px 18px 18px;border:2px solid var(--line);border-bottom-width:4px;border-radius:16px;background:var(--bg);margin:0 0 16px;min-width:0}
+.db-ct{font:700 18px/1.2 var(--display);margin:0 0 4px;color:var(--fg)}
+.db-cap{margin:0 0 14px;font:600 14px/1.45 var(--font-ui);color:var(--fg2)}
+.db-card>.db-note{margin:0}
+.db-bv{display:grid;gap:4px;align-items:end}.db-bv.tall .db-bb{height:150px}
+.db-bc{display:flex;flex-direction:column;align-items:center;gap:6px;min-width:0}
+.db-bt{font:800 12px/1 var(--font-ui);color:var(--fg2);height:12px;white-space:nowrap}
+.db-bb{display:flex;align-items:flex-end;width:100%;height:120px;background:var(--panel2);border-radius:8px;overflow:hidden}
+.db-bb i{display:block;width:100%;background:var(--pri);border-radius:6px 6px 0 0}
+.db-bc.hi .db-bb i{background:var(--pri-dark)}
+.db-bc:first-child{align-items:flex-start}.db-bc:last-child{align-items:flex-end}.db-bc.hi .db-bt{color:var(--fg)}
+.db-bl{font:700 11px/1 var(--font-ui);color:var(--faint);height:11px;white-space:nowrap}
+.db-svg{width:100%;height:auto;display:block;overflow:visible}
+.db-gl{stroke:var(--line);stroke-width:1}
+.db-gt{font-family:var(--font-ui);font-weight:700;fill:var(--faint)}
+.db-ar{fill:var(--pri);opacity:.13}
+.db-ln{fill:none;stroke:var(--pri);stroke-width:3;stroke-linejoin:round;stroke-linecap:round}
+.db-ln2{fill:none;stroke:var(--pri-dark);stroke-width:2;stroke-dasharray:5 5;stroke-linejoin:round;stroke-linecap:round}
+.db-dot{fill:var(--pri);stroke:var(--bg);stroke-width:2}
+.db-heat{display:grid;grid-template-columns:34px repeat(24,minmax(0,1fr));gap:3px;align-items:center}
+.db-heat i{display:block;aspect-ratio:1;border-radius:4px;min-width:0}
+.db-hr{font:700 11px var(--font-ui);color:var(--faint)}
+.db-hh{font:700 10px var(--font-ui);color:var(--faint);white-space:nowrap;overflow:visible}
+.db-fn{display:flex;flex-direction:column;gap:8px}
+.db-fr{display:grid;grid-template-columns:minmax(110px,190px) 1fr 96px;gap:12px;align-items:center;font:700 14px var(--font-ui);color:var(--fg2)}
+.db-fb{height:22px;background:var(--panel2);border-radius:11px;overflow:hidden}.db-fb i{display:block;height:100%;background:var(--pri);border-radius:11px;min-width:3px}
+.db-fv{text-align:right;color:var(--fg)}.db-fv small{font-weight:700;color:var(--faint)}
+.db-sk{display:flex;height:26px;border-radius:13px;overflow:hidden;background:var(--panel2);gap:2px}
+.db-sk i{display:block;height:100%}
+.s0{background:var(--pri-dark)}.s1{background:var(--pri)}.s2{background:var(--pri-light)}.s3{background:var(--line-hi)}
+.db-lg{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:12px;font:700 13px var(--font-ui);color:var(--fg2)}
+.db-lg span{display:inline-flex;align-items:center;gap:7px}.db-lg b{color:var(--fg)}.db-lg small{font-weight:700;color:var(--faint)}
+.db-lg i{width:12px;height:12px;border-radius:4px;display:inline-block}
+.db-lg i.l0{background:var(--pri-light,#a4ceff)}.db-lg i.l1{background:var(--pri-dark,var(--pri))}.db-lg i.l2{background:color-mix(in srgb,var(--pri-dark,var(--pri)) 62%,#000)}
+.db-over{margin-bottom:2px}
+.db-st2{display:flex;flex-direction:column}
+.db-sr{display:grid;grid-template-columns:minmax(90px,1.3fr) repeat(4,minmax(0,1fr));gap:10px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.db-sr.hd{border-top:0;padding:0 0 6px;font:700 12px var(--font-ui);color:var(--faint);text-transform:uppercase;letter-spacing:.05em}
+.db-sn{font:700 15px var(--font-ui);color:var(--fg)}
+.db-sc{display:flex;flex-direction:column;gap:1px;min-width:0}.db-sc b{font:700 22px/1.1 var(--display);color:var(--fg)}.db-sc small{font:600 12px var(--font-ui);color:var(--fg2)}
+.db-sx{grid-column:2/-1;font:700 13px var(--font-ui);color:var(--faint)}
+.db-gt{font-size:8.5px}
+.db-kpis>.db-k:last-child:nth-child(odd){grid-column:1/-1}
+@media (min-width:701px){.db-kpis>.db-k:last-child:nth-child(odd){grid-column:auto}}
+@media (max-width:700px){.db-gt{font-size:17px}.db-sc b{font-size:18px}.db-sc small{font-size:11px}.db-sr{gap:6px}}
+
+@media (max-width:700px){.db-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.db-kv{font-size:28px}.db-fr{grid-template-columns:1fr 84px}.db-fr .db-fb{grid-column:1/3;order:3}.db-heat{grid-template-columns:26px repeat(24,minmax(0,1fr));gap:2px}.db-card{padding:14px 14px 16px}}
+
 .db-spn{font:700 14px/1.6 var(--font-ui);color:var(--fg2);white-space:nowrap}.db-spn b{color:var(--fg);font-size:18px}
 @media (max-width:900px){.db-lay{grid-template-columns:minmax(0,1fr);gap:0}
   .db-nav{top:0;z-index:6;flex-direction:row;overflow-x:auto;overscroll-behavior:none;background:var(--bg);margin:0 -16px 16px;padding:10px 16px;scrollbar-width:none}
@@ -7360,9 +7417,20 @@ function normalizeCourse(input){
   /* the owner's dashboard: accounts, new ones, who was here lately and sign-ups per week (12 weeks), and joins: sign-up times of the last 15 days (the page puts them in its own days).
      u.c created, u.k login times (kept even after logging out), u.v visit times (an account's first page load of each
      day), so someone who stays signed in still counts as active. logins: login times of the last 7 days, visits: the same for visits */
+  /* Eastern time, the school's: milliseconds to add to a UTC time (US daylight saving: 2:00 on the second Sunday of March to 2:00 on the first Sunday of November) */
+  SX.etOffset = function (t) {
+    var y = new Date(t).getUTCFullYear();
+    function sunday(month, n) { var first = (7 - new Date(Date.UTC(y, month, 1)).getUTCDay()) % 7; return 1 + first + (n - 1) * 7; }
+    var start = Date.UTC(y, 2, sunday(2, 2), 7), end = Date.UTC(y, 10, sunday(10, 1), 6);
+    return t >= start && t < end ? -4 * 36e5 : -5 * 36e5;
+  };
+  SX.etDay = function (t) { return Math.floor((t + SX.etOffset(t)) / 864e5); };
   SX.userStats = function (list, now) {
-    var D = 864e5, out = { ok: true, total: list.length, new7: 0, new30: 0, active7: 0, active30: 0, weeks: [], joins: [], refjoins: [], primjoins: [], refTotal: 0, primTotal: 0, logins: [], visits: [], at: now }, i;
+    var D = 864e5, out = { ok: true, total: list.length, new7: 0, new30: 0, active7: 0, active30: 0, weeks: [], joins: [], refjoins: [], primjoins: [], allJoinsH: [], dau: [], cohorts: [], refDist: [0, 0, 0, 0, 0], refMax: 0, refTotal: 0, primTotal: 0, logins: [], visits: [], at: now }, i;
     for (i = 0; i < 12; i++) out.weeks.push(0);
+    for (i = 0; i < 30; i++) out.dau.push(0);
+    for (i = 0; i < 8; i++) out.cohorts.push({ n: 0, e: 0, r: 0 });
+    var today = SX.etDay(now), perRef = {};
     /* a primary referral is the sign-up that gave its referrer their first referral: the earliest account that used that code */
     var first = {};
     list.forEach(function (u, ix) {
@@ -7370,9 +7438,15 @@ function normalizeCourse(input){
       if (r && (!first[r] || c < first[r].c)) first[r] = { c: c, ix: ix };
     });
     list.forEach(function (u, ix) {
-      var c = Number(u.c) || 0, last = c, r = u.ref ? String(u.ref).toLowerCase() : '', prim = !!(r && first[r].ix === ix);
-      (u.k || []).forEach(function (t) { t = Number(t) || 0; if (t > last) last = t; if (t && now - t < 7 * D) out.logins.push(t); });
-      (u.v || []).forEach(function (t) { t = Number(t) || 0; if (t > last) last = t; if (t && now - t < 7 * D) out.visits.push(t); });
+      var c = Number(u.c) || 0, last = c, r = u.ref ? String(u.ref).toLowerCase() : '', prim = !!(r && first[r].ix === ix), seen = {}, back = false;
+      if (r) perRef[r] = (perRef[r] || 0) + 1;
+      if (c) out.allJoinsH.push(Math.floor(c / 36e5));
+      function mark(t) { var di = today - SX.etDay(t); if (di >= 0 && di < 30) seen[di] = 1; if (c && t >= c + 12 * 36e5 && t <= c + 7 * D) back = true; }
+      mark(c);
+      (u.k || []).forEach(function (t) { t = Number(t) || 0; if (t > last) last = t; if (t && now - t < 7 * D) out.logins.push(t); if (t) mark(t); });
+      (u.v || []).forEach(function (t) { t = Number(t) || 0; if (t > last) last = t; if (t && now - t < 7 * D) out.visits.push(t); if (t) mark(t); });
+      Object.keys(seen).forEach(function (di) { out.dau[29 - Number(di)]++; });
+      { var cw = Math.floor((now - c) / (7 * D)); if (c && cw >= 0 && cw < 8) { var co = out.cohorts[7 - cw]; co.n++; if (now - c >= 7 * D) { co.e++; if (back) co.r++; } } }
       if (Number(u.seen) > last) last = Number(u.seen);
       if (c && now - c < 7 * D) out.new7++;
       if (c && now - c < 30 * D) out.new30++;
@@ -7385,6 +7459,8 @@ function normalizeCourse(input){
       if (u.ref) out.refTotal++;
       if (prim) out.primTotal++;
     });
+    out.allJoinsH.sort(function (a, b) { return a - b; });
+    (function () { var b = [0, 0, 0, 0, 0]; Object.keys(perRef).forEach(function (k) { var n = perRef[k]; if (n > out.refMax) out.refMax = n; b[n === 1 ? 0 : n === 2 ? 1 : n <= 4 ? 2 : n <= 9 ? 3 : 4]++; }); out.refDist = b; })();
     out.logins.sort(function (a, b) { return a - b; });
     out.visits.sort(function (a, b) { return a - b; });
     out.joins.sort(function (a, b) { return a - b; });
@@ -14845,106 +14921,130 @@ function dashPaint(){
   const head=`<button class="hbtn navbtn res-x" data-db-close title="Close" aria-label="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button><div class="res-head"><div class="rh-text"><span class="rt">dashboard</span></div></div>`;
   if(!DB){d.innerHTML=`<div class="docs-in">${head}<div class="res-load">${resRunHTML()}</div></div>`;return;}
   if(DB.error){d.innerHTML=`<div class="docs-in">${head}<div class="rl-none">Can't load the dashboard</div></div>`;return;}
-  const st=(v,l,big)=>`<div class="db-st${big?' big':''}"><span class="db-v">${esc(String(v))}</span><span class="db-l">${esc(l)}</span></div>`;
-  const w=DB.weeks||[],mx=Math.max(1,...w),now=Date.now();
-  const wk=i=>new Date(now-(w.length-1-i)*7*864e5).toLocaleDateString([],{month:'short',day:'numeric'});
-  /* logins and visits (first page load of a day) in the last 7 days: by hour of the day (this device's time) and by day */
-  const lg=(DB.logins||[]).concat(DB.visits||[]).sort((a,b)=>a-b),hrs=Array(24).fill(0),days=Array(7).fill(0),t0=new Date();t0.setHours(0,0,0,0);
-  lg.forEach(t=>{const x=new Date(t);hrs[x.getHours()]++;const di=6-Math.floor((t0.getTime()+864e5-1-t)/864e5);if(di>=0&&di<7)days[di]++;});
-  const hm=Math.max(1,...hrs),dm=Math.max(1,...days);
+  const now=Date.now(),t0=new Date();t0.setHours(0,0,0,0);
+  const nf=v=>typeof v==='number'?v.toLocaleString():v;
+  const sum=(a,f,t)=>a.slice(f,t).reduce((x,y)=>x+y,0);
+  const pct=(a,b)=>b?Math.round(a/b*100)+'%':'-';
   const hl=h=>h===0?'12a':h<12?h+'a':h===12?'12p':(h-12)+'p';
-  const cols=`<div class="db-cols">${hrs.map((n,h)=>`<div class="db-col" title="${hl(h)}: ${n}"><span class="db-cb"><i style="height:${Math.round(n/hm*100)}%"></i></span><span class="db-cl">${h%3===0?hl(h):''}</span></div>`).join('')}</div>`;
-  const dayl=i=>new Date(t0.getTime()-(6-i)*864e5).toLocaleDateString([],{weekday:'short'});
-  const half=(a,b)=>a+b?Math.round((b-a)/Math.max(1,a)*100):0;
-  const trend=half(days.slice(0,3).reduce((a,b)=>a+b,0),days.slice(3,6).reduce((a,b)=>a+b,0));
-  const pk=hrs.indexOf(Math.max(...hrs));
-  const T=DB.tasks||{},U=DB.usage||{c:{},g:{}};
+  const hlong=h=>h===0?'12 AM':h<12?h+' AM':h===12?'12 PM':(h-12)+' PM';
+  const DN=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const shortDay=t=>new Date(t).toLocaleDateString([],{month:'short',day:'numeric'});
   const top=(m,n)=>Object.keys(m||{}).sort((a,b)=>m[b]-m[a]).slice(0,n);
   const gname=id=>{const x=GAMES.find(g=>g.id===id);return x?x.name:id;};
-  const list=(m,keys,nm)=>{const mx=Math.max(1,...keys.map(k=>m[k]));return keys.length?`<div class="db-bars db-wide">${keys.map(k=>`<div class="db-row"><span class="db-d">${esc(nm?nm(k):k)}</span><span class="db-bar"><i style="width:${Math.round(m[k]/mx*100)}%"></i></span><span class="db-n">${m[k]}</span></div>`).join('')}</div>`:'<div class="db-note">Nothing yet</div>';};
-  /* older counts: game tiles were saved as the name run into its labels ("Torah RunnerSingleplayerEmbed") */
-  const UC={};Object.keys(U.c||{}).forEach(k=>{const m=k.match(/^(.+?)((Singleplayer|Multiplayer|Social|Online|Embed)+)$/),n=m?'Open game: '+m[1]:k;UC[n]=(UC[n]||0)+U.c[k];});U.c=UC;
-  const tc=top(U.c,10),tg=top(U.g,10);
-  const pct=T.timed?Math.round(T.onTime/T.timed*100)+'%':'-';
-  /* sign-ups for each of the last 30 days, in this device's days: all of them, and the ones that came through a referral */
+  /* ---------- building blocks ---------- */
+  /* a change against the period before, in words */
+  const dlt=(cur,prev,tail)=>{if(!prev&&!cur)return '';const c=prev?Math.round((cur-prev)/prev*100):100,cls=c>0?'up':c<0?'down':'';
+    return `<span class="db-dl ${cls}">${c>0?'Up '+c+'%':c<0?'Down '+(-c)+'%':'Level'} ${esc(tail)}</span>`;};
+  const kpi=(v,l,o)=>{o=o||{};return `<div class="db-k${o.big?' big':''}"><span class="db-kv">${esc(String(v))}</span><span class="db-kl">${esc(l)}</span>${o.d||''}${o.s?`<span class="db-ks">${esc(o.s)}</span>`:''}</div>`;};
+  const kpis=a=>`<div class="db-kpis">${a.join('')}</div>`;
+  const card=(title,cap,body)=>`<div class="db-card"><h3 class="db-ct">${esc(title)}</h3>${cap?`<p class="db-cap">${cap}</p>`:''}${body}</div>`;
+  const none=t=>`<div class="db-note">${esc(t||'Nothing yet')}</div>`;
+  const nice=m=>{const p=Math.pow(10,Math.floor(Math.log10(m))),f=m/p;return (f<=1?1:f<=2?2:f<=4?4:f<=5?5:10)*p;};
+  /* columns: the tallest is darker; the value shows over every column when there are few, otherwise over the tallest */
+  const barsV=(vals,o)=>{o=o||{};const mx=Math.max(0,...vals),m=Math.max(1,mx),mi=vals.indexOf(mx),lab=o.lab||(()=>''),tip=o.tip||((i,n)=>String(n)),few=vals.length<=14,fmt=o.fmt||nf;
+    return `<div class="db-bv${o.tall?' tall':''}" style="grid-template-columns:repeat(${vals.length},minmax(0,1fr))">${vals.map((n,i)=>`<div class="db-bc${i===mi&&mx>0?' hi':''}" title="${esc(tip(i,n))}"><span class="db-bt">${(few||i===mi)&&n?esc(fmt(n)):''}</span><span class="db-bb"><i style="height:${Math.round(n/m*100)}%"></i></span><span class="db-bl">${esc(lab(i))}</span></div>`).join('')}</div>`;};
+  /* a line over time with a faint area, gridlines and a dot on the latest value; b is an optional second line (a moving average) */
+  const line=(vals,o)=>{o=o||{};const W=600,H=176,L=36,R=10,T=12,B=24,n=vals.length;if(!n)return none();
+    const ny=Math.max(2,nice(Math.max(1,...vals,...(o.b||[])))),X=i=>(L+(n<2?0:i/(n-1))*(W-L-R)),Y=v=>T+(H-T-B)*(1-v/ny);
+    const P=a=>a.map((v,i)=>X(i).toFixed(1)+','+Y(v).toFixed(1)).join(' ');
+    const grid=[0,.5,1].map(f=>{const y=Y(ny*f).toFixed(1);return `<line x1="${L}" x2="${W-R}" y1="${y}" y2="${y}" class="db-gl"/><text x="${L-6}" y="${(+y+4).toFixed(1)}" class="db-gt" text-anchor="end">${nf(Math.round(ny*f))}</text>`;}).join('');
+    const xl=(o.x||[]).map(([i,t])=>`<text x="${X(i).toFixed(1)}" y="${H-6}" class="db-gt" text-anchor="${i===0?'start':i===n-1?'end':'middle'}">${esc(t)}</text>`).join('');
+    return `<svg viewBox="0 0 ${W} ${H}" class="db-svg" role="img" aria-label="${esc(o.aria||'Chart')}">${grid}<polygon points="${X(0).toFixed(1)},${Y(0).toFixed(1)} ${P(vals)} ${X(n-1).toFixed(1)},${Y(0).toFixed(1)}" class="db-ar"/>${o.b?`<polyline points="${P(o.b)}" class="db-ln2"/>`:''}<polyline points="${P(vals)}" class="db-ln"/><circle cx="${X(n-1).toFixed(1)}" cy="${Y(vals[n-1]).toFixed(1)}" r="4.5" class="db-dot"/>${xl}</svg>`;};
+  /* when sign-ups happen: weekday by hour, darker is more */
+  const heat=g=>{const m=Math.max(1,...g.map(r=>Math.max(...r)));
+    return `<div class="db-heat"><span></span>${Array.from({length:24},(_,h)=>`<span class="db-hh">${h%3===0?hl(h):''}</span>`).join('')}${g.map((row,r)=>`<span class="db-hr">${DN[r]}</span>${row.map((n,h)=>`<i title="${DN[r]} ${hlong(h)}: ${n} sign-up${n===1?'':'s'}" style="background:${n?`color-mix(in srgb,var(--pri) ${Math.max(16,Math.round(n/m*100))}%,var(--panel2))`:'var(--panel2)'}"></i>`).join('')}`).join('')}</div>`;};
+  /* steps of a path, each as a share of the first */
+  const funnel=steps=>{const tp=Math.max(1,steps[0][1]);return `<div class="db-fn">${steps.map(([l,v])=>`<div class="db-fr"><span class="db-fl">${esc(l)}</span><span class="db-fb"><i style="width:${Math.round(v/tp*100)}%"></i></span><span class="db-fv">${nf(v)} <small>${Math.round(v/tp*100)}%</small></span></div>`).join('')}</div>`;};
+  /* one bar split into parts, with a legend under it */
+  const stack=parts=>{const tot=parts.reduce((a,p)=>a+p[1],0)||1;return `<div class="db-sk">${parts.map((p,i)=>p[1]?`<i class="s${i}" style="width:${p[1]/tot*100}%" title="${esc(p[0])}: ${nf(p[1])}"></i>`:'').join('')}</div><div class="db-lg">${parts.map((p,i)=>`<span><i class="s${i}"></i>${esc(p[0])} <b>${nf(p[1])}</b> <small>${Math.round(p[1]/tot*100)}%</small></span>`).join('')}</div>`;};
+  const list=(m,keys,nm)=>{const mx=Math.max(1,...keys.map(k=>m[k]));return keys.length?`<div class="db-bars db-wide">${keys.map(k=>`<div class="db-row"><span class="db-d">${esc(nm?nm(k):k)}</span><span class="db-bar"><i style="width:${Math.round(m[k]/mx*100)}%"></i></span><span class="db-n">${m[k]}</span></div>`).join('')}</div>`:none();};
+  /* ---------- sign-ups ---------- */
   const ND=30,jd=Array(ND).fill(0),rd=Array(ND).fill(0),pd=Array(ND).fill(0),dix=t=>ND-1-Math.floor((t0.getTime()+864e5-1-t)/864e5);
   (DB.joins||[]).forEach(t=>{const di=dix(t);if(di>=0&&di<ND)jd[di]++;});
   (DB.refjoins||[]).forEach(t=>{const di=dix(t);if(di>=0&&di<ND)rd[di]++;});
   (DB.primjoins||[]).forEach(t=>{const di=dix(t);if(di>=0&&di<ND)pd[di]++;});
   const dl=(i,n)=>new Date(t0.getTime()-(n-1-i)*864e5).toLocaleDateString([],{month:'short',day:'numeric'});
-  const sumA=(a,f,t)=>a.slice(f,t).reduce((x,y)=>x+y,0),nf=v=>typeof v==='number'?v.toLocaleString():v;
-  const chg=(a,b)=>b?Math.round((a-b)/b*100):(a?100:0),chgT=(a,b)=>{const c=chg(a,b);return c>0?'Up '+c+'%':c<0?'Down '+(-c)+'%':'Level'};
-  const j7=sumA(jd,ND-7,ND),j7p=sumA(jd,ND-14,ND-7),j30=sumA(jd,0,ND);
-  const r7=sumA(rd,ND-7,ND),r7p=sumA(rd,ND-14,ND-7),r30=sumA(rd,0,ND),rTot=DB.refTotal||0,rBest=Math.max(0,...rd),rBi=rd.indexOf(rBest);
-  /* a column chart: the light column is all sign-ups that day, the dark one the part that came through a referral */
-  const colsTwo=(tot,part,prim)=>{const m=Math.max(1,...tot);return `<div class="db-cols db-cols2${part?' db-lay3':''}" style="grid-template-columns:repeat(${tot.length},1fr)">${tot.map((n,i)=>`<div class="db-col" title="${esc(dl(i,tot.length))}: ${n} sign-up${n===1?'':'s'}${part?', '+part[i]+' through referrals':''}${prim?', '+prim[i]+' primary':''}"><span class="db-cb"><i class="all" style="height:${Math.round(n/m*100)}%"></i>${part&&part[i]?`<i class="ref" style="height:${Math.round(part[i]/m*100)}%"></i>`:''}${prim&&prim[i]?`<i class="prim" style="height:${Math.round(prim[i]/m*100)}%"></i>`:''}</span><span class="db-cl">${i%5===4||i===0?esc(dl(i,tot.length)):''}</span></div>`).join('')}</div>`;};
-  const cum=[];{let run=Math.max(0,rTot-r30);rd.forEach(n=>{run+=n;cum.push(run);});}
-  const cmx=Math.max(...cum),cmn=Math.min(...cum);
-  const spark=`<svg class="db-spark" viewBox="0 0 300 60" preserveAspectRatio="none" role="img" aria-label="Accounts through referrals, adding up over 30 days"><polyline fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke" points="${cum.map((v,i)=>(i/(ND-1)*300).toFixed(1)+','+(56-(cmx===cmn?0:(v-cmn)/(cmx-cmn)*52)).toFixed(1)).join(' ')}"/></svg>`;
-  /* new players: what accounts made in the last 30 days did first */
-  const NB=DB.newbies,np=(v)=>NB&&NB.n?Math.round(v/NB.n*100)+'%':'-';
-  const nst=(v,l)=>`<div class="db-st"><span class="db-v">${esc(nf(v))}</span><span class="db-l">${esc(l)}</span><span class="db-p">${esc(np(v))}</span></div>`;
-  const tutEnded=NB?NB.tutDone+NB.tutSkip:0;
-  const newb=!NB?'<div class="db-note">Nothing yet</div>':`<p class="db-note">${nf(NB.n)} account${NB.n===1?'':'s'} made in the last 30 days. Percentages are of all of them.</p>
-    <div class="db-stats">${st(NB.n,'New players',1)}${nst(NB.tutDone,'Finished the tutorial')}${nst(NB.tutSkip,'Skipped the tutorial')}${nst(NB.tutOpen,'Tutorial not ended yet')}</div>
-    <div class="db-stats">${nst(NB.classes,'Added classes')}${nst(NB.ical,'Linked Schoology')}${nst(NB.gamesFirst,'Went straight to games')}${nst(NB.gamesAny,'Opened a game')}</div>
-    <div class="db-stats">${nst(NB.back,'Came back later')}${nst(NB.nothing,'No classes or games yet')}</div>
-    ${NB.tutOld?`<p class="db-note">${NB.tutOld} ended the tutorial before finish and skip were told apart, so they're in neither.</p>`:''}
-    <p class="db-note">Straight to games: opened a game (outside the tutorial) before adding any classes. Came back later: visited or logged in 12 hours or more after signing up.</p>
-    <h3 class="db-h3">Where they skip the tutorial</h3>${tutEnded&&NB.tutSkip?list(NB.skipAt,top(NB.skipAt,10)):'<div class="db-note">Nobody has skipped it yet</div>'}
-    <h3 class="db-h3">First game they open</h3>${list(NB.firstGame||{},top(NB.firstGame||{},8),gname)}`;
+  const j7=sum(jd,ND-7,ND),j7p=sum(jd,ND-14,ND-7),j30=sum(jd,0,ND),r7=sum(rd,ND-7,ND),r7p=sum(rd,ND-14,ND-7),r30=sum(rd,0,ND),rTot=DB.refTotal||0;
+  const ma=jd.map((_,i)=>{const a=jd.slice(Math.max(0,i-6),i+1);return +(a.reduce((x,y)=>x+y,0)/a.length).toFixed(2);});
+  const AJ=(DB.allJoinsH||[]).map(h=>h*36e5),have=AJ.length>0;
+  const hr24=Array(24).fill(0),dw7=Array(7).fill(0),grid=Array.from({length:7},()=>Array(24).fill(0)),dayMap={},dkey=x=>x.getFullYear()+'-'+x.getMonth()+'-'+x.getDate();
+  AJ.forEach(t=>{const x=new Date(t),h=x.getHours(),w=(x.getDay()+6)%7;hr24[h]++;dw7[w]++;grid[w][h]++;const k=dkey(x);dayMap[k]=(dayMap[k]||0)+1;});
+  const allDays=[],allLab=[];if(have){const c=new Date(AJ[0]);c.setHours(0,0,0,0);for(;c<=t0;c.setDate(c.getDate()+1)){allDays.push(dayMap[dkey(c)]||0);allLab.push(c.getTime());}}
+  const cumAll=[];allDays.reduce((a,n)=>{cumAll.push(a+n);return a+n;},0);
+  const bestN=Math.max(0,...allDays),bestI=allDays.indexOf(bestN),school=grid.slice(0,5).reduce((a,r)=>a+sum(r,8,16),0);
+  const hrPk=hr24.indexOf(Math.max(...hr24)),dwPk=dw7.indexOf(Math.max(...dw7));
+  const wk=DB.weeks||[],wkLab=i=>shortDay(now-(wk.length-1-i)*7*864e5);
+  const daysSince=have?Math.max(1,allDays.length):30;
+  /* ---------- activity ---------- */
+  const lg=(DB.logins||[]).concat(DB.visits||[]),hrs=Array(24).fill(0),days=Array(7).fill(0);
+  lg.forEach(t=>{hrs[new Date(t).getHours()]++;const di=6-Math.floor((t0.getTime()+864e5-1-t)/864e5);if(di>=0&&di<7)days[di]++;});
+  const dau=DB.dau||[],dauAvg=dau.length?sum(dau,23,30)/7:0,dauPrev=dau.length?sum(dau,16,23)/7:0;
+  const T=DB.tasks||{},U=DB.usage||{c:{},g:{}};
+  const UC={};Object.keys(U.c||{}).forEach(k=>{const m=k.match(/^(.+?)((Singleplayer|Multiplayer|Social|Online|Embed)+)$/),n=m?'Open game: '+m[1]:k;UC[n]=(UC[n]||0)+U.c[k];});U.c=UC;
+  const tc=top(U.c,10),tg=top(U.g,10);
+  /* ---------- newcomers ---------- */
+  const NB=DB.newbies,tutEnded=NB?NB.tutDone+NB.tutSkip:0,CO=DB.cohorts||[];
+  const cohPct=CO.map(c=>c.e?Math.round(c.r/c.e*100):0),coE=sum(CO.map(c=>c.e),0,CO.length),coR=sum(CO.map(c=>c.r),0,CO.length);
   const upd=DB.at?new Date(DB.at).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'}):'';
-  const kindsHTML=(()=>{const K=DB.kinds;if(!K)return '';const tot=K.gamers+K.studiers+K.both+K.undecided,pc=v=>tot?Math.round(v/tot*100)+'%':'-',ks=(v,l)=>`<div class="db-st"><span class="db-v">${esc(pc(v))}</span><span class="db-l">${esc(l)}</span><span class="db-p">${nf(v)}</span></div>`;
-    return `<h3 class="db-h3">What they use it for</h3>
-    <p class="db-note">Games: saved game progress or a first game opened. Planner: two or more own assignments, a finished assignment, or a linked Schoology. Both means both; undecided means neither yet.</p>
-    <div class="db-stats">${ks(K.gamers,'Games only')}${ks(K.studiers,'Planner only')}${ks(K.both,'Both')}${ks(K.undecided,'Undecided')}</div>`;})();
-  /* addresses: atoll.web.app (opened through the shared link) and saxonplanner.web.app (the direct address) are told apart */
-  const hostHTML=(()=>{if(!DB.hosts||!Object.keys(DB.hosts).length)return '<div class="db-note">Nothing yet</div>';
+  /* ---------- sections ---------- */
+  const kindsCard=(()=>{const K=DB.kinds;if(!K)return '';return card('What they use it for','Games means saved game progress or a first game opened. Planner means two or more own assignments, a finished assignment, or a linked Schoology. Undecided means neither yet.',
+    stack([['Games only',K.gamers],['Planner only',K.studiers],['Both',K.both],['Undecided',K.undecided]]));})();
+  const overview=`${kpis([kpi(nf(DB.total),'Accounts',{big:1}),kpi(nf(DB.new7),'New this week',{d:dlt(DB.new7,j7p,'on the week before')}),kpi(nf(DB.active7),'Active this week',{s:pct(DB.active7,DB.total)+' of accounts'}),kpi(nf(DB.active30),'Active this month',{s:pct(DB.active30,DB.total)+' of accounts'}),kpi(coE?Math.round(coR/coE*100)+'%':'-','Back within a week',{s:coE?'of '+nf(coE)+' new accounts':'not enough data yet'})])}
+    ${card('Sign-ups, last 30 days','Each column is a day. The darkest column is the busiest.',`<div class="db-over">${barsV(jd,{lab:i=>i%5===4||i===0?dl(i,ND):'',tip:(i,n)=>dl(i,ND)+': '+n+' sign-up'+(n===1?'':'s'),tall:1})}</div>`)}
+    ${dau.length?card('Active accounts per day','Accounts that logged in or opened the site that day, by Eastern day.',line(dau,{x:[[0,dl(0,ND)],[14,dl(14,ND)],[29,'Today']],aria:'Active accounts per day, last 30 days'})):''}
+    ${kindsCard}`;
+  const signups=`${kpis([kpi(jd[ND-1],'Today'),kpi(nf(j7),'This week',{big:1,d:dlt(j7,j7p,'on the week before')}),kpi((j30/30).toFixed(1),'Per day, last 30 days',{s:nf(j30)+' in 30 days'}),have?kpi(nf(bestN),'Best day ever',{s:shortDay(allLab[bestI])}):'',have?kpi((AJ.length/daysSince).toFixed(1),'Per day since the start',{s:nf(AJ.length)+' accounts in '+nf(daysSince)+' days'}):''].filter(Boolean))}
+    ${card('Sign-ups per day, last 30 days','The line is the average of the 7 days up to each day.',line(jd,{b:ma,x:[[0,dl(0,ND)],[14,dl(14,ND)],[29,'Today']],aria:'Sign-ups per day, last 30 days'}))}
+    ${have&&allDays.length>2?card('Accounts over time',nf(AJ.length)+' accounts since '+shortDay(allLab[0])+'.',line(cumAll,{x:[[0,shortDay(allLab[0])],[Math.floor((cumAll.length-1)/2),shortDay(allLab[Math.floor((cumAll.length-1)/2)])],[cumAll.length-1,'Today']],aria:'Accounts over time'})):''}
+    ${wk.length?card('Sign-ups per week','Seven day windows ending today, the last 12.',barsV(wk,{lab:i=>i%3===2?wkLab(i):'',tip:(i,n)=>'Week ending '+wkLab(i)+': '+n})):''}
+    ${have?card('Time of day','When people sign up, in this device\'s time. '+(hr24[hrPk]?'Busiest hour is '+hlong(hrPk)+'. ':'')+pct(school,AJ.length)+' sign up on a school day between 8 AM and 4 PM.',barsV(hr24,{lab:h=>h%3===0?hl(h):'',tip:(h,n)=>hlong(h)+': '+n+' sign-up'+(n===1?'':'s')})):''}
+    ${have?card('Day of the week','Busiest is '+['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'][dwPk]+'.',barsV(dw7,{lab:i=>DN[i],tip:(i,n)=>DN[i]+': '+n+' sign-up'+(n===1?'':'s')})):''}
+    ${have?card('Week by hour','Every sign-up in one picture. Darker is more.',heat(grid)):''}`;
+  const refDist=DB.refDist||[0,0,0,0,0],nRef=sum(refDist,0,5);
+  const referrals=`${kpis([kpi(nf(rTot),'Through referrals',{big:1,s:pct(rTot,DB.total)+' of accounts'}),kpi(nf(DB.primTotal||0),'Primary referrals',{s:'first referral of their referrer'}),kpi(r30,'Last 30 days',{s:pct(r30,j30)+' of new accounts'}),kpi(r7,'This week',{d:dlt(r7,r7p,'on the week before')}),kpi(nf(nRef),'People who referred',{s:DB.refMax?'most: '+nf(DB.refMax)+' by one person':''})])}
+    ${card('Sign-ups through referrals, last 30 days','The light column is all sign-ups that day, the dark one the part that came through a referral, and the darkest one the primary referrals: sign-ups that gave the person who referred them their first referral.',
+      `<div class="db-over">${(()=>{const m=Math.max(1,...jd);return `<div class="db-cols db-cols2 db-lay3" style="grid-template-columns:repeat(${ND},1fr)">${jd.map((n,i)=>`<div class="db-col" title="${esc(dl(i,ND))}: ${n} sign-up${n===1?'':'s'}, ${rd[i]} through referrals, ${pd[i]} primary"><span class="db-cb"><i class="all" style="height:${Math.round(n/m*100)}%"></i>${rd[i]?`<i class="ref" style="height:${Math.round(rd[i]/m*100)}%"></i>`:''}${pd[i]?`<i class="prim" style="height:${Math.round(pd[i]/m*100)}%"></i>`:''}</span><span class="db-cl">${i%5===4||i===0?esc(dl(i,ND)):''}</span></div>`).join('')}</div>`;})()}</div>
+      <div class="db-lg"><span><i class="l0"></i>All sign-ups</span><span><i class="l1"></i>Through a referral</span><span><i class="l2"></i>Primary referral</span></div>`)}
+    ${nRef?card('How many each person brought','People who referred, by how many accounts signed up straight from their link.',barsV(refDist,{lab:i=>['1','2','3 to 4','5 to 9','10 or more'][i],tip:(i,n)=>n+' '+(n===1?'person':'people')+' brought '+['1','2','3 to 4','5 to 9','10 or more'][i]})):''}`;
+  const activity=`${kpis([kpi(dau.length?dauAvg.toFixed(0):'-','Active per day',{big:1,d:dau.length?dlt(dauAvg,dauPrev,'on the week before'):'',s:'average, last 7 days'}),kpi(dau.length&&DB.active30?Math.round(dauAvg/DB.active30*100)+'%':'-','Daily share of monthly',{s:'active per day over active this month'}),kpi(nf(lg.length),'Logins and visits',{s:'last 7 days'})])}
+    ${card('Logins and visits by hour','The last 7 days, in this device\'s time.'+(lg.length?' Busiest around '+hlong(hrs.indexOf(Math.max(...hrs)))+'.':''),barsV(hrs,{lab:h=>h%3===0?hl(h):'',tip:(h,n)=>hlong(h)+': '+n}))}
+    ${card('Logins and visits by day','A visit is the first time an account opens the site on a day.',barsV(days,{lab:i=>new Date(t0.getTime()-(6-i)*864e5).toLocaleDateString([],{weekday:'short'}),tip:(i,n)=>shortDay(t0.getTime()-(6-i)*864e5)+': '+n}))}
+    ${card('Most clicked buttons','',list(U.c,tc))}`;
+  const newcomers=!NB?none():`${kpis([kpi(nf(NB.n),'New in 30 days',{big:1}),kpi(pct(NB.tutDone,NB.n),'Finished the tutorial',{s:nf(NB.tutDone)+' accounts'}),kpi(pct(NB.back,NB.n),'Came back later',{s:nf(NB.back)+' accounts'}),kpi(pct(NB.nothing,NB.n),'Did nothing yet',{s:'no classes or games'})])}
+    ${card('What new accounts did','Of everyone who signed up in the last 30 days.',funnel([['Signed up',NB.n],['Finished the tutorial',NB.tutDone],['Added classes',NB.classes],['Linked Schoology',NB.ical],['Opened a game',NB.gamesAny],['Came back later',NB.back]]))}
+    ${CO.length&&coE?card('Coming back, by sign-up week','Share of each week\'s new accounts that returned 12 hours to 7 days after signing up. Only accounts at least 7 days old count.',barsV(cohPct,{fmt:v=>v+'%',lab:i=>shortDay(now-(CO.length-1-i)*7*864e5),tip:(i,n)=>'Joined in the week ending '+shortDay(now-(CO.length-1-i)*7*864e5)+': '+n+'% came back ('+CO[i].r+' of '+CO[i].e+')'})):''}
+    ${card('How the tutorial ended','',stack([['Finished',NB.tutDone],['Skipped',NB.tutSkip],['Not ended yet',NB.tutOpen]]))}
+    ${card('What they did first','Straight to games means a game opened before any classes were added.',stack([['Classes first',Math.max(0,NB.n-NB.gamesFirst-NB.nothing)],['Straight to games',NB.gamesFirst],['Nothing yet',NB.nothing]]))}
+    ${tutEnded&&NB.tutSkip?card('Where they skip the tutorial','',list(NB.skipAt,top(NB.skipAt,10))):''}
+    ${card('First game they open','',list(NB.firstGame||{},top(NB.firstGame||{},8),gname))}`;
+  const hostHTML=(()=>{if(!DB.hosts||!Object.keys(DB.hosts).length)return none();
     const HN={'saxonplanner.web.app':'saxonplanner, first degree','atoll.web.app':'atoll, second degree','saxon-planner.web.app':'saxon-planner, direct or before atoll was counted','script.google.com':'Apps Script link'};
     const hk=Object.keys(DB.hosts).sort((a,b)=>DB.hosts[b].accounts-DB.hosts[a].accounts||DB.hosts[b].days-DB.hosts[a].days),hm={};hk.forEach(k=>{hm[k]=DB.hosts[k].accounts;});
-    return `<p class="db-note">Accounts that opened the planner from each address (an account counts once for every address it used). Visits through atoll.web.app are counted as atoll from Nov 19; before that they show under saxon-planner.</p>`+list(hm,hk.slice(0,10),k=>HN[k]||k.replace(/\.web\.app$/,''));})();
-  const otherHTML=!DBO?'<div class="db-note">Loading…</div>':DBO.error?'<div class="db-note">Can\'t reach the visit counts right now</div>':OTHER_SITES.map(([k,nm])=>{
-      const days=DBO.d&&DBO.d[k],o=days?otherTotals(days):null,has=o&&o.all[0]+o.all[1]>0,f=a=>a[0]+' / '+a[1];
-      return `<p class="db-note"><b>${esc(nm)}</b>${has?'':' (not collected yet)'}</p>`+(has?`<div class="db-stats">${st(f(o.today),'Today')}${st(f(o.d7),'7 days')}${st(f(o.d30),'30 days')}${st(f(o.all),'All time')}</div>`:'');}).join('');
-  const SEC=[['overview','Overview'],['signups','Sign-ups'],['referrals','Referrals'],['visits','Visits'],['newcomers','Newcomers'],['players','Players'],['games','Games'],['sites','Sites'],['assignments','Assignments'],['classes','Classes']];
+    return list(hm,hk.slice(0,10),k=>HN[k]||k.replace(/\.web\.app$/,''));})();
+  /* one table: each row a site, each column a period; the big number is different browsers, the small line is visits */
+  const siteRows=OTHER_SITES.map(([k,nm])=>{const days=DBO.d&&DBO.d[k],o=days?otherTotals(days):null,has=o&&o.all[0]+o.all[1]>0,
+      c=a=>`<span class="db-sc"><b>${nf(a[1])}</b><small>${nf(a[0])} visit${a[0]===1?'':'s'}</small></span>`;
+    return `<div class="db-sr"><b class="db-sn">${esc(nm)}</b>${has?c(o.today)+c(o.d7)+c(o.d30)+c(o.all):'<span class="db-sx">Not collected yet</span>'}</div>`;}).join('');
+  const otherCard=!DBO?none('Loading...'):DBO.error?none('Can\'t reach the visit counts right now'):card('Other websites','Sent by each site, counts only. The big number is how many different browsers came; the line under it is how many times the site was opened. Days are UTC.',
+    `<div class="db-st2"><div class="db-sr hd"><span></span><span>Today</span><span>7 days</span><span>30 days</span><span>All time</span></div>${siteRows}</div>`);
+  const sites=`${card('Addresses','Accounts that opened the planner from each address, counted once for every address an account used. Visits through atoll.web.app count as atoll from Nov 19; before that they show under saxon-planner.',hostHTML)}
+    ${otherCard}`;
+  const assignments=`${kpis([kpi(nf(T.done||0),'Completed',{big:1}),kpi(nf(T.week||0),'Completed this week'),kpi(T.timed?Math.round(T.onTime/T.timed*100)+'%':'-','Finished on time',{s:nf(T.onTime||0)+' on time, '+nf(T.late||0)+' late'}),kpi(nf(Math.max(0,(T.open||0)-(T.overdue||0))),'Still to do'),kpi(nf(T.overdue||0),'Overdue, not done'),kpi(nf(T.people||0),'Students crossing off',{s:nf(T.cleared||0)+' cleared in bulk'})])}
+    ${(T.days||[]).length?card('Crossed off, last 14 days','',barsV(T.days,{lab:i=>i%2===0?dl(i,T.days.length):'',tip:(i,n)=>dl(i,T.days.length)+': '+n})):''}
+    <p class="db-note">Completed counts assignments crossed off with a time and assignments deleted (${nf(T.deleted||0)} of them), since most students delete an assignment to finish it. Not in-class work or events, not banned accounts. Five or more overdue ones removed together are counted as cleared in bulk, not completed.${T.untimed?` ${T.untimed} were crossed off before times were kept and aren't counted.`:''}</p>`;
+  const classes=DB.classes?`${kpis([kpi(nf(DB.classes.accounts),'Accounts with classes',{big:1}),kpi(nf(DB.classes.total),'Classes in all'),kpi(DB.classes.accounts?(DB.classes.total/DB.classes.accounts).toFixed(1):'-','Classes per student'),kpi(nf(DB.classes.ical),'Linked Schoology',{s:pct(DB.classes.ical,DB.classes.accounts)+' of accounts with classes'}),DB.classes.real!=null?kpi(nf(DB.classes.real),'Using it for real',{s:'classes plus assignments or a Schoology link'}):''].filter(Boolean))}
+    ${DB.classes.grades?card('Estimated grade','Guessed from class names (English 11, Algebra 2, APUSH and so on). It needs two recognised classes and a clear lead, so some accounts stay unknown.',barsV(['9','10','11','12','?'].map(k=>DB.classes.grades[k]||0),{lab:i=>['Grade 9','Grade 10','Grade 11','Grade 12','Not sure'][i],tip:(i,n)=>n+' accounts'})):''}
+    ${card('Most common classes','',list(DB.classes.names||{},top(DB.classes.names||{},12)))}`:none();
+  const SEC=[['overview','Overview'],['signups','Sign-ups'],['referrals','Referrals'],['visits','Activity'],['newcomers','Newcomers'],['players','Players'],['games','Games'],['sites','Sites'],['assignments','Assignments'],['classes','Classes']];
   const nav=`<nav class="db-nav" aria-label="Dashboard sections">${SEC.map(([k,n])=>`<button type="button" class="kbtn db-nl${DBP.sec===k?' on':''}" data-db-go="${k}"${DBP.sec===k?' aria-current="true"':''}>${n}</button>`).join('')}</nav>`;
   const sec=(k,h,body)=>`<section class="db-sec" id="db-${k}"><h2 class="db-h">${h}</h2>${body}</section>`;
-  const body=[
-    sec('overview','Overview',`<div class="db-stats">${st(nf(DB.total),'Accounts',1)}${st(nf(DB.new7),'New this week')}${st(nf(DB.new30),'New this month')}${st(nf(DB.active7),'Active this week')}${st(nf(DB.active30),'Active this month')}</div>
-      <div class="db-stats">${st(nf(Math.max(0,DB.total-DB.active7)),'Not here this week')}${st(nf(Math.max(0,DB.total-DB.active30)),'Inactive for 30 days')}</div>
-      <p class="db-note">Signing up counts as being active, so a brand new account is active for the first week and month.</p>${kindsHTML}`),
-    sec('signups','Sign-ups',`<p class="db-note">${jd[ND-1]} today, ${nf(j7)} in the last 7 days (${chgT(j7,j7p)} on the 7 days before), ${nf(j30)} in 30 days. Days are this device's days.</p>
-      ${colsTwo(jd,null)}
-      <h3 class="db-h3">By week</h3><p class="db-note">Each bar is a 7 day window, labeled with the day it ends.</p>
-      <div class="db-bars">${w.map((n,i)=>`<div class="db-row"><span class="db-d">${esc(wk(i))}</span><span class="db-bar"><i style="width:${Math.round(n/mx*100)}%"></i></span><span class="db-n">${n}</span></div>`).join('')}</div>`),
-    sec('referrals','Referrals',`<p class="db-note">Accounts that signed up through a referral link, by day. The light column is all sign-ups that day, the dark one the part that came through a referral, and the darkest one the primary referrals: sign-ups that gave the person who referred them their first referral.</p>
-      <div class="db-stats">${st(nf(rTot),'Through referrals',1)}${st(DB.total?Math.round(rTot/DB.total*100)+'%':'-','Of all accounts')}${st(r30,'Last 30 days')}${st(j30?Math.round(r30/j30*100)+'%':'-','Of new accounts')}</div>
-      <div class="db-stats">${st(nf(DB.primTotal||0),'Primary referrals')}${st(pd.reduce((x,y)=>x+y,0),'Primary, last 30 days')}${st(r7,'This week')}${st(r7p,'Week before')}${st(chgT(r7,r7p),'Change')}${st(rBest?rBest+' on '+dl(rBi,ND):'-','Best day')}</div>
-      ${colsTwo(jd,rd,pd)}
-      <h3 class="db-h3">Adding up</h3><div class="db-spk">${spark}<span class="db-spn"><b>${nf(cum[0])}</b> 30 days ago<br><b>${nf(cum[ND-1])}</b> now</span></div>`),
-    sec('visits','Visits',`<p class="db-note">${lg.length} logins and daily visits in the last 7 days${lg.length?`, busiest around ${hl(pk)}`:''}. A visit is the first time an account opens the site on a day.</p>${cols}
-      <h3 class="db-h3">This week</h3>
-      <p class="db-note">${lg.length?(trend>0?`Up ${trend}% over the last 3 full days against the 3 before them`:trend<0?`Down ${-trend}% over the last 3 full days against the 3 before them`:'Steady over the last 3 full days'):'No visits yet'}. Today is still in progress.</p>
-      <div class="db-bars">${days.map((n,i)=>`<div class="db-row"><span class="db-d">${esc(dayl(i))}</span><span class="db-bar"><i style="width:${Math.round(n/dm*100)}%"></i></span><span class="db-n">${n}</span></div>`).join('')}</div>
-      <h3 class="db-h3">Most clicked buttons</h3>${list(U.c,tc)}`),
-    sec('newcomers','Newcomers',newb),
+  const gTot=Object.values(U.g||{}).reduce((a,b)=>a+b,0);
+  const body=[sec('overview','Overview',overview),sec('signups','Sign-ups',signups),sec('referrals','Referrals',referrals),sec('visits','Activity',activity),sec('newcomers','Newcomers',newcomers),
     sec('players','Players',dashPlayers().replace(/^\s*<h2 class="db-h">Players<\/h2>/,'')),
-    sec('games','Games',`<h3 class="db-h3">Most played</h3>${list(U.g,tg,gname)}`),
-    sec('sites','Sites',`<h3 class="db-h3">Addresses</h3>${hostHTML}<h3 class="db-h3">Other websites</h3><p class="db-note">Visits to the other websites, sent by each site (counts only, no ids). Each box shows visits and unique browsers. Days are UTC.</p>${otherHTML}`),
-    sec('assignments','Assignments',`<div class="db-stats">${st(nf(T.done||0),'Completed',1)}${st(nf(T.week||0),'Completed this week')}${st(nf(T.onTime||0),'Finished on time')}${st(nf(T.late||0),'Finished late')}${st(pct,'On time rate')}</div>
-      <div class="db-stats">${st(nf(Math.max(0,(T.open||0)-(T.overdue||0))),'Still to do')}${st(nf(T.overdue||0),'Overdue, not done')}${st(nf(T.people||0),'Students crossing off')}${st(nf(T.cleared||0),'Cleared in bulk')}</div>
-      ${(T.days||[]).length?`<h3 class="db-h3">Crossed off, last 14 days</h3><div class="db-bars">${T.days.map((n,i)=>`<div class="db-row"><span class="db-d">${esc(dl(i,T.days.length))}</span><span class="db-bar"><i style="width:${Math.round(n/Math.max(1,...T.days)*100)}%"></i></span><span class="db-n">${n}</span></div>`).join('')}</div>`:''}
-      <p class="db-note">Completed counts assignments crossed off with a time and assignments deleted (${nf(T.deleted||0)} of them), since most students delete an assignment to finish it. Not in-class work or events, not banned accounts. Five or more overdue ones removed together are counted as cleared in bulk, not completed.${T.untimed?` ${T.untimed} were crossed off before times were kept and aren't counted.`:''}</p>`),
-    sec('classes','Classes',DB.classes?`<div class="db-stats">${st(nf(DB.classes.accounts),'Accounts with classes',1)}${st(nf(DB.classes.total),'Classes in all')}${st(DB.classes.accounts?(DB.classes.total/DB.classes.accounts).toFixed(1):'-','Classes per student')}${st(nf(DB.classes.ical),'Linked Schoology')}</div>
-      ${DB.classes.real!=null?`<div class="db-stats">${st(nf(DB.classes.real),'Classes plus assignments or a Schoology link')}${st(DB.classes.accounts?Math.round(DB.classes.real/DB.classes.accounts*100)+'%':'-','Of accounts with classes')}</div>
-      <p class="db-note">The tutorial won't go on until one class is added, so Accounts with classes counts everyone who got through it. The second row counts only accounts that also added assignments of their own or linked Schoology.</p>`:''}
-      ${DB.classes.grades?`<h3 class="db-h3">Estimated grade</h3>
-      <p class="db-note">Guessed from class names (English 11, Algebra 2, APUSH and so on). It needs two recognised classes and a clear lead, so some accounts stay unknown.</p>
-      ${list(Object.assign({},DB.classes.grades),['9','10','11','12','?'].filter(k=>DB.classes.grades[k]),k=>k==='?'?'Not sure':'Grade '+k)}`:''}
-      <h3 class="db-h3">Most common classes</h3>${list(DB.classes.names||{},top(DB.classes.names||{},12))}`:'<div class="db-note">Nothing yet</div>')
-  ].join('');
+    sec('games','Games',card('Most played',gTot?nf(gTot)+' game opens in all.':'',list(U.g,tg,gname))),
+    sec('sites','Sites',sites),sec('assignments','Assignments',assignments),sec('classes','Classes',classes)].join('');
   d.innerHTML=`<div class="docs-in db-in">${head}
-    <p class="db-note db-upd">${dbFresh?(upd?'Updated '+esc(upd)+'. Refreshes every minute.':''):'Updating…'}</p>
+    <p class="db-note db-upd">${dbFresh?(upd?'Updated '+esc(upd)+'. Refreshes every minute.':''):'Updating...'}</p>
     <div class="db-lay">${nav}<div class="db-main">${body}</div></div></div>`;
 }
 /* the sidebar: a click scrolls to the section (below the strip on phones, to the very top for Overview); scrolling lights the section in view */
