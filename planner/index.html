@@ -7592,10 +7592,16 @@ function normalizeCourse(input){
      u.c created, u.k login times (kept even after logging out), u.v visit times (an account's first page load of each
      day), so someone who stays signed in still counts as active. logins: login times of the last 7 days, visits: the same for visits */
   SX.userStats = function (list, now) {
-    var D = 864e5, out = { ok: true, total: list.length, new7: 0, new30: 0, active7: 0, active30: 0, weeks: [], joins: [], refjoins: [], refTotal: 0, logins: [], visits: [], at: now }, i;
+    var D = 864e5, out = { ok: true, total: list.length, new7: 0, new30: 0, active7: 0, active30: 0, weeks: [], joins: [], refjoins: [], primjoins: [], refTotal: 0, primTotal: 0, logins: [], visits: [], at: now }, i;
     for (i = 0; i < 12; i++) out.weeks.push(0);
-    list.forEach(function (u) {
-      var c = Number(u.c) || 0, last = c;
+    /* a primary referral is the sign-up that gave its referrer their first referral: the earliest account that used that code */
+    var first = {};
+    list.forEach(function (u, ix) {
+      var c = Number(u.c) || 0, r = u.ref ? String(u.ref).toLowerCase() : '';
+      if (r && (!first[r] || c < first[r].c)) first[r] = { c: c, ix: ix };
+    });
+    list.forEach(function (u, ix) {
+      var c = Number(u.c) || 0, last = c, r = u.ref ? String(u.ref).toLowerCase() : '', prim = !!(r && first[r].ix === ix);
       (u.k || []).forEach(function (t) { t = Number(t) || 0; if (t > last) last = t; if (t && now - t < 7 * D) out.logins.push(t); });
       (u.v || []).forEach(function (t) { t = Number(t) || 0; if (t > last) last = t; if (t && now - t < 7 * D) out.visits.push(t); });
       if (Number(u.seen) > last) last = Number(u.seen);
@@ -7606,13 +7612,15 @@ function normalizeCourse(input){
       var w = Math.floor((now - c) / (7 * D));
       if (c && w >= 0 && w < 12) out.weeks[11 - w]++;
       // sign-up times of the last 30 days (and which of them came through a referral); times only, never names
-      if (c && now - c < 30 * D) { out.joins.push(c); if (u.ref) out.refjoins.push(c); }
+      if (c && now - c < 30 * D) { out.joins.push(c); if (u.ref) out.refjoins.push(c); if (prim) out.primjoins.push(c); }
       if (u.ref) out.refTotal++;
+      if (prim) out.primTotal++;
     });
     out.logins.sort(function (a, b) { return a - b; });
     out.visits.sort(function (a, b) { return a - b; });
     out.joins.sort(function (a, b) { return a - b; });
     out.refjoins.sort(function (a, b) { return a - b; });
+    out.primjoins.sort(function (a, b) { return a - b; });
     return out;
   };
   /* Add by year: the year a GPA list is in, a class's subject, and Virginia's diploma credits (8VAC20-131-51) */
