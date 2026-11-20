@@ -3250,8 +3250,9 @@ svg.ic-pic>*{vector-effect:non-scaling-stroke;stroke-width:2px}
 .db-h3{font:700 17px/1.2 var(--display);margin:24px 0 10px;color:var(--fg)}
 .db-cols2 .db-cb{position:relative}
 .db-cols2 .db-cb i{position:absolute;left:0;right:0;bottom:0;border-radius:4px;min-height:2px}
-.db-cols2 .db-cb i.all:not(:only-child){background:var(--pri-light,#a4ceff)}
+.db-cols2.db-lay3 .db-cb i.all{background:var(--pri-light,#a4ceff)}
 .db-cols2 .db-cb i.ref{background:var(--pri-dark,var(--pri))}
+.db-cols2 .db-cb i.prim{background:color-mix(in srgb,var(--pri-dark,var(--pri)) 62%,#000)}
 .db-cols2{margin-bottom:8px}
 .db-spk{display:flex;gap:18px;align-items:center;flex-wrap:wrap}
 .db-spark{width:100%;max-width:420px;height:60px;color:var(--pri);display:block}
@@ -3580,14 +3581,14 @@ html.pg-open:not(.splash-on):has(:is(#games,#desmos,#sugg,#roles,#rewards) :is(.
 .hm-btn.alt:hover{background:var(--panel2);color:var(--blue)}
 /* Suggestions on Home stands out (yellow) so people find it */
 .hm-stk{display:inline-flex;flex-direction:column;gap:8px;align-items:stretch}
-/* Mixed: the buttons are as wide as the Courses button. See assignments takes a row, Suggestions and Petition share the next,
+/* Every Home view (not only Mixed): the buttons are as wide as the Courses button. See assignments takes a row, Suggestions and Petition share the next,
    and Tutorial, FAQ, Meme and Edit home split the last one into four equal parts */
-html #v-home[data-hv=mixed] .hm-btns:not(.hm-tutonly){display:flex;flex-wrap:wrap;gap:8px;width:100%}
-html #v-home[data-hv=mixed] .hm-btns:not(.hm-tutonly)>.hm-btn#hm-asg{flex:1 1 100%;justify-content:center;text-align:center}
-html #v-home[data-hv=mixed] .hm-btns:not(.hm-tutonly)>.hm-stk{flex:1 1 100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-html #v-home[data-hv=mixed] .hm-btns:not(.hm-tutonly)>.hm-btn:not(#hm-asg){flex:1 1 auto;padding-left:10px;padding-right:10px;font-size:14px;white-space:nowrap;min-width:0;justify-content:center;text-align:center}
-html #v-home[data-hv=mixed] .hm-btns:not(.hm-tutonly) .hm-stk .hm-btn{width:100%;box-sizing:border-box}
-@media (max-width:430px){html #v-home[data-hv=mixed] .hm-btns:not(.hm-tutonly)>.hm-btn:not(#hm-asg){padding-left:5px;padding-right:5px;letter-spacing:0}}
+html #v-home .hm-btns:not(.hm-tutonly){display:flex;flex-wrap:wrap;gap:8px;width:100%}
+html #v-home .hm-btns:not(.hm-tutonly)>.hm-btn#hm-asg{flex:1 1 100%;justify-content:center;text-align:center}
+html #v-home .hm-btns:not(.hm-tutonly)>.hm-stk{flex:1 1 100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+html #v-home .hm-btns:not(.hm-tutonly)>.hm-btn:not(#hm-asg){flex:1 1 auto;padding-left:10px;padding-right:10px;font-size:14px;white-space:nowrap;min-width:0;justify-content:center;text-align:center}
+html #v-home .hm-btns:not(.hm-tutonly) .hm-stk .hm-btn{width:100%;box-sizing:border-box}
+@media (max-width:430px){html #v-home .hm-btns:not(.hm-tutonly)>.hm-btn:not(#hm-asg){padding-left:5px;padding-right:5px;letter-spacing:0}}
 .hm-stk .hm-btn{text-align:center;justify-content:center;text-decoration:none}
 html #v-home .hm-btn.hm-hl,html.pg2 #v-home .hm-btn.hm-hl{background:var(--gold-hi);color:#4b3600;border-color:var(--gold-dark);display:inline-flex;align-items:center;gap:6px}
 #v-home .hm-btn.hm-hl svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
@@ -13522,6 +13523,10 @@ function chatShow(){
 function chatSchedule(ms){clearTimeout(CH.timer);CH.timer=setTimeout(chatPoll,ms);}
 /* live updates (realtime.js): on when connected over the Worker (WebSocket or long-poll) or Firebase, off otherwise */
 const chLive=()=>!!(window.SXRT&&SXRT.mode&&/^(ws|http|rtdb)$/.test(SXRT.mode()));
+/* the list (sidebar) knows of a message newer than any the open conversation shows. Both come from the server, but by separate
+   paths (the lists on every check, a conversation's messages only when asked for), so one can be ahead of the other */
+function chBehind(id){const cv=id&&chConv(id),cc=id&&CH.conv[id];
+  return !!(cv&&cc&&cc.loaded&&!cc.msgs.some(x=>x.pend)&&cv.last>cc.msgs.reduce((m,x)=>x.fail?m:Math.max(m,x.time),0));}
 async function chatPoll(){
   if(!state.user){CH.timer=0;return;}
   /* a game is on screen: wait until it closes (gmPlaySync starts the next one) */
@@ -13537,10 +13542,11 @@ async function chatPoll(){
   if(CH.inflight){CH.again=true;return;}
   CH.inflight=true;CH.again=false;
   try{
-    const id=onPage&&!CH.pane&&CH.cur&&!chTmp(CH.cur)?CH.cur:null,c=id&&chC(id);
+    /* the open conversation's messages are fetched on the chat page, and also whenever the list already shows it is ahead of them */
+    const cur=!CH.pane&&CH.cur&&!chTmp(CH.cur)?CH.cur:null,id=cur&&(onPage||chBehind(cur))?cur:null,c=id&&chC(id);
     /* a check Google never answers is dropped after 9 s, so the next one can run (one stuck call must not freeze chat) */
     const r=await Promise.race([chatApi('sync',id?{id,since:c.loaded?c.syncLast||0:0}:{}),new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),9000))]);
-    if(r&&r.state){CH.lastSync=Date.now();let moved=false;
+    if(r&&r.state){CH.fails=0;CH.lastSync=Date.now();let moved=false;
       if(id&&r.open){if(r.open.error==='noconv')chDrop(id);
         else if(r.open.messages){/* only messages this page didn't have count as news (ones it already got in a ping, or sent itself, come back once) */
           const was=c.loaded;if(chMerge(id,r.open,!was)||!was)moved=true;
@@ -13552,13 +13558,18 @@ async function chatPoll(){
       const sig=JSON.stringify(r.state);if(sig!==CH.sig)moved=true;CH.sig=sig;
       chApplyState(r.state);
       /* the list says this conversation has something newer than the messages on screen (a stale saved copy or a missed update):
-         load it again from the start, once per newest time */
-      {const cv=id&&chConv(id),cc=id&&CH.conv[id];
-        if(cv&&cc&&cc.loaded&&cv.last>(cc.msgs.reduce((m,x)=>x.pend||x.fail?m:Math.max(m,x.time),0))&&cc.healed!==cv.last){cc.healed=cv.last;cc.loaded=false;cc.syncLast=0;CH.again=true;}}
+         load it again from the start (at once for a new newest time, then at most every 15 s while it stays behind, so one stale answer is not final) */
+      {const cv=cur&&chConv(cur),cc=cur&&CH.conv[cur];
+        if(id&&chBehind(id)&&(cc.healed!==cv.last||Date.now()-(cc.healAt||0)>15000)){cc.healed=cv.last;cc.healAt=Date.now();cc.loaded=false;cc.syncLast=0;CH.again=true;}
+        /* this check carried only the lists (not on the chat page) and they moved ahead: the next one brings the messages */
+        else if(!id&&chBehind(cur))CH.again=true;}
       CH.quiet=moved?0:q+1;
       chatPaint();chPersist();}
-  }catch(e){}
+  }catch(e){CH.fails=(CH.fails||0)+1;}
   CH.inflight=false;
+  /* a check that failed or timed out waits longer each time (4 s, 8 s, 16 s ... up to 2 minutes, a little random so
+     many pages don't return together) and does not rerun at once: retrying fast while the server struggles makes it worse */
+  if(CH.fails){CH.again=false;chatSchedule(Math.max(Math.min(120000,4000*Math.pow(2,CH.fails-1))*(0.75+Math.random()*0.5),gap(CH.quiet||0)));return;}
   if(CH.again){CH.again=false;chatSchedule(0);return;}
   chatSchedule(gap(CH.quiet||0));
 }
@@ -13945,7 +13956,7 @@ function renderChat(){
   /* a check now only when what's shown may be old (render() runs often; each call no longer costs a request) */
   const c=CH.cur&&chC(CH.cur);
   /* not live, coming to the page: the checks made elsewhere didn't bring the open conversation's messages, so one now */
-  if((c&&!c.loaded)||!CH.state)chatSchedule(0);else if(!chLive()&&(suLastView!=='chat'||Date.now()-CH.lastSync>20000))chatSchedule(400);
+  if((c&&!c.loaded)||!CH.state||(CH.cur&&chBehind(CH.cur)))chatSchedule(0);else if(!chLive()&&(suLastView!=='chat'||Date.now()-CH.lastSync>20000))chatSchedule(400);
 }
 /* fit the page between the menu bar and the bottom of the window */
 function chFit(){const p=document.querySelector('#v-chat .chp'),w=document.querySelector('.wrap');if(!p||!w||state.view!=='chat')return;
@@ -14666,7 +14677,7 @@ async function loadGame(id){
    kept under id|hash and used only when the page asks for that same hash. A fetched file is stored only when its own
    hash matches what the page expects, so an updated game is never served from an old copy. Up to GF_KEEP characters
    in all, the least recently opened go first. Without IndexedDB or a stamp it simply fetches, as before */
-const GAME_VER={"lander":"1684804b21","pipworks":"79e1238ce5","solitaire":"8c505f28ec","geohunter":"1fcd87b8d6","chess":"5c078efb55","gartic":"6f22b9c960","guessbuild":"ec4193b106","imposter":"2c7f34720b","poker":"6c5dc0b563","soundboard":"e07aefc27d","capitalist":"73fea6408d","tinyfishing":"708c08b431","krillion":"e0d5f87312","geodash":"f1196aa413","appel":"80dd5f0087","metrica-wave":"c3df75a336","voteout":"7f793110c6","getaway":"9dda126d83","tag":"8bc7736018","crossyroad":"da8570d413","drivemad":"127bf09cfc","gladihoppers":"87d1b808b0","monkeymart":"4ce25762a3","ovo":"f564966222","stickmanhook":"a5c495f4f5","paperio":"8198023f59","smashkarts":"806875291a","yohoho":"24208763a5","basketballrandom":"175bedac55","houseofhazards":"7b313f0931","snake":"c5420e56c9","torahrunner":"118d7d3a3d","knessetcombat":"2729a1592b","doom":"4f3b061ac7","papaspizzeria":"ded7417f7e","papasburgeria":"aedcee9463","papaswingeria":"b9b6139c9d","papastacomia":"5f69931ad8","papaspancakeria":"4baa264d88","pakistanrunner":"4a386dfc67","departed":"a354fdc1d9","retrobowl":"d7ddcc1688","subwaysurfers":"c332af6b02","tunnelrush":"dec240f546","driftboss":"71fad4f513","fnae":"9844ce377d","meditation":"56847adf1b","crashout":"59eaa18662","snowrider":"a692396710","retrobowlcollege":"3ad9da6ab9","powerlineio":"a874292b22","janissarybattles":"6da0602eb4","tag2":"cda72138aa","cookieclicker":"7422c6501f","idlebreakout":"57034162f4","farflung":"2dc945985c","cards":"759a40fee2","jamborine":"6b3031482b","stonks":"00e653f0c7","scrapyard":"6ae157e457","tanukisunset":"f43650a20f","extraplot":"8c6176690d"};
+const GAME_VER={"lander":"1684804b21","pipworks":"79e1238ce5","solitaire":"8c505f28ec","geohunter":"1fcd87b8d6","chess":"5c078efb55","gartic":"6f22b9c960","guessbuild":"ec4193b106","imposter":"2c7f34720b","poker":"6c5dc0b563","soundboard":"e07aefc27d","capitalist":"73fea6408d","tinyfishing":"708c08b431","krillion":"e0d5f87312","geodash":"f1196aa413","appel":"80dd5f0087","metrica-wave":"c3df75a336","voteout":"7f793110c6","getaway":"9dda126d83","tag":"8bc7736018","crossyroad":"da8570d413","drivemad":"127bf09cfc","gladihoppers":"87d1b808b0","monkeymart":"4ce25762a3","ovo":"f564966222","stickmanhook":"a5c495f4f5","paperio":"8198023f59","smashkarts":"806875291a","yohoho":"24208763a5","basketballrandom":"175bedac55","houseofhazards":"7b313f0931","snake":"c5420e56c9","torahrunner":"999330d0cd","knessetcombat":"40048a6819","doom":"4f3b061ac7","papaspizzeria":"ded7417f7e","papasburgeria":"aedcee9463","papaswingeria":"b9b6139c9d","papastacomia":"5f69931ad8","papaspancakeria":"4baa264d88","pakistanrunner":"f31a76e05b","departed":"a354fdc1d9","retrobowl":"d7ddcc1688","subwaysurfers":"c332af6b02","tunnelrush":"dec240f546","driftboss":"71fad4f513","fnae":"9844ce377d","meditation":"56847adf1b","crashout":"59eaa18662","snowrider":"a692396710","retrobowlcollege":"3ad9da6ab9","powerlineio":"a874292b22","janissarybattles":"6da0602eb4","tag2":"cda72138aa","cookieclicker":"7422c6501f","idlebreakout":"57034162f4","farflung":"2dc945985c","cards":"759a40fee2","jamborine":"6b3031482b","stonks":"00e653f0c7","scrapyard":"6ae157e457","tanukisunset":"f43650a20f","extraplot":"8c6176690d"};
 const GF_KEEP=24e6;let gfDbP=null;
 function gfDb(){if(gfDbP)return gfDbP;gfDbP=new Promise((res,rej)=>{try{const q=indexedDB.open('sx-game',1);
   q.onupgradeneeded=()=>{q.result.createObjectStore('f');q.result.createObjectStore('m');};q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error);q.onblocked=()=>rej(0);}catch(e){rej(e);}});
@@ -14868,16 +14879,17 @@ function dashPaint(){
   const tc=top(U.c,10),tg=top(U.g,10);
   const pct=T.timed?Math.round(T.onTime/T.timed*100)+'%':'-';
   /* sign-ups for each of the last 30 days, in this device's days: all of them, and the ones that came through a referral */
-  const ND=30,jd=Array(ND).fill(0),rd=Array(ND).fill(0),dix=t=>ND-1-Math.floor((t0.getTime()+864e5-1-t)/864e5);
+  const ND=30,jd=Array(ND).fill(0),rd=Array(ND).fill(0),pd=Array(ND).fill(0),dix=t=>ND-1-Math.floor((t0.getTime()+864e5-1-t)/864e5);
   (DB.joins||[]).forEach(t=>{const di=dix(t);if(di>=0&&di<ND)jd[di]++;});
   (DB.refjoins||[]).forEach(t=>{const di=dix(t);if(di>=0&&di<ND)rd[di]++;});
+  (DB.primjoins||[]).forEach(t=>{const di=dix(t);if(di>=0&&di<ND)pd[di]++;});
   const dl=(i,n)=>new Date(t0.getTime()-(n-1-i)*864e5).toLocaleDateString([],{month:'short',day:'numeric'});
   const sumA=(a,f,t)=>a.slice(f,t).reduce((x,y)=>x+y,0),nf=v=>typeof v==='number'?v.toLocaleString():v;
   const chg=(a,b)=>b?Math.round((a-b)/b*100):(a?100:0),chgT=(a,b)=>{const c=chg(a,b);return c>0?'Up '+c+'%':c<0?'Down '+(-c)+'%':'Level'};
   const j7=sumA(jd,ND-7,ND),j7p=sumA(jd,ND-14,ND-7),j30=sumA(jd,0,ND);
   const r7=sumA(rd,ND-7,ND),r7p=sumA(rd,ND-14,ND-7),r30=sumA(rd,0,ND),rTot=DB.refTotal||0,rBest=Math.max(0,...rd),rBi=rd.indexOf(rBest);
   /* a column chart: the light column is all sign-ups that day, the dark one the part that came through a referral */
-  const colsTwo=(tot,part)=>{const m=Math.max(1,...tot);return `<div class="db-cols db-cols2" style="grid-template-columns:repeat(${tot.length},1fr)">${tot.map((n,i)=>`<div class="db-col" title="${esc(dl(i,tot.length))}: ${n} sign-up${n===1?'':'s'}${part?', '+part[i]+' through referrals':''}"><span class="db-cb"><i class="all" style="height:${Math.round(n/m*100)}%"></i>${part?`<i class="ref" style="height:${Math.round(part[i]/m*100)}%"></i>`:''}</span><span class="db-cl">${i%5===4||i===0?esc(dl(i,tot.length)):''}</span></div>`).join('')}</div>`;};
+  const colsTwo=(tot,part,prim)=>{const m=Math.max(1,...tot);return `<div class="db-cols db-cols2${part?' db-lay3':''}" style="grid-template-columns:repeat(${tot.length},1fr)">${tot.map((n,i)=>`<div class="db-col" title="${esc(dl(i,tot.length))}: ${n} sign-up${n===1?'':'s'}${part?', '+part[i]+' through referrals':''}${prim?', '+prim[i]+' primary':''}"><span class="db-cb"><i class="all" style="height:${Math.round(n/m*100)}%"></i>${part&&part[i]?`<i class="ref" style="height:${Math.round(part[i]/m*100)}%"></i>`:''}${prim&&prim[i]?`<i class="prim" style="height:${Math.round(prim[i]/m*100)}%"></i>`:''}</span><span class="db-cl">${i%5===4||i===0?esc(dl(i,tot.length)):''}</span></div>`).join('')}</div>`;};
   const cum=[];{let run=Math.max(0,rTot-r30);rd.forEach(n=>{run+=n;cum.push(run);});}
   const cmx=Math.max(...cum),cmn=Math.min(...cum);
   const spark=`<svg class="db-spark" viewBox="0 0 300 60" preserveAspectRatio="none" role="img" aria-label="Accounts through referrals, adding up over 30 days"><polyline fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke" points="${cum.map((v,i)=>(i/(ND-1)*300).toFixed(1)+','+(56-(cmx===cmn?0:(v-cmn)/(cmx-cmn)*52)).toFixed(1)).join(' ')}"/></svg>`;
@@ -14917,10 +14929,10 @@ function dashPaint(){
       ${colsTwo(jd,null)}
       <h3 class="db-h3">By week</h3><p class="db-note">Each bar is a 7 day window, labeled with the day it ends.</p>
       <div class="db-bars">${w.map((n,i)=>`<div class="db-row"><span class="db-d">${esc(wk(i))}</span><span class="db-bar"><i style="width:${Math.round(n/mx*100)}%"></i></span><span class="db-n">${n}</span></div>`).join('')}</div>`),
-    sec('referrals','Referrals',`<p class="db-note">Accounts that signed up through a referral link, by day. The light column is all sign-ups that day, the dark one the part that came through a referral.</p>
+    sec('referrals','Referrals',`<p class="db-note">Accounts that signed up through a referral link, by day. The light column is all sign-ups that day, the dark one the part that came through a referral, and the darkest one the primary referrals: sign-ups that gave the person who referred them their first referral.</p>
       <div class="db-stats">${st(nf(rTot),'Through referrals',1)}${st(DB.total?Math.round(rTot/DB.total*100)+'%':'-','Of all accounts')}${st(r30,'Last 30 days')}${st(j30?Math.round(r30/j30*100)+'%':'-','Of new accounts')}</div>
-      <div class="db-stats">${st(r7,'This week')}${st(r7p,'Week before')}${st(chgT(r7,r7p),'Change')}${st(rBest?rBest+' on '+dl(rBi,ND):'-','Best day')}</div>
-      ${colsTwo(jd,rd)}
+      <div class="db-stats">${st(nf(DB.primTotal||0),'Primary referrals')}${st(pd.reduce((x,y)=>x+y,0),'Primary, last 30 days')}${st(r7,'This week')}${st(r7p,'Week before')}${st(chgT(r7,r7p),'Change')}${st(rBest?rBest+' on '+dl(rBi,ND):'-','Best day')}</div>
+      ${colsTwo(jd,rd,pd)}
       <h3 class="db-h3">Adding up</h3><div class="db-spk">${spark}<span class="db-spn"><b>${nf(cum[0])}</b> 30 days ago<br><b>${nf(cum[ND-1])}</b> now</span></div>`),
     sec('visits','Visits',`<p class="db-note">${lg.length} logins and daily visits in the last 7 days${lg.length?`, busiest around ${hl(pk)}`:''}. A visit is the first time an account opens the site on a day.</p>${cols}
       <h3 class="db-h3">This week</h3>
@@ -15568,7 +15580,7 @@ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest
   if(b){const k=b.dataset.gear;gearClose();goSettings(k);return;}
   if(document.getElementById('gearmenu')&&!(e.target.closest&&e.target.closest('#gearmenu,#mgear')))gearClose();});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.getElementById('gearmenu')){e.preventDefault();gearClose();}});
-function goSettings(cat){if(!state.user)return;closeNavMenus();try{pgCloseAll('');}catch(_){}
+function goSettings(cat){if(!state.user)return;closeNavMenus();state.setOpen=false;renderSetdd();try{pgCloseAll('');}catch(_){}
   if(state.setup&&COURSES.length)state.setup=false;state.setCat=cat||state.setCat||'classes';
   const v=document.getElementById('v-settings');if(v)v.dataset.cat='';state.view='settings';render();}
 function setInline(host){let o=document.getElementById('pwx');if(o&&!o.classList.contains('pwx-inline')){o.remove();o=null;}
@@ -15878,7 +15890,10 @@ function roomServerPoll(s){
     if(!r.ok){if(r.error==='noroom'||r.error==='badtoken')s.err=r.error;s.lw=false;return r;}
     s.err='';const x=r.result;
     s.lw=x.lw===1;
-    setTimeout(()=>{if(!s.closed&&!s.inflight&&s.lw&&!document.hidden&&!roomFast(s))roomServerPoll(s);},0);
+    /* every long poll holds one of Apps Script's few simultaneous runs for its whole wait, so a room where nothing has
+       happened for three polls in a row leaves a short gap (up to 2.5 s) before the next; any event ends the gap */
+    s.idle=(x.events&&x.events.length)||('state' in x)?0:(s.idle||0)+1;
+    setTimeout(()=>{if(!s.closed&&!s.inflight&&s.lw&&!document.hidden&&!roomFast(s))roomServerPoll(s);},Math.min(2500,Math.max(0,s.idle-3)*500));
     const pk0=roomPk(s);
     s.since=x.seq;s.players=x.players||[];s.host=!!x.host;if(x.me)s.me=x.me;
     if(roomPk(s)!==pk0)roomWake(s);
