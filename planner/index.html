@@ -2619,11 +2619,6 @@ svg.bk-book .bk-p2{animation:bkp2 5s cubic-bezier(.5,0,.4,1) infinite}
 .lib-rt:hover{color:var(--blue)}
 .lib-done{font-weight:800;color:var(--faint)}
 /* above the top bar even when a page is open (the bar is raised to 1550 then; the menu hangs off the bar's menu and would hide behind it) */
-.gearmenu{position:fixed;z-index:1700;min-width:240px;max-width:calc(100vw - 16px);background:var(--bg);border:2px solid var(--line);border-bottom-width:4px;border-radius:var(--r);padding:6px;display:flex;flex-direction:column;gap:2px}
-.gearmenu button{appearance:none;border:0;background:none;color:var(--fg);cursor:pointer;text-align:left;padding:10px 12px;border-radius:12px;display:flex;flex-direction:column;gap:2px;font-family:var(--font-ui)}
-.gearmenu button:hover{background:var(--panel2)}
-.gearmenu b{font:800 14px/1.2 var(--font-ui)}
-.gearmenu span{font:600 12.5px/1.3 var(--font-ui);color:var(--fg2)}
 .lib-fmenu{width:290px;max-height:min(70vh,calc(100dvh - 200px));overflow-y:auto;overscroll-behavior:none}
 .lib-fclr{border-top:2px solid var(--line);color:var(--blue);font-weight:800}
 .lib-none{padding:16px var(--rin);font-weight:700}
@@ -5125,8 +5120,13 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
       </div>
       <div class="mm-sep mm-psep"></div>
       <button class="mm-row" data-act-games><i class="mi" data-art="controller"></i><span>Games</span></button>
-      <button class="mm-row" id="mgear" aria-expanded="false"><i class="mi" data-art="gear"></i><span>Settings</span></button>
-      <div class="mcolors" id="mcolors" hidden></div>
+      <button class="mm-row" id="mgear" aria-expanded="false" aria-controls="mgear-l"><i class="mi" data-art="gear"></i><span>Settings</span><svg class="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></button>
+      <div class="mm-other" id="mgear-l" hidden>
+        <button class="mm-row mm-sub" data-gear="classes"><i class="mi" data-art="backpack"></i><span>Classes</span></button>
+        <button class="mm-row mm-sub" data-gear="appearance"><i class="mi" data-art="pencil"></i><span>Appearance</span></button>
+        <button class="mm-row mm-sub" data-gear="password"><i class="mi" data-art="lock"></i><span>Security</span></button>
+        <button class="mm-row mm-sub" data-gear="admin" hidden><i class="mi" data-art="shield"></i><span>Administration</span></button>
+      </div>
       <button class="mm-row" id="msugg" data-act-sugg><i class="mi" data-art="bulb"></i><span>Suggestions</span></button>
       <button class="mm-row" id="mrewards" data-act-rewards><i class="mi" data-art="trophy"></i><span>Rewards</span></button>
       <button class="mm-row" data-act-docs><i class="mi" data-art="guide"></i><span>Guide</span></button>
@@ -10389,7 +10389,7 @@ document.addEventListener('click',e=>{
 const navEl=document.getElementById('tabs'),trowEl=document.getElementById('trow'),
   moreWrap=document.getElementById('morewrap'),moreBtn=document.getElementById('morebtn'),
   moreDD=document.getElementById('moredd'),menuBtn=document.getElementById('menubtn'),
-  mMenu=document.getElementById('mmenu'),mGear=document.getElementById('mgear'),mColors=document.getElementById('mcolors');
+  mMenu=document.getElementById('mmenu'),mGear=document.getElementById('mgear');
 let measureQueued=false;
 function measureTabs(){
   if(!trowEl)return;
@@ -10439,6 +10439,7 @@ setTimeout(scheduleMeasure,400);setTimeout(scheduleMeasure,1500);
 function closeNavMenus(){
   moreDD.classList.remove('open');moreBtn.classList.remove('dd-open');
   mMenu.classList.remove('open');mMenu.setAttribute('aria-hidden','true');menuBtn.classList.remove('dd-open');menuBtn.setAttribute('aria-expanded','false');
+  gearClose();
 }
 moreBtn.addEventListener('click',e=>{e.stopPropagation();
   moreDD.classList.toggle('open');moreBtn.classList.toggle('dd-open');});
@@ -10446,14 +10447,17 @@ menuBtn.addEventListener('click',e=>{e.stopPropagation();
   const open=!mMenu.classList.contains('open');
   mMenu.classList.toggle('open',open);mMenu.setAttribute('aria-hidden',String(!open));
   menuBtn.classList.toggle('dd-open',open);menuBtn.setAttribute('aria-expanded',String(open));
-  if(open){mMenu.scrollTop=0;renderMColors();}
+  if(open){mMenu.scrollTop=0;renderMAcct();}
 });
 /* Other: the sister sites (ProfeGPT, Interpres, Ambicant, Planner) fold under one row */
 document.getElementById('mother').addEventListener('click',e=>{e.stopPropagation();const l=document.getElementById('mother-l'),b=e.currentTarget;l.hidden=!l.hidden;b.setAttribute('aria-expanded',String(!l.hidden));b.classList.toggle('dd-open',!l.hidden);});
-mGear.addEventListener('click',e=>{e.stopPropagation();if(!state.user){mColors.hidden=true;return;}gearMenu();return;mColors.hidden=!mColors.hidden;
-  mGear.setAttribute('aria-expanded',String(!mColors.hidden));mGear.classList.toggle('dd-open',!mColors.hidden);if(!mColors.hidden)renderMColors();});
-function renderMColors(){mColors.innerHTML=state.user?settingsHTML('m'):'';
-  const w=document.getElementById('mwho'),a=document.getElementById('macct');if(w)w.textContent=state.user?state.user.name:'';if(a)a.hidden=!state.user;}
+/* Settings: its categories fold under the row, the way Other folds the sister sites */
+function gearClose(){const l=document.getElementById('mgear-l');if(l)l.hidden=true;mGear.setAttribute('aria-expanded','false');mGear.classList.remove('dd-open');}
+mGear.addEventListener('click',e=>{e.stopPropagation();if(!state.user)return;const l=document.getElementById('mgear-l'),open=l.hidden;
+  l.querySelector('[data-gear="admin"]').hidden=!(state.user&&state.user.owner);
+  l.hidden=!open;mGear.setAttribute('aria-expanded',String(open));mGear.classList.toggle('dd-open',open);});
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#mgear-l [data-gear]');if(!b)return;e.stopPropagation();goSettings(b.dataset.gear);});
+function renderMAcct(){const w=document.getElementById('mwho'),a=document.getElementById('macct');if(w)w.textContent=state.user?state.user.name:'';if(a)a.hidden=!state.user;}
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeNavMenus();state.setOpen=false;
   if(state.qaDay||state.modeOpen||state.advOpen||state.dpOpen){state.qaDay=null;state.modeOpen=false;state.advOpen=false;state.dpOpen=false;render();}
   renderSetdd();}});
@@ -16019,22 +16023,6 @@ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest
    Administration's own page moves into it ---------- */
 const SET_CATS=()=>[['classes','Classes'],['appearance','Appearance'],['password','Security']].concat(state.user&&state.user.owner?[['admin','Administration']]:[]);
 let setSide=(()=>{try{return localStorage.getItem('sx-setside')!=='0';}catch(_){return true;}})();
-/* the settings button opens a small menu with the settings categories and what each holds */
-const GEAR_DESC={classes:'Your classes and Schoology link',appearance:'Colors, Home, avatar and pages',password:'Password and sign-in',admin:'Roles, suggestions and the Dashboard'};
-function gearClose(){const m=document.getElementById('gearmenu');if(m)m.remove();const g=document.getElementById('mgear');if(g){g.setAttribute('aria-expanded','false');g.classList.remove('dd-open');}}
-function gearMenu(){if(document.getElementById('gearmenu')){gearClose();return;}
-  const g=document.getElementById('mgear');if(!g||!state.user)return;
-  const m=document.createElement('div');m.id='gearmenu';m.className='gearmenu';m.setAttribute('role','menu');
-  m.innerHTML=SET_CATS().map(([k,n])=>`<button type="button" role="menuitem" data-gear="${k}"><b>${esc(n)}</b><span>${esc(GEAR_DESC[k]||'')}</span></button>`).join('');
-  document.body.appendChild(m);
-  /* the Settings row sits in the three-lines menu, which closes when it is clicked, so by now its box is empty: sit under whichever of the row, the three-lines button or the gear is actually on screen, and never off the left edge */
-  const an=[g,document.getElementById('menubtn'),document.getElementById('gearbtn')].find(x=>x&&x.getBoundingClientRect().width>0),r=an?an.getBoundingClientRect():{bottom:56,right:innerWidth-8};
-  m.style.top=(r.bottom+8)+'px';m.style.right=Math.min(Math.max(8,innerWidth-r.right),Math.max(8,innerWidth-m.offsetWidth-8))+'px';
-  g.setAttribute('aria-expanded','true');g.classList.add('dd-open');}
-document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#gearmenu [data-gear]');
-  if(b){const k=b.dataset.gear;gearClose();goSettings(k);return;}
-  if(document.getElementById('gearmenu')&&!(e.target.closest&&e.target.closest('#gearmenu,#mgear')))gearClose();});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.getElementById('gearmenu')){e.preventDefault();gearClose();}});
 function goSettings(cat){if(!state.user)return;closeNavMenus();state.setOpen=false;renderSetdd();try{pgCloseAll('');}catch(_){}
   if(state.setup&&COURSES.length)state.setup=false;state.setCat=cat||state.setCat||'classes';
   const v=document.getElementById('v-settings');if(v)v.dataset.cat='';state.view='settings';render();}
@@ -16098,7 +16086,7 @@ function pgCloseAll(keep){
 var pgToTools=false;
 function pgBackTools(){if(!pgToTools)return;pgToTools=false;if(pgOpenNow())return;openTools();}
 document.addEventListener('click',e=>{
-  const t=e.target.closest&&e.target.closest('header.topbar :is([data-v],.brand,[data-act-games],[data-act-sugg],[data-act-docs],[data-act-dash],[data-act-roles],[data-act-rewards],[data-act-tut],[data-act-tools],[data-act-clock],[data-act-scare],#mgear,[data-act="classes"])');
+  const t=e.target.closest&&e.target.closest('header.topbar :is([data-v],.brand,[data-act-games],[data-act-sugg],[data-act-docs],[data-act-dash],[data-act-roles],[data-act-rewards],[data-act-tut],[data-act-tools],[data-act-clock],[data-act-scare],[data-act="classes"])');
   if(!t)return;
   /* a menu row leaves the menu closed (the page it opens sits under the bar, where the open menu would cover it) */
   if(t.closest('#mmenu,#moredd,#setdd'))closeNavMenus();
