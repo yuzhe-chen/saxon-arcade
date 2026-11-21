@@ -1374,8 +1374,8 @@ html.home-on body::before{opacity:1}
 #games .gm-sec h2{margin:0 0 12px;font:800 1.6rem/1.1 var(--font-ui);text-transform:uppercase;letter-spacing:-0.03em;color:#f2f0ea}
 #games .gm-grid{display:grid;grid-template-columns:repeat(5,minmax(0,220px));gap:18px;justify-content:start;grid-auto-flow:row dense}
 /* Lander gets a 2 by 2 tile; the others fill in around it */
-#games .gm-grid > .gm-tile:is([data-game="lander"],[data-game="krillion"]){grid-column:span 2;grid-row:span 2}
-#games .gm-grid > .gm-tile:is([data-game="lander"],[data-game="krillion"]) .gm-foot b{font-size:20px}
+#games .gm-tile:is([data-game="lander"],[data-game="krillion"]):where(:not(.gm-feat)){grid-column:span 2;grid-row:span 2}
+#games .gm-tile:is([data-game="lander"],[data-game="krillion"]):where(:not(.gm-feat)) .gm-foot b{font-size:20px}
 #gm-warn{position:fixed;inset:0;z-index:3000}
 #gm-warn .gm-warn-p{margin:0 0 16px;line-height:1.5;color:var(--fg2)}
 #gm-warn .gm-warn-p b{color:var(--fg)}
@@ -3527,7 +3527,7 @@ html.pg-open:not(.splash-on):has(:is(#games,#desmos,#sugg,#roles,#rewards) :is(.
 #games .gm-tile:hover{background:var(--panel2);border-color:var(--line-hi)}
 #games .gm-tile:active{transform:translateY(2px);border-bottom-width:2px;margin-bottom:-2px}
 #games .gm-tile img{background:var(--panel2);border-bottom:2px solid var(--line)}
-#games .gm-grid > .gm-tile:is([data-game="lander"],[data-game="krillion"]) .gm-foot b{font-size:22px}
+#games .gm-tile:is([data-game="lander"],[data-game="krillion"]):where(:not(.gm-feat)) .gm-foot b{font-size:22px}
 #games .gm-foot{gap:8px;padding:10px 12px 12px}
 #games .gm-q{display:block;box-sizing:border-box;width:100%;max-width:none;min-width:0;margin:0 0 16px}
 #games .gm-tile[hidden]{display:none}
@@ -3602,7 +3602,7 @@ html.pg-open:not(.splash-on):has(:is(#games,#desmos,#sugg,#roles,#rewards) :is(.
 #games .gm-ref-copy:hover{background:var(--pri-hi)}
 #games .gm-unl{margin-left:4px;border-radius:999px;background:var(--pri-wash);color:var(--green);font:800 12px/1 var(--font-ui);letter-spacing:.8px;padding:6px 10px;text-transform:uppercase}
 @media (max-width:700px){#games .gm-pick{padding:0 var(--gut) 40px}#games .gm-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-  #games .gm-foot b{font-size:15px}#games .gm-grid > .gm-tile:is([data-game="lander"],[data-game="krillion"]) .gm-foot b{font-size:18px}#games .gm-sec h2{font-size:1.3rem}
+  #games .gm-foot b{font-size:15px}#games .gm-tile:is([data-game="lander"],[data-game="krillion"]):where(:not(.gm-feat)) .gm-foot b{font-size:18px}#games .gm-sec h2{font-size:1.3rem}
   #games .gm-lock{flex-direction:column;align-items:flex-start}#games .gm-ref{flex:1 1 auto;width:100%}}
 #games .gm-load{background:var(--bg);color:var(--fg)}
 #games .gm-lname{font-family:var(--display);font-weight:700;text-transform:none;letter-spacing:-0.02em;color:var(--pri)}
@@ -3660,7 +3660,7 @@ html #v-home .hm-btn.hm-hl,html.pg2 #v-home .hm-btn.hm-hl{background:var(--gold-
 /* every screenshot the same shape; the labels may wrap under the name without squeezing it */
 #games .gm-tile{aspect-ratio:auto}
 #games .gm-tile img{flex:none;aspect-ratio:4/3;height:auto}
-#games .gm-grid > .gm-tile:is([data-game="lander"],[data-game="krillion"]) img{aspect-ratio:auto;height:0;flex:1 1 auto;min-height:220px}
+#games .gm-tile:is([data-game="lander"],[data-game="krillion"]):where(:not(.gm-feat)) img{aspect-ratio:auto;height:0;flex:1 1 auto;min-height:220px}
 /* the Krillion picture is wider than its tile: keep the title block in the middle so all of its text shows */
 #games .gm-plain .gm-big{min-height:120px}
 /* Featured and Most played: a 2x2 tile each at the front of the grid, with a small label */
@@ -3668,6 +3668,9 @@ html #v-home .hm-btn.hm-hl,html.pg2 #v-home .hm-btn.hm-hl{background:var(--gold-
 #games .gm-hot[hidden]{display:none}
 #games .gm-hot1{grid-column:span 1}
 #games .gm-hot1 .gm-hotg{grid-template-columns:minmax(0,1fr)}
+#games .gm-hot3{grid-column:span 3}
+#games .gm-hot3 .gm-hotg{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-width:700px){#games .gm-hot3{grid-column:1/-1}#games .gm-hot3 .gm-hotg{grid-template-columns:repeat(2,minmax(0,1fr))}}
 #games .gm-hotg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
 /* the box fills its grid cell and its tile fills the box, so the three boxes and their tiles are always the same height */
 #games .gm-hot{display:flex}#games .gm-hotg{flex:1;min-width:0}
@@ -3700,9 +3703,9 @@ html #v-home .hm-btn.hm-hl,html.pg2 #v-home .hm-btn.hm-hl{background:var(--gold-
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #games .mx{--bg:#131f24;--sf:#131f24;--box:#202f36;--box2:#37464f;--fg:#f1f7fb;--fg2:#8799a3;--line:#37464f;--grid:rgba(255,255,255,.05);--hatch:rgba(255,255,255,.06);--gnd:#202f36;--acc:#4b9af3;--acc2:#3c81db;--accfg:#ffffff}}
 /* phone: every tile one size, so the list keeps its order */
 @media (min-width:701px){#games .gm-grid .gm-tr{grid-column:span 2 / -1;grid-row:1 / span 2}#games .gm-grid .gm-tl{grid-column:1 / span 2}}
-@media (max-width:700px){#games .gm-grid > .gm-tile:is([data-game="lander"],[data-game="krillion"]){grid-column:auto;grid-row:auto}
-  #games .gm-grid > .gm-tile:is([data-game="lander"],[data-game="krillion"]) img{aspect-ratio:4/3;height:auto;flex:none;min-height:0}
-  #games .gm-grid > .gm-tile:is([data-game="lander"],[data-game="krillion"]) .gm-foot b{font-size:15px}}
+@media (max-width:700px){#games .gm-tile:is([data-game="lander"],[data-game="krillion"]):where(:not(.gm-feat)){grid-column:auto;grid-row:auto}
+  #games .gm-tile:is([data-game="lander"],[data-game="krillion"]):where(:not(.gm-feat)) img{aspect-ratio:4/3;height:auto;flex:none;min-height:0}
+  #games .gm-tile:is([data-game="lander"],[data-game="krillion"]):where(:not(.gm-feat)) .gm-foot b{font-size:15px}}
 
 /* dropdown carets: a drawn chevron (the ▾ character rendered as a dot) */
 .car svg{display:block;width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
@@ -15555,8 +15558,9 @@ function gmFeatTiles(list,tile){
   /* the game this account played last gets a box like the other two */
   const lg=state.settings&&state.settings.lastGame,lx=lg&&list.find(x=>x.id===lg),taken=new Set([f&&f.id,top&&top.id]);
   const last=lx&&!taken.has(lx.id)?[big(lx,'Last played')]:[];
-  /* every one sits in its own box of one column, so Featured, Most played and Last played are exactly the same size */
-  return out.concat(last).map(t=>`<div class="gm-hot gm-hot1"><div class="gm-hotg">${t}</div></div>`).join('');
+  /* one box with Featured, Most played and (when it is another game) Last played, side by side and the same size */
+  const all=out.concat(last);
+  return all.length?`<div class="gm-hot gm-hot${all.length}"><div class="gm-hotg">${all.join('')}</div></div>`:'';
 }
 function gmRenderPick(){
   const g=document.getElementById('games'),pick=g.querySelector('.gm-pick');if(!pick)return;
