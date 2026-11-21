@@ -16275,7 +16275,7 @@ const rmid=()=>Math.random().toString(36).slice(2,10)+Date.now().toString(36);
 const isObj=v=>v&&typeof v==='object'&&!Array.isArray(v);
 function roomSession(code,token,me,rch,game){
   const s={code,token,me,rch:typeof rch==='string'&&/^[a-f0-9]{32}$/.test(rch)&&ROOM_DB_GAMES.includes(game)?rch:'',db:null,dbAt:0,dbFails:0,dbRetry:0,dbHid:0,dbT:[],dbN:0,dbSeq:0,dbLive:new Map(),dbStQ:null,dbStAt:0,dbStT:0,players:[],host:false,since:0,seq:0,ev:[],state:undefined,stSeq:0,stKey:null,stN:0,
-    peers:new Map(),seen:new Set(),outN:{},inN:{},buf:{},err:'',lastPoll:0,inflight:null,timer:null,closed:false,
+    peers:new Map(),seen:new Set(),outN:{},inN:{},buf:{},ackIn:{},ackSent:{},ackAt:0,mq:[],stAt:0,stT:0,err:'',lastPoll:0,inflight:null,timer:null,closed:false,
     lw:false,stQ:null,stBusy:0,stOver:false,stLast:null,wakeT:0,rs:null,rsUp:false,rsPeers:new Map(),rsRetry:0,rsT:[],rsN:0,rsSlow:0};
   rooms.set(code,s);roomSockOpen(s);roomServerPoll(s);roomTick(s);return s;
 }
@@ -16288,14 +16288,16 @@ function roomWake(s){
 }
 /* server writes the game doesn't wait for: a send retries a few times on its own; the host's snapshot keeps only the
    newest one waiting while one is on its way */
-function roomPush(s,args,tries){
+function roomPush(s,args,tries,done){
   tries=tries||0;
-  roomCall('send',args).then(r=>{if(!r.ok&&(r.error==='rate'||r.error==='conn')&&!s.closed&&tries<4)setTimeout(()=>roomPush(s,args,tries+1),800*(tries+1));});
+  roomCall('send',args).then(r=>{if(r.ok&&done)done();if(!r.ok&&(r.error==='rate'||r.error==='conn')&&!s.closed&&tries<4)setTimeout(()=>roomPush(s,args,tries+1,done),800*(tries+1));});
 }
 function roomStateFlush(s){
   /* two may be on their way at once (a new snapshot shouldn't wait out a whole round trip behind the last one); they
      can land in either order, so when they overlapped the newest goes once more at the end */
   if(s.stBusy>=2||!s.stQ||s.closed)return;
+  if(roomFast(s)){const w=4000-(Date.now()-s.stAt);if(w>0){clearTimeout(s.stT);s.stT=setTimeout(()=>roomStateFlush(s),w);return;}}
+  s.stAt=Date.now();
   const q=s.stQ;s.stQ=null;s.stBusy++;if(s.stBusy>1)s.stOver=true;s.stLast=q;
   roomCall('state',{code:s.code,token:s.token,state:{__sk:q.key,d:q.data}}).then(r=>{
     s.stBusy--;
@@ -16306,6 +16308,39 @@ function roomStateFlush(s){
     if(!s.stBusy&&s.stOver&&!s.stQ&&s.host){s.stOver=false;s.stQ=s.stLast;}
     roomStateFlush(s);
   });
+}
+/* the server copy of a message that reached everyone by a fast path waits MIRROR_WAIT for the receivers' confirmations: each
+   player sends one small {t:'a', a:{sender: highest n received in order}} a second over the same fast channels; a message every
+   receiver has confirmed is dropped from the queue and never costs an Apps Script call. Anything else sends the copy: no
+   confirmation (a lost message, an older page that does not confirm, a dead channel) or a player who lost its channel */
+const MIRROR_WAIT=1500;
+function roomMirrorLater(s,args,nFor){s.mq.push({args,nFor,t:Date.now()});}
+function roomMirrorTick(s){
+  if(!s.mq.length)return;
+  const now=Date.now(),all=!roomFast(s);
+  s.mq=s.mq.filter(e=>{
+    if(Object.keys(e.nFor).every(id=>(s.ackIn[id]||0)>=e.nFor[id]))return false;
+    if(all||now-e.t>=MIRROR_WAIT){roomPush(s,e.args,0,all?null:()=>roomPoke(s));return false;}
+    return true;});
+}
+/* the server now holds a copy of something a receiver did not confirm (the last message of a burst has nothing after it to show
+   that it is missing): tell the others over the fast channels to fetch it at once, instead of at the next heartbeat */
+function roomPoke(s){
+  const now=Date.now();if(now-(s.pokeAt||0)<300)return;s.pokeAt=now;
+  const others=roomOthers(s),direct=others.filter(id=>roomOpen(s,id));
+  for(const id of direct)roomDc(s,id,{t:'k'});
+  if(others.length>direct.length)roomSockSend(s,{t:'k'},null,direct);
+}
+function roomAckIn(s,from,a){if(!isObj(a))return;const v=Number(a[s.me]);if(v>(s.ackIn[from]||0))s.ackIn[from]=v;}
+function roomAckTick(s){
+  const now=Date.now();if(now-s.ackAt<1000)return;s.ackAt=now;
+  const a={};let any=false;
+  for(const f of Object.keys(s.inN)){const v=(s.inN[f]||1)-1;if(v>0&&v!==(s.ackSent[f]||0)){a[f]=v;any=true;}}
+  if(!any)return;
+  const others=roomOthers(s),direct=others.filter(id=>roomOpen(s,id));let ok=true;
+  for(const id of direct)if(!roomDc(s,id,{t:'a',a}))ok=false;
+  if(others.length>direct.length&&!roomSockSend(s,{t:'a',a},null,direct))ok=false;
+  if(ok)Object.assign(s.ackSent,a);
 }
 const roomPk=s=>s.players.map(p=>p.id+(p.host?'*':'')).join(',')+(s.host?'!':'');
 function roomClose(s,leave){
@@ -16402,8 +16437,10 @@ function roomTick(s){
   const now=Date.now();
   for(const f of Object.keys(s.buf))if(now-s.buf[f].at>5000)roomFlush(s,f,true);
   roomPeers(s);
-  /* long polls (s.lw) run back to back; while every player has a channel (a data channel, the Worker or Firebase) the server is only a heartbeat for the player list, a short poll every 10 s, so a room that is running smoothly holds no Apps Script run (they are few and shared by everyone); it is back to normal the moment any player loses its channel */
-  const every=roomFast(s)?10000:s.lw?(document.hidden?1500:0):document.hidden?3000:1000;
+  roomMirrorTick(s);roomAckTick(s);
+  /* long polls (s.lw) run back to back; while every player has a channel (a data channel, the Worker or Firebase) the server is only a heartbeat for the player list, a short poll every 6 s, so a room that is running smoothly holds no Apps Script run (they are few and shared by everyone); it is back to normal the moment any player loses its channel */
+  const gap=Object.keys(s.buf).length>0; /* a message is missing: its server copy comes within MIRROR_WAIT, so ask every second */
+  const every=gap?1000:roomFast(s)?6000:s.lw?(document.hidden?1500:0):document.hidden?3000:1000;
   if(!s.rs||s.rsMe!==s.me)roomSockOpen(s);
   roomDbTick(s);
   if(s.inflight&&now-s.pollAt>25000){s.inflight=null;s.pollId++;}
@@ -16442,6 +16479,8 @@ function roomWire(s,p,pc,dc){
     if(!isObj(m))return;
     if(m.t==='m'&&typeof m.m==='string')roomArrive(s,{m:m.m,from:p.id,to:m.to,d:m.d,at:m.at,n:m.n,via:'dc'});
     else if(m.t==='st'&&isObj(m.k)&&s.players.some(x=>x.id===p.id&&x.host))roomState(s,m.k,m.d,'dc',m.at);
+    else if(m.t==='a')roomAckIn(s,p.id,m.a);
+    else if(m.t==='k'){if(!s.inflight)roomServerPoll(s);}
   };
 }
 function roomArm(s,p,gen,ms){clearTimeout(p.t);p.t=setTimeout(()=>{if(p.gen===gen&&!p.open)roomDrop(s,p);},ms);}
@@ -16534,6 +16573,8 @@ function roomSockIn(s,ev){
   roomStats.wsIn=(roomStats.wsIn||0)+1;
   if(d.t==='m'&&typeof d.m==='string')roomArrive(s,{m:d.m,from:f,to:d.to,d:d.d,at:d.at,n:isObj(d.ns)?d.ns[s.me]:0,via:'ws'});
   else if(d.t==='st'&&isObj(d.k)&&pl.host)roomState(s,d.k,d.d,'ws',d.at);
+  else if(d.t==='a')roomAckIn(s,f,d.a);
+  else if(d.t==='k'){if(!s.inflight)roomServerPoll(s);}
 }
 /* last resort, Firebase RTDB (firebaseio.com gets through the school filter when *.workers.dev and WebRTC don't): only
    after this page's Worker room socket has failed, only while some other player has neither a data channel nor the
@@ -16675,19 +16716,29 @@ async function roomOp(op,args){
       const ws=rest.length&&roomSockSend(s,{t:'m',m,to:to||undefined,d:args.data,at},to,to?null:dc)?rest.length:0;
       return {ok:true,result:{seq:s.seq,dc:dc.length,ws,miss:targets.length-dc.length-ws}};
     }
-    const direct=targets.filter(id=>roomOpen(s,id)),relay=targets.filter(id=>!direct.includes(id)),ns={};
-    for(const id of relay)ns[id]=s.outN[id]=(s.outN[id]||0)+1;
-    /* broadcasts always reach the server too (minus the direct players), so late joiners still find them */
+    const direct=targets.filter(id=>roomOpen(s,id)),relay=targets.filter(id=>!direct.includes(id)),ns={},nFor={};
+    for(const id of relay)ns[id]=nFor[id]=s.outN[id]=(s.outN[id]||0)+1;
     /* the game doesn't wait for the server: sends go out together (receivers put each sender's messages back in order
        by n) and retry on their own */
     const viaServer=to?(relay.length>0||!targets.length):true;
+    /* fast: every receiver was reached by a data channel or the Worker socket (Firebase and the server alone are not trusted
+       that far); then the server copy (late joiners, and the fallback) is held back and only sent if a receiver has not
+       confirmed the message within MIRROR_WAIT (see roomMirrorTick), so a smooth room costs Apps Script almost nothing */
+    let fast=targets.length>0;
     for(const id of direct){
       const n=s.outN[id]=(s.outN[id]||0)+1;
-      if(!roomDc(s,id,{t:'m',m,to:to||undefined,d:args.data,at,n})){s.outN[id]--;roomPush(s,{code:s.code,token:s.token,to:id,data:{__m:m,d:args.data,ns:{[id]:s.outN[id]=(s.outN[id]||0)+1}}});}
+      if(roomDc(s,id,{t:'m',m,to:to||undefined,d:args.data,at,n}))nFor[id]=n;
+      else{s.outN[id]--;fast=false;roomPush(s,{code:s.code,token:s.token,to:id,data:{__m:m,d:args.data,ns:{[id]:s.outN[id]=(s.outN[id]||0)+1}}});}
     }
-    if(viaServer)roomPush(s,{code:s.code,token:s.token,data:{__m:m,d:args.data,ns},to:to||undefined,except:to?undefined:direct});
-    if(relay.some(id=>roomSock(s,id)))roomSockSend(s,{t:'m',m,to:to||undefined,d:args.data,at,ns},to,to?null:direct);
-    if(relay.some(id=>!roomSock(s,id)))roomDbSend(s,{t:'m',m,to:to||undefined,d:args.data,at,ns});
+    const onSock=relay.filter(id=>roomSock(s,id)),offSock=relay.filter(id=>!roomSock(s,id));
+    let sockOk=false;
+    if(onSock.length)sockOk=roomSockSend(s,{t:'m',m,to:to||undefined,d:args.data,at,ns},to,to?null:direct);
+    if(offSock.length)roomDbSend(s,{t:'m',m,to:to||undefined,d:args.data,at,ns});
+    if(offSock.length||(onSock.length&&!sockOk))fast=false;
+    if(viaServer){
+      const sv={code:s.code,token:s.token,data:{__m:m,d:args.data,ns},to:to||undefined,except:to?undefined:direct};
+      if(fast&&Object.keys(nFor).length)roomMirrorLater(s,sv,nFor);else roomPush(s,sv);
+    }
     roomDeliver(s,{m,from:s.me,to:to||undefined,d:args.data,at});
     return {ok:true,result:{seq:s.seq}};
   }
