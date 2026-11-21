@@ -15962,7 +15962,7 @@ function roomServerPoll(s){
   /* polls are long polls: the server holds one until something new from someone else is in the room (up to 6 s; the
      first answers at once, its pk matching nothing), and the next starts as soon as it returns, so a relayed message
      arrives about as fast as the server can write it. One stuck past 25 s is given up on (roomTick) */
-  const a={code:s.code,token:s.token,since:s.since,wait:6000,pk:s.lastPoll?roomPk(s):''};
+  const a={code:s.code,token:s.token,since:s.since,wait:roomFast(s)?0:6000,pk:s.lastPoll?roomPk(s):''};
   const pid=s.pollId=(s.pollId||0)+1;s.pollAt=Date.now();
   s.inflight=roomCall('poll',a).then(r=>{
     if(pid!==s.pollId)return r;
@@ -16032,8 +16032,8 @@ function roomTick(s){
   const now=Date.now();
   for(const f of Object.keys(s.buf))if(now-s.buf[f].at>5000)roomFlush(s,f,true);
   roomPeers(s);
-  /* long polls (s.lw) run back to back; spaced out while every player has a channel or the tab is hidden */
-  const every=s.lw?(roomFast(s)?3000:document.hidden?1500:0):roomFast(s)?4000:document.hidden?3000:1000;
+  /* long polls (s.lw) run back to back; while every player has a channel (a data channel, the Worker or Firebase) the server is only a heartbeat for the player list, a short poll every 10 s, so a room that is running smoothly holds no Apps Script run (they are few and shared by everyone); it is back to normal the moment any player loses its channel */
+  const every=roomFast(s)?10000:s.lw?(document.hidden?1500:0):document.hidden?3000:1000;
   if(!s.rs||s.rsMe!==s.me)roomSockOpen(s);
   roomDbTick(s);
   if(s.inflight&&now-s.pollAt>25000){s.inflight=null;s.pollId++;}
@@ -16180,8 +16180,8 @@ function roomDbBase(){
   if(/^(localhost|127\.0\.0\.1)$/.test(location.hostname)){let o='';try{o=localStorage.getItem('sx-rtdb-url')||'';}catch(_){}return o.replace(/\/$/,'');}
   return ((RT_INFO&&RT_INFO.db)||('https:'+SLASH2+'saxonplanner-default-rtdb.firebaseio.com')).replace(/\/$/,'');
 }
-/* this page's Worker room socket is out for now: no realtime Worker, the room socket refused or gave up, or not up 3 s on */
-const roomWorkerDown=s=>!window.SXRT||!SXRT.room||SXRT.mode()!=='ws'||(!s.rs&&Date.now()<s.rsRetry)||(!!s.rs&&!s.rsUp&&Date.now()-(s.rsAt||0)>3000);
+/* this page's Worker room socket is out for now: no realtime Worker, the room socket refused or gave up, or not up 1.5 s on (then Firebase takes over where the game uses it) */
+const roomWorkerDown=s=>!window.SXRT||!SXRT.room||SXRT.mode()!=='ws'||(!s.rs&&Date.now()<s.rsRetry)||(!!s.rs&&!s.rsUp&&Date.now()-(s.rsAt||0)>1500);
 /* a player whose messages reach this page over Firebase (its stream is up and a live message from it came that way) */
 const roomDbFrom=(s,id)=>!!(s.db&&s.db.up&&s.dbLive.has(id));
 function roomDbTick(s){
