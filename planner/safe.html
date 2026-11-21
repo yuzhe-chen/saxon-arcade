@@ -3669,6 +3669,8 @@ html #v-home .hm-btn.hm-hl,html.pg2 #v-home .hm-btn.hm-hl{background:var(--gold-
 #games .gm-hot1{grid-column:span 1}
 #games .gm-hot1 .gm-hotg{grid-template-columns:minmax(0,1fr)}
 #games .gm-hotg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+/* the box fills its grid cell and its tile fills the box, so the three boxes and their tiles are always the same height */
+#games .gm-hot{display:flex}#games .gm-hotg{flex:1;min-width:0}
 #games .gm-hotg .gm-tile{min-width:0;margin:0}
 #games .gm-flag{position:absolute;right:10px;left:auto;top:10px;z-index:2;padding:4px 9px;border-radius:999px;background:var(--blue);color:#fff;font:800 10.5px/1.2 var(--font-ui);letter-spacing:.6px;text-transform:uppercase;pointer-events:none}
 :root{--wrap-pt:32px}
@@ -15550,10 +15552,11 @@ function gmFeatTiles(list,tile){
   if(f)out.push(big(f,'Featured'));
   const top=(GSTAT||[]).map(r=>list.find(x=>x.id===r.id)).find(x=>x&&(!f||x.id!==f.id));
   if(top)out.push(big(top,'Most played'));
-  /* the game this account played last gets its own small box beside it (it drops under on narrow screens) */
+  /* the game this account played last gets a box like the other two */
   const lg=state.settings&&state.settings.lastGame,lx=lg&&list.find(x=>x.id===lg),taken=new Set([f&&f.id,top&&top.id]);
-  const last=lx&&!taken.has(lx.id)?`<div class="gm-hot gm-hot1"><div class="gm-hotg">${big(lx,'Last played')}</div></div>`:'';
-  return (out.length?`<div class="gm-hot"><div class="gm-hotg">${out.join('')}</div></div>`:'')+last;
+  const last=lx&&!taken.has(lx.id)?[big(lx,'Last played')]:[];
+  /* every one sits in its own box of one column, so Featured, Most played and Last played are exactly the same size */
+  return out.concat(last).map(t=>`<div class="gm-hot gm-hot1"><div class="gm-hotg">${t}</div></div>`).join('');
 }
 function gmRenderPick(){
   const g=document.getElementById('games'),pick=g.querySelector('.gm-pick');if(!pick)return;
