@@ -1374,8 +1374,8 @@ html.home-on body::before{opacity:1}
 #games .gm-sec h2{margin:0 0 12px;font:800 1.6rem/1.1 var(--font-ui);text-transform:uppercase;letter-spacing:-0.03em;color:#f2f0ea}
 #games .gm-grid{display:grid;grid-template-columns:repeat(5,minmax(0,220px));gap:18px;justify-content:start;grid-auto-flow:row dense}
 /* Lander gets a 2 by 2 tile; the others fill in around it */
-#games .gm-tile:is([data-game="lander"],[data-game="krillion"]){grid-column:span 2;grid-row:span 2}
-#games .gm-tile:is([data-game="lander"],[data-game="krillion"]) .gm-foot b{font-size:20px}
+#games .gm-grid > .gm-tile:is([data-game="lander"],[data-game="krillion"]){grid-column:span 2;grid-row:span 2}
+#games .gm-grid > .gm-tile:is([data-game="lander"],[data-game="krillion"]) .gm-foot b{font-size:20px}
 #gm-warn{position:fixed;inset:0;z-index:3000}
 #gm-warn .gm-warn-p{margin:0 0 16px;line-height:1.5;color:var(--fg2)}
 #gm-warn .gm-warn-p b{color:var(--fg)}
@@ -3527,7 +3527,7 @@ html.pg-open:not(.splash-on):has(:is(#games,#desmos,#sugg,#roles,#rewards) :is(.
 #games .gm-tile:hover{background:var(--panel2);border-color:var(--line-hi)}
 #games .gm-tile:active{transform:translateY(2px);border-bottom-width:2px;margin-bottom:-2px}
 #games .gm-tile img{background:var(--panel2);border-bottom:2px solid var(--line)}
-#games .gm-tile:is([data-game="lander"],[data-game="krillion"]) .gm-foot b{font-size:22px}
+#games .gm-grid > .gm-tile:is([data-game="lander"],[data-game="krillion"]) .gm-foot b{font-size:22px}
 #games .gm-foot{gap:8px;padding:10px 12px 12px}
 #games .gm-q{display:block;box-sizing:border-box;width:100%;max-width:none;min-width:0;margin:0 0 16px}
 #games .gm-tile[hidden]{display:none}
@@ -3602,7 +3602,7 @@ html.pg-open:not(.splash-on):has(:is(#games,#desmos,#sugg,#roles,#rewards) :is(.
 #games .gm-ref-copy:hover{background:var(--pri-hi)}
 #games .gm-unl{margin-left:4px;border-radius:999px;background:var(--pri-wash);color:var(--green);font:800 12px/1 var(--font-ui);letter-spacing:.8px;padding:6px 10px;text-transform:uppercase}
 @media (max-width:700px){#games .gm-pick{padding:0 var(--gut) 40px}#games .gm-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-  #games .gm-foot b{font-size:15px}#games .gm-tile:is([data-game="lander"],[data-game="krillion"]) .gm-foot b{font-size:18px}#games .gm-sec h2{font-size:1.3rem}
+  #games .gm-foot b{font-size:15px}#games .gm-grid > .gm-tile:is([data-game="lander"],[data-game="krillion"]) .gm-foot b{font-size:18px}#games .gm-sec h2{font-size:1.3rem}
   #games .gm-lock{flex-direction:column;align-items:flex-start}#games .gm-ref{flex:1 1 auto;width:100%}}
 #games .gm-load{background:var(--bg);color:var(--fg)}
 #games .gm-lname{font-family:var(--display);font-weight:700;text-transform:none;letter-spacing:-0.02em;color:var(--pri)}
@@ -3660,7 +3660,7 @@ html #v-home .hm-btn.hm-hl,html.pg2 #v-home .hm-btn.hm-hl{background:var(--gold-
 /* every screenshot the same shape; the labels may wrap under the name without squeezing it */
 #games .gm-tile{aspect-ratio:auto}
 #games .gm-tile img{flex:none;aspect-ratio:4/3;height:auto}
-#games .gm-tile:is([data-game="lander"],[data-game="krillion"]) img{aspect-ratio:auto;height:0;flex:1 1 auto;min-height:220px}
+#games .gm-grid > .gm-tile:is([data-game="lander"],[data-game="krillion"]) img{aspect-ratio:auto;height:0;flex:1 1 auto;min-height:220px}
 /* the Krillion picture is wider than its tile: keep the title block in the middle so all of its text shows */
 #games .gm-plain .gm-big{min-height:120px}
 /* Featured and Most played: a 2x2 tile each at the front of the grid, with a small label */
@@ -3698,9 +3698,9 @@ html #v-home .hm-btn.hm-hl,html.pg2 #v-home .hm-btn.hm-hl{background:var(--gold-
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #games .mx{--bg:#131f24;--sf:#131f24;--box:#202f36;--box2:#37464f;--fg:#f1f7fb;--fg2:#8799a3;--line:#37464f;--grid:rgba(255,255,255,.05);--hatch:rgba(255,255,255,.06);--gnd:#202f36;--acc:#4b9af3;--acc2:#3c81db;--accfg:#ffffff}}
 /* phone: every tile one size, so the list keeps its order */
 @media (min-width:701px){#games .gm-grid .gm-tr{grid-column:span 2 / -1;grid-row:1 / span 2}#games .gm-grid .gm-tl{grid-column:1 / span 2}}
-@media (max-width:700px){#games .gm-tile:is([data-game="lander"],[data-game="krillion"]){grid-column:auto;grid-row:auto}
-  #games .gm-tile:is([data-game="lander"],[data-game="krillion"]) img{aspect-ratio:4/3;height:auto;flex:none;min-height:0}
-  #games .gm-tile:is([data-game="lander"],[data-game="krillion"]) .gm-foot b{font-size:15px}}
+@media (max-width:700px){#games .gm-grid > .gm-tile:is([data-game="lander"],[data-game="krillion"]){grid-column:auto;grid-row:auto}
+  #games .gm-grid > .gm-tile:is([data-game="lander"],[data-game="krillion"]) img{aspect-ratio:4/3;height:auto;flex:none;min-height:0}
+  #games .gm-grid > .gm-tile:is([data-game="lander"],[data-game="krillion"]) .gm-foot b{font-size:15px}}
 
 /* dropdown carets: a drawn chevron (the ▾ character rendered as a dot) */
 .car svg{display:block;width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
@@ -15108,7 +15108,7 @@ async function loadGame(id){
    kept under id|hash and used only when the page asks for that same hash. A fetched file is stored only when its own
    hash matches what the page expects, so an updated game is never served from an old copy. Up to GF_KEEP characters
    in all, the least recently opened go first. Without IndexedDB or a stamp it simply fetches, as before */
-const GAME_VER={"lander":"1684804b21","pipworks":"79e1238ce5","solitaire":"8c505f28ec","geohunter":"1fcd87b8d6","chess":"5c078efb55","gartic":"6f22b9c960","guessbuild":"ec4193b106","imposter":"2c7f34720b","poker":"6c5dc0b563","soundboard":"e07aefc27d","capitalist":"73fea6408d","tinyfishing":"708c08b431","krillion":"b1f7a47f3f","geodash":"f1196aa413","appel":"80dd5f0087","metrica-wave":"c3df75a336","voteout":"7f793110c6","getaway":"9dda126d83","tag":"8bc7736018","crossyroad":"da8570d413","drivemad":"127bf09cfc","gladihoppers":"87d1b808b0","monkeymart":"4ce25762a3","ovo":"f564966222","stickmanhook":"a5c495f4f5","paperio":"8198023f59","smashkarts":"806875291a","yohoho":"24208763a5","basketballrandom":"175bedac55","houseofhazards":"7b313f0931","snake":"c5420e56c9","torahrunner":"999330d0cd","knessetcombat":"40048a6819","doom":"4f3b061ac7","papaspizzeria":"ded7417f7e","papasburgeria":"aedcee9463","papaswingeria":"b9b6139c9d","papastacomia":"5f69931ad8","papaspancakeria":"4baa264d88","pakistanrunner":"f31a76e05b","departed":"a354fdc1d9","retrobowl":"d7ddcc1688","subwaysurfers":"c332af6b02","tunnelrush":"dec240f546","driftboss":"71fad4f513","fnae":"9844ce377d","meditation":"56847adf1b","crashout":"59eaa18662","snowrider":"a692396710","retrobowlcollege":"3ad9da6ab9","powerlineio":"a874292b22","janissarybattles":"6da0602eb4","tag2":"cda72138aa","cookieclicker":"7422c6501f","idlebreakout":"57034162f4","farflung":"2dc945985c","cards":"759a40fee2","jamborine":"6b3031482b","stonks":"00e653f0c7","scrapyard":"6ae157e457","tanukisunset":"f43650a20f","extraplot":"8c6176690d"};
+const GAME_VER={"lander":"1684804b21","pipworks":"79e1238ce5","solitaire":"8c505f28ec","geohunter":"1fcd87b8d6","chess":"5c078efb55","gartic":"6f22b9c960","guessbuild":"ec4193b106","imposter":"2c7f34720b","poker":"6c5dc0b563","soundboard":"e07aefc27d","capitalist":"73fea6408d","tinyfishing":"708c08b431","krillion":"3971d4d158","geodash":"f1196aa413","appel":"80dd5f0087","metrica-wave":"c3df75a336","voteout":"7f793110c6","getaway":"9dda126d83","tag":"8bc7736018","crossyroad":"da8570d413","drivemad":"127bf09cfc","gladihoppers":"87d1b808b0","monkeymart":"4ce25762a3","ovo":"f564966222","stickmanhook":"a5c495f4f5","paperio":"8198023f59","smashkarts":"806875291a","yohoho":"24208763a5","basketballrandom":"175bedac55","houseofhazards":"7b313f0931","snake":"c5420e56c9","torahrunner":"999330d0cd","knessetcombat":"40048a6819","doom":"4f3b061ac7","papaspizzeria":"ded7417f7e","papasburgeria":"aedcee9463","papaswingeria":"b9b6139c9d","papastacomia":"5f69931ad8","papaspancakeria":"4baa264d88","pakistanrunner":"f31a76e05b","departed":"a354fdc1d9","retrobowl":"d7ddcc1688","subwaysurfers":"c332af6b02","tunnelrush":"dec240f546","driftboss":"71fad4f513","fnae":"9844ce377d","meditation":"56847adf1b","crashout":"59eaa18662","snowrider":"a692396710","retrobowlcollege":"3ad9da6ab9","powerlineio":"a874292b22","janissarybattles":"6da0602eb4","tag2":"cda72138aa","cookieclicker":"7422c6501f","idlebreakout":"57034162f4","farflung":"2dc945985c","cards":"759a40fee2","jamborine":"6b3031482b","stonks":"00e653f0c7","scrapyard":"6ae157e457","tanukisunset":"f43650a20f","extraplot":"8c6176690d"};
 const GF_KEEP=24e6;let gfDbP=null;
 function gfDb(){if(gfDbP)return gfDbP;gfDbP=new Promise((res,rej)=>{try{const q=indexedDB.open('sx-game',1);
   q.onupgradeneeded=()=>{q.result.createObjectStore('f');q.result.createObjectStore('m');};q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error);q.onblocked=()=>rej(0);}catch(e){rej(e);}});
@@ -15931,7 +15931,8 @@ function gmRenderPick(){
   pick.innerHTML=`<div class="gm-head"><h1 class="gm-h"><span>games</span></h1>
     <button class="gm-x" data-act-gclose aria-label="Close" title="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
     <section class="gm-sec" data-sec="all">${list.some(gameLocked)?gmLockPanel():''}<input type="text" id="gm-q" readonly data-noauto class="gm-q" placeholder="Search games" aria-label="Search games" autocomplete="off" spellcheck="false" value="${esc(gmQ)}"><div class="gm-grid"><button class="gm-tile gm-add" data-gm-sugg aria-label="Suggest a game" title="Suggest a game"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>${gmFeatTiles(list,tile)}${gmSorted(list).map(x=>tile(x).replace(/^<button[^>]*>/,m=>m+gmStar(x))).join('')}</div></section>${SENS_GAMES.length?`<div class="gm-endbar">${SENS_GAMES.length?`<button class="kbtn" data-gm-sens>${state.settings.sensGames?'Hide sensitive games':'Show sensitive games'}</button>`:''}</div>`:''}`;
-  {const big=[...pick.querySelectorAll('.gm-tile:is([data-game="lander"],[data-game="krillion"])')];if(big[0])big[0].classList.add('gm-tr');if(big[1])big[1].classList.add('gm-tl');}
+  {/* only the tiles of the main grid itself: the copy of a game inside the Featured, Most played or Last played boxes must not get the big-tile placement */
+  const big=[...pick.querySelectorAll('.gm-grid > .gm-tile:is([data-game="lander"],[data-game="krillion"])')];if(big[0])big[0].classList.add('gm-tr');if(big[1])big[1].classList.add('gm-tl');}
   gmFilterQ();
   /* the first time an account sees its games unlocked by a referral, the lock bursts open */
 }
