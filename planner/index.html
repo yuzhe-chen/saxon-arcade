@@ -4372,6 +4372,9 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
        Worker WebSocket is up; ready resolves true once this room's socket is open (false if it could not open). */
     room: function (code, pid) {
       var fns = [], ws = null, left = false, tries = 0, queue = [];
+      /* the dedicated rooms Worker (S.cfg.rurl) first; if it does not open within WS_OPEN_MS, or fails all its retries, the hub
+         Worker (S.cfg.url) takes the room, and below that the page keeps its Firebase and Apps Script paths */
+      var viaRooms = !!(S && S.cfg && typeof S.cfg.rurl === 'string' && /^https:\/\//.test(S.cfg.rurl)), everOpened = false;
       var R = { ok: !!(S && S.mode === 'ws'), ready: null,
         send: function (data, to, except) {
           var m = JSON.stringify({ d: data, to: to || undefined, ex: except || undefined });
@@ -4385,13 +4388,13 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
       var emit = function (ev) { fns.forEach(function (f) { call(f, ev); }); };
       var connect = function (resolve) {
         var opened = false, w;
-        try { w = new WebSocket(wsUrl(S.cfg.url) + '/ws?t=' + encodeURIComponent(S.cfg.ticket) + '&room=' + encodeURIComponent(code) + (pid ? '&pid=' + encodeURIComponent(pid) : '')); }
-        catch (e) { R.ok = false; if (resolve) resolve(false); return; }
+        try { w = new WebSocket(wsUrl(viaRooms ? S.cfg.rurl : S.cfg.url) + '/ws?t=' + encodeURIComponent(S.cfg.ticket) + '&room=' + encodeURIComponent(code) + (pid ? '&pid=' + encodeURIComponent(pid) : '')); }
+        catch (e) { if (viaRooms) { viaRooms = false; return connect(resolve); } R.ok = false; if (resolve) resolve(false); return; }
         var to = setTimeout(function () { if (!opened) { try { w.close(); } catch (e) {} } }, WS_OPEN_MS);
         w.onmessage = function (e) {
           var m; try { m = JSON.parse(e.data); } catch (x) { return; }
           if (m.k === 'rs') {
-            opened = true; clearTimeout(to); tries = 0; ws = w;
+            opened = true; everOpened = true; clearTimeout(to); tries = 0; ws = w;
             queue.splice(0).forEach(function (q) { try { w.send(q); } catch (x) {} });
             if (resolve) { resolve(true); resolve = null; }
             emit({ type: 'peers', peers: (m.peers || []).map(function (p) { return { pid: p.p, user: p.u }; }) });
@@ -4404,7 +4407,10 @@ html.pfade:not(.splash-on) #games .gm-pick{background:transparent}
         w.onclose = function () {
           clearTimeout(to); if (ws === w) ws = null;
           if (left || !S) return;
-          if (++tries > 3 || S.mode !== 'ws') { R.ok = false; if (resolve) resolve(false); emit({ type: 'down' }); return; }
+          if (viaRooms && !everOpened) { viaRooms = false; connect(resolve); return; }   /* the rooms Worker never opened: the hub, at once */
+          if (++tries > 3 || S.mode !== 'ws') {
+            if (viaRooms && S.mode === 'ws') { viaRooms = false; tries = 0; connect(resolve); return; }   /* its retries are used up: the hub */
+            R.ok = false; if (resolve) resolve(false); emit({ type: 'down' }); return; }
           setTimeout(function () { if (!left && S) connect(resolve); }, 1000 * tries);
         };
       };
