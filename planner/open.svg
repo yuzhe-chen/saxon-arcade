@@ -5,11 +5,15 @@
 </foreignObject>
 <script><![CDATA[
 (function(){
-  var f=document.getElementById('f'), base='https://cdn.jsdelivr.net/gh/yuzhe-chen/saxon-arcade@';
-  // the newest page version is listed in planner/latest.txt; fall back to a known one
-  fetch(base+'main/planner/latest.txt?'+Date.now()).then(function(r){return r.ok?r.text():'';}).catch(function(){return '';})
-  .then(function(v){v=(v||'').trim()||'7ad53c85a877a0f2dfa389aa1fd4be9efc562b86';return fetch(base+v+'/planner/index.html');})
-  .then(function(r){if(!r.ok)throw new Error(r.status);return r.text();})
+  var f=document.getElementById('f'), live='https://cdn.jsdelivr.net/gh/yuzhe-chen/saxon-live@', old='https://cdn.jsdelivr.net/gh/yuzhe-chen/saxon-arcade@';
+  // the newest page version is listed in planner/latest.txt of the small saxon-live repo; if that cannot be loaded, the older saxon-arcade repo still holds the last page it published
+  function load(base,fallback){
+    return fetch(base+'main/planner/latest.txt?'+Date.now()).then(function(r){return r.ok?r.text():'';}).catch(function(){return '';})
+    .then(function(v){v=(v||'').trim()||fallback;return fetch(base+v+'/planner/index.html');})
+    .then(function(r){if(!r.ok)throw new Error(r.status);return r.text();});
+  }
+  load(live,'0ef006c0e88ff5daf06199eecf779bbb09d290f8')
+  .catch(function(){return load(old,'bb3c133690b13c9e11ad3e44a6ca01b402206d05');})
   .then(function(h){f.srcdoc=h;})
   .catch(function(){f.srcdoc='<p style="font:18px system-ui;text-align:center;margin-top:40vh">Could not load. Reload the page.</p>';});
 })();
