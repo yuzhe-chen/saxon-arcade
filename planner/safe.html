@@ -16075,9 +16075,9 @@ function roomTick(s){
   for(const f of Object.keys(s.buf))if(now-s.buf[f].at>5000)roomFlush(s,f,true);
   roomPeers(s);
   roomMirrorTick(s);roomAckTick(s);
-  /* long polls (s.lw) run back to back; while every player has a channel (a data channel, the Worker or Firebase) the server is only a heartbeat for the player list, a short poll every 6 s, so a room that is running smoothly holds no Apps Script run (they are few and shared by everyone); it is back to normal the moment any player loses its channel */
+  /* long polls (s.lw) run back to back; while every player has a channel (a data channel, the Worker or Firebase) the server is only a heartbeat for the player list, a short poll every 3 s (so a player joining or leaving still shows within about 3 s), so a room that is running smoothly holds no Apps Script run (they are few and shared by everyone); it is back to normal the moment any player loses its channel */
   const gap=Object.keys(s.buf).length>0; /* a message is missing: its server copy comes within MIRROR_WAIT, so ask every second */
-  const every=gap?1000:roomFast(s)?6000:s.lw?(document.hidden?1500:0):document.hidden?3000:1000;
+  const every=gap?1000:roomFast(s)?3000:s.lw?(document.hidden?1500:0):document.hidden?3000:1000;
   if(!s.rs||s.rsMe!==s.me)roomSockOpen(s);
   roomDbTick(s);
   if(s.inflight&&now-s.pollAt>25000){s.inflight=null;s.pollId++;}
