@@ -5564,12 +5564,13 @@ const __import1 = __require("public/js/lib/dom.js"); const { el, icon, ICONS, cl
 const __import2 = __require("public/js/lib/art.js"); const { art } = __import2;
 const __import3 = __require("public/js/lib/i18n.js"); const { pick, t } = __import3;
 const __import4 = __require("public/js/lib/study.js"); const { page, studyLang } = __import4;
-const __import5 = __require("public/js/views/word-of-day.js"); const { wordCard } = __import5;
+const __import5 = __require("public/js/lib/translator-state.js"); const { acceptsAnswer, initialDirection, requestBody, swapPanes } = __import5;
+const __import6 = __require("public/js/views/word-of-day.js"); const { wordCard } = __import6;
 
 
 
-const LANGUAGES = () => ({
-  [studyLang()]: {
+const LANGUAGES = (study) => ({
+  [study]: {
     label: t('translator.studyName'),
     placeholder: 'translator.placeholderStudy',
     out: 'translator.outStudy',
@@ -5689,7 +5690,12 @@ function fitOnOneLine(row) {
 }
 
 function buildTranslator(root) {
-  const state = { from: 'en', to: studyLang(), pending: null };
+  
+  const study = studyLang();
+  
+  
+  const state = { ...initialDirection(study), pending: null, shown: null };
+  const direction = () => ({ from: state.from, to: state.to });
 
   const input = el('textarea', { spellcheck: false, maxLength: MAX_CHARS, 'aria-label': t('translator.sourceLabel') });
 
@@ -5725,7 +5731,7 @@ function buildTranslator(root) {
     listen.classList.remove('speak--failed');
     try {
       const english = state.to === 'en' ? '&lang=en' : '';
-      const response = await fetch(`/api/speak?text=${encodeURIComponent(text)}&study=${studyLang()}${english}`);
+      const response = await fetch(`/api/speak?text=${encodeURIComponent(text)}&study=${study}${english}`);
       if (!response.ok) {
         if (response.status === 503) { listen.remove(); return; }
         const failure = await response.json().catch(() => ({}));
@@ -5821,7 +5827,7 @@ function buildTranslator(root) {
   
 
   function paintLanguages() {
-    const languages = LANGUAGES();
+    const languages = LANGUAGES(study);
     const source = languages[state.from];
     const target = languages[state.to];
     sourceLang.textContent = source.label;
@@ -5830,12 +5836,21 @@ function buildTranslator(root) {
     output.dataset.placeholder = t(target.out);
   }
 
+   
+  function clearAnswer() {
+    clear(output);
+    clear(notes);
+    engine.textContent = '';
+    state.shown = null;
+  }
+
   function sync() {
     counter.textContent = `${input.value.length} / ${MAX_CHARS}`;
     if (!input.value.trim()) {
-      clear(output);
-      clear(notes);
-      engine.textContent = '';
+      // Nothing to translate, so nothing still on its way may land here either.
+      scheduleTranslate.cancel();
+      state.pending?.abort();
+      clearAnswer();
       status.textContent = t('translator.ready');
       return;
     }
@@ -5850,33 +5865,32 @@ function buildTranslator(root) {
     const controller = new AbortController();
     state.pending = controller;
 
+    
+    
+    const request = requestBody(text, direction(), study);
+
     clear(status);
     status.append(el('span', { class: 'spinner' }), ` ${t('translator.working')}`);
 
     try {
-      const data = await postJson(
-        '/api/translate',
-        { text, from: state.from, study: studyLang() },
-        { signal: controller.signal },
-      );
+      const data = await postJson('/api/translate', request, { signal: controller.signal });
       if (controller.signal.aborted) return;
+      
+      if (!acceptsAnswer(request, { text: input.value, direction: direction() }, data)) return;
       output.textContent = data.translation || '';
+      state.shown = data.translation ? { text, from: request.from, to: request.to } : null;
       paintNotes(data.notes);
       engine.textContent = data.engine ? t('translator.engine', { engine: data.engine }) : '';
       status.textContent = force ? t('translator.done') : t('translator.ready');
     } catch (error) {
       if (controller.signal.aborted || error.name === 'AbortError') return;
       clear(status);
-      /**
-       * DeepL could not answer, and nothing else is asked. The old
-       * translation is cleared rather than left standing under the new
-       * sentence — it would read as the answer to it — and the reason is said
-       * once, plainly, where the translation would have been.
-       */
+      
+
+      clearAnswer();
       if (error.data?.unavailable) {
-        clear(output);
-        clear(notes);
-        engine.textContent = '';
+        
+        
         notes.appendChild(el('p', { class: 'translator__down' },
           el('b', {}, t('translator.unavailableTitle')),
           ` ${t('translator.unavailable')}`));
@@ -5889,26 +5903,29 @@ function buildTranslator(root) {
     }
   }
 
-  /**
-   * One pass, once typing pauses.
-   *
-   * The wait is longer than it looks, and deliberately. Every pause is a
-   * different prefix and so a different cache miss, and DeepL bills by the
-   * character against a monthly allowance the whole class shares — so a beat
-   * more patience here is a lesson's worth of headroom there.
-   */
+  
+
   const scheduleTranslate = debounce(() => translate(), 900);
 
   swap.addEventListener('click', () => {
     scheduleTranslate.cancel();
     state.pending?.abort();
 
-    // Keep what is on screen: the translation becomes the new source text.
-    const previousOutput = output.textContent;
-    const previousInput = input.value;
-    [state.from, state.to] = [state.to, state.from];
-    input.value = previousOutput;
-    output.textContent = previousOutput ? previousInput : '';
+    
+    
+    
+    const next = swapPanes({
+      direction: direction(),
+      input: input.value,
+      output: output.textContent,
+      shown: state.shown,
+    });
+    state.from = next.direction.from;
+    state.to = next.direction.to;
+    state.shown = next.shown;
+    input.value = next.input;
+    output.textContent = next.output;
+    if (!next.shown) { clear(notes); engine.textContent = ''; }
 
     paintLanguages();
     counter.textContent = `${input.value.length} / ${MAX_CHARS}`;
@@ -5917,7 +5934,7 @@ function buildTranslator(root) {
     input.focus();
 
     if (input.value.trim()) translate();
-    else { clear(output); clear(notes); engine.textContent = ''; status.textContent = t('translator.ready'); }
+    else { clearAnswer(); status.textContent = t('translator.ready'); }
   });
 
   input.addEventListener('input', sync);
@@ -5931,6 +5948,107 @@ function buildTranslator(root) {
 
   paintLanguages();
   sync();
+}
+
+});
+
+__define("public/js/lib/translator-state.js", function (exports) {
+'use strict';
+  Object.defineProperty(exports, "initialDirection", { enumerable: true, get: () => initialDirection });
+  Object.defineProperty(exports, "swapDirection", { enumerable: true, get: () => swapDirection });
+  Object.defineProperty(exports, "requestBody", { enumerable: true, get: () => requestBody });
+  Object.defineProperty(exports, "isCurrent", { enumerable: true, get: () => isCurrent });
+  Object.defineProperty(exports, "acceptsAnswer", { enumerable: true, get: () => acceptsAnswer });
+  Object.defineProperty(exports, "swapPanes", { enumerable: true, get: () => swapPanes });
+/**
+ * Which way the translator is going, kept in one place.
+ *
+ * The page has two panes, a source and a target, and a button between them
+ * that flips them. Everything that names a language (the pane labels, the
+ * request sent to /api/translate, the check made on its answer, the swap) reads
+ * the same `{ from, to }` pair from here, so the labels can never say
+ * ENGLISH → FRENCH while the request goes the other way.
+ *
+ * The translator never guesses the source language. "hi", "no" and "pain"
+ * are words in more than one language, and an engine left to detect them
+ * will sometimes pick the wrong one. The source is always the source pane's
+ * language and the target always the target pane's, and both are sent.
+ *
+ * Plain functions with no DOM, so test/translator-state.test.js can check
+ * them in Node.
+ */
+
+/** The pair the page opens on: English into the language the side is about. */
+function initialDirection(study) {
+  return { from: 'en', to: study };
+}
+
+/** The same two languages, the other way round. */
+function swapDirection(direction) {
+  return { from: direction.to, to: direction.from };
+}
+
+/** What is sent for one translation: both ends, never left to be guessed. */
+function requestBody(text, direction, study) {
+  return { text, from: direction.from, to: direction.to, study };
+}
+
+/**
+ * Whether what the target pane shows is the translation of what the source
+ * pane holds now, in the direction the labels show now. `shown` is what the
+ * last applied answer was for.
+ */
+function isCurrent(shown, text, direction) {
+  return Boolean(shown)
+    && shown.text === String(text).trim()
+    && shown.from === direction.from
+    && shown.to === direction.to;
+}
+
+/**
+ * Whether an answer may go in the target pane.
+ *
+ * It has to be for the request the page is waiting on (the same text, the same
+ * direction as the panes show now) and, where the server says which way it
+ * went, that has to be the way it was asked. An answer for anything else is
+ * dropped rather than shown under the wrong label.
+ */
+function acceptsAnswer(request, current, data) {
+  if (!request || !current || !data) return false;
+  if (request.from !== current.direction.from || request.to !== current.direction.to) return false;
+  if (request.text !== String(current.text).trim()) return false;
+  if (data.from !== undefined && data.from !== request.from) return false;
+  if (data.to !== undefined && data.to !== request.to) return false;
+  return true;
+}
+
+/**
+ * The swap button.
+ *
+ * When the target pane holds the translation of what is in the source pane,
+ * the two trade places, so the translation becomes the new text to translate.
+ * When it does not (the text was edited since, the answer has not come back,
+ * or the last request failed), there is no pair to trade: carrying the old
+ * output across would put text from one language under the other language's
+ * label. Then only the languages turn round; the text stays in the source
+ * pane and is translated afresh from the new source language.
+ *
+ * @returns {{ direction, input: string, output: string, shown: object|null }}
+ */
+function swapPanes({ direction, input, output, shown }) {
+  const next = swapDirection(direction);
+  const paired = String(output || '').trim() !== '' && isCurrent(shown, input, direction);
+  if (paired) {
+    return {
+      direction: next,
+      input: output,
+      output: input,
+      // The old source text is a fair rendering of the old translation, and a
+      // fresh request in the new direction follows at once anyway.
+      shown: { text: String(output).trim(), from: next.from, to: next.to },
+    };
+  }
+  return { direction: next, input, output: '', shown: null };
 }
 
 });
