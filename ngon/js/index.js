@@ -1,0 +1,2567 @@
+"use strict";
+
+//convert text into numbers for seed
+Math.hash = s => {
+    let h = 9
+    for (let i = 0; i < s.length;) h = Math.imul(h ^ s.charCodeAt(i++), 9 ** 9);
+    return h ^ h >>> 9
+}
+
+document.getElementById("seed").placeholder = Math.initialSeed = String(Math.floor(Date.now() % 100000))
+Math.seed = Math.abs(Math.hash(Math.initialSeed)) //update randomizer seed in case the player changed it
+Math.seededRandom = function (min = 0, max = 1) { // in order to work 'Math.seed' must NOT be undefined
+    Math.seed = (Math.seed * 9301 + 49297) % 233280;
+    return min + Math.seed / 233280 * (max - min);
+}
+//Math.seed is set to document.getElementById("seed").value in level.populate level at the start of runs
+// console.log(Math.seed)
+
+
+function seededShuffle(array) {
+    let currentIndex = array.length,
+        temporaryValue,
+        randomIndex;
+    // While there remain elements
+    while (0 !== currentIndex) {
+        // Pick a remaining element...
+        // randomIndex = Math.floor(Math.random() * currentIndex);
+        randomIndex = Math.floor(Math.seededRandom(0, currentIndex)) //Math.floor(Math.random() * currentIndex);
+        currentIndex -= 1;
+        // And swap it with the current element.
+        temporaryValue = array[currentIndex];
+        array[currentIndex] = array[randomIndex];
+        array[randomIndex] = temporaryValue;
+    }
+    return array;
+}
+function vertexCollision(v1, v1End, domains, minHitDistance2 = 0) {  //= [map, body, [playerBody, playerHead]]     //m.isCloak ? [map, body] : [map, body, [playerBody, playerHead]]
+    let best = { x: null, y: null, dist2: Infinity, who: null, v1: null, v2: null };
+    const rayX = v1End.x - v1.x;
+    const rayY = v1End.y - v1.y;
+    const rayMinX = v1.x < v1End.x ? v1.x : v1End.x;
+    const rayMaxX = v1.x > v1End.x ? v1.x : v1End.x;
+    const rayMinY = v1.y < v1End.y ? v1.y : v1End.y;
+    const rayMaxY = v1.y > v1End.y ? v1.y : v1End.y;
+    for (let j = 0; j < domains.length; j++) {
+        let domain = domains[j]
+        for (let i = 0; i < domain.length; ++i) {
+            const bounds = domain[i].bounds;
+            if (rayMaxX < bounds.min.x || bounds.max.x < rayMinX || rayMaxY < bounds.min.y || bounds.max.y < rayMinY) continue;
+            if (domain[i].mob && !domain[i].alive) continue;
+            let vertices = domain[i].vertices;
+            const len = vertices.length - 1;
+            for (let j = 0; j < len; j++) {
+                const edgeX = vertices[j + 1].x - vertices[j].x;
+                const edgeY = vertices[j + 1].y - vertices[j].y;
+                const denominator = edgeY * rayX - edgeX * rayY;
+                if (denominator !== 0) {
+                    const offsetY = v1.y - vertices[j].y;
+                    const offsetX = v1.x - vertices[j].x;
+                    const a = (edgeX * offsetY - edgeY * offsetX) / denominator;
+                    const b = (rayX * offsetY - rayY * offsetX) / denominator;
+                    if (!(a > 0 && a < 1 && b > 0 && b < 1)) continue;
+                    const x = v1.x + a * rayX;
+                    const y = v1.y + a * rayY;
+                    const dx = v1.x - x;
+                    const dy = v1.y - y;
+                    const dist2 = dx * dx + dy * dy;
+                    if (dist2 >= minHitDistance2 && dist2 < best.dist2) {
+                        best = {
+                            x: x,
+                            y: y,
+                            dist2: dist2,
+                            who: domain[i],
+                            v1: vertices[j],
+                            v2: vertices[j + 1]
+                        };
+                    }
+                }
+            }
+            const edgeX = vertices[len].x - vertices[0].x;
+            const edgeY = vertices[len].y - vertices[0].y;
+            const denominator = edgeY * rayX - edgeX * rayY;
+            if (denominator !== 0) {
+                const offsetY = v1.y - vertices[0].y;
+                const offsetX = v1.x - vertices[0].x;
+                const a = (edgeX * offsetY - edgeY * offsetX) / denominator;
+                const b = (rayX * offsetY - rayY * offsetX) / denominator;
+                if (a > 0 && a < 1 && b > 0 && b < 1) {
+                    const x = v1.x + a * rayX;
+                    const y = v1.y + a * rayY;
+                    const dx = v1.x - x;
+                    const dy = v1.y - y;
+                    const dist2 = dx * dx + dy * dy;
+                    if (dist2 >= minHitDistance2 && dist2 < best.dist2) {
+                        best = {
+                            x: x,
+                            y: y,
+                            dist2: dist2,
+                            who: domain[i],
+                            v1: vertices[0],
+                            v2: vertices[len]
+                        };
+                    }
+                }
+            }
+        }
+    }
+    return best
+}
+
+// prompts to reload and exit  for JUNK tech named "beforeunload"
+function beforeUnloadEventListener(event) {
+    event.preventDefault();
+    if (tech.isExitPrompt) {
+        m.damageDone *= 1.25
+        // simulation.inGameConsole(`<strong class='color-d'>damage</strong> <span class='color-symbol'>*=</span> ${1.25}`)
+        simulation.inGameConsole(`<span class='color-var'>tech</span>.<strong class='color-d'>damage</strong> *= ${1.25} //beforeunload`);
+        if (Math.random() < 0.25) {
+            removeEventListener('beforeunload', beforeUnloadEventListener);
+        }
+    }
+}
+// addEventListener('beforeunload', beforeUnloadEventListener);
+
+
+// // 1. Fix for exiting the lock (Document level)
+// document.exitPointerLock = document.exitPointerLock ||
+//     document.mozExitPointerLock ||
+//     document.webkitExitPointerLock ||
+//     function () { return; };
+
+// // 2. Fix for requesting the lock (Element level)
+// if (typeof Element !== 'undefined') {
+//     Element.prototype.requestPointerLock = Element.prototype.requestPointerLock ||
+//         Element.prototype.mozRequestPointerLock ||
+//         Element.prototype.webkitRequestPointerLock ||
+//         function () { return; };
+// }
+
+// //block pointer lock on some systems
+// if (!('pointerLockElement' in document || 'webkitPointerLockElement' in document)) {
+//     console.log("pointer lock disabled");
+// }
+
+
+
+//collision groups
+//   cat.player | cat.map | cat.body | cat.bullet | cat.powerUp | cat.mob | cat.mobBullet | cat.mobShield | cat.phased
+const cat = {
+    player: 0x1,
+    map: 0x10,
+    body: 0x100,
+    bullet: 0x1000,
+    powerUp: 0x10000,
+    mob: 0x100000,
+    mobBullet: 0x1000000,
+    mobShield: 0x10000000,
+    phased: 0x100000000,
+}
+
+let color = { //light
+    // background: "#ddd", // used instead:  document.body.style.backgroundColor
+    block: "rgba(140,140,140,0.85)",
+    blockS: "#222",
+    map: "#444",
+    bullet: "#000"
+}
+
+// const color = { //dark
+//     background: "#333",
+//     block: "#444",
+//     blockS: "#aab",
+//     map: "#556",
+//     bullet: "#fff"
+// }
+
+// const color = { //dark
+//     background: "#999",
+//     block: "#888",
+//     blockS: "#111",
+//     map: "#444",
+// }
+
+// shrink power up selection menu
+// if (screen.height < 800) {
+//     document.getElementById("choose-grid").style.fontSize = "1em"; //1.3em is normal
+//     if (screen.height < 600) document.getElementById("choose-grid").style.fontSize = "0.8em"; //1.3em is normal
+// }
+
+
+//**********************************************************************
+//set up canvas
+//**********************************************************************
+const canvas = document.getElementById("canvas");
+//using "const" causes problems in safari when an ID shares the same name.
+const ctx = canvas.getContext("2d");
+// const ctx = canvas.getContext('2d', { alpha: false }); //optimization, this works if you wipe with the background color of each level
+document.body.style.backgroundColor = "#fff";
+
+//disable pop up menu on right click
+document.oncontextmenu = function () {
+    return false;
+}
+
+function setupCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    canvas.width2 = canvas.width / 2; //precalculated because I use this often (in mouse look)
+    canvas.height2 = canvas.height / 2;
+    ctx.font = "25px Arial";
+    ctx.textAlign = "center";
+    ctx.lineJoin = "round";
+    ctx.lineCap = "round";
+    simulation.setZoom();
+
+    if (simulation.isInvertedVertical) {
+        ctx.translate(0, canvas.height); // Move the origin down to the bottom
+        ctx.scale(1, -1); // Flip vertically
+    }
+}
+setupCanvas();
+window.onresize = () => {
+    setupCanvas();
+    //health bars above 1 max health scale with the window width
+    document.getElementById("health-bg").style.width = `${Math.floor(m.healthBarWidth(m.maxHealth))}px`
+    m.displayHealth()
+    m.lastCalculatedDefense = 0 //this triggers a redraw of the defense bar
+};
+
+//**********************************************************************
+// experimental build grid display and pause
+//**********************************************************************
+//set wikipedia link
+for (let i = 0, len = tech.tech.length; i < len; i++) {
+    if (!tech.tech[i].link) tech.tech[i].link = `<a target="_blank" href='https://en.wikipedia.org/w/index.php?search=${encodeURIComponent(tech.tech[i].name).replace(/'/g, '%27')}&title=Special:Search' class="link">${tech.tech[i].name}</a>`
+}
+const build = {
+    setSettingCheckbox(id, isChecked) { //the title page and the pause menu each have a checkbox for this setting, the pause menu's id starts with "pause-"
+        for (const el of [document.getElementById(id), document.getElementById(`pause-${id}`)]) {
+            if (el) el.checked = isChecked
+        }
+    },
+    hideHUD() {
+        if (simulation.isTraining) {
+            localSettings.isHideHUD = false
+        } else {
+            localSettings.isHideHUD = !localSettings.isHideHUD
+        }
+        if (localSettings.isAllowed) localStorage.setItem("localSettings", JSON.stringify(localSettings)); //update local storage
+        build.setSettingCheckbox("hide-hud", localSettings.isHideHUD)
+        simulation.removeEphemera("dmgDefBars", true)
+        if (!localSettings.isHideHUD) {
+            simulation.ephemera.push({
+                name: "dmgDefBars", count: 0, do() {
+                    if (!(m.cycle % 15)) { //4 times a second
+                        const defense = m.defense()             //update defense bar
+                        if (m.lastCalculatedDefense !== defense) {
+                            document.getElementById("defense-bar").style.width = Math.floor(m.healthBarWidth(m.maxHealth) * (1 - defense)) + "px";
+                            m.lastCalculatedDefense = defense
+                        }
+                        const damage = tech.damageAdjustments()             //update damage bar
+                        if (m.lastCalculatedDamage !== damage) {
+                            m.lastCalculatedDamage = damage
+                        }
+                    }
+                },
+            })
+        }
+    },
+    showDmgNumbers() {
+        localSettings.showDmgNumbers = !localSettings.showDmgNumbers
+        if (localSettings.isAllowed) localStorage.setItem("localSettings", JSON.stringify(localSettings)); //update local storage
+        build.setSettingCheckbox("show-num", localSettings.showDmgNumbers)
+    },
+    lineOfSight() {
+        localSettings.isLineOfSight = !localSettings.isLineOfSight
+        if (localSettings.isAllowed) localStorage.setItem("localSettings", JSON.stringify(localSettings)); //update local storage
+        build.setSettingCheckbox("line-of-sight", localSettings.isLineOfSight)
+        simulation.draw.updateLineOfSightSetting()
+    },
+    fpsOptions: [["max", "no cap"], ["72", "72 fps"], ["60", "60 fps"], ["45", "45 fps"], ["30", "30 fps"]], //same as the title screen settings
+    setFpsCap(value) { //limit frames per second, from the title screen settings or the pause menu
+        hasExplicitFpsPreference = true
+        localSettings.fpsPreferenceIsExplicit = true
+        const isAtDefault = simulation.fpsCap === simulation.fpsCapDefault //don't cut short the slow down after taking damage
+        simulation.fpsCapDefault = value === 'max' ? 999999999 : Number(value)
+        if (isAtDefault) {
+            simulation.fpsCap = simulation.fpsCapDefault
+            simulation.fpsInterval = 1000 / simulation.fpsCap;
+        }
+        localSettings.fpsCapDefault = value
+        if (localSettings.isAllowed) localStorage.setItem("localSettings", JSON.stringify(localSettings)); //update local storage
+        document.getElementById("fps-select").value = value
+    },
+    pauseGrid() {
+        build.generatePauseLeft() //makes the left side of the pause menu with the tech
+        build.generatePauseRight() //makes the right side of the pause menu with the tech
+        // build.sortTech('') //sorts tech into the order the player got them using tech.tech[i].cycle = m.cycle
+        document.getElementById("right-HUD").style.display = "none"
+        document.getElementById("guns").style.display = "none"
+        document.getElementById("field").style.display = "none"
+        document.getElementById("health").style.display = "none"
+        document.getElementById("health-bg").style.display = "none"
+        document.getElementById("defense-bar").style.display = "none"
+        document.body.classList.add("pause-open") //the level editor hides its panels under the pause menu
+        //show in game console
+        simulation.lastLogTime = m.cycle
+    },
+    generatePauseLeft() {
+        //left side
+        let botText = ""
+        if (tech.nailBotCount) botText += `<br><strong class='color-bot no-box' data-help='bot'>nail-bots ${tech.nailBotCount}</strong>`
+        if (tech.orbitBotCount) botText += `<br><strong class='color-bot no-box' data-help='bot'>orbital-bots ${tech.orbitBotCount}</strong>`
+        if (tech.boomBotCount) botText += `<br><strong class='color-bot no-box' data-help='bot'>boom-bots ${tech.boomBotCount}</strong>`
+        if (tech.laserBotCount) botText += `<br><strong class='color-bot no-box' data-help='bot'>laser-bots ${tech.laserBotCount}</strong>`
+        if (tech.foamBotCount) botText += `<br><strong class='color-bot no-box' data-help='bot'>foam-bots ${tech.foamBotCount}</strong>`
+        if (tech.soundBotCount) botText += `<br><strong class='color-bot no-box' data-help='bot'>sound-bots ${tech.soundBotCount}</strong>`
+        if (tech.dynamoBotCount) botText += `<br><strong class='color-bot no-box' data-help='bot'>dynamo-bots ${tech.dynamoBotCount}</strong>`
+        if (tech.plasmaBotCount) botText += `<br><strong class='color-bot no-box' data-help='bot'>plasma-bots ${tech.plasmaBotCount}</strong>`
+        if (tech.missileBotCount) botText += `<br><strong class='color-bot no-box' data-help='bot'>missile-bots ${tech.missileBotCount}</strong>`
+
+        // <strong class='color-g'>${b.activeGun === null || b.activeGun === undefined ? "undefined" : b.guns[b.activeGun].name}</strong> (${b.activeGun === null || b.activeGun === undefined ? "0" : b.guns[b.activeGun].ammo})
+
+        let mobText
+        if (level.levelsCleared > 0 && level.levelsCleared < 13) {
+            mobText = `<br>${spawn.pickList[0]} (<strong class="color-tier">T${level.trainingMobTier ?? spawn.mobTierSpawnOrder[level.levelsCleared - 1]}</strong>), ${spawn.pickList[1]} (<strong class="color-tier">T${level.trainingMobTier ?? spawn.mobTierSpawnOrder[level.levelsCleared]}</strong>)<span style="float: right;">mobs ${mob.length}</span>`
+        } else {
+            mobText = ""
+        }
+        function keyCap(key) { //same key style as the training levels
+            return `<strong class="key-input-train">${key.replace('Key', '').replace('Digit', '')}</strong>`
+        }
+        const fullscreenRow = document.fullscreenElement ? `<div class="pause-row"><span class="color-paused">FULLSCREEN</span><span class="pause-hint">${keyCap(input.key.fullscreen)} or ${keyCap("ESC")} to exit</span></div>` : ""
+
+        let text = `<div class="pause-grid-module pause-top">
+<div class="pause-row"><span class="color-paused" data-help="pause">PAUSED</span><span class="pause-hint">${keyCap(input.key.pause)} to resume</span></div>
+${fullscreenRow}
+</div>
+
+<div class="pause-grid-module">
+    
+        <!-- music menu, commented out
+        <details id="pause-music-details" style="padding: 0 8px;line-height: 140%;">
+            <summary>music</summary>
+            <div class="pause-details" style="font-size: 100%;">
+                playlists
+                <br><a data-music-playlist="instrumental" href="https://music.youtube.com/watch?v=lDlU08RU7Tk&amp;list=PLea2HwrA4R0E" target="_blank" rel="noopener noreferrer">mostly instrumental</a> <span style="color:#aaa;">classical shoegaze</span>
+                <br><a data-music-playlist="old-stuff" href="https://music.youtube.com/watch?v=qumO-vBey2Q&amp;list=PLbjRnln-q160" target="_blank" rel="noopener noreferrer">old stuff</a> <span style="color:#aaa;">new wave indie motown</span>
+                <br>
+                <br>video game OST
+                <br><a data-music-playlist="hollow-knight" href="https://music.youtube.com/watch?v=NSlkW1fFkyo&amp;list=PLmOldskd2VbL7_t-NE9p6rEboq_v0AHko" target="_blank" rel="noopener noreferrer">Hollow Knight</a>
+                <a data-music-playlist="silksong" href="https://music.youtube.com/watch?v=yUfD7w5y3Ug&amp;list=PLbNT78Q7M14yC4iIN4RaQqGa6q6zY6bqc" target="_blank" rel="noopener noreferrer" style="float: right;">Silksong</a>
+                <br><a data-music-playlist="animal-well" href="https://music.youtube.com/watch?v=yccb86YuwXs&amp;list=PLS7HzNXh-PwozVLyFxG3a7-0HplJwKPY2" target="_blank" rel="noopener noreferrer">Animal Well</a>
+                <a data-music-playlist="disco-elysium" href="https://music.youtube.com/watch?v=qMUoWTEIGx4&amp;list=OLAK5uy_n_Y491JJMFBAxR3v_o5LLTgu20URfxpuw" target="_blank" rel="noopener noreferrer" style="float: right;">Disco Elysium</a>
+                <br><a data-music-playlist="undertale" href="https://music.youtube.com/watch?v=3BR7-AzE2dQ&amp;list=OLAK5uy_ljXkQlhVlWyV7BxSxMMzgOLbzYS_-JPt4" target="_blank" rel="noopener noreferrer">UNDERTALE</a>
+                <a data-music-playlist="deltarune" href="https://music.youtube.com/watch?v=XEdoMoV4D6k&amp;list=OLAK5uy_kidGzGmzCUSJK1LAtIh7ngZwRF9MT3qjE" target="_blank" rel="noopener noreferrer" style="float: right;">deltarune</a>
+                <br>
+                <br><label>service:
+                    <select class="music-service-select" data-music-service>
+                        <option value="youtube">YouTube</option>
+                        <option value="spotify">Spotify</option>
+                        <option value="apple">Apple Music</option>
+                    </select>
+                </label>
+            </div>
+        </details>
+        -->
+    
+    <details id="pause-settings-details" style="padding: 0 8px;line-height: 140%;">
+    <summary>settings</summary>
+        <div class="pause-details">
+            ${saveGame.exportHTML()}
+            <div class="pause-row pause-setting">
+            <span><input onclick="build.hideHUD()" type="checkbox" id="pause-hide-hud" name="pause-hide-hud" ${localSettings.isHideHUD ? "checked" : ""}>
+            <label for="pause-hide-hud" title="hide: tech, damage taken, damage, in game console, final boss health bar, tech: filament, tech: pair production, duplication animation, eigen animation, lower max body caps, fewer grappling hook rope wraps, no stroke on blocks">performance mode</label></span>
+            <span><input onclick="build.showDmgNumbers()" type="checkbox" id="pause-show-num" name="pause-show-num" ${localSettings.showDmgNumbers ? "checked" : ""}>
+            <label for="pause-show-num" title="show in game combat text">damage numbers</label></span>
+            </div>
+            <div class="pause-row pause-setting">
+            <span><input onclick="build.lineOfSight()" type="checkbox" id="pause-line-of-sight" name="pause-line-of-sight" ${localSettings.isLineOfSight ? "checked" : ""}>
+            <label for="pause-line-of-sight" title="walls block your view on every level, like on subway">line of sight <span class="pause-hint" style="font-size:0.75em;">(beta, low performance)</span></label></span>
+            </div>
+            <div class="pause-row">
+            <label for="pause-fps-select" title="use this to slow the game down">limit frames per second</label>
+            <select id="pause-fps-select" oninput="build.setFpsCap(this.value); this.blur()">${build.fpsOptions.map(([value, text]) => `<option value="${value}"${String(localSettings.fpsCapDefault) === value ? " selected" : ""}>${text}</option>`).join("")}</select>
+            </div>
+        </div>
+    </details>
+
+    <details id = "simulation-variables-details" style="padding: 0 8px;line-height: 140%;">
+    <summary>simulation variables</summary>
+        <div class="pause-details">
+            <strong class='color-d' data-help='damage'>damage</strong> ${((tech.damageAdjustments())).toPrecision(4)}x
+            <span style="float: right;"><strong class='color-defense' data-help='defense'>damage taken</strong> ${(m.defense()).toPrecision(4)}x</span>
+            <br><strong class='color-h' data-help='health'>health</strong> (${level.isHideHealth ? "null" : (m.health * 100).toFixed(0)} / ${(m.maxHealth * 100).toFixed(0)})
+            <span style="float: right;">${powerUps.research.count} ${powerUps.orb.research()}</span>
+            <br><strong class='energy' data-help='energy'>energy</strong> (${(m.energy * 100).toFixed(0)} / ${(m.maxEnergy * 100).toFixed(0)}) + (${(m.fieldRegen * 6000 * level.isReducedRegen).toFixed(0)}/s)
+            <span style="float: right;">${tech.totalCount} ${powerUps.orb.tech()}</span>
+            <br><strong><span class='color-fire-rate' data-help='fire-rate'>fire rate</span></strong> ${(1 / b.fireCDscale).toFixed(2)}x
+            <span style="float: right;">mass ${player.mass.toFixed(1)}</span>
+            ${m.coupling ? `<br><span style = 'font-size:90%;'>` + m.couplingDescription(m.coupling) + `</span> from ${(m.coupling).toFixed(0)} ${powerUps.orb.coupling(1)}` : ""}
+            <br><strong class='color-dup' data-help='duplicate'>duplication</strong> ${(tech.duplicationChance() * 100).toFixed(0)}%
+            <span style="float: right;"><strong class='color-junk' data-help='junk'>JUNK</strong> ${(100 * (tech.junkChance + level.junkAdded)).toFixed(0)}%</span>
+            ${botText}
+            <br>
+            <br> ${level.levelAnnounce()}
+            <span style="float: right;">position (${player.position.x.toFixed(0)}, ${player.position.y.toFixed(0)})</span>
+            <br>seed ${Math.initialSeed}
+            <span style="float: right;">mouse (${simulation.mouseInGame.x.toFixed(0)}, ${simulation.mouseInGame.y.toFixed(0)})</span>
+            <br>cycles ${m.cycle - 600}
+            <span style="float: right;">velocity (${player.velocity.x.toFixed(2)}, ${player.velocity.y.toFixed(2)})</span>
+            <br>bullets ${bullet.length}
+            <span style="float: right;">power ups ${powerUp.length}</span>
+            ${mobText}
+            ${simulation.isCheating ? "<br><br><em>lore disabled</em>" : ""}
+        </div>
+    </details>
+</div>`
+
+        text += `<div class="pause-grid-module card-background" style="height:auto;">
+<details id="difficulty-parameters-details" style="padding: 0 8px;">
+<summary>difficulty parameters</summary>
+<div class="pause-details pause-difficulty-grid">
+        ${powerUps.difficulty.pauseText()}
+</div>
+</details>
+</div>`
+        text += `<div class="pause-grid-module card-background" style="height:auto;">
+<details id = "console-log-details" style="padding: 0 8px;">
+<summary>console log</summary>
+<div class="pause-details">
+    <div class="pause-grid-module" style="background-color: #e2e9ec;font-size: 0.85em; font-family: monospace; white-space: normal; overflow-wrap: anywhere;">${document.getElementById("text-log").innerHTML}</div>
+    ${pauseConsole.html}
+</div>
+</details>
+</div>`
+        const style = `style="height:auto;"`
+        text += `<div class="pause-grid-module card-background" id="pause-field" ${style}>
+<div class="card-text">
+<div class="grid-title"><div class="circle-grid-title field" onclick="speechHandler.speech('${m.fieldUpgrades[m.fieldMode].name}')"></div> &nbsp; ${build.nameLink(m.fieldUpgrades[m.fieldMode].name)}</div>
+${m.fieldUpgrades[m.fieldMode].descriptionFunction()}</div> </div>`
+        // }
+        for (let i = 0, len = b.inventory.length; i < len; i++) {
+            const style = `style="height:auto;"`
+            //onclick="speechHandler.speech('${tech.tech[i].name}')"
+            text += `<div class="pause-grid-module card-background" ${style} >
+<div class="card-text">
+<div class="grid-title"><div class="circle-grid-title gun" onclick="speechHandler.speech('${b.guns[b.inventory[i]].name}')"></div> &nbsp; ${build.nameLink(b.guns[b.inventory[i]].name)} - <span style="font-size:100%;font-weight: 100;">${b.guns[b.inventory[i]].ammo}</span></div>
+${b.guns[b.inventory[i]].descriptionFunction()}</div> </div>`
+        }
+        let el = document.getElementById("pause-grid-left")
+        el.style.display = "grid"
+        el.innerHTML = text
+        pauseConsole.setup()
+        updateMusicLinks()
+        requestAnimationFrame(() => {
+            if (localSettings.isAllowed) {
+                document.getElementById("simulation-variables-details").open = localSettings.pauseMenuDetailsOpen[0]
+                document.getElementById("difficulty-parameters-details").open = localSettings.pauseMenuDetailsOpen[1]
+                document.getElementById("console-log-details").open = localSettings.pauseMenuDetailsOpen[2]
+                // document.getElementById("pause-music-details").open = localSettings.pauseMenuDetailsOpen[4]
+                document.getElementById("pause-settings-details").open = localSettings.pauseMenuDetailsOpen[5]
+            }
+        });
+    },
+    generatePauseRight() {
+        //sort input tech to top
+        // tech.tech.sort((a, b) => {
+        //     // This moves 'true' to the front and 'false' to the back
+        //     return Number(b.isInput) - Number(a.isInput);
+        // });
+
+
+        let text = `<div class="sort">
+        <button onclick="build.sortTech('PAUSE')" class='color-paused' data-help='pause' style="border: 1px #333 solid;border-radius: 0.3em;font-size: 0.5em;">PAUSE</button>
+    <button onclick="build.sortTech('guntech')" class='sort-button'>${powerUps.orb.gunTech()}</button>
+    <button onclick="build.sortTech('fieldtech')" class='sort-button'>${powerUps.orb.fieldTech()}</button>
+    <button onclick="build.sortTech('damage')" class='sort-button'><strong class='color-d' data-help='damage'>dmg</strong></button>
+    <button onclick="build.sortTech('damage taken')" class='sort-button'><strong data-help='defense' style="font-weight: 100;">dmg taken</strong></button>
+    <input type="search" id="pause-sort-input" style="font-size: 0.6em;color:#000;" placeholder="find" />
+</div>`;
+        // <input type="search" id="sort-input" style="width: 8em;font-size: 0.6em;color:#000;" placeholder="sort by" />
+        // <button onclick="build.sortTech('input')" class='sort-button' style="border-radius: 0em;border: 1.5px #000 solid;font-size: 0.6em;" value="damage">sort</button>
+        // tech.tech.sort((a, b) => {
+        //     if (a.isInput && b.isInput) {
+        //         return (a.allowed() === b.allowed()) ? 0 : a.allowed() ? -1 : 1;
+        //     }
+        //     if (a.isInput && !b.isInput) return -1; //sort to the top
+        //     if (!a.isInput && b.isInput) return 1; //sort to the bottom
+        //     return 0;
+        // });
+        for (let i = 0, len = tech.tech.length; i < len; i++) {
+            if (tech.tech[i].count > 0) {
+                const ejectClass = (tech.isPauseEjectTech && !simulation.isChoosing && m.immuneCycle < m.cycle) ? 'pause-eject' : '' //&& !tech.tech[i].isInput
+                const style = `style="height:auto;"`
+                // const techCountText = tech.tech[i].count > 1 ? `(${tech.tech[i].count}x)` : "";
+                if (tech.tech[i].isInstant) {
+                    // text += `<div class="pause-grid-module" id ="${i}-pause-tech"  style = "border: 0px; opacity:0.5; font-size: 60%; line-height: 130%; margin: 1px; padding: 6px;"><div class="grid-title">${tech.tech[i].link} ${techCountText}</div>${tech.tech[i].descriptionFunction ? tech.tech[i].descriptionFunction() : tech.tech[i].description}</div></div>`
+                } else if (tech.tech[i].isFieldTech) {
+                    text += `<div id="${i}-pause-tech" class="pause-grid-module card-background ${ejectClass}" onclick="powerUps.pauseEjectTech(${i})" ${style}>`
+                    text += build.fieldTechText(i) + "</div>"
+                } else if (tech.tech[i].isGunTech) {
+                    text += `<div id="${i}-pause-tech" class="pause-grid-module card-background ${ejectClass}" onclick="powerUps.pauseEjectTech(${i})" ${style}>`
+                    text += build.gunTechText(i) + "</div>"
+                } else if (tech.tech[i].isSkin) {
+                    text += `<div id="${i}-pause-tech" class="pause-grid-module card-background ${ejectClass}" onclick="powerUps.pauseEjectTech(${i})" ${style}>`
+                    text += build.skinTechText(i) + "</div>"
+                } else if (tech.tech[i].isSkinUpgrade) {
+                    text += `<div id="${i}-pause-tech" class="pause-grid-module card-background ${ejectClass}" onclick="powerUps.pauseEjectTech(${i})" ${style}>`
+                    text += build.skinTechUpgradeText(i) + "</div>"
+                } else if (tech.tech[i].isJunk) {
+                    text += `<div id="${i}-pause-tech" class="pause-grid-module card-background ${ejectClass}" onclick="powerUps.pauseEjectTech(${i})" ${style}>`
+                    text += build.junkTechText(i) + "</div>"
+                } else {
+                    text += `<div id="${i}-pause-tech" class="pause-grid-module card-background ${ejectClass}" onclick="powerUps.pauseEjectTech(${i})" ${style}>`
+                    text += build.techText(i) + "</div>"
+                }
+            } else if (tech.tech[i].isLost) {
+                text += `<div class="pause-grid-module" style="text-decoration: line-through; padding-left: 8px; opacity: 0.4;"><div class="grid-title">${tech.tech[i].link}</div>${tech.tech[i].descriptionFunction ? tech.tech[i].descriptionFunction() : tech.tech[i].description}</div></div>`
+            }
+        }
+        const el = document.getElementById("pause-grid-right")
+        el.style.display = "grid"
+        el.innerHTML = text
+        const searchBox = document.getElementById("pause-sort-input")
+        searchBox.addEventListener('input', () => build.filterPause(searchBox.value)) //filter as you type
+        searchBox.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') { //clear the search and show everything
+                event.preventDefault()
+                searchBox.value = ""
+                build.filterPause("")
+            }
+            if (event.key === 'Enter' || event.key === 'Escape') searchBox.blur() //so the pause key works again
+        })
+
+        //add event listener for pressing enter key when in sort
+        // function pressEnterSort(event) {
+        //     if (event.key === 'Enter') {
+        //         requestAnimationFrame(() => { document.getElementById("sort-input").focus(); });
+        //         // event.preventDefault(); // Prevent the default action to avoid form submission or any other default action
+        //         build.sortTech('input')
+        //     }
+        // }
+        // document.getElementById("sort-input").addEventListener('keydown', pressEnterSort);
+        // requestAnimationFrame(() => { document.getElementById("sort-input").focus(); });
+    },
+    techMatches(t, find) { //compares against the text players see, ignoring case and html tags
+        const text = (t.descriptionFunction ? t.descriptionFunction() : t.description).replace(/<br\s*\/?>/gi, " ").replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ")
+        find = find.toLowerCase()
+        return text.toLowerCase().includes(find) || t.name.toLowerCase().includes(find)
+    },
+    filterPause(find) { //hides pause menu tech that doesn't match the text you see, an empty search shows them all
+        find = find.trim().toLowerCase()
+        for (const card of document.querySelectorAll("#pause-grid-right .pause-grid-module")) {
+            card.classList.toggle("search-filtered", find !== "" && !card.textContent.replace(/\s+/g, " ").toLowerCase().includes(find))
+        }
+    },
+    experimentFilter: "",
+    filterExperiment(find) { //hides experiment tech cards that don't match, an empty search shows them all
+        find = find.trim()
+        const flags = { guntech: "isGunTech", fieldtech: "isFieldTech", heal: "isHealTech", bot: "isBotTech" }
+        for (let i = 0, len = tech.tech.length; i < len; i++) {
+            const techID = document.getElementById("tech-" + i)
+            if (!techID) continue
+            const isMatch = find === "" || (flags[find] ? tech.tech[i][flags[find]] : build.techMatches(tech.tech[i], find))
+            techID.classList.toggle("search-filtered", !isMatch)
+        }
+        build.experimentFilter = find
+    },
+    sortTech(find, isExperiment = false) {
+        const isButton = find !== 'input'
+        if (find === 'input') find = document.getElementById("sort-input").value.trim() //use the text typed into the sort by field
+        if (isExperiment) { //experiment mode filters instead of sorting, clicking the same button again clears it
+            if (isButton && find === build.experimentFilter) find = ""
+            build.filterExperiment(find)
+            document.getElementById("sort-input").value = find
+            const first = [...document.querySelectorAll("#experiment-grid [id^='tech-']")].find(el => el.offsetParent !== null)
+            if (first && find !== "") first.scrollIntoView(); //scroll to the first match
+            return
+        }
+        const hasKeywordCache = new Map() //each tech's description is built once, not twice per comparison
+        const hasKeyword = (t) => {
+            if (!hasKeywordCache.has(t)) hasKeywordCache.set(t, build.techMatches(t, find))
+            return hasKeywordCache.get(t)
+        }
+        const sortKeyword = (a, b) => {
+            let aHasKeyword = hasKeyword(a)
+            let bHasKeyword = hasKeyword(b)
+            if ((aHasKeyword) && !bHasKeyword) return -1;
+            if (!aHasKeyword && bHasKeyword) return 1;
+            return 0;
+        }
+        // if (find === '') {
+        //     tech.tech.sort((a, b) => { //sorts tech into the order the player got them using tech.tech[i].cycle = m.cycle
+        //         console.log(a.cycle, b.cycle)
+        //         if (a.cycle === undefined && b.cycle !== undefined) return -1;
+        //         if (a.cycle !== undefined && b.cycle === undefined) return 1;
+        //         if (a.cycle === undefined && b.cycle === undefined) return 0;
+        //         if (a.cycle !== b.cycle) return a.cycle - b.cycle;
+        //     });
+        // } else
+        if (find === 'guntech') {
+            tech.tech.sort((a, b) => {
+                if (a.isGunTech && b.isGunTech) {
+                    return (a.allowed() === b.allowed()) ? 0 : a.allowed() ? -1 : 1;
+                }
+                if (a.isGunTech && !b.isGunTech) return -1; //sort to the top
+                if (!a.isGunTech && b.isGunTech) return 1; //sort to the bottom
+                return 0;
+            });
+        } else if (find === 'fieldtech') {
+            tech.tech.sort((a, b) => {
+                if (a.isFieldTech && b.isFieldTech) {
+                    return (a.allowed() === b.allowed()) ? 0 : a.allowed() ? -1 : 1;
+                }
+                if (a.isFieldTech && !b.isFieldTech) return -1; //sort to the top
+                if (!a.isFieldTech && b.isFieldTech) return 1; //sort to the bottom
+                return 0;
+            });
+        } else if (find === 'allowed') {
+            // tech.tech.sort((a, b) => {
+            //     if (a.allowed() > !b.allowed()) return -1; //sort to the top
+            //     if (!a.allowed() < b.allowed()) return 1; //sort to the bottom
+            //     return 0;
+            // });
+            tech.tech.sort((a, b) => {
+                return (a.allowed() === b.allowed()) ? 0 : a.allowed() ? -1 : 1;
+            });
+        } else if (find === 'have') {
+            tech.tech.sort((a, b) => {
+                return (a.allowed() === b.allowed()) ? 0 : a.allowed() ? -1 : 1;
+            });
+        } else if (find === 'heal') {
+            tech.tech.sort((a, b) => {
+                if (a.isHealTech && b.isHealTech) {
+                    return (a.allowed() === b.allowed()) ? 0 : a.allowed() ? -1 : 1;
+                }
+                if (a.isHealTech && !b.isHealTech) return -1; //sort to the top
+                if (!a.isHealTech && b.isHealTech) return 1; //sort to the bottom
+                return 0;
+            });
+        } else if (find === 'bot') {
+            tech.tech.sort((a, b) => {
+                if (a.isBotTech && b.isBotTech) {
+                    return (a.allowed() === b.allowed()) ? 0 : a.allowed() ? -1 : 1;
+                }
+                if (a.isBotTech && !b.isBotTech) return -1; //sort to the top
+                if (!a.isBotTech && b.isBotTech) return 1; //sort to the bottom
+                return 0;
+            });
+            // } else if (document.getElementById("sort-input").value === 'skin') {
+            //     tech.tech.sort((a, b) => {
+            //         if (a.isSkin && b.isSkin) {
+            //             return (a.allowed() === b.allowed()) ? 0 : a.allowed() ? -1 : 1;
+            //         }
+            //         if (a.isSkin && !b.isSkin) return -1; //sort to the top
+            //         if (!a.isSkin && b.isSkin) return 1; //sort to the bottom
+            //         return 0;
+            //     });
+            // } else if (document.getElementById("sort-input").value === 'junk') {
+            //     tech.tech.sort((a, b) => {
+            //         if (a.isJunk && !b.isJunk) return -1; //sort to the top
+            //         if (!a.isJunk && b.isJunk) return 1; //sort to the bottom
+            //         return 0;
+            //     });
+        } else if (find === 'damage') {
+            tech.tech.sort(sortKeyword);
+        } else if (find === 'damage taken') {
+            tech.tech.sort(sortKeyword);
+        } else if (find === 'defense') {
+            tech.tech.sort(sortKeyword);
+        } else if (find === 'energy') {
+            tech.tech.sort(sortKeyword);
+        } else if (find === 'duplic') {
+            tech.tech.sort(sortKeyword);
+        } else if (find === 'PAUSE') {
+            tech.tech.sort(sortKeyword);
+        } else if (find !== '') {
+            tech.tech.sort(sortKeyword);
+        }
+        build.generatePauseRight() //makes the right side of the pause menu with the tech
+        simulation.updateTechHUD();
+    },
+    unPauseGrid() {
+        if (localSettings.isAllowed) {
+            //save details open/close state
+            if (document.getElementById("simulation-variables-details")) localSettings.pauseMenuDetailsOpen[0] = document.getElementById("simulation-variables-details").open
+            if (document.getElementById("difficulty-parameters-details")) localSettings.pauseMenuDetailsOpen[1] = document.getElementById("difficulty-parameters-details").open
+            if (document.getElementById("console-log-details")) localSettings.pauseMenuDetailsOpen[2] = document.getElementById("console-log-details").open
+            if (document.getElementById("pause-music-details")) localSettings.pauseMenuDetailsOpen[4] = document.getElementById("pause-music-details").open
+            if (document.getElementById("pause-settings-details")) localSettings.pauseMenuDetailsOpen[5] = document.getElementById("pause-settings-details").open
+            localStorage.setItem("localSettings", JSON.stringify(localSettings)); //update local storage
+        }
+
+        document.getElementById("guns").style.display = "inline"
+        document.getElementById("field").style.display = "inline"
+        if (tech.isEnergyHealth) {
+            document.getElementById("health").style.display = "none"
+            document.getElementById("health-bg").style.display = "none"
+        } else if (!level.isHideHealth) {
+            document.getElementById("health").style.display = "inline"
+            document.getElementById("health-bg").style.display = "inline"
+        }
+        if (!localSettings.isHideHUD) {
+            document.getElementById("right-HUD").style.display = "inline"
+            document.getElementById("defense-bar").style.display = "inline"
+        }
+        document.getElementById("pause-grid-left").style.display = "none"
+        document.getElementById("pause-grid-right").style.display = "none"
+        document.getElementById("pause-grid-right").style.opacity = "1"
+        document.getElementById("pause-grid-left").style.opacity = "1"
+        document.body.classList.remove("pause-open")
+        window.scrollTo(0, 0);
+    },
+    isExperimentSelection: false,
+    isExperimentRun: false,
+    techText(i) {
+        return `<div class="card-text">
+                <div class="grid-title" ><div class="circle-grid-title tech" onclick="speechHandler.speech('${tech.tech[i].name}')"></div> &nbsp; ${build.nameLink(tech.tech[i].name)} ${tech.tech[i].count > 1 ? `(${tech.tech[i].count}x)` : ""}</div>
+                ${tech.tech[i].descriptionFunction ? tech.tech[i].descriptionFunction() : tech.tech[i].description}</div>`
+    },
+    instantTechText(i) {
+        // 
+        return `<div class="card-text">
+                <div class="grid-title" > <div class="circle-grid-instant" onclick="speechHandler.speech('${tech.tech[i].name}')"></div> &nbsp; ${build.nameLink(tech.tech[i].name)} ${tech.tech[i].count > 1 ? `(${tech.tech[i].count}x)` : ""}</div>
+                ${tech.tech[i].descriptionFunction ? tech.tech[i].descriptionFunction() : tech.tech[i].description}</div>`
+    },
+    skinTechText(i) {
+        return `<div class="card-text"> <div class="grid-title">
+                <span style="position:relative;" onclick="speechHandler.speech('${tech.tech[i].name}')">
+                    <div class="circle-grid-skin"></div>
+                    <div class="circle-grid-skin-eye"></div>
+                </span> &nbsp; &nbsp; &nbsp; &nbsp; ${build.nameLink(tech.tech[i].name)} ${tech.tech[i].count > 1 ? `(${tech.tech[i].count}x)` : ""}</div>
+                ${tech.tech[i].descriptionFunction ? tech.tech[i].descriptionFunction() : tech.tech[i].description}</div>`
+    },
+    // skinTechUpgradeText(i) {
+    //     return `<div class="card-text"> <div class="grid-title">
+    //             <span style="position:relative;" onclick="speechHandler.speech('${tech.tech[i].name}')">
+    //                 <div class="circle-grid-skin tech" style="opacity:0.5;"></div>
+    //                 <div class="circle-grid-skin-eye"></div>
+    //             </span> &nbsp; &nbsp; &nbsp; &nbsp; ${build.nameLink(tech.tech[i].name)} ${tech.tech[i].count > 1 ? `(${tech.tech[i].count}x)` : ""}</div>
+    //             ${tech.tech[i].descriptionFunction ? tech.tech[i].descriptionFunction() : tech.tech[i].description}</div>`
+    // },
+    skinTechUpgradeText(i) {
+        return `<div class="card-text"> <div class="grid-title">
+                <span style="position:relative;" onclick="speechHandler.speech('${tech.tech[i].name}')">
+                    <div class="circle-grid-title" style="position:absolute; top:0.18em; left:0.56em;opacity:1;">
+                        <span style="position:relative;">
+                            <div class="circle-grid-skin"></div>
+                            <div class="circle-grid-skin-eye"></div>
+                        </span>
+                    </div>
+                    <div class="circle-grid-title tech" style="position:absolute; top:0.12em; left:-0.1em;opacity:0.93;"></div>
+                </span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ${build.nameLink(tech.tech[i].name)} ${tech.tech[i].count > 1 ? `(${tech.tech[i].count}x)` : ""}</div>
+                ${tech.tech[i].descriptionFunction ? tech.tech[i].descriptionFunction() : tech.tech[i].description}</div>`
+    },
+    gunTechText(i) {
+        return `<div class="card-text"> <div class="grid-title">
+                <span style="position:relative;" onclick="speechHandler.speech('${tech.tech[i].name}')">
+                    <div class="circle-grid-title tech" style="position:absolute; top:0.12em; left:0;opacity:0.8;"></div>
+                    <div class="circle-grid-title gun" style="position:absolute; top:0.12em; left:0.55em; opacity:0.65;"></div>
+                </span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ${build.nameLink(tech.tech[i].name)} ${tech.tech[i].count > 1 ? `(${tech.tech[i].count}x)` : ""}</div>
+                ${tech.tech[i].descriptionFunction ? tech.tech[i].descriptionFunction() : tech.tech[i].description}</div>`
+    },
+    fieldTechText(i) {
+        return `<div class="card-text"><div class="grid-title">
+                <span style="position:relative;" onclick="speechHandler.speech('${tech.tech[i].name}')">
+                    <div class="circle-grid-title tech" style="position:absolute; top:0.12em; left:0;opacity:0.8;"></div>
+                    <div class="circle-grid-title field" style="position:absolute; top:0.12em; left:0.55em;opacity:0.65;"></div>
+                </span> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ${build.nameLink(tech.tech[i].name)} ${tech.tech[i].count > 1 ? `(${tech.tech[i].count}x)` : ""}</div>
+                ${tech.tech[i].descriptionFunction ? tech.tech[i].descriptionFunction() : tech.tech[i].description}</div>`
+    },
+    junkTechText(i) {
+        return `<div class="card-text">
+                <div class="grid-title"><div class="circle-grid-title junk" onclick="speechHandler.speech('${tech.tech[i].name}')"></div> &nbsp; ${build.nameLink(tech.tech[i].name)} ${tech.tech[i].count > 1 ? `(${tech.tech[i].count}x)` : ""}</div>
+                ${tech.tech[i].descriptionFunction ? tech.tech[i].descriptionFunction() : tech.tech[i].description}</div>`
+    },
+    choosePowerUp(index, type, isAllowed = false) {
+        if (type === "gun") {
+            let isDeselect = false
+            for (let i = 0, len = b.inventory.length; i < len; i++) { //look for selection in inventory
+                if (b.guns[b.inventory[i]].name === b.guns[index].name) { //if already clicked, remove gun
+                    isDeselect = true
+                    document.getElementById("gun-" + b.inventory[i]).classList.remove("build-gun-selected");
+                    //remove gun
+                    b.inventory.splice(i, 1)
+                    b.guns[index].count = 0;
+                    b.guns[index].have = false;
+                    if (b.guns[index].ammo != Infinity) b.guns[index].ammo = 0;
+                    if (b.inventory.length === 0) {
+                        b.activeGun = null;
+                        b.inventoryGun = 0;
+                    }
+                    simulation.makeGunHUD();
+                    break
+                }
+            }
+            if (!isDeselect) { //add gun
+                document.getElementById("gun-" + index).classList.add("build-gun-selected");
+                if (tech.isOneGun && b.inventory.length > 0) tech.removeTech("integrated armament", false)
+                b.giveGuns(index)
+            }
+        } else if (type === "field") {
+            if (m.fieldMode !== index) {
+                document.getElementById("field-" + m.fieldMode).classList.remove("build-field-selected");
+                m.setField(index)
+                document.getElementById("field-" + index).classList.add("build-field-selected");
+                document.getElementById("tech-150").focus();
+            } else if (m.fieldMode === 4) {
+                const i = 4 //update experiment text
+                m.fieldUpgrades[4].nextMode()
+                document.getElementById(`field-${i}`).innerHTML = `<div class="card-text">
+                                <div class="grid-title"><div class="circle-grid-title field"></div> &nbsp; ${build.nameLink(m.fieldUpgrades[i].name)}</div>
+                                ${m.fieldUpgrades[i].descriptionFunction()}</div>`
+            }
+        } else if (type === "tech") {
+            if (tech.tech[index].count < tech.tech[index].maxCount) {
+                // if (!tech.tech[index].isLore && !tech.tech[index].isInstant && !who.classList.contains("build-tech-selected")) who.classList.add("build-tech-selected");
+                if (!document.getElementById("tech-" + index).classList.contains("build-tech-selected")) document.getElementById("tech-" + index).classList.add("build-tech-selected");
+                tech.giveTech(index)
+            } else if (!tech.tech[index].isInstant) {
+                // tech.totalCount -= tech.tech[index].count
+                document.getElementById("tech-" + index).classList.remove("build-tech-selected");
+                tech.removeTech(index);
+            } else {
+                // for non refundable tech this makes it flash off for a second, but return to on to show that it can't be set off
+                document.getElementById("tech-" + index).classList.remove("build-tech-selected")
+                setTimeout(() => { document.getElementById("tech-" + index).classList.add("build-tech-selected") }, 50);
+            }
+        }
+        build.updateExperimentText(isAllowed)
+    },
+    updateExperimentText(isAllowed = false) {
+        for (let i = 0, len = tech.tech.length; i < len; i++) {
+            const techID = document.getElementById("tech-" + i)
+            if ((!tech.tech[i].isJunk || localSettings.isJunkExperiment) && !tech.tech[i].isLore) {
+                if ((tech.tech[i].allowed() || isAllowed || tech.tech[i].count > 0) && (!tech.tech[i].isInstant || localSettings.isJunkExperiment)) { //instant tech needs JUNK unlocked in experiment mode, same as populateGrid
+                    //deselect selected tech options if you don't have the tech any more // for example: when bot techs are converted after a bot upgrade tech is taken
+                    if (tech.tech[i].count === 0 && techID.classList.contains("build-tech-selected")) techID.classList.remove("build-tech-selected");
+                    if (techID.classList.contains("experiment-grid-disabled")) {
+                        techID.classList.remove("experiment-grid-disabled");
+                        techID.setAttribute("onClick", `javascript: build.choosePowerUp(${i},'tech')`);
+                    }
+                } else { //disabled color for disabled tech
+                    if (!techID.classList.contains("experiment-grid-disabled")) {
+                        techID.classList.add("experiment-grid-disabled");
+                        techID.onclick = null
+                    }
+                    if (tech.tech[i].count > 0) tech.removeTech(i)
+                    if (techID.classList.contains("build-tech-selected")) techID.classList.remove("build-tech-selected");
+                }
+                const html = build.experimentCardText(i)
+                if (techID.experimentHTML !== html) { //only rewrite cards whose text changed, rewriting all ~500 cards every click is slow
+                    techID.innerHTML = html
+                    techID.experimentHTML = html
+                }
+            }
+        }
+    },
+    experimentCardText(i) { //the inside of an experiment tech card, populateGrid and updateExperimentText share it so their text matches
+        const t = tech.tech[i]
+        if (t.isFieldTech) return build.fieldTechText(i)
+        if (t.isGunTech) return build.gunTechText(i)
+        if (t.isSkin) return build.skinTechText(i)
+        if (t.isSkinUpgrade) return build.skinTechUpgradeText(i)
+        if (t.isJunk) return build.junkTechText(i)
+        if (t.isInstant) return build.instantTechText(i)
+        return build.techText(i)
+    },
+
+    populateGrid() { //background-color:var(--build-bg-color);
+        let text = `
+<div class="experiment-start-box">
+    <div class="sort" style="border: 0px;">
+    <button onclick="build.sortTech('PAUSE', true)" class='color-paused' data-help='pause' style="border: 1px #333 solid;border-radius: 0.3em;font-size: 0.5em;">PAUSE</button>
+        <button onclick="build.sortTech('guntech', true)" class='sort-button'>${powerUps.orb.gunTech()}</button>
+        <button onclick="build.sortTech('fieldtech', true)" class='sort-button'>${powerUps.orb.fieldTech()}</button>
+        <button onclick="build.sortTech('damage', true)" class='sort-button'><strong class='color-d' data-help='damage'>dmg</strong></button>
+        <button onclick="build.sortTech('damage taken', true)" class='sort-button'><strong data-help='defense' style="font-weight: 100;">dmg taken</strong></button>
+        <button onclick="build.sortTech('bot', true)" class='sort-button color-bot' data-help='bot' style="border-radius: 0px;">bot</button>
+        <button onclick="build.sortTech('energy', true)" class='sort-button'><strong class='energy' data-help='energy'>energy</strong></button>
+        <button onclick="build.sortTech('heal', true)" class='sort-button'><strong class='color-h' data-help='health'>heal</strong></button>
+        <button onclick="build.sortTech('duplic', true)" class='sort-button'><strong class='color-dup' data-help='duplicate'>dup</strong></button>
+
+        <input type="search" id="sort-input" style="font-size: 0.6em;color:#000;" placeholder="search" />
+    </div>
+    <div>
+        <div style="display: grid;grid-template-columns: repeat(3, 1fr);row-gap: 10px;column-gap: 25px;grid-auto-rows: minmax(5px, auto);margin:-5px 0px 10px 25px;line-height: 100%;">
+            <div style="grid-column: 1;grid-row: 2 / 4;">
+                <svg class="SVG-button" onclick="build.startExperiment()" width="150" height="70" >
+                    <g stroke='none' fill='#333' stroke-width="2" font-size="65px" font-family="Ariel, sans-serif">
+                        ${levelEditor.isActive ? `<text x="75" y="57" text-anchor="middle">set</text>` : `<text x="10" y="57">start</text>`}
+                    </g>
+                </svg>
+            </div>
+            <div style="grid-column: 2;grid-row: 3;">
+                <svg class="SVG-button" onclick="build.reset()" width="50" height="25">
+                    <g stroke='none' fill='#333' stroke-width="2" font-size="17px" font-family="Ariel, sans-serif">
+                        <text x="5" y="18">reset</text>
+                    </g>
+                </svg>
+            </div>
+            <div style="grid-column: 2 / 4;grid-row: 2;margin-left: -7px;">
+                <svg id="experiment-show-all" class="SVG-button" onclick="build.toggleShowAll()" width="64" height="25">
+                    <g stroke='none' fill='#333' stroke-width="2" font-size="15px" font-family="Ariel, sans-serif">
+                        <text x="5" y="17">show all</text>
+                    </g>
+                </svg>
+            </div>
+        </div>
+    </div>
+</div>`
+        const hideStyle = `style="height:auto; border: none; background-color: transparent;"`
+        for (let i = 0, len = m.fieldUpgrades.length; i < len; i++) {
+            if (m.fieldUpgrades[i].isLoreField && localSettings.loreCount === 0) continue //lore fields show up after testing is unlocked
+            text += `<div id="field-${i}" class="experiment-grid-module card-background ${m.fieldMode === i ? " build-field-selected" : ""}" onclick="build.choosePowerUp(${i},'field');" ${hideStyle} >
+                            <div class="card-text">
+                                <div class="grid-title"><div class="circle-grid-title field" onclick="speechHandler.speech('${m.fieldUpgrades[i].name}')"></div> &nbsp; ${build.nameLink(m.fieldUpgrades[i].name)}</div>
+                                ${m.fieldUpgrades[i].descriptionFunction()}</div> </div>`
+        }
+        for (let i = 0, len = b.guns.length; i < len; i++) {
+            text += `<div id="gun-${i}" class="experiment-grid-module card-background ${b.guns[i].have ? " build-gun-selected" : ""}" onclick="build.choosePowerUp(${i},'gun')" ${hideStyle} >
+                        <div class="card-text">
+                            <div class="grid-title"><div class="circle-grid-title gun" onclick="speechHandler.speech('${b.guns[i].name}')"></div> &nbsp; ${build.nameLink(b.guns[i].name)}</div>
+                            ${b.guns[i].descriptionFunction()}</div> </div>`
+        }
+        const cardText = [] //each tech card's text, remembered after the grid is built
+        for (let i = 0, len = tech.tech.length; i < len; i++) {
+            if ((!tech.tech[i].isJunk || localSettings.isJunkExperiment) && !tech.tech[i].isLore) {
+                const junkClass = tech.tech[i].isJunk ? " experiment-junk" : "" //hidden unless show all is on
+                if ((tech.tech[i].allowed() || tech.tech[i].count > 0) && (!tech.tech[i].isInstant || localSettings.isJunkExperiment)) { // || tech.tech[i].name === "+1 cardinality") { //|| tech.tech[i].name === "leveraged investment"
+                    text += `<div id="tech-${i}" class="experiment-grid-module card-background${junkClass} ${tech.tech[i].count ? "build-tech-selected" : ""}" onclick="build.choosePowerUp(${i},'tech')" ${hideStyle}>`
+                } else { //disabled
+                    text += `<div id="tech-${i}" class="experiment-grid-module card-background${junkClass} experiment-grid-disabled" ${hideStyle}>`
+                }
+                const cardHTML = build.experimentCardText(i)
+                cardText.push([i, cardHTML])
+                text += cardHTML + '</div>'
+            }
+        }
+        document.getElementById("experiment-grid").innerHTML = text
+        for (const [i, cardHTML] of cardText) document.getElementById("tech-" + i).experimentHTML = cardHTML //so the first click only rewrites cards that change
+
+
+        //add event listener for pressing enter key when in sort
+        function pressEnterSort(event) {
+            if (event.key === 'Enter') {
+                // event.preventDefault(); // Prevent the default action to avoid form submission or any other default action
+                build.sortTech('input', true)
+            } else if (event.key === 'Escape') { //clear the search and show everything
+                event.preventDefault()
+                event.target.value = ""
+                build.filterExperiment("")
+                event.target.blur()
+            }
+        }
+        document.getElementById("sort-input").addEventListener('keydown', pressEnterSort);
+        document.getElementById("sort-input").addEventListener('input', () => build.filterExperiment(document.getElementById("sort-input").value)); //filter as you type
+        build.experimentFilter = ""
+
+        //add tooltips
+        for (let i = 0, len = tech.tech.length; i < len; i++) {
+            if (document.getElementById(`tech-${i}`)) {
+                document.getElementById(`tech-${i}`).setAttribute('data-descr', tech.tech[i].requires); //add tooltip
+                // document.getElementById(`tech-${i}`).setAttribute('title', tech.tech[i].requires); //add tooltip
+            }
+        }
+
+        build.applyShowAll()
+        requestAnimationFrame(() => { document.getElementById("sort-input").focus(); });
+    },
+    toggleShowAll() { //saved in localSettings, on by default
+        localSettings.isExperimentShowAll = !localSettings.isExperimentShowAll
+        if (localSettings.isAllowed) localStorage.setItem("localSettings", JSON.stringify(localSettings)); //update local storage
+        build.applyShowAll()
+    },
+    applyShowAll() {
+        document.getElementById("experiment-grid").classList.toggle("hide-unavailable", !localSettings.isExperimentShowAll)
+        document.getElementById("experiment-show-all").classList.toggle("is-on", !!localSettings.isExperimentShowAll)
+    },
+    nameLink(text) { //converts text into a clickable wikipedia search
+        return `<a target="_blank" href='https://en.wikipedia.org/w/index.php?search=${encodeURIComponent(text).replace(/' /g, '%27')}&title=Special:Search' class="link">${text}</a>`
+    },
+    async reset() {
+        build.isExperimentSelection = true;
+        build.isExperimentRun = true;
+        await simulation.startGame(true); //starts game, but pauses it
+        build.isExperimentSelection = true;
+        build.isExperimentRun = true;
+        simulation.paused = true;
+        powerUps.totalUsed = 0
+        b.inventory = []; //removes guns and ammo
+        for (let i = 0, len = b.guns.length; i < len; ++i) {
+            b.guns[i].count = 0;
+            b.guns[i].have = false;
+            if (b.guns[i].ammo != Infinity) b.guns[i].ammo = 0;
+        }
+        b.activeGun = null;
+        b.inventoryGun = 0;
+        simulation.makeGunHUD();
+        tech.resetAllTech();
+        build.populateGrid();
+        document.getElementById("field-0").classList.add("build-field-selected");
+        document.getElementById("experiment-grid").style.display = "grid"
+    },
+    hasExperimentalMode: false,
+    startExperiment() { //start playing the game after exiting the experiment menu
+        build.isExperimentSelection = false;
+        if (b.inventory.length > 0) {
+            b.activeGun = b.inventory[0] //set first gun to active gun
+            b.inventoryGun = 0;
+            simulation.makeGunHUD();
+        }
+        for (let i = 0; i < bullet.length; ++i) Matter.Composite.remove(engine.world, bullet[i]);
+        bullet = []; //remove any bullets that might have spawned from tech
+        build.hasExperimentalMode = false
+        if (!simulation.isCheating) {
+            for (let i = 0, len = tech.tech.length; i < len; i++) {
+                if (tech.tech[i].count > 0 && !tech.tech[i].isLore) simulation.isCheating = true;
+            }
+            if (b.inventory.length !== 0 || m.fieldMode !== 0) simulation.isCheating = true;
+        }
+        if (simulation.isCheating) { //if you are cheating remove any lore you might have gotten
+            lore.techCount = 0;
+            for (let i = 0, len = tech.tech.length; i < len; i++) {
+                if (tech.tech[i].isLore) {
+                    tech.tech[i].frequency = 0; //remove lore power up chance
+                    tech.tech[i].count = 0; //remove lore power up chance
+                }
+            }
+            simulation.updateTechHUD();
+        } else { //if you have no tech (not cheating) remove all power ups that might have spawned from tech
+            for (let i = 0; i < powerUp.length; ++i) Matter.Composite.remove(engine.world, powerUp[i]);
+            powerUp = [];
+        }
+        document.body.style.cursor = "none";
+        document.body.style.overflow = "hidden"
+        document.getElementById("experiment-grid").style.display = "none"
+        simulation.paused = false;
+        requestAnimationFrame(cycle);
+        mouseMove.lock()
+        if (levelEditor.isActive) levelEditor.run("setLoadout") //in the level editor the start button says set, it sets the picks as the level's loadout
+    }
+}
+
+async function openExperimentMenu() {
+    document.getElementById("experiment-button").style.display = "none";
+    document.getElementById("community-button").style.display = "none";
+    document.getElementById("start-button").style.display = "none";
+    document.getElementById("level-editor-splash-button").style.display = "none";
+    const el = document.getElementById("experiment-grid")
+    el.style.display = "grid"
+    document.body.style.overflowY = "scroll";
+    document.body.style.overflowX = "hidden";
+    document.getElementById("info").style.display = 'none'
+    levelPoolMenu.close()
+    await build.reset();
+
+}
+
+//record settings so they can be reproduced in the experimental menu
+document.getElementById("experiment-button").addEventListener("click", async () => { //setup build run
+    // let field = 0;
+    // let inventory = [];
+    // let techList = [];
+    // if (!simulation.firstRun) {
+    //     field = m.fieldMode
+    //     inventory = [...b.inventory]
+    //     for (let i = 0; i < tech.tech.length; i++) {
+    //         techList.push(tech.tech[i].count)
+    //     }
+    // }
+    await openExperimentMenu();
+});
+
+
+// ************************************************************************************************
+// inputs
+// ************************************************************************************************
+const input = {
+    fire: false, // left mouse
+    field: false, // right mouse
+    up: false, // jump
+    upPressCycle: -Infinity, //m.cycle when jump was last pressed, used to buffer jumps pressed just before landing, -Infinity when there is no buffered press
+    down: false, // crouch
+    left: false,
+    right: false,
+    isPauseKeyReady: true,
+    isMenuKeyFocus: false, //Tab navigation keeps the normal keyboard controls in menus
+    movementKeys: new Set(),
+    // isMouseInside: true,
+    // lastDown: null,
+    reset() {
+        input.movementKeys.clear()
+        input.fire = false
+        input.field = false
+        input.up = false
+        input.upPressCycle = -Infinity
+        input.down = false
+        input.left = false
+        input.right = false
+    },
+    key: {
+        fire: "KeyF",
+        field: "Space",
+        up: "KeyW", // jump
+        down: "KeyS", // crouch
+        left: "KeyA",
+        right: "KeyD",
+        pause: "KeyP",
+        fullscreen: "KeyO",
+        nextGun: "KeyE",
+        previousGun: "KeyQ",
+        testing: "KeyT"
+    },
+    setDefault() {
+        input.key = {
+            fire: "KeyF",
+            field: "Space",
+            up: "KeyW", // jump
+            down: "KeyS", // crouch
+            left: "KeyA",
+            right: "KeyD",
+            pause: "KeyP",
+            fullscreen: "KeyO",
+            nextGun: "KeyE",
+            previousGun: "KeyQ",
+            testing: "KeyT"
+        }
+        input.controlTextUpdate()
+    },
+    controlTextUpdate() {
+        function cleanText(text) {
+            return text.replace('Key', '').replace('Digit', '')
+        }
+        if (!input.key.fire) input.key.fire = "KeyF"
+        document.getElementById("key-fire").innerHTML = cleanText(input.key.fire)
+        document.getElementById("key-field").innerHTML = cleanText(input.key.field)
+        document.getElementById("key-up").innerHTML = cleanText(input.key.up)
+        document.getElementById("key-down").innerHTML = cleanText(input.key.down)
+        document.getElementById("key-left").innerHTML = cleanText(input.key.left)
+        document.getElementById("key-right").innerHTML = cleanText(input.key.right)
+        document.getElementById("key-pause").innerHTML = cleanText(input.key.pause)
+        document.getElementById("key-fullscreen").innerHTML = cleanText(input.key.fullscreen)
+        document.getElementById("key-next-gun").innerHTML = cleanText(input.key.nextGun)
+        document.getElementById("key-previous-gun").innerHTML = cleanText(input.key.previousGun)
+        document.getElementById("key-testing").innerHTML = cleanText(input.key.testing) //if (localSettings.loreCount > 0)
+
+        document.getElementById("splash-up").innerHTML = cleanText(input.key.up)[0]
+        document.getElementById("splash-down").innerHTML = cleanText(input.key.down)[0]
+        document.getElementById("splash-left").innerHTML = cleanText(input.key.left)[0]
+        document.getElementById("splash-right").innerHTML = cleanText(input.key.right)[0]
+        document.getElementById("splash-pause").innerHTML = cleanText(input.key.pause)[0]
+        document.getElementById("splash-fullscreen").innerHTML = cleanText(input.key.fullscreen)[0]
+        document.getElementById("splash-next-gun").innerHTML = cleanText(input.key.nextGun)[0]
+        document.getElementById("splash-previous-gun").innerHTML = cleanText(input.key.previousGun)[0]
+
+        localSettings.key = input.key
+        if (localSettings.isAllowed) localStorage.setItem("localSettings", JSON.stringify(localSettings)); //update local storage
+    },
+    focus: null,
+    setTextFocus() {
+        const backgroundColor = "#fff"
+        document.getElementById("key-fire").style.background = backgroundColor
+        document.getElementById("key-field").style.background = backgroundColor
+        document.getElementById("key-up").style.background = backgroundColor
+        document.getElementById("key-down").style.background = backgroundColor
+        document.getElementById("key-left").style.background = backgroundColor
+        document.getElementById("key-right").style.background = backgroundColor
+        document.getElementById("key-pause").style.background = backgroundColor
+        document.getElementById("key-fullscreen").style.background = backgroundColor
+        document.getElementById("key-next-gun").style.background = backgroundColor
+        document.getElementById("key-previous-gun").style.background = backgroundColor
+        document.getElementById("key-testing").style.background = backgroundColor
+        if (input.focus) input.focus.style.background = 'rgb(0, 200, 255)';
+        document.getElementById("key-num").style.background = backgroundColor //always not highlighted
+    },
+    setKeys(event) {
+        //check for duplicate keys
+        if (event.code && !(
+            event.code === "ArrowRight" ||
+            event.code === "ArrowLeft" ||
+            event.code === "ArrowUp" ||
+            event.code === "ArrowDown" ||
+            event.code === input.key.fire ||
+            event.code === input.key.field ||
+            event.code === input.key.up ||
+            event.code === input.key.down ||
+            event.code === input.key.left ||
+            event.code === input.key.right ||
+            event.code === input.key.pause ||
+            // event.code === "Escape" ||
+            event.code === input.key.nextGun ||
+            event.code === input.key.previousGun ||
+            event.code === input.key.testing ||
+            event.code === "Digit1" || event.code === "Digit2" || event.code === "Digit3" || event.code === "Digit4" || event.code === "Digit5" || event.code === "Digit6" || event.code === "Digit7" || event.code === "Digit8" || event.code === "Digit9" || event.code === "Digit0" || event.code === "Minus" || event.code === "Equal"
+        )) {
+            switch (input.focus.id) {
+                case "key-fire":
+                    input.key.fire = event.code
+                    break;
+                case "key-field":
+                    input.key.field = event.code
+                    break;
+                case "key-up":
+                    input.key.up = event.code
+                    break;
+                case "key-down":
+                    input.key.down = event.code
+                    break;
+                case "key-left":
+                    input.key.left = event.code
+                    break;
+                case "key-right":
+                    input.key.right = event.code
+                    break;
+                case "key-pause":
+                    input.key.pause = event.code
+                    break;
+                case "key-fullscreen":
+                    input.key.fullscreen = event.code
+                    break;
+                case "key-next-gun":
+                    input.key.nextGun = event.code
+                    break;
+                case "key-previous-gun":
+                    input.key.previousGun = event.code
+                    break;
+                case "key-testing":
+                    input.key.testing = event.code
+                    break;
+            }
+        }
+        input.controlTextUpdate()
+        input.endKeySensing()
+    },
+    endKeySensing() {
+        window.removeEventListener("keydown", input.setKeys);
+        input.focus = null
+        input.setTextFocus()
+    }
+}
+
+document.getElementById("control-table").addEventListener('click', (event) => {
+    if (event.target.className === 'key-input') {
+        input.focus = event.target
+        input.setTextFocus()
+        window.addEventListener("keydown", input.setKeys);
+    }
+});
+document.getElementById("control-details").addEventListener("toggle", function () {
+    input.controlTextUpdate()
+    input.endKeySensing();
+})
+
+document.getElementById("control-reset").addEventListener('click', input.setDefault);
+
+window.addEventListener("blur", () => input.reset())
+window.addEventListener("keyup", function (event) {
+    input.movementKeys.delete(event.code)
+    switch (event.code) {
+        case input.key.right:
+        case "ArrowRight":
+            input.right = input.movementKeys.has(input.key.right) || input.movementKeys.has("ArrowRight")
+            break;
+        case input.key.left:
+        case "ArrowLeft":
+            input.left = input.movementKeys.has(input.key.left) || input.movementKeys.has("ArrowLeft")
+            break;
+        case input.key.up:
+        case "ArrowUp":
+            input.up = input.movementKeys.has(input.key.up) || input.movementKeys.has("ArrowUp")
+            break;
+        case input.key.down:
+        case "ArrowDown":
+            input.down = input.movementKeys.has(input.key.down) || input.movementKeys.has("ArrowDown")
+            break;
+        case input.key.fire:
+            input.fire = false
+            break
+        case input.key.field:
+            input.field = false
+            break
+    }
+});
+
+window.addEventListener("pointerdown", function () {
+    input.isMenuKeyFocus = false
+}, true);
+
+//After a click, game keys must not change the focused setting. Tab lets the player edit it with the keyboard instead.
+window.addEventListener("keydown", function (event) {
+    if (event.code === "Tab") {
+        input.isMenuKeyFocus = true
+        return
+    }
+    const el = event.target
+    if (el.tagName === "SELECT" || (el.tagName === "INPUT" && (el.type === "checkbox" || el.type === "radio"))) {
+        if (input.isMenuKeyFocus) {
+            event.stopImmediatePropagation() //keep native menu controls without also moving, firing, or pausing the game
+        } else {
+            event.preventDefault()
+            el.blur()
+        }
+    }
+}, true);
+
+//Cmd/Ctrl+F goes to the menu search box instead of the browser's find, when one is showing (experiment, pause)
+//always, even when the box already has focus, since experiment mode focuses it on open
+window.addEventListener("keydown", function (event) {
+    if (!(event.metaKey || event.ctrlKey) || event.altKey || event.key.toLowerCase() !== "f") return
+    const searchBox = ["sort-input", "pause-sort-input"].map(id => document.getElementById(id)).find(el => el && el.offsetParent !== null)
+    if (!searchBox) return
+    event.preventDefault()
+    event.stopImmediatePropagation()
+    searchBox.focus()
+    searchBox.select()
+});
+
+window.addEventListener("keydown", function (event) {
+    if (event.target.id === "sort-input" || event.target.id === "pause-sort-input") return //typing in a menu search box, don't move, switch guns, or pause
+    // input.lastDown = event.code
+    // console.log(event.code)
+    switch (event.code) {
+        case input.key.right:
+        case "ArrowRight":
+            input.movementKeys.add(event.code)
+            input.right = true
+            break;
+        case input.key.left:
+        case "ArrowLeft":
+            input.movementKeys.add(event.code)
+            input.left = true
+            break;
+        case input.key.up:
+        case "ArrowUp":
+            if (!event.repeat && !input.up) input.upPressCycle = m.cycle
+            input.movementKeys.add(event.code)
+            input.up = true
+            break;
+        case input.key.down:
+        case "ArrowDown":
+            input.movementKeys.add(event.code)
+            input.down = true
+            break;
+        case input.key.fire:
+            input.fire = true
+            break
+        case input.key.field:
+            input.field = true
+            break
+        case input.key.nextGun:
+            simulation.nextGun();
+            break
+        case input.key.previousGun:
+            simulation.previousGun();
+            break
+        case input.key.pause:
+            if (input.isPauseKeyReady && m.alive && !build.isExperimentSelection) {
+                input.isPauseKeyReady = false
+                setTimeout(function () { input.isPauseKeyReady = true }, 300);
+                if (simulation.isChoosing) {
+                    if (document.getElementById("pause-grid-left").style.display === "none") {
+                        build.pauseGrid()
+                    } else {
+                        build.unPauseGrid()
+                    }
+                } else if (simulation.paused) {
+                    build.unPauseGrid()
+                    simulation.paused = false;
+                    // level.levelAnnounce();
+                    document.body.style.cursor = "none";
+                    requestAnimationFrame(cycle); //restart time
+                    mouseMove.lock()
+                } else {
+                    simulation.paused = true;
+                    build.pauseGrid()
+                    document.body.style.cursor = "auto";
+                    mouseMove.unlock()
+                }
+            }
+            break
+        case input.key.fullscreen: {
+            //don't toggle fullscreen when typing an "o" into a text box like seed or sort
+            const isTyping = document.activeElement && document.activeElement.matches("textarea, input:not([type]), input[type='text'], input[type='search']")
+            if (event.repeat || isTyping) break
+            //the fullscreenchange event handles pointer lock and input reset
+            if (document.fullscreenElement) { //exit fullscreen mode if in fullscreen
+                mouseMove.unlock()
+                document.exitFullscreen();
+            } else if (mouseMove.isMouseInWindow) { //if mouse is in the window enter fullscreen
+                document.documentElement.requestFullscreen?.().catch(err => {
+                    console.error('Error attempting to enable fullscreen:', err);
+                });
+            }
+            break
+        }
+        case input.key.testing:
+            if (m.alive && localSettings.loreCount > 0 && !simulation.paused && !build.isExperimentSelection) {
+                if (simulation.difficultyMode > 6) {
+                    simulation.inGameConsole("<em>testing mode disabled for this difficulty</em>");
+                    break
+                }
+                if (simulation.testing) {
+                    simulation.testing = false;
+                    simulation.loop = simulation.normalLoop
+                    if (simulation.isConstructionMode) document.getElementById("construct").style.display = 'none'
+                    simulation.inGameConsole("", 0);
+                } else {
+                    simulation.testing = true;
+                    simulation.loop = simulation.testingLoop
+                    if (simulation.testing) tech.setCheating();
+                    if (simulation.isConstructionMode) {
+                        document.getElementById("construct").style.display = 'inline'
+                    } else {
+                        simulation.inGameConsole(
+                            `<table class="pause-table">
+                <tr>
+                    <td class='key-input-pause'>T</td>
+                    <td class='key-used'><strong>toggle testing</strong></td>
+                </tr>
+                <tr>
+                    <td class='key-input-pause'>R</td>
+                    <td class='key-used'>teleport to mouse</td>
+                </tr>
+                <tr>
+                    <td class='key-input-pause'>F</td>
+                    <td class='key-used'>cycle field</td>
+                </tr>
+                <tr>
+                    <td class='key-input-pause'>G</td>
+                    <td class='key-used'>all guns</td>
+                </tr>
+                <tr>
+                    <td class='key-input-pause'>H</td>
+                    <td class='key-used'>+100% defense</td>
+                </tr>
+                <tr>
+                    <td class='key-input-pause'>B</td>
+                    <td class='key-used'>damage, research</td>
+                </tr>
+                <tr>
+                    <td class='key-input-pause'>N</td>
+                    <td class='key-used'>fill health, energy</td>
+                </tr>
+                <tr>
+                    <td class='key-input-pause'>Y</td>
+                    <td class='key-used'>experiment menu</td>
+                </tr>
+                <tr>
+                    <td class='key-input-pause'>U</td>
+                    <td class='key-used'>next level</td>
+                </tr>
+                <tr>
+                    <td class='key-input-pause'>J</td>
+                    <td class='key-used'>clear mobs</td>
+                </tr>
+                <tr>
+                    <td class='key-input-pause'>–/+</td>
+                    <td class='key-used'>zoom out / in</td>
+                </tr>
+                <tr>
+                    <td class='key-input-pause'>9</td>
+                    <td class='key-used'>level warp</td>
+                </tr>
+                <tr>
+                    <td class='key-input-pause'>1-8</td>
+                    <td class='key-used'>spawn things</td>
+                </tr>
+                <tr>
+                    <td class='key-input-pause'>⇧X</td>
+                    <td class='key-used'>restart</td>
+                </tr></table>`, Infinity);
+                    }
+                }
+            }
+            break
+    }
+    if (b.inventory.length > 1 && !simulation.testing && !(tech.isGunChoice || tech.isGunCycle)) {
+        switch (event.code) {
+            case "Digit1":
+                simulation.switchToGunInInventory(0);
+                break
+            case "Digit2":
+                simulation.switchToGunInInventory(1);
+                break
+            case "Digit3":
+                simulation.switchToGunInInventory(2);
+                break
+            case "Digit4":
+                simulation.switchToGunInInventory(3);
+                break
+            case "Digit5":
+                simulation.switchToGunInInventory(4);
+                break
+            case "Digit6":
+                simulation.switchToGunInInventory(5);
+                break
+            case "Digit7":
+                simulation.switchToGunInInventory(6);
+                break
+            case "Digit8":
+                simulation.switchToGunInInventory(7);
+                break
+            case "Digit9":
+                simulation.switchToGunInInventory(8);
+                break
+            case "Digit0":
+                simulation.switchToGunInInventory(9);
+                break
+            case "Minus":
+                simulation.switchToGunInInventory(10);
+                break
+            case "Equal":
+                simulation.switchToGunInInventory(11);
+                break
+        }
+    }
+
+    if (simulation.testing) {
+        if (event.key === "X") m.death(); //only uppercase
+        switch (event.key.toLowerCase()) {
+            case "-":
+                // simulation.isAutoZoom = false;
+                // simulation.zoomScale /= 0.9;
+                // simulation.setZoom();
+                simulation.zoomTransition(simulation.zoomScale / 0.9)
+                break;
+            case "=":
+                // simulation.isAutoZoom = false;
+                // simulation.zoomScale *= 0.9;
+                // simulation.setZoom();
+                simulation.zoomTransition(simulation.zoomScale * 0.9)
+                break
+            case "`":
+                powerUps.directSpawn(simulation.mouseInGame.x, simulation.mouseInGame.y, "research");
+                break
+            case "1":
+                powerUps.directSpawn(simulation.mouseInGame.x, simulation.mouseInGame.y, "heal");
+                break
+            case "2":
+                powerUps.directSpawn(simulation.mouseInGame.x, simulation.mouseInGame.y, "ammo");
+                break
+            case "3":
+                powerUps.directSpawn(simulation.mouseInGame.x, simulation.mouseInGame.y, "gun");
+                break
+            case "4":
+                powerUps.directSpawn(simulation.mouseInGame.x, simulation.mouseInGame.y, "field");
+                break
+            case "5":
+                powerUps.directSpawn(simulation.mouseInGame.x, simulation.mouseInGame.y, "tech");
+                break
+            case "6":
+                spawn.bodyRect(simulation.mouseInGame.x, simulation.mouseInGame.y, 50, 50);
+                break
+            case "7":
+                spawn.randomMobByLevelsCleared(simulation.mouseInGame.x, simulation.mouseInGame.y)
+                break
+            case "8":
+                spawn.randomLevelBoss(simulation.mouseInGame.x, simulation.mouseInGame.y);
+                break
+            case "9":
+                powerUps.warp.effect()
+                break
+            case "f":
+                const mode = (m.fieldMode === m.fieldUpgrades.length - 1) ? 0 : m.fieldMode + 1
+                m.setField(mode)
+                break
+            case "g":
+                b.giveGuns("all", 1000)
+                break
+            case "h":
+                // m.health = Infinity
+                if (m.immuneCycle === Infinity) {
+                    m.immuneCycle = 0 //you can't take damage
+                } else {
+                    m.immuneCycle = Infinity //you can't take damage
+                }
+
+                // m.energy = Infinity
+                // document.getElementById("health").style.display = "none"
+                // document.getElementById("health-bg").style.display = "none"
+                break
+            case "n":
+                m.addHealth(Infinity)
+                m.energy = m.maxEnergy
+                break
+            case "y":
+                if (simulation.testing) {
+                    simulation.testing = false;
+                    simulation.loop = simulation.normalLoop
+                    if (simulation.isConstructionMode) document.getElementById("construct").style.display = 'none'
+                    simulation.inGameConsole("", 0);
+                }
+                simulation.paused = true;
+                build.isExperimentSelection = true;
+                build.populateGrid();
+                document.getElementById("experiment-grid").style.display = "grid";
+                Object.assign(document.body.style, { overflowY: "scroll", overflowX: "hidden", cursor: "auto" });
+                mouseMove.unlock()
+                break
+            case "b":
+                tech.isRerollDamage = true
+                powerUps.research.changeRerolls(1000000)
+                break
+            case "r":
+                m.resetHistory();
+                Matter.Body.setPosition(player, simulation.mouseInGame);
+                Matter.Body.setVelocity(player, { x: 0, y: 0 });
+                // move bots to player
+                for (let i = 0; i < bullet.length; i++) {
+                    if (bullet[i].botType) {
+                        Matter.Body.setPosition(bullet[i], Vector.add(player.position, {
+                            x: 250 * (Math.random() - 0.5),
+                            y: 250 * (Math.random() - 0.5)
+                        }));
+                        Matter.Body.setVelocity(bullet[i], {
+                            x: 0,
+                            y: 0
+                        });
+                    }
+                }
+                break
+            case "u":
+                level.nextLevel();
+                break
+            case "j":
+                for (let i = 0, len = mob.length; i < len; ++i) mob[i].damage(Infinity, true)
+                setTimeout(() => {
+                    for (let i = 0, len = mob.length; i < len; ++i) mob[i].damage(Infinity, true)
+                }, 100);
+                setTimeout(() => {
+                    for (let i = 0, len = mob.length; i < len; ++i) mob[i].damage(Infinity, true)
+                }, 200);
+                break
+            case "l":
+                document.getElementById("field").style.display = "none"
+                document.getElementById("guns").style.display = "none"
+                document.getElementById("right-HUD").style.display = "none"
+                break
+        }
+    }
+});
+
+//exit fullscreen if you switch programs
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden && document.fullscreenElement) {
+        document.exitFullscreen();
+    }
+});
+//mouse move input
+const mouseMove = {
+    active(e) { },//this controls how the mouse is updated in the mousemove event based on 1 of the 4 methods below
+    default(e) {
+        simulation.mouse.x = e.clientX;
+        simulation.mouse.y = e.clientY;
+    },
+    pointerLocked(e) {
+        simulation.mouse.x += e.movementX;
+        simulation.mouse.y += e.movementY;
+        //keep mouse inside canvas
+        if (simulation.mouse.x < 0) simulation.mouse.x = 0
+        if (simulation.mouse.x > canvas.width) simulation.mouse.x = canvas.width
+        if (simulation.mouse.y < 0) simulation.mouse.y = 0
+        if (simulation.mouse.y > canvas.height) simulation.mouse.y = canvas.height
+    },
+    inverted(e) {
+        simulation.mouse.x = e.clientX;
+        simulation.mouse.y = window.innerHeight - e.clientY;
+    },
+    invertedPointerLocked(e) {
+        simulation.mouse.x += e.movementX;
+        simulation.mouse.y -= e.movementY;
+        //keep mouse inside canvas
+        if (simulation.mouse.x < 0) simulation.mouse.x = 0
+        if (simulation.mouse.x > canvas.width) simulation.mouse.x = canvas.width
+        if (simulation.mouse.y < 0) simulation.mouse.y = 0
+        if (simulation.mouse.y > canvas.height) simulation.mouse.y = canvas.height
+    },
+    isPointerLocked: false, //tracks the pointer locked state, only set by the pointerlockchange event
+    isMouseInWindow: true,
+    wantsLock() { //pointer lock is only used in fullscreen during gameplay, menus need the normal mouse
+        return !!document.fullscreenElement && !simulation.onTitlePage && !build.isExperimentSelection && !simulation.paused && !simulation.isChoosing && !levelEditor.isActive //the level editor uses the normal mouse for its panels
+    },
+    lock() { //call after anything that resumes gameplay, browsers only allow this after a click or key press
+        if (mouseMove.wantsLock() && !document.pointerLockElement) {
+            const request = canvas.requestPointerLock?.()
+            if (request) request.catch(() => { }) //browsers can refuse, the next click in game tries again
+        }
+    },
+    unlock() { //call when opening a menu
+        if (document.pointerLockElement) document.exitPointerLock();
+    },
+    reset() {//sets mouseMove.active based on inverted and pointer lock
+        if (simulation.isInvertedVertical) {
+            // simulation.mouse.y = canvas.height - simulation.mouse.y
+            if (mouseMove.isPointerLocked) {
+                mouseMove.active = mouseMove.invertedPointerLocked
+            } else {
+                mouseMove.active = mouseMove.inverted
+            }
+        } else {
+            if (mouseMove.isPointerLocked) {
+                mouseMove.active = mouseMove.pointerLocked
+            } else {
+                mouseMove.active = mouseMove.default
+                // if (true) {
+                //     //show where mouse is
+                //     simulation.ephemera.push({
+                //         count: 30, //cycles before it self removes
+                //         do() {
+                //             this.count--
+                //             if (this.count < 0) simulation.removeEphemera(this)
+                //             ctx.beginPath();
+                //             ctx.arc(simulation.mouse.x, -simulation.mouse.y, 50, 0, 2 * Math.PI);
+                //             ctx.fillStyle = "#f00"
+                //             ctx.fill();
+                //         },
+                //     })
+                // }
+            }
+        }
+    },
+}
+mouseMove.reset()
+document.body.addEventListener("mousemove", (e) => {
+    mouseMove.active(e)
+});
+//the browser can grant, refuse, or drop pointer lock on its own (ESC, switching programs), so only trust these events
+document.addEventListener("pointerlockchange", () => {
+    const wasLocked = mouseMove.isPointerLocked
+    mouseMove.isPointerLocked = document.pointerLockElement === canvas
+    if (wasLocked && !mouseMove.isPointerLocked) input.reset()
+    mouseMove.reset()
+    if (mouseMove.isPointerLocked && !mouseMove.wantsLock()) mouseMove.unlock() //a slow lock request finished after a menu opened
+});
+document.addEventListener("fullscreenchange", () => {
+    input.reset(); //to prevent key ghosting reset all input keys
+    if (document.fullscreenElement) {
+        mouseMove.lock()
+    } else {
+        mouseMove.unlock()
+    }
+});
+
+document.body.addEventListener("mouseup", (e) => {
+    // input.fire = false;
+    // console.log(e)
+    if (e.button === 0) {
+        input.fire = false;
+    } else if (e.button === 2) {
+        input.field = false;
+    }
+});
+
+document.body.addEventListener("mousedown", (e) => {
+    if (e.button === 0) {
+        input.fire = true;
+    } else if (e.button === 2) {
+        input.field = true;
+    }
+    mouseMove.lock() //backup in case pointer lock was lost or refused, does nothing in menus
+});
+
+document.body.addEventListener("mouseenter", (e) => { //prevents mouse getting stuck when leaving the window
+    if (e.button === 1) {
+        input.fire = true;
+    } else {
+        input.fire = false;
+    }
+    mouseMove.isMouseInWindow = true
+
+    // if (e.button === 3) {
+    //     input.field = true;
+    // } else {
+    //     input.field = false;
+    // }
+    // input.isMouseInside = true
+});
+document.body.addEventListener("mouseleave", (e) => { //prevents mouse getting stuck when leaving the window
+    if (e.button === 1) {
+        input.fire = true;
+    } else {
+        input.fire = false;
+    }
+    mouseMove.isMouseInWindow = false
+
+    // if (e.button === 3) {
+    //     input.field = true;
+    // } else {
+    //     input.field = false;
+    // }
+    // input.isMouseInside = false
+});
+
+document.body.addEventListener("wheel", (e) => {
+    if (!simulation.paused) {
+        if (e.deltaY > 0) {
+            simulation.nextGun();
+        } else {
+            simulation.previousGun();
+        }
+    }
+}, {
+    passive: true
+});
+
+
+//**********************************************************************
+//  local storage
+//**********************************************************************
+let localSettings
+
+function localStorageCheck() {
+    try {
+        return 'localStorage' in window && window['localStorage'] !== null;
+    } catch (e) {
+        return false;
+    }
+
+}
+// if (localStorageCheck()) {
+//     localSettings = JSON.parse(localStorage.getItem("localSettings"))
+//     if (localSettings) {
+//         console.log('localStorage is enabled')
+if (localStorageCheck()) {
+    try {
+        localSettings = JSON.parse(localStorage.getItem("localSettings"))
+    } catch (error) {
+        console.warn("Ignoring invalid localSettings data", error)
+        localSettings = null
+    }
+    if (localSettings) {
+        console.log('localStorage is enabled') // eslint-disable-line no-console
+        localSettings.isAllowed = true
+        localSettings.isEmpty = false
+    } else {
+        console.log('localStorage is enabled, local settings empty') // eslint-disable-line no-console
+        localSettings = {
+            isAllowed: true,
+            isEmpty: true
+        }
+    }
+} else {
+    console.log("localStorage is disabled") // eslint-disable-line no-console
+    localSettings = {
+        isAllowed: false
+    }
+}
+
+const hadSavedFpsPreference = localSettings.fpsPreferenceIsExplicit ?? (localSettings.fpsCapDefault !== undefined) //preserve legacy preferences; new defaults carry an explicit false marker
+if (localSettings.isAllowed && !localSettings.isEmpty) {
+    console.log('restoring previous settings') // eslint-disable-line no-console
+
+    if (localSettings.key && localSettings.key.fullscreen) {
+        input.key = localSettings.key
+    } else {
+        input.setDefault()
+    }
+
+    if (localSettings.loreCount === undefined) {
+        localSettings.loreCount = 0
+        localStorage.setItem("localSettings", JSON.stringify(localSettings)); //update local storage
+    }
+
+    if (localSettings.levelPool === undefined) { //older settings had a typed ban list and a community maps checkbox
+        const banned = String(localSettings.banList || "").replace(/[^\w\s,]/g, '').split(/[\s,]+/)
+        localSettings.levelPool = {
+            banned: level.playableLevels.filter(name => banned.includes(name)),
+            added: localSettings.isCommunityMaps ? level.communityLevels.filter(name => !banned.includes(name)) : []
+        }
+        delete localSettings.banList
+        localStorage.setItem("localSettings", JSON.stringify(localSettings)); //update local storage
+    }
+    delete localSettings.isLevelPoolThumbnails //the thumbnails button is gone, they always show
+    localSettings.isCommunityMaps = level.poolableLevels(level.communityLevels).some(name => localSettings.levelPool.added.includes(name))
+    simulation.isCommunityMaps = localSettings.isCommunityMaps
+
+    if (localSettings.fpsCapDefault === undefined) localSettings.fpsCapDefault = 'max'
+    if (localSettings.personalSeeds === undefined) localSettings.personalSeeds = [];
+    if (localSettings.fpsCapDefault === 'max') {
+        simulation.fpsCapDefault = 999999999;
+    } else {
+        simulation.fpsCapDefault = Number(localSettings.fpsCapDefault)
+    }
+    document.getElementById("fps-select").value = localSettings.fpsCapDefault
+
+    if (!localSettings.isLoreDoesNotNeedReset) {
+        localSettings.isLoreDoesNotNeedReset = true
+        localSettings.loreCount = 0; //this sets what conversation is heard
+        if (localSettings.isAllowed) localStorage.setItem("localSettings", JSON.stringify(localSettings)); //update local storage
+    }
+
+    if (localSettings.isHideHUD === undefined) localSettings.isHideHUD = false
+    document.getElementById("hide-hud").checked = localSettings.isHideHUD
+
+    if (localSettings.showDmgNumbers === undefined) localSettings.showDmgNumbers = true
+    document.getElementById("show-num").checked = localSettings.showDmgNumbers
+
+    if (localSettings.isLineOfSight === undefined) localSettings.isLineOfSight = false
+    document.getElementById("line-of-sight").checked = localSettings.isLineOfSight
+
+    if (localSettings.isAutoFullscreen === undefined) localSettings.isAutoFullscreen = false
+    document.getElementById("auto-fullscreen").checked = localSettings.isAutoFullscreen
+
+    if (!["youtube", "spotify", "apple"].includes(localSettings.musicService)) {
+        localSettings.musicService = "youtube"
+        localStorage.setItem("localSettings", JSON.stringify(localSettings)); //update local storage
+    }
+
+    if (localSettings.difficultyCompleted === undefined) {
+        localSettings.difficultyCompleted = [null, false, false, false, false, false, false, false] //null because there isn't a difficulty zero
+        localStorage.setItem("localSettings", JSON.stringify(localSettings)); //update local storage
+    }
+
+    if (localSettings.difficultyMode === undefined) localSettings.difficultyMode = "2"
+    //Individual selections are restored below, after default settings are initialized.
+
+    if (localSettings.pauseMenuDetailsOpen === undefined) {
+        localSettings.pauseMenuDetailsOpen = [true, false, false, true, false, false]
+        localStorage.setItem("localSettings", JSON.stringify(localSettings)); //update local storage
+    } else if (localSettings.pauseMenuDetailsOpen[5] === undefined) {
+        if (localSettings.pauseMenuDetailsOpen[4] === undefined) localSettings.pauseMenuDetailsOpen[4] = false
+        localSettings.pauseMenuDetailsOpen[5] = false
+        localStorage.setItem("localSettings", JSON.stringify(localSettings)); //update local storage
+    }
+    if (localSettings.techHistory === undefined) {
+        localSettings.techHistory = []
+        localStorage.setItem("localSettings", JSON.stringify(localSettings)); //update local storage
+    }
+    if (localSettings.isExperimentShowAll === undefined) localSettings.isExperimentShowAll = true //saves from before show all start with it on
+} else {
+    console.log('setting default localSettings') // eslint-disable-line no-console
+    const isAllowed = localSettings.isAllowed //don't overwrite isAllowed value
+    localSettings = {
+        levelPool: { banned: [], added: [] }, //official levels taken out of the pool, community and local levels put in
+        isAllowed: isAllowed,
+        personalSeeds: [],
+        isJunkExperiment: false,
+        isExperimentShowAll: true, //experiment mode's show all button, off hides tech you can't take yet and JUNK
+        isCommunityMaps: false,
+        difficultyMode: '2',
+        difficultyCompleted: [null, false, false, false, false, false, false, false],
+        fpsCapDefault: 'max',
+        fpsPreferenceIsExplicit: false,
+        estimatedDisplayFps: null,
+        runCount: 0,
+        isTrainingNotAttempted: true,
+        levelsClearedLastGame: 0,
+        loreCount: 0,
+        isLoreDoesNotNeedReset: false,
+        isHuman: false,
+        key: undefined,
+        isHideHUD: false,
+        showDmgNumbers: false,
+        isLineOfSight: false,
+        isAutoFullscreen: false,
+        musicService: "youtube",
+        pauseMenuDetailsOpen: [true, false, false, true, false, false],
+        techHistory: [],
+    };
+    input.setDefault()
+    if (localSettings.isAllowed) localStorage.setItem("localSettings", JSON.stringify(localSettings)); //update local storage
+    simulation.isCommunityMaps = localSettings.isCommunityMaps
+    document.getElementById("fps-select").value = localSettings.fpsCapDefault
+    document.getElementById("auto-fullscreen").checked = localSettings.isAutoFullscreen
+}
+simulation.difficultyOptions = localSettings.difficultyOptions ? powerUps.difficulty.normalize(localSettings.difficultyOptions) : powerUps.difficulty.fromLegacy(localSettings.difficultyMode);
+localSettings.difficultyOptions = { ...simulation.difficultyOptions };
+powerUps.difficulty.updateScale();
+lore.setTechGoal();
+document.getElementById("control-testing").style.visibility = (localSettings.loreCount === 0) ? "hidden" : "visible"
+// document.getElementById("experiment-button").style.visibility = (localSettings.loreCount === 0) ? "hidden" : "visible"
+input.controlTextUpdate()
+
+if (simulation.isCommunityMaps) {
+    level.loadMoreLevels().catch(error => console.error(error))
+}
+
+
+//**********************************************************************
+// settings
+//**********************************************************************
+
+let hasExplicitFpsPreference = hadSavedFpsPreference
+let isDisplayFpsSampling = false
+function detectDisplayFps() {
+    if (isDisplayFpsSampling || (Number.isFinite(localSettings.estimatedDisplayFps) && localSettings.estimatedDisplayFps > 0)) return
+    isDisplayFpsSampling = true
+    localSettings.estimatedDisplayFps = null
+    let previous
+    let warmup = 5
+    const intervals = []
+    function sample(timestamp) {
+        if (!simulation.onTitlePage) {
+            isDisplayFpsSampling = false
+            return
+        }
+        if (document.hidden) {
+            previous = undefined
+            warmup = 5
+            intervals.length = 0
+        } else {
+            if (previous !== undefined) {
+                const interval = timestamp - previous
+                if (warmup > 0) {
+                    warmup--
+                } else if (interval > 0) {
+                    intervals.push(interval)
+                }
+            }
+            previous = timestamp
+            if (intervals.length === 30) {
+                intervals.sort((a, b) => a - b)
+                const median = (intervals[14] + intervals[15]) / 2
+                localSettings.estimatedDisplayFps = Math.round(1000 / median)
+                isDisplayFpsSampling = false
+                if (!hasExplicitFpsPreference) {
+                    localSettings.fpsCapDefault = median < 15 ? '60' : 'max'
+                    simulation.fpsCapDefault = median < 15 ? 60 : 999999999
+                    document.getElementById("fps-select").value = localSettings.fpsCapDefault
+                }
+                if (localSettings.isAllowed) localStorage.setItem("localSettings", JSON.stringify(localSettings))
+                return
+            }
+        }
+        requestAnimationFrame(sample)
+    }
+    requestAnimationFrame(sample)
+}
+if (document.readyState === 'complete') {
+    detectDisplayFps()
+} else {
+    window.addEventListener('load', detectDisplayFps, { once: true })
+}
+
+document.getElementById("fps-select").addEventListener("input", () => {
+    build.setFpsCap(document.getElementById("fps-select").value)
+});
+
+document.getElementById("auto-fullscreen").addEventListener("input", () => {
+    localSettings.isAutoFullscreen = document.getElementById("auto-fullscreen").checked
+    if (localSettings.isAllowed) localStorage.setItem("localSettings", JSON.stringify(localSettings)); //update local storage
+});
+
+//**********************************************************************
+// progression tab and level pool
+// drag or click a level to move it into or out of the random pool, see level.randomLevelPool()
+// each level shows a zoomed out picture above its name, they only load while the menu is open
+//**********************************************************************
+const levelPoolMenu = {
+    siteLink: `<a class="level-menu-site-link" href="https://whyisthisnotavalable.github.io/n-vote/" target="_blank" rel="noopener" title="n-vote, a fan site for sharing and rating n-gon maps">upload, download, and rate maps on n-vote</a>`,
+    tabs(isProgression, isOpening = false) {
+        return `<div class="level-menu-tabs" role="group" aria-label="level menus">
+            <button type="button" class="level-menu-tab" data-training-tab${isProgression ? "" : ' aria-current="true"'}>Training</button>
+            <button type="button" class="level-menu-tab" ${isProgression ? `aria-current="true"${isOpening ? " autofocus" : ""}` : 'popovertarget="level-pool" popovertargetaction="show"'}>Progression</button>
+        </div>`
+    },
+    toolbar(isProgression, actions, isOpening = false) {
+        const description = isProgression
+            ? "a standard 13-level run with randomized levels, combat, multiple routes, and tech progression"
+            : "single play, scripted, puzzles, with more linear paths and set tech/guns/field"
+        return `<div class="level-menu-toolbar">
+            ${levelPoolMenu.tabs(isProgression, isOpening)}
+            ${levelPoolMenu.siteLink}
+            ${actions ? `<div class="level-menu-actions">${actions}</div>` : ""}
+            <div class="level-menu-description level-pool-note">${description}</div>
+        </div>`
+    },
+    dragging: null, //name of the level being dragged
+    thumbnailPath: "img/levels/", //made by tools/level-thumbnails.js, run "npm run level-thumbnails" after adding a level or changing how one looks
+    thumbnailSize: [320, 160], //about twice the size they show at
+    localThumbnails: {}, //local levels' thumbnails are drawn from their data each time the menu opens, they can change in the level editor
+    origin(name) { //where a level goes when it leaves the pool
+        if (level.playableLevels.includes(name)) return "banned"
+        if (level.communityLevels.includes(name)) return "community"
+        return "local"
+    },
+    isInPool(name) {
+        const pool = localSettings.levelPool
+        return levelPoolMenu.origin(name) === "banned" ? !pool.banned.includes(name) : pool.added.includes(name)
+    },
+    move(name, isIntoPool) {
+        if (levelPoolMenu.isInPool(name) === isIntoPool) return
+        const pool = localSettings.levelPool
+        if (!isIntoPool && level.randomLevelPool().length === 1) { //a run needs at least one level to shuffle
+            const zone = document.querySelector("#level-pool [data-zone='pool']")
+            zone.classList.remove("level-pool-shake")
+            void zone.offsetWidth //restart the animation
+            zone.classList.add("level-pool-shake")
+            return
+        }
+        const list = levelPoolMenu.origin(name) === "banned" ? "banned" : "added"
+        const isListed = (list === "banned") !== isIntoPool
+        pool[list] = pool[list].filter(n => n !== name)
+        if (isListed) pool[list].push(name)
+        levelPoolMenu.update()
+    },
+    update() { //save, then redraw
+        localSettings.isCommunityMaps = level.poolableLevels(level.communityLevels).some(name => localSettings.levelPool.added.includes(name))
+        simulation.isCommunityMaps = localSettings.isCommunityMaps
+        if (localSettings.isAllowed) localStorage.setItem("localSettings", JSON.stringify(localSettings)); //update local storage
+        if (simulation.isCommunityMaps) level.loadMoreLevels().catch(error => console.error(error))
+        levelPoolMenu.render()
+    },
+    chip(name) {
+        const origin = levelPoolMenu.origin(name)
+        const inPool = levelPoolMenu.isInPool(name)
+        return `<span class="level-chip level-chip-${origin}${inPool ? "" : " level-chip-out"}" draggable="true" tabindex="0" role="button" data-level="${name}">${levelPoolMenu.thumbnail(name)}<span class="level-chip-name">${name}</span></span>`
+    },
+    thumbnail(name) {
+        let src = `${levelPoolMenu.thumbnailPath}${name}.webp`
+        if (!level.trainingLevels.includes(name) && levelPoolMenu.origin(name) === "local") {
+            if (levelPoolMenu.localThumbnails[name] === undefined) {
+                const data = levelData.store.get(name)
+                levelPoolMenu.localThumbnails[name] = data ? levelPoolMenu.thumbnailOfData(data) : ""
+            }
+            src = levelPoolMenu.localThumbnails[name]
+        }
+        return `<img class="level-chip-thumbnail" src="${src}" alt="" loading="lazy" draggable="false" onerror="this.style.visibility = 'hidden'">` //a level without one yet keeps the space
+    },
+    thumbnailOfData(data) { //a local level's map and blocks
+        const outlines = type => data.elements.filter(el => el.type === type).map(el => levelElements.points(el))
+        return levelPoolMenu.drawThumbnail({ background: data.background, mapColor: data.mapColor, blockColor: data.blockColor, map: outlines("map"), blocks: outlines("block") }).toDataURL()
+    },
+    drawThumbnail({ background, mapColor, blockColor, map, blocks, view }) { //a new canvas with the whole level zoomed out to fit, map and blocks are lists of outlines, each a list of { x, y }, view is an optional { minX, minY, maxX, maxY } to fit instead
+        const [width, height] = levelPoolMenu.thumbnailSize
+        const canvas = document.createElement("canvas")
+        canvas.width = width
+        canvas.height = height
+        const c = canvas.getContext("2d")
+        c.fillStyle = background
+        c.fillRect(0, 0, width, height)
+        const points = (map.length ? map : blocks).flat() //the map sets the size, blocks can be thrown far away
+        if (!points.length) return canvas
+        const { minX, minY, maxX, maxY } = view || {
+            minX: Math.min(...points.map(p => p.x)), maxX: Math.max(...points.map(p => p.x)),
+            minY: Math.min(...points.map(p => p.y)), maxY: Math.max(...points.map(p => p.y)),
+        }
+        const pad = 6
+        const scale = Math.min((width - 2 * pad) / Math.max(1, maxX - minX), (height - 2 * pad) / Math.max(1, maxY - minY))
+        c.setTransform(scale, 0, 0, scale, (width - (maxX + minX) * scale) / 2, (height - (maxY + minY) * scale) / 2) //centered
+        const fill = (outlines, color) => { //one path like simulation.draw.setPaths(), so overlaps match the game
+            c.beginPath()
+            for (const outline of outlines) {
+                c.moveTo(outline[0].x, outline[0].y)
+                for (let i = 1; i < outline.length; i++) c.lineTo(outline[i].x, outline[i].y)
+                c.closePath()
+            }
+            c.fillStyle = color
+            c.fill()
+            c.strokeStyle = color
+            c.lineWidth = 1 / scale //thin floors stay visible zoomed out
+            c.stroke()
+        }
+        fill(blocks, blockColor)
+        fill(map, mapColor)
+        return canvas
+    },
+    zone(zoneName, names, emptyText) {
+        return `<div class="level-pool-zone level-pool-zone-${zoneName}" data-zone="${zoneName}">${names.length ? names.map(name => levelPoolMenu.chip(name)).join("") : `<span class="level-pool-empty">${emptyText}</span>`}</div>`
+    },
+    header(text, button = "") {
+        return `<div class="level-pool-header"><span>${text}</span>${button}</div>`
+    },
+    render(isOpening = false) {
+        const menu = document.getElementById("level-pool")
+        const pool = level.randomLevelPool()
+        const banned = level.playableLevels.filter(name => !pool.includes(name))
+        const community = level.poolableLevels(level.communityLevels).filter(name => !pool.includes(name)) //only progression levels, training levels are in the training menu
+        const local = level.poolableLevels(level.localLevels()).filter(name => !pool.includes(name))
+        const locked = name => `<span class="level-route-locked">${name}</span>`
+        const random = count => `<span class="level-route-random">${count} random</span>`
+        const addAll = (zoneName, names) => names.length ? `<button type="button" class="level-pool-button" data-add-all="${zoneName}">add all</button>` : ""
+        menu.innerHTML = `
+            ${levelPoolMenu.toolbar(true, "", isOpening)}
+            <div class="level-route">
+                <div class="level-route-order">
+                    ${[locked("initial"), random(6), locked("reactor"), random(3), locked("reservoir / factory / interferometer"), locked("subway"), locked("final")]
+                    .map((step, i) => i ? `<span class="level-route-step"><span class="level-route-dash">-</span>${step}</span>` : step).join("")}
+                </div>
+                <button type="button" class="level-pool-button" data-reset title="every n-gon level, no community levels">reset</button>
+            </div>
+            ${levelPoolMenu.zone("pool", pool, "")}
+            ${levelPoolMenu.header("local storage", addAll("local", local))}
+            ${levelPoolMenu.zone("local", local, "progression levels from local storage")}
+            ${levelPoolMenu.header("community progression", addAll("community", community))}
+            ${levelPoolMenu.zone("community", community, "progression community maps go here")}
+            ${levelPoolMenu.header("banned", addAll("banned", banned))}
+            ${levelPoolMenu.zone("banned", banned, "")}`
+    },
+    zoneUnder(event) { //the zone a dragged level goes to, other levels only drop on the pool, pool levels drop anywhere else on the page and go back where they came from
+        if (!levelPoolMenu.dragging) return null
+        const isOverPool = !!event.target.closest?.("#level-pool [data-zone='pool']")
+        if (isOverPool === levelPoolMenu.isInPool(levelPoolMenu.dragging)) return null
+        return document.querySelector(`#level-pool [data-zone="${isOverPool ? "pool" : levelPoolMenu.origin(levelPoolMenu.dragging)}"]`)
+    },
+    clearTargets() {
+        for (const el of document.querySelectorAll("#level-pool .level-pool-target")) el.classList.remove("level-pool-target")
+    },
+    close() {
+        const menu = document.getElementById("level-pool")
+        if (menu.matches(":popover-open")) menu.hidePopover()
+    },
+    showProgression() { //the settings shortcut opens the same picker with progression selected
+        if (!level.isTrainingMenuOpen()) level.chooseCommunityTraining()
+        document.getElementById("level-pool").showPopover()
+    },
+    showTraining() {
+        levelPoolMenu.close()
+        document.querySelector("#choose-grid [data-training-tab]")?.focus({ preventScroll: true })
+    },
+}
+{
+    const menu = document.getElementById("level-pool")
+    menu.addEventListener("beforetoggle", (event) => {
+        if (event.newState === "open") {
+            levelPoolMenu.localThumbnails = {}
+            levelPoolMenu.render(true) //local levels can change in the level editor
+            menu.scrollTop = 0
+        }
+    })
+    //a manual pop up, clicking outside it doesn't close it because a click on the title art starts a run
+    window.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape") return
+        if (menu.matches(":popover-open")) levelPoolMenu.showTraining()
+        else if (level.isTrainingMenuOpen()) level.closeTrainingMenu()
+    })
+    for (const details of document.querySelectorAll('details[name="front-page-group"]')) { //one title page menu at a time, opening one closes the training menu, see level.chooseCommunityTraining()
+        details.addEventListener("toggle", () => {
+            if (details.open && level.isTrainingMenuOpen()) level.closeTrainingMenu()
+        })
+    }
+    menu.addEventListener("click", (event) => {
+        const chip = event.target.closest("[data-level]")
+        if (chip) {
+            if (event.detail !== 0) chip.blur() //like menus, so the field key (space) doesn't move it again
+            levelPoolMenu.move(chip.dataset.level, !levelPoolMenu.isInPool(chip.dataset.level))
+            return
+        }
+        if (event.target.closest("[data-training-tab]")) return levelPoolMenu.showTraining()
+        const button = event.target.closest("button[data-reset], button[data-add-all]")
+        if (!button) return
+        const pool = localSettings.levelPool
+        if (button.dataset.reset !== undefined) {
+            pool.banned = []
+            pool.added = []
+        } else if (button.dataset.addAll === "banned") {
+            pool.banned = []
+        } else if (button.dataset.addAll === "community") {
+            pool.added = pool.added.filter(name => !level.communityLevels.includes(name)).concat(level.poolableLevels(level.communityLevels))
+        } else if (button.dataset.addAll === "local") {
+            pool.added = pool.added.filter(name => !level.localLevels().includes(name)).concat(level.poolableLevels(level.localLevels()))
+        }
+        levelPoolMenu.update()
+        if (event.detail === 0) { //the update replaces the button; keep keyboard focus in the menu
+            const action = button.dataset.addAll
+            const replacement = action ? menu.querySelector(`[data-add-all="${action}"]`) : null
+            const focusTarget = replacement || menu.querySelector("[data-reset]")
+            focusTarget.focus()
+        }
+    })
+    menu.addEventListener("keydown", (event) => {
+        const chip = event.target.closest("[data-level]")
+        if (!chip || (event.key !== "Enter" && event.key !== " ")) return
+        event.preventDefault()
+        const name = chip.dataset.level
+        levelPoolMenu.move(name, !levelPoolMenu.isInPool(name))
+        document.querySelector(`#level-pool [data-level="${name}"]`)?.focus() //keep focus on the level after it's redrawn in its new spot
+    })
+    menu.addEventListener("dragstart", (event) => {
+        const chip = event.target.closest?.("[data-level]")
+        if (!chip) return
+        levelPoolMenu.dragging = chip.dataset.level
+        event.dataTransfer.effectAllowed = "move"
+        event.dataTransfer.setData("text/plain", chip.dataset.level)
+        requestAnimationFrame(() => chip.classList.add("level-chip-dragging")) //after the browser grabs the drag image
+    })
+    menu.addEventListener("dragend", () => {
+        levelPoolMenu.dragging = null
+        levelPoolMenu.clearTargets()
+        for (const el of document.querySelectorAll("#level-pool .level-chip-dragging")) el.classList.remove("level-chip-dragging")
+    })
+    document.addEventListener("dragover", (event) => { //the whole page, so a level dragged out of the pool can be dropped anywhere
+        const zone = levelPoolMenu.zoneUnder(event)
+        if (!zone) {
+            levelPoolMenu.clearTargets()
+            return
+        }
+        event.preventDefault()
+        event.dataTransfer.dropEffect = "move"
+        if (!zone.classList.contains("level-pool-target")) { //highlights where the level will go
+            levelPoolMenu.clearTargets()
+            zone.classList.add("level-pool-target")
+        }
+    })
+    document.addEventListener("drop", (event) => {
+        const zone = levelPoolMenu.zoneUnder(event)
+        if (!zone) return
+        event.preventDefault()
+        const name = levelPoolMenu.dragging
+        levelPoolMenu.dragging = null
+        levelPoolMenu.move(name, zone.dataset.zone === "pool")
+    })
+}
+
+// Add the Spotify and Apple Music playlist URLs to the empty strings below.
+const musicPlaylists = {
+    "instrumental": {
+        links: {
+            youtube: "https://music.youtube.com/watch?v=lDlU08RU7Tk&list=PLea2HwrA4R0E",
+            spotify: "https://open.spotify.com/playlist/2omGOxvDtT9LD0MZIjy5dU?si=hyYkufc5RNehpEMY3kAZDg",
+            apple: ""
+        },
+        youtubePlaylistId: "PLea2HwrA4R0E",
+        trackIds: [
+            "lDlU08RU7Tk", "5Cblo3sEJ8Y", "Jz1gvBluvc8", "ypqHpzTeVAU", "3et63xTh2bE", "SEWALc6ySI8", "qYMsd6pDSTc", "ZhHocqvb-uE", "BlpbLX4dMCA", "ogzsMhPajgA",
+            "BzImHGz4R0M", "n4lGd0KVmZo", "5D2u3ASuelQ", "YdQz6NltncU", "sb7797FQG5Y", "XvvGYEjloOg", "ziSEJeTPfyU", "u1fWF8uD6pw", "uEVbyd-u2X4", "5qVaP7mNphA",
+            "PamBD5B2wXk", "wwXtPu-iA4Q", "TkiyWhETiJw", "NUnXxh5U25Y", "FM7ALFsOH4g", "pYHEpDnvVPk", "2Agt3XfmccM", "GGwrLidX0o4", "WKg_QOy6tRk", "aolhrxi6IKc",
+            "li7KsxPyiTk", "zR2KomIYg-k", "m_npTC0Rvgg"
+        ]
+    },
+    "old-stuff": {
+        links: {
+            youtube: "https://music.youtube.com/watch?v=qumO-vBey2Q&list=PLbjRnln-q160",
+            spotify: "https://open.spotify.com/playlist/4u5qJNiBofLl8hg2BPnmcU?si=sOOIr-hWT3-z8XWkhG69Nw",
+            apple: ""
+        },
+        youtubePlaylistId: "PLbjRnln-q160",
+        trackIds: [
+            "qumO-vBey2Q", "UR-B4tHmaF8", "yWQezjGjiqs", "r2cbOdNLQuQ", "8Nlbj1t99m8", "8Jtokmp8zoE", "uZj032MNIx4", "u2XoqyVfc8g", "OPoSuyu0dsY", "egqv1mtos6A",
+            "OvzJZTkWYoY", "tVdr_JWmnsA", "1MXAIKXsVdg", "lSDfCdycdvk", "1nAE38dulRk", "kMXapsSOCD0", "aYCshYyFzls", "fid78ktHTi8", "G_GxaoOJFTY", "n4lGd0KVmZo",
+            "NF9Pc2FvgQU", "Vd_nkokQwnQ", "EMeN_aGKtIY", "AH1gqeAq3jU", "3A8FK3C2OOk", "oMfjgQ8ptrE", "e0NVBfCyoAc", "yIDx6WvXayg", "n6x7GiV9JWA", "whfOqPwa264",
+            "PkwdtkULcmA", "5D2u3ASuelQ", "CZ4QLs2jSWg", "hns_lKWj4zM", "MXcjg9o9HJ8", "Mgk3oOOd1io", "Vs-eS6IwEAA", "d7DWBxxEdXw", "hTUAaW3oGGo", "gQjYgR_3UqQ",
+            "HVyUqxilaYY", "XRAk8hrtB3k", "15aa3WIHk5M", "nqhXgO1iA1I", "LfCm57XdpO0", "zuuyR7vrL6M", "MFHwrH3J57s", "Nt9bkgRQbLs", "FwNVTYwFXS0", "7vFGKHzY_38",
+            "KvaxYUfGHnk", "ZLLccZfVV20", "DD-5_lCEMHY", "-5yXN2hvkyg", "rHQrSx9LRN8", "FuJDNYT3n0w", "YdQz6NltncU", "sb7797FQG5Y", "XvvGYEjloOg", "ziSEJeTPfyU",
+            "5qVaP7mNphA", "GylmMVT5C8Q", "9zOKBvHNWus", "YLp2cW7ICCU", "2ObjtVdsV3I", "AB2yBmZi3yo", "LnDwBrm_jsY", "Enzxdvo8NOk", "I6OR9gOMyv0", "aBKEt3MhNMM",
+            "KMXNiw4H6qA", "_NywTcGOUkE", "bgJ-hyzl6jg", "f8_EpxhNEsA", "gQLvhLbs3X4", "wwXtPu-iA4Q", "CXHz_6qmHFg", "d6nNz9At9Tc", "DiHFk7ArzYc", "vEjRMVPydOQ",
+            "GGwrLidX0o4", "TkiyWhETiJw", "NUnXxh5U25Y", "FM7ALFsOH4g", "_fTWmUlTEqE", "pYHEpDnvVPk", "i0GC7Oo_Zo4", "g0az4OkM02Y", "2Agt3XfmccM"
+        ]
+    },
+    "hollow-knight": {
+        links: {
+            youtube: "https://music.youtube.com/watch?v=NSlkW1fFkyo&list=PLmOldskd2VbL7_t-NE9p6rEboq_v0AHko",
+            spotify: "https://open.spotify.com/album/2eWzQP7WEiAEhbg7HHIHR9",
+            apple: "https://music.apple.com/us/album/hollow-knight-original-soundtrack/1263341718"
+        }
+    },
+    "silksong": {
+        links: {
+            youtube: "https://music.youtube.com/watch?v=yUfD7w5y3Ug&list=PLbNT78Q7M14yC4iIN4RaQqGa6q6zY6bqc",
+            spotify: "https://open.spotify.com/album/2IsamtSh2nFGio5SnXmwWq",
+            apple: "https://music.apple.com/us/album/hollow-knight-silksong-original-soundtrack/1838949732"
+        }
+    },
+    "animal-well": {
+        links: {
+            youtube: "https://music.youtube.com/watch?v=yccb86YuwXs&list=PLS7HzNXh-PwozVLyFxG3a7-0HplJwKPY2",
+            spotify: "",
+            apple: ""
+        }
+    },
+    "disco-elysium": {
+        links: {
+            youtube: "https://music.youtube.com/watch?v=qMUoWTEIGx4&list=OLAK5uy_n_Y491JJMFBAxR3v_o5LLTgu20URfxpuw",
+            spotify: "https://open.spotify.com/album/5IhBwGYrQotmDvfLcdIj8R",
+            apple: "https://music.apple.com/us/album/disco-elysium/1659525966"
+        }
+    },
+    "undertale": {
+        links: {
+            youtube: "https://music.youtube.com/watch?v=3BR7-AzE2dQ&list=OLAK5uy_ljXkQlhVlWyV7BxSxMMzgOLbzYS_-JPt4",
+            spotify: "https://open.spotify.com/album/2M2Ae2SvZe3fmzUtlVOV5Z",
+            apple: "https://music.apple.com/us/album/undertale-soundtrack/1528217465"
+        }
+    },
+    "deltarune": {
+        links: {
+            youtube: "https://music.youtube.com/watch?v=XEdoMoV4D6k&list=OLAK5uy_kidGzGmzCUSJK1LAtIh7ngZwRF9MT3qjE",
+            spotify: "https://open.spotify.com/album/6putGW0KxGMrgTZzplp2pF",
+            apple: "https://music.apple.com/us/album/deltarune-chapter-1-original-game-soundtrack/1443475587"
+        }
+    }
+}
+
+const musicServiceNames = {
+    youtube: "YouTube",
+    spotify: "Spotify",
+    apple: "Apple Music"
+}
+
+function updateMusicLinks() {
+    const service = localSettings.musicService
+    for (const select of document.querySelectorAll("[data-music-service]")) select.value = service
+    for (const link of document.querySelectorAll("[data-music-playlist]")) {
+        const playlist = musicPlaylists[link.dataset.musicPlaylist]
+        const url = playlist && playlist.links[service]
+        if (url) {
+            link.href = url
+            link.classList.remove("music-link-unavailable")
+            link.removeAttribute("aria-disabled")
+            link.removeAttribute("title")
+        } else {
+            link.removeAttribute("href")
+            link.classList.add("music-link-unavailable")
+            link.setAttribute("aria-disabled", "true")
+            link.title = `${musicServiceNames[service]} link not added yet`
+        }
+    }
+}
+
+document.addEventListener("input", event => {
+    if (!event.target.matches("[data-music-service]")) return
+    localSettings.musicService = event.target.value
+    if (localSettings.isAllowed) localStorage.setItem("localSettings", JSON.stringify(localSettings)); //update local storage
+    updateMusicLinks()
+})
+
+document.addEventListener("click", event => {
+    const link = event.target.closest && event.target.closest("[data-music-playlist]")
+    if (!link || localSettings.musicService !== "youtube") return
+    const playlist = musicPlaylists[link.dataset.musicPlaylist]
+    if (!playlist || !playlist.trackIds) return
+    const trackId = playlist.trackIds[Math.floor(Math.random() * playlist.trackIds.length)]
+    link.href = `https://music.youtube.com/watch?v=${trackId}&list=${playlist.youtubePlaylistId}`
+})
+
+updateMusicLinks()
+
+document.getElementById("updates").addEventListener("toggle", function () {
+    function loadJSON(path, success, error) { //generic function to get JSON
+        const xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 200) {
+                    if (success)
+                        success(JSON.parse(xhr.responseText));
+                } else {
+                    if (error)
+                        error(xhr);
+                }
+            }
+        };
+        xhr.open("GET", path, true);
+        xhr.send();
+    }
+
+    // fetch(`https://api.github.com/repos/landgreen/n-gon/commits?per_page=100`)
+    //     .then(response => {
+    //         if (!response.ok) {
+    //             throw new Error(`GitHub API responded with status ${response.status}`);
+    //         }
+    //         return response.json();
+    //     })
+    //     .then(commits => {
+    //         // console.log(commits.sha)
+    //         const array = []
+    //         commits.forEach(commitData => {
+    //             const shortHash = commitData.sha.substr(0, 7);
+    //             array.push(shortHash)
+    //         });
+    //         console.log(array)
+    //     })
+    //     .catch(error => {
+    //         console.error('Error fetching commits:', error);
+    //     });
+
+
+
+    let text = `<pre><strong>n-gon</strong>: <a href="https://github.com/landgreen/n-gon/blob/master/todo.txt">todo list</a>, complete <a href="https://github.com/landgreen/n-gon/commits/master">change-log</a>, commit <a href="https://www.cornbread2100.com/n-gon-loader">loader</a><hr>`
+    document.getElementById("updates-div").innerHTML = text
+
+    ///  https://api.github.com/repos/landgreen/n-gon/stats/commit_activity
+    loadJSON('https://api.github.com/repos/landgreen/n-gon/commits',
+        function (data) {
+            // console.log(data[0].sha, lastShortHash)
+            // if (data[0].sha.substr(0, 7) === lastShortHash) {
+            //     text += "<br><em>https://github.com/landgreen/n-gon/</em>: hash matches latest version<hr>"
+            // } else {
+            //     text += "<br><em>https://github.com/landgreen/n-gon/</em>: hash does <strong>not</strong> match latest version<br><hr>"
+            // }
+            for (let i = 0, len = 20; i < len; i++) {
+                if (data[i].commit.message !== "quick bug fix") {
+                    text += "<strong>" + data[i].commit.author.date.substr(0, 10) + "</strong> - "; //+ "<br>"
+                    text += data[i].commit.message
+                    if (i < len - 1) text += "<hr>"
+                }
+            }
+            text += `</pre><hr><em>complete <a href="https://github.com/landgreen/n-gon/commits/master">change-log</a></em>`
+            document.getElementById("updates-div").innerHTML = text.replace(/\n/g, "<br />")
+        },
+        function (xhr) {
+            console.error(xhr);
+        }
+    );
+})
+const sound = {
+    tone(frequency, end = 1000, gain = 0.05) {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)(); //setup audio context
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        gainNode.gain.value = gain; //controls volume
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        oscillator.type = "sine"; // 'sine' 'square', 'sawtooth', 'triangle' and 'custom'
+        oscillator.frequency.value = frequency; // value in hertz
+        oscillator.start();
+        setTimeout(() => {
+            audioCtx.suspend()
+            audioCtx.close()
+        }, end)
+        // return audioCtx
+    },
+    portamento(frequency, end = 1000, shiftRate = 10, gain = 0.05) {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)(); //setup audio context
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        gainNode.gain.value = gain; //controls volume
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        oscillator.type = "sine"; // 'sine' 'square', 'sawtooth', 'triangle' and 'custom'
+        oscillator.frequency.value = frequency; // value in hertz
+        oscillator.start();
+        for (let i = 0, len = end * 0.1; i < len; i++) oscillator.frequency.setValueAtTime(frequency + i * shiftRate, audioCtx.currentTime + i * 0.01);
+        setTimeout(() => {
+            audioCtx.suspend()
+            audioCtx.close()
+        }, end)
+        // return audioCtx
+    }
+}
+
+document.getElementById("choose-grid").classList.add('choose-grid-no-images');
+
+//**********************************************************************
+// main loop 
+//**********************************************************************
+simulation.loop = simulation.normalLoop;
+
+function cycle() {
+    if (!simulation.paused) requestAnimationFrame(cycle);
+    const now = Date.now();
+    const elapsed = now - simulation.then; // calc elapsed time since last loop
+    if (elapsed > simulation.fpsInterval) { // if enough time has elapsed, draw the next frame
+        simulation.then = now - (elapsed % simulation.fpsInterval); // Get ready for next frame by setting then=now.   Also, adjust for fpsInterval not being multiple of 16.67
+
+        simulation.cycle++; //tracks game cycles
+        m.cycle++; //tracks player cycles  //used to alow time to stop for everything, but the player
+        if (input.fire || input.field) m.lastFireFieldCycle = m.cycle
+        try {
+            if (simulation.clearNow) {
+                simulation.clearNow = false;
+                simulation.clearMap();
+                level.start();
+                consoleMirror.showTitleLogs()
+            }
+            if (simulation.extraCycles) simulation.timeSkip(simulation.extraCycles)
+            simulation.loop();
+        } catch (error) {
+            consoleMirror.showError(error)
+            consoleMirror.isShownByLoop = true
+            throw error //keep the crash and the browser console error
+        }
+    }
+}
+
+saveGame.updateContinueButton() //show continue on the title page when there is an autosave

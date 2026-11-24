@@ -1,0 +1,4694 @@
+:root {
+    --build-bg-color: #aeb6c2;
+    --card-color: #fafcfd;
+    --hover-card-color: #e5e5ed;
+}
+
+/* * {
+    cursor: crosshair;
+} */
+
+/* override for text elements */
+/* p,
+span,
+input,
+textarea {
+    cursor: auto;
+} */
+
+body {
+    font-family: "Helvetica", "Arial", sans-serif;
+    margin: 0;
+    overflow: hidden;
+    cursor: auto;
+    /* cursor: crosshair; */
+    /* cursor: text; */
+    background-color: #f00;
+    /* filter: grayscale(1); */
+    /* transition: background-color 0.2s ease-in-out; */
+}
+
+#canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    user-select: none;
+}
+
+select {
+    font-size: 1em;
+    border: 1px #333 solid;
+    border-radius: 6px;
+    /* padding: 0px 5px; */
+    /* appearance: none; */
+    /* font-family: sans-serif; */
+    /* background-color: #eef1f6; */
+    color: #000;
+    cursor: pointer;
+}
+
+/* clickable things get the pointer cursor, text fields keep the browser's text cursor */
+button,
+input[type="checkbox"],
+input[type="checkbox"]+label,
+input[type="range"] {
+    cursor: pointer;
+}
+
+button:disabled {
+    cursor: default;
+}
+
+input {
+    padding: 0px 4px;
+    font-size: 0.8em;
+    border: 1px #333 solid;
+    border-radius: 4px;
+}
+
+a {
+    text-decoration: none;
+    color: #08c;
+}
+
+.music-link-unavailable {
+    color: #999;
+    cursor: default;
+}
+
+em {
+    opacity: 0.7;
+}
+
+#splash {
+    cursor: default;
+    user-select: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    transition: opacity 5s ease-in;
+}
+
+/* title page keys and mouse buttons light up while held, see js/title.js */
+#splash [data-key] {
+    transition: fill 0.3s ease-out;
+}
+
+#splash [data-key].pressed {
+    fill: rgb(0, 200, 255);
+    transition: none;
+}
+
+#splash [data-key="fire"].pressed {
+    fill: rgb(0, 140, 220);
+}
+
+*:focus {
+    outline: none;
+}
+
+table {
+    border-collapse: collapse;
+    width: 360px;
+}
+
+tr {
+    padding: 10px;
+    text-align: left;
+}
+
+td {
+    padding-left: 10px;
+}
+
+.key-input-train {
+    padding: 0px 5px;
+    border: 2px solid #444;
+    color: #444;
+    border-radius: 4px;
+    background-color: #d0d0d0;
+    text-align: center;
+    font-weight: 400;
+}
+
+.key-input {
+    cursor: pointer;
+    padding: 3px 8px;
+    border: 2px solid #333;
+    background-color: #fff;
+    text-align: center;
+}
+
+.pause-table {
+    width: auto;
+}
+
+.key-input-pause {
+    width: 15px;
+    padding: 0px 2px;
+    border: 2px solid #333;
+    background-color: #fff;
+    text-align: center;
+}
+
+.key-used {
+    color: #777;
+    font-size: 80%;
+}
+
+summary {
+    font-size: 1.2em;
+    cursor: pointer;
+}
+
+.SVG-button {
+    border: 1.5px #333 solid;
+    border-radius: 8px;
+    background-color: #fff;
+    cursor: pointer;
+}
+
+.SVG-button:hover {
+    background-color: #eee;
+}
+
+/* a toggle that's on, like experiment mode's show all, the experiment background gray */
+.SVG-button.is-on,
+.SVG-button.is-on:hover {
+    background-color: var(--build-bg-color);
+}
+
+.SVG-button-splash {
+    border: 2px #333 solid;
+    border-radius: 8px;
+    background-color: #fff;
+    transition: opacity 5s ease-in;
+}
+
+.SVG-button-splash:hover {
+    background-color: #eee;
+}
+
+#start-button {
+    position: absolute;
+    bottom: 160px;
+    right: 4px;
+    z-index: 12;
+    /* top-left | top-right | bottom-right | bottom-left */
+    /* border-radius: 8px 8px 0 0; */
+}
+
+#community-button {
+    position: absolute;
+    bottom: 56px;
+    right: 4px;
+    z-index: 12;
+    /* border-radius: 8px 0px 0 0; */
+}
+
+#experiment-button {
+    position: absolute;
+    bottom: 4px;
+    right: 4px;
+    z-index: 12;
+    /* border-radius: 8px 0 8px 8px; */
+}
+
+#continue-button {
+    display: none;
+    position: absolute;
+    bottom: 108px;
+    right: 4px;
+    z-index: 12;
+}
+
+/* an autosave adds continue above community and moves editor and start up one slot */
+body.has-autosave #start-button {
+    bottom: 212px;
+}
+
+#level-editor-splash-button {
+    position: absolute;
+    bottom: 108px;
+    right: 4px;
+    z-index: 12;
+}
+
+body.has-autosave #level-editor-splash-button {
+    bottom: 160px;
+}
+
+
+
+
+
+#construct {
+    display: none;
+    position: absolute;
+    bottom: 0%;
+    right: 0%;
+    z-index: 1;
+    width: 250px;
+    height: 200px;
+    background-color: #fff;
+    color: #000;
+    font-size: 0.9em;
+    white-space: pre;
+    padding: 3px;
+    border: 1px #333 solid;
+}
+
+#flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.choose-grid {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 10px 1px;
+    margin: 0px;
+    border: 0px;
+    z-index: 12;
+    max-height: 99vh;
+    font-size: 1.3em;
+    display: grid;
+    grid-template-columns: repeat(3, 384px);
+    align-items: stretch;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.25s linear;
+    overflow: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.choose-grid-no-images {
+    border-radius: 8px;
+    border: 10px solid #444;
+    gap: 10px;
+    background-color: #444;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0px;
+    z-index: 12;
+    max-height: 99vh;
+    font-size: 1.3em;
+    display: grid;
+    grid-template-columns: 384px;
+    align-items: stretch;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.25s linear;
+    overflow: auto;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    /* box-shadow: 7px 7px 6px rgba(0, 0, 0, 0.13); */
+}
+
+
+#choose-grid::-webkit-scrollbar {
+    display: none;
+}
+
+.choose-grid-module {
+    line-height: 160%;
+    background-color: var(--card-color);
+    font-size: 0.75em;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.choose-grid-module:hover {
+    background-color: var(--hover-card-color);
+}
+
+/* the autopilot tech's settings, in its pause menu description */
+.autopilot-settings-details summary {
+    cursor: pointer;
+    font-size: 0.9em;
+    color: #777;
+}
+
+.autopilot-settings {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.1em;
+    margin-top: 0.4em;
+    font-size: 0.85em;
+    line-height: 1.35;
+}
+
+.autopilot-settings label {
+    cursor: pointer;
+    min-width: 0;
+}
+
+.autopilot-settings-group {
+    grid-column: 1 / -1;
+    margin-top: 0.5em;
+    border-bottom: 1px solid #bbb;
+    color: #777;
+    font-size: 0.9em;
+}
+
+.autopilot-settings-reset {
+    grid-column: 1 / -1;
+    justify-self: end;
+    margin-top: 0.4em;
+    font-size: 0.9em;
+    cursor: pointer;
+}
+
+/* the power up choice the autopilot is about to pick, darker than a hover so it stands out */
+.choose-grid-module.autopilot-hover,
+.autopilot-hover .card-text {
+    background-color: #c5c5d3;
+}
+
+.choose-grid-module[onclick],
+.experiment-grid-module[onclick],
+.cancel-card[onclick],
+.research-card[onclick],
+.pause-eject,
+#exit,
+#choose-unPause,
+#choose-training {
+    cursor: pointer;
+}
+
+.choose-grid-module:hover .card-text {
+    background-color: var(--hover-card-color);
+}
+
+.research-select {
+    float: right;
+    margin-right: 10px;
+}
+
+.pause-grid {
+    padding: 2px;
+    margin: 0px;
+    display: none;
+    grid-template-columns: 384px;
+    grid-auto-rows: minmax(auto, auto);
+    align-content: start;
+    align-items: start;
+    z-index: 2;
+    font-size: 1.3em;
+}
+
+#pause-grid-right {
+    position: absolute;
+    top: -2px;
+    right: -4px;
+    overflow: auto;
+    max-height: 100vh;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    padding: 1px;
+}
+
+#pause-grid-right::-webkit-scrollbar {
+    display: none;
+}
+
+#pause-grid-left {
+    position: absolute;
+    top: -2px;
+    left: -4px;
+    overflow: auto;
+    max-height: 100vh;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+#pause-grid-left::-webkit-scrollbar {
+    display: none;
+}
+
+.pause-grid-module {
+    line-height: 160%;
+    background-color: var(--card-color);
+    font-size: 0.75em;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+/* top of the left pause column (status) and the pause settings menu */
+.pause-top {
+    padding: 6px 8px;
+}
+
+.pause-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0px 8px;
+    /* if a row doesn't fit on one line the right side wraps instead of getting cut off */
+}
+
+.pause-setting input {
+    margin-left: 0px;
+}
+
+.pause-hint {
+    color: #999;
+}
+
+.pause-hint .key-input-train {
+    padding: 0px 4px;
+    border-width: 1.5px;
+}
+
+#pause-console {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 5px;
+    font-family: monospace;
+}
+
+#pause-console-input {
+    flex: 1;
+    min-width: 0;
+    padding: 3px 6px;
+    font-family: monospace;
+    font-size: 0.85em;
+    color: #000;
+    background-color: #fff;
+    border: 1px solid #999;
+    border-radius: 3px;
+}
+
+.sort {
+    padding: 0.1em 0.3em;
+    border: 1px solid #444;
+    /* min-height: 88px; */
+    line-height: 100%;
+    background-color: var(--card-color);
+}
+
+/* the pause menu's sort bar is one line, the search box fills what's left */
+#pause-grid-right .sort {
+    display: flex;
+    align-items: center;
+    column-gap: 4px;
+}
+
+#pause-sort-input {
+    flex: 1;
+    min-width: 0;
+}
+
+/* the experiment sort bar wraps like text, the search box stretches to the end of its row */
+.experiment-start-box .sort {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: 6px;
+    row-gap: 4px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+#sort-input {
+    flex: 1 1 5em;
+    min-width: 0;
+}
+
+.sort-button {
+    border: 1px #333 solid;
+    border-radius: 0.4em;
+    background-color: #fff;
+    font-size: 0.5em;
+    /* padding: 0.3em; */
+
+}
+
+.sort-button:hover {
+    background-color: #eee;
+}
+
+.pause-eject .card-text {
+    animation: techColorCycle 1s linear infinite alternate;
+}
+
+#experiment-grid {
+    display: flex;
+    justify-content: center;
+    padding: 0px;
+    margin: 0px;
+    border: 0px;
+    background-color: var(--build-bg-color);
+    display: none;
+    grid-template-columns: repeat(auto-fit, 384px);
+    grid-auto-flow: row;
+    /* always cover the whole screen, a short search would show the paused game behind it */
+    min-height: 100vh;
+    align-content: start;
+    /* grid-auto-rows: minmax(auto, auto); */
+    position: relative;
+    /* bottom: 0px; */
+    z-index: 10;
+    font-size: 1.3em;
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
+}
+
+#experiment-grid::-webkit-scrollbar {
+    display: none;
+}
+
+.experiment-grid-module {
+    line-height: 160%;
+    background-color: var(--card-color);
+    font-size: 0.75em;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+/* off screen tech cards skip layout, paint, and animation until they scroll close,
+   the placeholder is a tech card's usual height (.card-text min-height + 1em), auto remembers
+   each card's real size after it's drawn once, the media queries below match their min-height,
+   not with sideways descriptions, its rotated text overflows the card and would get clipped */
+body:not(.sideways-descriptions) .experiment-grid-module[id^="tech-"] {
+    content-visibility: auto;
+    contain-intrinsic-block-size: auto calc(88px + 1em);
+}
+
+/* show all is off, tech you can't take yet and JUNK tech you haven't picked are hidden */
+#experiment-grid.hide-unavailable .experiment-grid-disabled,
+#experiment-grid.hide-unavailable .experiment-junk:not(.build-tech-selected) {
+    display: none;
+}
+
+/* tech that doesn't match the experiment or pause menu search, the ids beat .card-background's display: flex */
+#experiment-grid .search-filtered,
+#pause-grid-right .search-filtered {
+    display: none;
+}
+
+.grid-title {
+    padding-bottom: 6px;
+    padding-top: 4px;
+    font-size: 1.4em;
+    font-weight: 600;
+}
+
+.experiment-grid-module:hover:not(.build-tech-selected, .build-field-selected, .build-gun-selected) {
+    background-color: var(--card-color);
+}
+
+.experiment-start-box {
+    background-color: var(--card-color);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    align-self: start;
+    width: 276px;
+    line-height: 200%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border: 2px #333 solid;
+    border-top: 0px;
+    border-radius: 10px;
+    border-top-left-radius: 0px;
+    /* border-bottom-left-radius: 0px; */
+    border-top-right-radius: 0px;
+    padding: 0.2em 0px;
+    /* height: 210px; */
+    box-shadow: 8px 8px 6px rgba(0, 0, 50, 0.15);
+    /* opacity: 0.1; */
+}
+
+.card-background {
+    height: 340px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    display: flex;
+    justify-content: flex-end;
+    flex-direction: column;
+}
+
+.card-text {
+    background-color: var(--card-color);
+    padding: 0.5em 1em;
+    border: 1px solid #444;
+    margin-top: -1px;
+    margin-right: -1px;
+    font-size: 0.92em;
+    min-height: 88px;
+    /* border-radius: 5px; */
+}
+
+.sideways-descriptions .card-text {
+    transform: rotate(90deg);
+    transform-origin: center;
+}
+
+.sideways-descriptions .card-background {
+    min-height: 374px;
+    margin-block: 0;
+    justify-content: center;
+}
+
+.sideways-descriptions .choose-grid-module,
+.sideways-descriptions .experiment-grid-module,
+.sideways-descriptions .pause-grid-module {
+    overflow: visible;
+}
+
+.cancel-card {
+    text-align: center;
+    font-size: 1.1em;
+    font-weight: 100;
+    justify-self: end;
+    border: 1px solid #444;
+    margin-top: -1px;
+    margin-right: -1px;
+    padding: 1px;
+    line-height: 160%;
+    background-color: var(--card-color);
+}
+
+.cancel-card:hover {
+    background-color: var(--hover-card-color);
+}
+
+.research-card {
+    font-size: 1.1em;
+    font-weight: 100;
+    border: 1px solid #444;
+    margin-top: -1px;
+    margin-right: -1px;
+    padding: 1px 0px 1px 10px;
+    line-height: 160%;
+    background-color: var(--card-color);
+}
+
+.research-card:hover {
+    background-color: var(--hover-card-color);
+}
+
+.research-cancel {
+    display: flex;
+    gap: 10px;
+    line-height: 160%;
+    /* background-color: var(--card-color); */
+    font-size: 1em;
+    position: sticky;
+    top: 0px;
+    z-index: 10;
+}
+
+.sticky {
+    position: sticky;
+    top: 0px;
+    z-index: 10;
+}
+
+/* keeps 5 columns at 1440px */
+@media (min-width: 1710px) and (max-width: 1950px) {
+
+    .experiment-grid-module,
+    .choose-grid-module,
+    .pause-grid-module,
+    .research-cancel {
+        line-height: 143%;
+        font-size: 0.68em;
+    }
+
+    .research-cancel {
+        font-size: 0.9em;
+    }
+
+    #experiment-grid,
+    .choose-grid,
+    .pause-grid {
+        grid-template-columns: repeat(auto-fit, 340px);
+    }
+
+    .card-background {
+        height: 290px;
+    }
+
+    .sideways-descriptions .card-background {
+        min-height: 330px;
+    }
+
+    .card-text {
+        min-height: 75px;
+    }
+
+    body:not(.sideways-descriptions) .experiment-grid-module[id^="tech-"] {
+        contain-intrinsic-block-size: auto calc(75px + 1em);
+    }
+}
+
+/* (min-width: 30em) and (max-width: 80em) */
+@media (max-width: 1709px) {
+
+    .experiment-grid-module,
+    .choose-grid-module,
+    .pause-grid-module {
+        line-height: 139%;
+        font-size: 0.58em;
+    }
+
+    .research-cancel {
+        font-size: 0.8em;
+    }
+
+    #experiment-grid,
+    .choose-grid,
+    .pause-grid {
+        grid-template-columns: repeat(auto-fit, 285px);
+    }
+
+    .card-background {
+        height: 240px;
+    }
+
+    .sideways-descriptions .card-background {
+        min-height: 275px;
+    }
+
+    .card-text {
+        min-height: 64px;
+    }
+
+    body:not(.sideways-descriptions) .experiment-grid-module[id^="tech-"] {
+        contain-intrinsic-block-size: auto calc(64px + 1em);
+    }
+}
+
+/* .card-text */
+.choose-grid-no-images .card-text,
+.choose-grid-no-images .research-card,
+.choose-grid-no-images .cancel-card {
+    border-radius: 5px;
+}
+
+.experiment-grid-module:hover .card-text {
+    background-color: var(--hover-card-color);
+}
+
+.build-tech-selected .card-text {
+    background-color: hsl(253, 100%, 84%);
+}
+
+.build-tech-selected.experiment-grid-module:hover .card-text {
+    background-color: hsl(253, 100%, 81%);
+}
+
+.build-gun-selected .card-text {
+    background-color: hsl(218, 100%, 81%);
+}
+
+.build-gun-selected.experiment-grid-module:hover .card-text {
+    background-color: hsl(218, 100%, 76%);
+}
+
+.build-field-selected .card-text {
+    background-color: hsl(193, 100%, 75%);
+}
+
+.build-field-selected.experiment-grid-module:hover .card-text {
+    background-color: hsl(193, 100%, 68%);
+}
+
+.experiment-grid-disabled {
+    /* background-color: var(--build-bg-color); */
+    /* color: #000; */
+    opacity: 0.35;
+}
+
+.experiment-grid-disabled[data-descr] {
+    position: relative;
+}
+
+.experiment-grid-disabled[data-descr]:hover::after {
+    content: '\a \00a0 \00a0 \00a0 REQUIRES:\a \00a0 \00a0 \00a0 ' attr(data-descr);
+    white-space: pre-wrap;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--build-bg-color);
+    z-index: 1;
+    pointer-events: none;
+    opacity: 1;
+    transition: opacity 0.5s ease;
+}
+
+#info {
+    pointer-events: none;
+    position: absolute;
+    bottom: 3px;
+    left: 3px;
+    z-index: 10;
+    font-size: 1.5em;
+    transition: opacity 5s ease-in;
+    width: 100%;
+
+    /* border: 1.5px #333 solid; */
+    /* border-radius: 8px; */
+    /* background-color: #fff; */
+}
+
+#info summary {
+    width: fit-content;
+    pointer-events: auto;
+}
+
+#info .details-div {
+    pointer-events: auto;
+}
+
+.details-div {
+    padding: 10px;
+    border-radius: 8px;
+    border: 2px #333 solid;
+    background-color: var(--card-color);
+}
+
+#settings-details>.details-div {
+    max-width: 24rem;
+}
+
+body:has(#level-pool:popover-open) #choose-grid:has(.training-picker) {
+    display: none;
+}
+
+.training-picker-title,
+.level-pool-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5em;
+}
+
+/* descriptions in the level menus */
+.level-pool-note {
+    font-size: 0.8em;
+    color: #888;
+}
+
+.level-route {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.level-route-order {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 5px;
+    font-size: 1rem;
+    min-width: 0;
+}
+
+/* a dash and the step after it wrap together */
+.level-route-step {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.level-route-dash,
+.level-route-locked {
+    color: #aaa;
+}
+
+.level-route-random {
+    white-space: nowrap;
+}
+
+.level-pool-zone {
+    min-height: 1.9em;
+    transition: background-color 0.1s;
+}
+
+.level-pool-target {
+    outline: 1px dashed #333;
+    outline-offset: 1px;
+    background-color: var(--hover-card-color);
+}
+
+.level-pool-empty {
+    grid-column: 1 / -1;
+    align-self: center;
+    text-align: center;
+    color: #4a525e;
+}
+
+.level-chip {
+    cursor: grab;
+    user-select: none;
+}
+
+.level-chip:active {
+    cursor: grabbing;
+}
+
+/* levels waiting outside the pool */
+.level-chip-out {
+    color: #666;
+}
+
+.level-chip-out:hover {
+    color: #000;
+}
+
+.level-chip-dragging {
+    opacity: 0.3;
+}
+
+.level-chip-thumbnail {
+    display: block;
+    width: 100%;
+    aspect-ratio: 2;
+    pointer-events: none;
+}
+
+.level-chip-out .level-chip-thumbnail {
+    opacity: 0.65;
+}
+
+.level-chip-out:is(:hover, :focus-visible) .level-chip-thumbnail {
+    opacity: 1;
+}
+
+.level-chip-name {
+    display: block;
+    padding: 3px 8px 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.level-pool-shake {
+    animation: level-pool-shake 0.3s;
+}
+
+@keyframes level-pool-shake {
+
+    25%,
+    75% {
+        transform: translateX(-3px);
+    }
+
+    50% {
+        transform: translateX(3px);
+    }
+}
+
+
+#dmg {
+    position: absolute;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    display: none;
+    /* background-color also set in mass-energy tech */
+    background-color: #f67;
+    opacity: 0;
+    transition: opacity 1s;
+}
+
+#defense-bar {
+    position: absolute;
+    top: 8px;
+    left: 15px;
+    height: 7px;
+    width: 0px;
+    transition: width 0.25s linear;
+    opacity: 1;
+    z-index: 2;
+    pointer-events: none;
+    background-color: #fff;
+    border-right: 1.5px solid #777;
+    display: none;
+}
+
+#health {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    height: 20px;
+    width: 0px;
+    transition: width 1s ease-out;
+    z-index: 2;
+    pointer-events: none;
+    background-color: rgb(9, 245, 166);
+    border-right: 2px solid rgb(51, 162, 125);
+    display: none;
+}
+
+#health-bg {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    height: 20px;
+    width: 0px;
+    transition: width 1s ease-out;
+    background-color: #032;
+    opacity: 0.1;
+    z-index: 1;
+    pointer-events: none;
+    display: none;
+}
+
+/* background on title page */
+#fade-out {
+    position: absolute;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    background-color: #e2e9ec;
+    opacity: 1;
+    transition: opacity 3s;
+    pointer-events: none;
+}
+
+#guns {
+    position: absolute;
+    top: 82px;
+    left: 15px;
+    z-index: 2;
+    font-size: 23px;
+    color: #222;
+    background-color: rgba(255, 255, 255, 0.2);
+    line-height: 120%;
+    user-select: none;
+    pointer-events: none;
+    padding: 0px 5px 0px 5px;
+    border-radius: 5px;
+}
+
+#field {
+    position: absolute;
+    top: 45px;
+    left: 15px;
+    z-index: 2;
+    font-size: 23px;
+    color: #000;
+    text-align: right;
+    opacity: 0.7;
+    background-color: rgba(190, 210, 245, 0.25);
+    user-select: none;
+    pointer-events: none;
+    padding: 0px 5px 0px 5px;
+    border-radius: 5px;
+}
+
+/* #damage-num {
+    position: absolute;
+    top: 80px;
+    left: 15px;
+    z-index: 2;
+    font-size: 23px;
+    color: rgb(108, 0, 0);
+    text-align: right;
+    opacity: 0.7;
+    background-color: rgba(190, 210, 245, 0.25);
+    user-select: none;
+    pointer-events: none;
+    padding: 0px 5px 0px 5px;
+    border-radius: 5px;
+} */
+
+#right-HUD {
+    position: absolute;
+    top: 15px;
+    right: 10px;
+    z-index: 2;
+    font-size: 20px;
+    text-align: right;
+    line-height: 120%;
+    user-select: none;
+    pointer-events: none;
+    /*border: 2px solid rgba(0, 0, 0, 0.4);*/
+    color: #222;
+    padding: 0px 5px 0px 5px;
+    border-radius: 5px;
+    opacity: 0.35;
+    background-color: rgba(255, 255, 255, 0.4);
+}
+
+.constraint-module {
+    line-height: 160%;
+    padding: 20px;
+    border-radius: 5px;
+    font-size: 1.2em;
+    font-family: monospace;
+    font-weight: 800;
+    text-align: center;
+    color: #624;
+    background-color: rgba(255, 240, 250, 1);
+}
+
+#right-HUD-constraint {
+    position: absolute;
+    top: 12px;
+    right: 10px;
+    z-index: 2;
+    font-size: 20px;
+    text-align: right;
+    line-height: 120%;
+    user-select: none;
+    pointer-events: none;
+    padding: 5px 10px 5px 10px;
+    border-radius: 8px;
+    color: #624;
+    opacity: 0.35;
+    background-color: rgba(255, 215, 241, 0.4);
+    /* color: rgb(141, 23, 88);
+    opacity: 0.35;
+    background-color: rgba(141, 23, 88, 0.1); */
+    /* font-weight: 400; */
+    transition: all 0.5s linear;
+}
+
+.constraint {
+    color: rgb(141, 23, 88);
+}
+
+.metallic-sparkle {
+    background: linear-gradient(90deg,
+            #c38aa6,
+            #e6c0d9,
+            #dca4c6,
+            #c38aa6,
+            #e6c0d9,
+            #dca4c6,
+            #c38aa6);
+    background-size: 200% 100%;
+    background-clip: text;
+    color: transparent;
+    animation: shimmer 4s infinite linear;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+#text-log {
+    z-index: 2;
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    padding: 10px;
+    border-radius: 4px;
+    line-height: 140%;
+    color: #555;
+    background-color: rgba(255, 255, 255, 0.5);
+    pointer-events: none;
+    user-select: none;
+    font-size: 1.2em;
+    font-family: monospace;
+    overflow-wrap: anywhere;
+}
+
+.color-text {
+    color: #000;
+}
+
+.color-var {
+    color: hsl(253, 100%, 58%);
+}
+
+.color-symbol {
+    color: hsl(290, 100%, 40%);
+}
+
+.color-gun {
+    color: hsl(218, 100%, 58%);
+}
+
+.color-paused {
+    color: #fff;
+    background-color: #678;
+    /* font-weight: 200; */
+    padding: 0px 2px;
+}
+
+/* .color-paused {
+    position: relative;
+
+    font-weight: bold;
+    animation: vcr-random 3s infinite;
+}
+
+@keyframes vcr-random {
+    0% {
+        text-shadow: 0.5px 0 rgba(255, 0, 0, 0.5), -0.5px 0 rgba(0, 255, 255, 0.5);
+        transform: translate(0);
+    }
+
+    2% {
+        text-shadow: 1.5px 0 rgba(255, 0, 0, 0.6), -1.5px 0 rgba(0, 255, 255, 0.6);
+        transform: translate(1px, 0);
+    }
+
+    4% {
+        text-shadow: -1px 0 rgba(255, 0, 0, 0.5), 1px 0 rgba(0, 255, 255, 0.5);
+        transform: translate(-1px, 0);
+    }
+
+    5% {
+        text-shadow: none;
+        transform: translate(0);
+    }
+
+
+    6% {
+        text-shadow: 2px 0 rgba(255, 0, 0, 0.3), -1px 0 rgba(0, 255, 255, 0.3);
+        opacity: 0.7;
+    }
+
+    8% {
+        text-shadow: none;
+        opacity: 1;
+    }
+
+    10%,
+    100% {
+        text-shadow: none;
+        transform: translate(0);
+        opacity: 1;
+    }
+} */
+
+.highlight {
+    border-radius: 6px;
+    background-color: #ff0;
+    padding: 3px;
+}
+
+.energy {
+    color: #0ad;
+    letter-spacing: 1px;
+}
+
+.color-s {
+    color: #04f;
+    letter-spacing: 1px;
+}
+
+.color-d {
+    color: #f03;
+    letter-spacing: 1px;
+}
+
+.color-p {
+    color: #067;
+    letter-spacing: 1px;
+}
+
+.spore {
+    color: #067;
+    letter-spacing: 1px;
+}
+
+.color-h {
+    color: #0b7;
+    letter-spacing: 1px;
+}
+
+.explode {
+    color: #d60;
+    letter-spacing: 1px;
+}
+
+[data-help] {
+    cursor: help;
+}
+
+button[data-help],
+button [data-help] {
+    cursor: pointer;
+}
+
+#hover-help {
+    display: none;
+    position: fixed;
+    inset: auto;
+    box-sizing: border-box;
+    max-width: min(200px, calc(100vw - 16px));
+    margin: 0;
+    padding: 7px 10px;
+    color: #444;
+    background-color: rgb(255, 255, 255);
+    border: 1.5px solid #555;
+    border-radius: 8px;
+    box-shadow: 4px 4px 6px rgba(0, 0, 50, 0.15);
+    font: 14px/1.35 Arial, Helvetica, sans-serif;
+    pointer-events: none;
+}
+
+#hover-help:popover-open {
+    display: block;
+}
+
+#hover-help.hover-help-open {
+    display: block;
+}
+
+#hover-help[data-help-key="coupling"],
+#hover-help[data-help-key="orb-coupling"],
+#hover-help[data-help-key="mob-death"] {
+    max-width: min(330px, calc(100vw - 16px));
+}
+
+.hover-help-laser-path {
+    position: absolute;
+    z-index: 0;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    border-radius: inherit;
+    pointer-events: none;
+}
+
+.hover-help-laser-path polyline {
+    fill: none;
+    stroke: #f02;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+    opacity: 0.45;
+}
+
+.hover-help-foam-bubbles {
+    position: absolute;
+    z-index: 0;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    border-radius: inherit;
+    pointer-events: none;
+}
+
+.hover-help-foam-bubbles circle {
+    fill: rgba(0, 0, 0, 0.04);
+    stroke: #777;
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+    opacity: 0.5;
+}
+
+.hover-help-foam-copy {
+    position: relative;
+    z-index: 1;
+}
+
+.hover-help-laser-copy {
+    position: relative;
+    z-index: 1;
+}
+
+.color-m {
+    color: hsl(253, 100%, 50%);
+    letter-spacing: 1px;
+}
+
+.color-g {
+    color: hsl(218, 80%, 40%);
+    letter-spacing: 1px;
+}
+
+.color-ammo {
+    color: #356;
+}
+
+.expend {
+    text-decoration: underline;
+    text-decoration-color: #f7b;
+    /* text-decoration-style: double; */
+    /* text-decoration-style: wavy; */
+    text-decoration-thickness: 0.16em;
+}
+
+.color-tier {
+    color: #006aff;
+}
+
+.color-choice {
+    display: inline-block;
+}
+
+.color-choice span {
+    display: inline-block;
+    animation: bounce 3s infinite;
+    transform-origin: bottom;
+}
+
+.color-choice span:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.color-choice span:nth-child(2) {
+    animation-delay: 1s;
+}
+
+.color-choice span:nth-child(3) {
+    animation-delay: 2s;
+}
+
+@keyframes bounce {
+    0% {
+        transform: translateY(0);
+    }
+
+    15% {
+        transform: translateY(-2px);
+    }
+
+    30% {
+        transform: translateY(0);
+    }
+
+    100% {
+        transform: translateY(0);
+    }
+}
+
+.color-invulnerable {
+    color: #fff;
+    text-shadow: 0px 0px 7px #000;
+}
+
+.color-dark-matter {
+    color: #246;
+    text-shadow: 0px 0px 7px #246;
+}
+
+.color-wire {
+    /* font-family: 'Century Gothic', AppleGothic, 'URW Gothic L', sans-serif; */
+    /* color: rgba(0, 0, 0, 0.05);
+    -webkit-text-stroke: 1px #000;
+    font-family: 'Inter', sans-serif;
+    font-weight: 900;
+    letter-spacing: 0px; */
+
+
+    text-decoration: #000 wavy underline 2px;
+    text-decoration-skip-ink: none;
+}
+
+.color-tokamak {
+    color: #5c3ab8;
+    font-weight: 100;
+    text-shadow: 0px -5px 9px rgb(255, 0, 204);
+}
+
+
+
+.color-dup {
+    font-variant: small-caps;
+    letter-spacing: 1px;
+    text-shadow: 1.5px -1.5px hsla(243, 100%, 38%, 0.2);
+}
+
+.color-death {
+    /* a faint ghost of the word floats above it, used for mob death tech */
+    color: #3e4458;
+    text-shadow: 0 -0.45em 0 rgba(95, 110, 170, 0.25);
+}
+
+.color-remove {
+    text-decoration: line-through;
+    /* letter-spacing: 2px; */
+    border-radius: 3px;
+    padding: 0px 3px;
+    background-color: hsl(255, 40%, 71%);
+    color: #fff;
+}
+
+.color-cloaked {
+    letter-spacing: 2px;
+    animation: cloak 9s linear infinite;
+    color: #000;
+}
+
+/* opacity only, so it runs on the GPU, 5s solid, 1s fade out, 2s hidden, 1s fade in */
+@keyframes cloak {
+    0%,
+    55.556%,
+    100% {
+        opacity: 1;
+    }
+
+    66.667%,
+    88.889% {
+        opacity: 0;
+    }
+}
+
+.color-laser {
+    color: #f02;
+    font-weight: 100;
+    letter-spacing: -0.8px;
+}
+
+.color-plasma {
+    color: #c0e;
+    letter-spacing: 1px;
+    background-color: rgba(132, 0, 255, 0.06);
+    padding: 2px;
+    border-radius: 9px;
+    letter-spacing: 1px;
+}
+
+.color-worm {
+    color: #fff;
+    text-shadow: 1px 0px 2px #234;
+}
+
+.color-portal span:nth-child(1) {
+    color: hsl(197, 100%, 42%);
+    background-color: hsla(197, 100%, 50%, 0.1);
+}
+
+.color-portal span:nth-child(2) {
+    color: hsl(29, 100%, 48%);
+    background-color: hsla(29, 100%, 50%, 0.1);
+}
+
+.color-print {
+    color: #567;
+    /* font-family: monospace; */
+    font-variant-caps: small-caps;
+    /* font-size: 1.3em; */
+}
+
+.color-defense {
+    background-color: hsla(227, 9%, 71%, 0.279);
+    padding: 2px;
+    border-radius: 4px;
+    letter-spacing: 1px;
+    font-weight: 100;
+}
+
+.color-bot {
+    font-variant: small-caps;
+    background-color: rgba(75, 125, 150, 0.06);
+    border: 0.1em solid #146;
+    color: #146;
+    padding: 0em 0.3em 0.08em 0.3em;
+    font-weight: 400;
+}
+
+.no-box {
+    border: none;
+    background-color: transparent;
+    padding: 0;
+}
+
+.block {
+    background-color: rgba(0, 0, 0, 0.1);
+    border: 0.1em solid #333;
+    padding: 0.5px;
+    font-weight: 100;
+}
+
+.color-cancel {
+    background-color: var(--card-color);
+    border: 0.15em #444 solid;
+    padding: 0.2em;
+    border-radius: 0.2em;
+    font-weight: 800;
+    font-size: 1em;
+}
+
+.color-junk {
+    letter-spacing: 1px;
+    font-family: Lucida Console, Courier, monospace;
+}
+
+.color-r {
+    color: #f7b;
+    letter-spacing: 1px;
+}
+
+.energylop {
+    text-decoration: underline;
+    font-weight: 100;
+    letter-spacing: -1px;
+}
+
+.color-alt {
+    text-decoration: underline;
+    font-weight: 100;
+    letter-spacing: -1px;
+}
+
+.faded {
+    opacity: 0.7;
+    font-size: 90%;
+}
+
+.circle-grid-title {
+    width: 1.5em;
+    height: 1.5em;
+    border-radius: 50%;
+    display: inline-block;
+    margin-bottom: -0.45em;
+    margin-top: -0.3em;
+}
+
+.circle-grid {
+    width: 1.32em;
+    height: 1.32em;
+    border-radius: 50%;
+    display: inline-block;
+    margin-bottom: -0.3em;
+}
+
+.circle-grid-instant {
+    width: 1.15em;
+    height: 1.15em;
+    border-radius: 50%;
+    border: 0.18em solid hsl(255, 100%, 71%);
+    display: inline-block;
+    margin-bottom: -0.5em;
+    margin-top: -0.3em;
+    /* margin-bottom: -0.35em; */
+}
+
+.circle-grid-skin {
+    width: 1.3em;
+    height: 1.3em;
+    border-radius: 50%;
+    display: inline-block;
+    background-color: #eee;
+    opacity: 1;
+    border: 0.08em solid #222;
+    position: absolute;
+    top: -0.05em;
+    left: 0em;
+}
+
+.circle-grid-skin-eye {
+    width: 0.18em;
+    height: 0.18em;
+    border-radius: 50%;
+    display: inline-block;
+    background-color: #fff;
+    border: 0.08em solid #222;
+    position: absolute;
+    top: 0.45em;
+    left: 0.9em;
+}
+
+.junk {
+    background-color: hsl(254, 44%, 75%);
+    border-radius: 25%;
+}
+
+.research-circle {
+    width: 0.9em;
+    height: 0.9em;
+    border-radius: 50%;
+    display: inline-block;
+    background-color: rgb(255, 134, 194);
+    /* rgb(255, 132, 193); */
+    border: 0.068em #fff solid;
+    opacity: 1;
+    margin-bottom: -0.1em;
+}
+
+.heal-circle {
+    width: 0.95em;
+    height: 0.95em;
+    border-radius: 50%;
+    display: inline-block;
+    background-color: #0d9;
+    border: 0.05em #fff solid;
+    opacity: 0.85;
+    margin-bottom: -1px;
+}
+
+.heal-circle-energy {
+    width: 0.95em;
+    height: 0.95em;
+    border-radius: 50%;
+    display: inline-block;
+    background-color: #ff0;
+    border: 0.05em #000 solid;
+    opacity: 0.85;
+    margin-bottom: -2px;
+}
+
+.ammo-circle {
+    width: 0.75em;
+    height: 0.75em;
+    border-radius: 50%;
+    display: inline-block;
+    background-color: #467;
+    border: 0.05em #fff solid;
+    opacity: 0.95;
+    margin-bottom: -0.5px;
+}
+
+.coupling-circle {
+    width: 0.7em;
+    height: 0.7em;
+    border-radius: 50%;
+    display: inline-block;
+    background-color: #0ae;
+    border: 0.05em #fff solid;
+    margin-bottom: -0.5px;
+}
+
+.energy-circle {
+    width: 0.7em;
+    height: 0.7em;
+    border-radius: 50%;
+    display: inline-block;
+    background-color: #ff0;
+    border: 0.05em #000 solid;
+    margin-bottom: -0.5px;
+}
+
+.qubit-circle {
+    width: 0.7em;
+    height: 0.7em;
+    border-radius: 50%;
+    display: inline-block;
+    background-color: #fff;
+    border: 0.05em #000 solid;
+    margin-bottom: -0.5px;
+}
+
+.boost-circle {
+    width: 0.7em;
+    height: 0.7em;
+    border-radius: 50%;
+    display: inline-block;
+    background-color: #f03;
+    border: 0.05em #fff solid;
+    opacity: 0.9;
+    margin-bottom: -0.5px;
+}
+
+@keyframes pulse {
+    0% {
+        border-radius: 0%;
+    }
+
+    100% {
+        border-radius: 50%;
+    }
+}
+
+.field {
+    background-color: #0cf;
+}
+
+.tech {
+    background-color: hsl(255, 100%, 71%);
+}
+
+.gun {
+    background-color: rgb(0, 80, 218);
+}
+
+.heal {
+    background-color: #0d9;
+}
+
+.research {
+    background-color: rgb(255, 86, 171);
+}
+
+.color-speed {
+    display: inline-block;
+    transform: skew(-27deg);
+    /* font-weight: 400; */
+    color: rgb(0, 0, 0);
+    font-weight: 100;
+}
+
+.color-fire-rate {
+    display: inline-block;
+    transform: skew(-25deg);
+    color: #038;
+    font-weight: 800;
+}
+
+.color-randomize {
+    display: inline-block;
+    animation: randomize 4s linear infinite alternate;
+    transform-origin: bottom;
+    color: #555;
+}
+
+@keyframes randomize {
+
+    0%,
+    100% {
+        font-family: Arial;
+    }
+
+    20% {
+        font-family: Times New Roman;
+    }
+
+    40% {
+        font-family: Verdana;
+    }
+
+    60% {
+        font-family: Georgia;
+    }
+
+    80% {
+        font-family: Courier New;
+    }
+}
+
+.alt {
+    position: relative;
+    white-space: nowrap;
+    font-weight: 400;
+    letter-spacing: 1px;
+}
+
+/* a copy of the word drifts under it, moved with transform so it runs on the GPU
+   instead of repainting a text-shadow every frame, needs data-text with the same words */
+.alt::before {
+    content: attr(data-text);
+    position: absolute;
+    left: 0;
+    top: 0;
+    line-height: normal;
+    pointer-events: none;
+    animation: alt 8s linear infinite alternate;
+}
+
+@keyframes alt {
+    0% {
+        transform: translateX(3px);
+    }
+
+    100% {
+        transform: translateX(-3px);
+    }
+}
+
+/* localization drop down, a details element because select options can't show orbs */
+.non-demolition-menu {
+    float: right;
+    border: 1px #333 solid;
+    border-radius: 6px;
+    background-color: #fff;
+    cursor: pointer;
+}
+
+.non-demolition-menu summary {
+    list-style: none;
+    padding: 0 0.3em;
+}
+
+.non-demolition-menu summary::-webkit-details-marker {
+    display: none;
+}
+
+.non-demolition-menu summary::after {
+    content: " \25BE";
+}
+
+.non-demolition-menu[open] summary {
+    border-bottom: 1px #333 solid;
+}
+
+.non-demolition-option {
+    padding: 0.1em 0.3em;
+}
+
+.non-demolition-option:hover {
+    background-color: var(--hover-card-color);
+}
+
+.non-demolition-option-selected {
+    background-color: #e2e9ec;
+}
+
+.flicker {
+    animation: flicker 4s linear infinite;
+}
+
+@keyframes flicker {
+    0% {
+        opacity: 1;
+    }
+
+    80% {
+        opacity: 1;
+    }
+
+    90% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.color-coupling {
+    text-shadow: 0px 0px 1.5px #0cf;
+    letter-spacing: 1px;
+    font-weight: 100;
+}
+
+.box {
+    padding: 3px 8px 3px 8px;
+    border: 2px solid #444;
+    border-radius: 4px;
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+.wrapper {
+    display: grid;
+    grid-template-columns: 360px 10px;
+    align-self: center;
+    justify-content: center;
+}
+
+.grid-box {
+    align-self: center;
+    justify-self: center;
+}
+
+.right {
+    text-align: right;
+}
+
+.lore {
+    animation: bgColor 3.5s linear infinite;
+}
+
+.lore-text {
+    animation: textColor 3s linear infinite;
+}
+
+.entanglement {
+    font-size: 1.1em;
+    font-weight: 100;
+    text-align: center;
+    letter-spacing: 10px;
+    border: none;
+    background-color: var(--card-color);
+}
+
+.flipX {
+    animation: 14s anim-flipX linear infinite;
+}
+
+@keyframes anim-flipX {
+    0% {
+        transform: rotateX(0.5turn);
+    }
+
+    50% {
+        transform: rotateX(1turn);
+    }
+
+    100% {
+        transform: rotateX(0.5turn);
+    }
+}
+
+@keyframes fieldColorCycle {
+    0% {
+        background-color: rgb(255, 255, 255)
+    }
+
+    100% {
+        background-color: rgb(0, 204, 255)
+    }
+}
+
+@keyframes techColorCycle {
+    0% {
+        background-color: hsl(253, 100%, 100%)
+    }
+
+    100% {
+        background-color: hsl(253, 100%, 90%)
+    }
+}
+
+@keyframes bgColor {
+    0% {
+        background-color: rgb(63, 218, 216)
+    }
+
+    10% {
+        background-color: rgb(47, 201, 226)
+    }
+
+    20% {
+        background-color: rgb(28, 127, 238)
+    }
+
+    30% {
+        background-color: rgb(95, 21, 242)
+    }
+
+    40% {
+        background-color: rgb(186, 12, 248)
+    }
+
+    50% {
+        background-color: rgb(251, 7, 217)
+    }
+
+    60% {
+        background-color: rgba(255, 0, 0)
+    }
+
+    70% {
+        background-color: rgb(255, 0, 0)
+    }
+
+    80% {
+        background-color: rgb(255, 154, 0)
+    }
+
+    90% {
+        background-color: rgb(208, 222, 33)
+    }
+
+    100% {
+        background-color: rgb(79, 220, 74)
+    }
+}
+
+@keyframes textColor {
+    0% {
+        color: rgb(63, 218, 216)
+    }
+
+    10% {
+        color: rgb(47, 201, 226)
+    }
+
+    20% {
+        color: rgb(28, 127, 238)
+    }
+
+    30% {
+        color: rgb(95, 21, 242)
+    }
+
+    40% {
+        color: rgb(186, 12, 248)
+    }
+
+    50% {
+        color: rgb(251, 7, 217)
+    }
+
+    60% {
+        color: rgba(255, 0, 0)
+    }
+
+    70% {
+        color: rgb(255, 0, 0)
+    }
+
+    80% {
+        color: rgb(255, 154, 0)
+    }
+
+    90% {
+        color: rgb(208, 222, 33)
+    }
+
+    100% {
+        color: rgb(79, 220, 74)
+    }
+}
+
+.link {
+    color: #000;
+}
+
+.link:hover {
+    text-decoration: underline;
+}
+
+/* 
+.fade-ins {
+    animation: 1.5s linear 1s fadeins;
+}
+
+@keyframes fadeins {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+} */
+.blurry-text {
+    user-select: none;
+    filter: blur(3.5px) contrast(1.4);
+}
+
+.blur-text {
+    color: transparent;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
+}
+
+.unblur {
+    color: transparent;
+    text-shadow: 0 0 7px rgba(0, 0, 0, 0.5);
+    animation: 2.5s ease 0.5s normal forwards 1 unblur;
+}
+
+@keyframes unblur {
+    0% {
+        color: transparent;
+        text-shadow: 0 0 7px rgba(0, 0, 0, 0.5);
+    }
+
+    100% {
+        /* font-weight: 800; */
+        color: #000;
+        text-shadow: 0 0 0px rgba(0, 0, 0, 0.5);
+    }
+}
+
+.fade-in {
+    opacity: 0;
+    animation: 2s ease 1.5s normal forwards 1 fadein;
+}
+
+.fade-in-fast {
+    opacity: 0;
+    animation: 1.5s ease 1s normal forwards 1 fadein;
+}
+
+.fade-in-faster {
+    opacity: 0;
+    animation: 2s ease 0.5s normal forwards 1 fadein;
+}
+
+@keyframes fadein {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes dash {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+.draw-lines {
+    stroke-dasharray: 20;
+    stroke-dashoffset: 20;
+    animation: dash 2.4s ease-in forwards;
+}
+
+.draw-lines-dash {
+    stroke-dasharray: 4;
+    stroke-dashoffset: 4;
+    animation: dash 2.4s ease-in forwards;
+}
+
+.draw-lines-o {
+    stroke-dasharray: 11;
+    stroke-dashoffset: 11;
+    animation: dash 2.4s ease-in forwards;
+}
+
+.draw-lines-g {
+    stroke-dasharray: 17;
+    stroke-dashoffset: 17;
+    animation: dash 2.4s ease-in forwards;
+}
+
+.draw-lines-box-1 {
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    animation: dash 5s ease-in forwards;
+    animation-delay: 0s;
+}
+
+.draw-lines-box-2 {
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    animation: dash 2.6s ease-in forwards;
+    animation-delay: 1s;
+}
+
+.draw-lines-box-3 {
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    animation: dash 1.15s ease-in forwards;
+    animation-delay: 1.55s;
+}
+
+.draw-lines3 {
+    stroke-dasharray: 3000;
+    stroke-dashoffset: 3000;
+    animation: dash 3.1s ease-in forwards;
+}
+
+.draw-lines4 {
+    stroke-dasharray: 500;
+    stroke-dashoffset: 500;
+    animation: dash 3.5s ease-in forwards;
+}
+
+
+
+.grid-container {
+    display: grid;
+    grid-template-columns: 0fr 5fr 0fr;
+    line-height: 150%;
+    background-color: #fff;
+    padding: 15px 0 14px 0;
+    border-radius: 5px;
+}
+
+/* both tabs occupy the same frame */
+#choose-grid:has(.training-picker) {
+    display: block;
+}
+
+#choose-grid:has(.training-picker),
+#level-pool {
+    position: fixed;
+    inset: 0;
+    transform: none;
+    margin: auto;
+    width: min(924px, calc(100% - 16px));
+    height: calc(100% - 36px);
+    max-height: none;
+    box-sizing: border-box;
+    overflow: auto;
+    scrollbar-width: none;
+    padding: 0 10px 10px;
+    border: 2px solid #333;
+    border-radius: 8px;
+    background-color: var(--card-color);
+    color: #000;
+    font-size: 1rem;
+    line-height: 130%;
+}
+
+/* the buttons stay in reach while the levels scroll */
+.level-menu-toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: auto auto minmax(0, 1fr);
+    grid-template-areas: "tabs actions link" "description description description";
+    align-items: start;
+    gap: 4px 8px;
+    padding: 10px 0 4px;
+    background-color: var(--card-color);
+}
+
+.level-menu-toolbar:not(:has(.level-menu-actions)) {
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas: "tabs link" "description description";
+}
+
+@media (max-width: 740px) {
+    .level-menu-toolbar {
+        grid-template-columns: auto minmax(0, 1fr);
+        grid-template-areas: "tabs link" "description description" "actions actions";
+    }
+}
+
+.level-menu-site-link {
+    grid-area: link;
+    place-self: center end;
+    color: #05749b;
+    font-size: 0.8em;
+    line-height: 1.15;
+    text-align: right;
+}
+
+.level-menu-description {
+    grid-area: description;
+}
+
+.level-menu-actions {
+    grid-area: actions;
+    justify-self: end;
+    grid-auto-flow: column;
+    grid-auto-columns: auto;
+}
+
+.level-menu-actions,
+.level-menu-tabs {
+    display: grid;
+    gap: 1px;
+    border: 1px solid #444;
+    background-color: #444;
+}
+
+.level-menu-tabs {
+    grid-area: tabs;
+    justify-self: start;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.training-picker-button,
+.level-pool-button,
+.level-menu-tab {
+    border: none;
+    border-radius: 0;
+    min-height: calc(17px + 0.85lh); /* 85% of the former line height plus 20px padding */
+    padding: 0 4px;
+    color: #000;
+    background-color: var(--card-color);
+    font: inherit;
+    font-size: 1.1em;
+    cursor: pointer;
+}
+
+.level-menu-actions > button,
+.level-menu-tab {
+    padding-inline: 10px;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+@media (max-width: 400px) {
+    .level-menu-tab {
+        padding-inline: 6px;
+        font-size: 0.95rem;
+    }
+}
+
+.training-picker-button:hover:not(:disabled),
+.level-pool-button:hover,
+.level-menu-tab:hover {
+    background-color: var(--hover-card-color);
+}
+
+.level-menu-tab[aria-current="true"] {
+    background-color: #333;
+    color: #fff;
+    cursor: default;
+}
+
+.training-picker-button:disabled {
+    color: #aaa;
+    cursor: default;
+}
+
+.training-picker-title,
+.level-pool-header {
+    margin: 12px 0 4px;
+    font-size: 1.1em;
+}
+
+.training-picker-title .training-picker-button,
+.level-pool-header .level-pool-button,
+.level-route > .level-pool-button {
+    border: 1px solid #444;
+    min-height: 0;
+    padding: 2px 9px;
+    font-size: 0.825rem;
+    flex-shrink: 0;
+}
+
+.training-picker-levels,
+.level-pool-zone {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 1px;
+    border: 1px solid #444;
+}
+
+@media (max-width: 560px) {
+    .training-picker-levels,
+    .level-pool-zone {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+.training-picker-tutorial-levels {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 6.25rem), 1fr));
+}
+
+/* each card draws its right and bottom lines into the gaps, so a short last row has no dark cells */
+.training-picker-level,
+.level-chip {
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    overflow: hidden;
+    background-color: var(--card-color);
+    box-shadow: 1px 0 0 #444, 0 1px 0 #444;
+    font: inherit;
+    font-size: 0.825em;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.training-picker-level {
+    color: #000;
+    cursor: pointer;
+}
+
+.training-picker-level:is(:hover, :focus-visible),
+.level-chip:is(:hover, :focus-visible) {
+    background-color: var(--hover-card-color);
+}
+
+.training-picker-level:focus-visible,
+.level-chip:focus-visible {
+    outline: 2px solid #333;
+    outline-offset: -2px;
+}
+
+.difficulty-options-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0;
+}
+
+.difficulty-options-heading {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: space-between;
+    color: #fff;
+    text-align: center;
+    padding: 4px;
+}
+
+.difficulty-option,
+.difficulty-confirm {
+    border: 1px solid #444;
+    border-radius: 0;
+    margin-top: -1px;
+    margin-right: -1px;
+    padding: 12px;
+    color: #222;
+    background-color: #fff;
+    font: inherit;
+    font-size: 0.8em;
+    line-height: 140%;
+    cursor: pointer;
+}
+
+.difficulty-option {
+    display: flex;
+    align-items: center;
+    text-align: left;
+}
+
+.difficulty-option-selected {
+    /* background-color: rgb(201, 227, 240); */
+    background-color: hsl(var(--difficulty-hue, 150), 30%, 85%);
+}
+
+.difficulty-option:hover:not(:disabled),
+.difficulty-confirm:hover:not(:disabled) {
+    background-color: #f3f3f3;
+}
+
+.difficulty-option-selected:hover:not(:disabled) {
+    background-color: hsl(var(--difficulty-hue, 150), 30%, 81%);
+}
+
+.difficulty-option-section {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.difficulty-option-section+.difficulty-option-section {
+    margin-top: 5px;
+}
+
+/*Round the exposed corners of each section, including an incomplete last row.*/
+.difficulty-option:first-child {
+    border-top-left-radius: 10px;
+}
+
+.difficulty-option:nth-child(2) {
+    border-top-right-radius: 10px;
+}
+
+.difficulty-option:nth-child(odd):nth-last-child(-n+2) {
+    border-bottom-left-radius: 10px;
+}
+
+.difficulty-option:last-child,
+.difficulty-option:nth-child(even):nth-last-child(2) {
+    border-bottom-right-radius: 10px;
+}
+
+.difficulty-option:disabled {
+    background-color: #eee;
+    cursor: default;
+}
+
+.difficulty-option:disabled>span {
+    opacity: 0.2;
+}
+
+.difficulty-confirm {
+    grid-column: 1 / -1;
+    position: relative;
+    overflow: visible;
+    /* justify-self: center; */
+    /* width: 450px; */
+    margin-top: 5px;
+    font-size: 1em;
+    border-radius: 10px;
+}
+
+.difficulty-readout {
+    grid-column: 1 / -1;
+    position: relative;
+    height: 18px;
+    margin-bottom: 5px;
+    background-color: #fff;
+    border: 1px solid #444;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.difficulty-readout-fill {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 0;
+    /* background-color: rgb(236, 230, 234); */
+    background-color: hsl(var(--difficulty-hue, 150), 30%, 85%);
+    /* background-color: rgb(0, 0, 0); */
+    transition: width 200ms ease;
+    pointer-events: none;
+}
+
+.difficulty-readout-record {
+    position: absolute;
+    top: -4px;
+    bottom: 0;
+    pointer-events: none;
+}
+
+.difficulty-readout-record::before {
+    content: "⚆";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translate(-50%, -50%);
+    font-size: 33px;
+    line-height: 1;
+    color: #666;
+}
+
+.difficulty-option:focus-visible,
+.difficulty-confirm:focus-visible {
+    outline: 3px solid #58f;
+    outline-offset: -3px;
+}
+
+.tech-slider {
+    /* height: 0.5em; */
+    vertical-align: middle;
+    /* width: 13em; */
+    width: 70%;
+    padding-right: 0px;
+    padding-left: 0px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* pause menu copy of the difficulty power up grid
+the gaps show the border color through, so the lines are only between options and the details box is the outside border */
+.pause-details.pause-difficulty-grid {
+    display: grid;
+    gap: 1px;
+    font-size: 0.85em;
+    /* small enough that every option fits on one line at the narrowest pause column */
+    padding: 0px;
+    overflow: hidden;
+    background-color: #333;
+}
+
+.pause-difficulty-section {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1px;
+}
+
+.pause-difficulty-option {
+    display: flex;
+    align-items: center;
+    padding: 4px 6px;
+    background-color: #e2e9ec;
+    line-height: 130%;
+    white-space: normal;
+}
+
+/* an odd option out at the end of a section fills its row */
+.pause-difficulty-option:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+}
+
+.pause-difficulty-option>span {
+    opacity: 0.1;
+}
+
+.pause-difficulty-selected>span {
+    opacity: 1;
+}
+
+.pause-details {
+    background-color: #e2e9ec;
+    border: 1px solid #333;
+    border-radius: 5px;
+    padding: 7px;
+    margin-bottom: 10px;
+    /* box-shadow: 4px 4px 4px hsla(240, 0%, 17%, 0.14); */
+}
+/* level editor, see js/level-editor.js
+the panels show while body has .level-editor, the HUD it replaces is hidden */
+/* blueprint theme, near gray drafting paper with lavender gray for on and selected, and the map's selection cyan for focus */
+:root {
+    --le-ink: #35343c; /* outlines, charcoal with a trace of lavender, was a blue slate #2f4350 */
+    --le-paper: #e6e6ea; /* gray with a barely there hint of lavender, the left panel and status bar, was the pause menu's blue gray #e2e9ec, then lavender #e3e2eb */
+    --le-sheet: #f0f0f3; /* code views and the import code, a paler paper */
+    --le-hover: var(--hover-card-color); /* the game's card hover, already a pale lavender gray */
+    --le-accent: rgb(0, 170, 255); /* levelEditor.colors.select */
+    --le-on: #c9c8da; /* on, selected, and the current history step, lavender gray, set but not eye catching, steel teal was #b9cfcf #abc4c4 #1d3333 #4b7f80 */
+    --le-on-hover: #bdbbd1;
+    --le-on-ink: #2a2840;
+    --le-on-bar: #6a6698; /* the edge on the selected row */
+    --le-on-status: #b9b7d0; /* --le-on on the gray status bar, a little deeper so it reads as the same lavender as on the white panels */
+    --le-on-status-hover: #adabc6;
+    --le-label: #6a6973;
+    /* the grays, darkest to lightest */
+    --le-soft: #555; /* secondary text, like the analysis' values */
+    --le-muted: #777; /* hints and explanations */
+    --le-faint: #999; /* ids, section titles, light outlines like the color swatch */
+    --le-off: #aaa; /* disabled, undone, and crossed out */
+    --le-rule: #bbb; /* light lines, the dashed line under a value, the code boxes */
+    --le-rule-light: #ccc; /* the lightest lines, disabled buttons and the history list */
+    --le-shadow: rgba(42, 40, 64, 0.13); /* --le-on-ink, see through */
+    --le-text-select: rgba(106, 102, 152, 0.3); /* --le-on-bar, see through */
+    /* code colors, the inspector and the js views share them, plain parts are charcoal and gray, values get the color */
+    --le-code: #3a3944; /* keys and plain code */
+    --le-code-symbol: #9b9aa6; /* { } : , faded */
+    --le-code-number: #554f9e; /* and true, false, null, a deeper --le-on */
+    --le-code-string: #3b7472; /* muted teal */
+    --le-code-keyword: #84527a; /* soft plum */
+    --le-code-call: #2f2e38; /* bold */
+    --le-code-comment: #9b9aa6;
+    /* the analysis and errors, a little muted, levelEditor.colors uses the same on the map */
+    --le-fix: #c62a2a;
+    --le-warn: #c26a00;
+    --le-note: #554f9e; /* --le-code-number */
+    --le-ok: #2f8a55;
+}
+.le-panel {
+    display: none;
+    position: absolute;
+    z-index: 2;
+    box-sizing: border-box;
+    max-height: calc(100vh - 80px); /* above the status bar */
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--le-on) transparent;
+    padding: 6px;
+    border: 2px solid var(--le-ink);
+    border-radius: 8px;
+    background-color: var(--card-color);
+    color: #000;
+    font-size: 13px;
+    line-height: 1.35;
+    cursor: auto;
+    user-select: none;
+}
+
+body.level-editor .le-panel {
+    display: block;
+}
+
+/* the bar along the bottom, like VS Code's status bar, see renderStatus() */
+.le-status {
+    display: none;
+    position: absolute;
+    z-index: 2;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    box-sizing: border-box;
+    zoom: 1.2; /* bigger, easier to read, it's 31px tall */
+    height: 26px;
+    padding: 0 0 0 10px; /* history on the right is flush with the window's edge */
+    align-items: center;
+    gap: 42px; /* tab hide, grid, zoom, tools, and the mouse on the left, issues and history on the right */
+    border-top: 1px solid var(--le-ink);
+    background-color: var(--le-paper);
+    color: #000;
+    font-size: 12px;
+    cursor: auto;
+    user-select: none;
+}
+
+body.level-editor .le-status {
+    display: flex;
+}
+
+/* smaller screens shrink the status bar, each step starts just before the size before it would squeeze out the mouse's x, y,
+   measured with a long x, y (-12345, -12345) and issues count (12 fix · 12 warn), the gaps close up first, then the text shrinks */
+@media (max-width: 1199px) {
+    .le-status {
+        gap: 18px; /* needs 1035px */
+    }
+}
+
+@media (max-width: 1049px) {
+    .le-status {
+        zoom: 1;
+        gap: 20px; /* needs 877px */
+    }
+}
+
+@media (max-width: 889px) {
+    .le-status {
+        zoom: 0.9;
+        gap: 16px; /* needs 759px */
+        padding-left: 6px;
+    }
+}
+
+@media (max-width: 774px) {
+    .le-status {
+        zoom: 0.8;
+        gap: 12px; /* needs 660px */
+    }
+}
+
+@media (max-width: 674px) {
+    .le-status {
+        zoom: 0.7;
+        gap: 10px; /* needs 573px */
+    }
+}
+
+.le-status-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-width: 0;
+}
+
+.le-status-icon {
+    flex: none;
+}
+
+/* the magnifying glass is a button with no box, it goes to the level's zoom */
+.le-button.le-icon-button {
+    display: inline-flex;
+    padding: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+}
+
+/* the browser wouldn't save, stays until a save works */
+.le-status-unsaved {
+    margin-right: 8px;
+    border-color: var(--le-fix);
+    color: var(--le-fix);
+    font-weight: bold;
+}
+
+.le-status-unsaved[hidden] {
+    display: none;
+}
+
+.le-status-right {
+    margin-left: auto;
+}
+
+.le-status-item.le-segment {
+    gap: 0;
+}
+
+/* a short window cuts text off instead of wrapping it to a second line */
+.le-status,
+.le-status * {
+    white-space: nowrap;
+}
+
+.le-status {
+    overflow: hidden;
+}
+
+.le-status .le-button {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: clip;
+}
+
+/* the status bar's buttons run its full height, flush with the top line and the bottom of the window, so only their sides draw lines */
+.le-status-item,
+.le-status-item>.le-segment {
+    align-self: stretch;
+}
+
+.le-status-item>.le-button:not(.le-icon-button),
+.le-status-item>.le-segment>.le-button {
+    align-self: stretch;
+    padding-left: 10px; /* wider to match, the same shape as before they were stretched */
+    padding-right: 10px;
+    border-top: none;
+    border-bottom: none;
+}
+
+/* icon buttons joined to text buttons, ghost after fit and the ruler after snap, the icon centered */
+.le-status-item>.le-segment>[data-command="ghost"],
+.le-status-item>.le-segment>[data-command="ruler"] {
+    display: flex;
+    align-items: center;
+    padding-left: 6px;
+    padding-right: 6px;
+}
+
+.le-status-item>.le-history-box>[data-command="undo"],
+.le-status-item>.le-history-box>[data-command="redo"] {
+    padding-left: 6px;
+    padding-right: 6px;
+}
+
+/* the drawings grow with the buttons, the same width kept from their viewBox */
+.le-status .le-segment .le-tool-icon {
+    width: auto;
+    height: 18px;
+}
+
+.le-status input,
+.le-status .le-label {
+    flex: none;
+}
+
+.le-status-item .le-label {
+    min-width: 0;
+}
+
+.le-status-mouse {
+    flex: 0 10000 110px; /* fixed, so the bar doesn't move as the mouse does, a narrow bar squeezes it out before the buttons get cut off */
+    min-width: 0;
+    overflow: hidden;
+    font-family: monospace;
+}
+
+/* tab hide, on the far left, clicking it hides the panels too */
+.le-status-tab {
+    flex: none;
+    padding: 0;
+    border: none;
+    background: none;
+    color: var(--le-soft);
+    font: inherit;
+    cursor: pointer;
+}
+
+.le-status-problems {
+    font-family: monospace;
+}
+
+.le-status-problems.le-status-fix {
+    color: var(--le-fix);
+}
+
+/* the in game console sits above the status bar */
+body.level-editor #text-log {
+    bottom: 42px;
+}
+
+/* the explorer's search, it lists only what matches */
+.le-explore-search { /* flush with the menu's top and sides, the menu's outline is its top and side lines */
+    box-sizing: border-box;
+    display: block;
+    width: calc(100% + 2 * var(--le-pad));
+    margin: calc(-1 * var(--le-pad)) calc(-1 * var(--le-pad)) 6px;
+    padding: 4px var(--le-pad);
+    border: 0 solid var(--le-ink);
+    border-bottom-width: 1px;
+    border-radius: var(--le-inner-radius) var(--le-inner-radius) 0 0;
+    font: inherit;
+}
+
+.le-explore-search:focus {
+    outline: 1px solid var(--le-accent);
+    outline-offset: -1px;
+}
+
+.le-align-icon {
+    display: block;
+    margin: 0 auto;
+}
+
+/* the simulation menu's top row, lvl and seed on the left, test on the right,
+   test is flush with the menu's outline on the right and top and meets the buttons' line below */
+.le-test-settings {
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: 0; /* lvl, seed, and test's auto margins share the free space evenly */
+    margin-top: calc(-1 * var(--le-pad));
+    margin-left: calc(-1 * var(--le-pad));
+    margin-right: calc(-1 * var(--le-pad)); /* as wide as the grids under it, so test's width can match their columns */
+    margin-bottom: 0;
+}
+
+.le-test-settings>.le-row {
+    flex-wrap: nowrap;
+}
+
+.le-test-settings>.le-row+.le-row {
+    margin-top: 0;
+}
+
+.le-test-settings .le-label {
+    min-width: 0;
+}
+
+.le-test-settings>.le-button.le-run { /* the extra class so it wins over .le-button.le-run further down */
+    flex: none;
+    order: 1; /* on the right, lvl and seed are on the left, nearer the level */
+    margin-left: auto;
+    width: calc((100% - 2px) / 3 + 1px); /* a third, like the 3 column grids under it after their 2 gaps, +1 for its line in the gap left of 1× */
+    padding: 9px 2px; /* taller than the other buttons' 4px, easier to hit */
+    white-space: nowrap;
+    border-width: 0 0 0 1px; /* the menu's outline is its right and top, the grid below is its bottom */
+    border-top-right-radius: var(--le-inner-radius);
+}
+
+.le-test-settings>.le-row {
+    align-self: center;
+    margin-left: auto; /* the same space before lvl, between lvl and seed, and between seed and test */
+}
+
+.le-test-settings [data-setting="testLevel"] {
+    width: 16px; /* two digits */
+}
+
+.le-test-settings [data-setting="testSeed"] {
+    width: 36px; /* fits random */
+    padding: 1px 3px;
+}
+
+.le-test-settings [data-setting="testSeed"]::placeholder {
+    font-size: 10px;
+}
+
+/* cut, copy, and paste's keys under the inspector's delete */
+.le-hotkeys .le-key-cap {
+    font-size: 15px;
+}
+
+/* the top of the info box, like a header */
+.le-hotkeys {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.le-hotkey-group {
+    display: flex;
+    gap: 10px;
+}
+
+/* a key cap that's a button, clicking it does what the key does */
+.le-hotkey {
+    padding: 0;
+    border: none;
+    background: none;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.le-hotkey:hover strong {
+    filter: brightness(0.92);
+}
+
+.le-hotkey:active strong {
+    transform: translateY(1px);
+}
+
+/* settings full test ignores, grayed out while it runs */
+.le-inactive {
+    opacity: 0.45;
+}
+
+/* full test is the main button, a little taller and bigger, quick test was beside it */
+.le-run .le-button,
+.le-button.le-run {
+    padding: 4px 2px;
+    font-size: 1.08em;
+}
+
+/* delete and remove buttons hint red before you click */
+.le-button[data-command^="delete"]:hover,
+.le-button[data-command^="remove"]:hover {
+    color: var(--le-fix);
+}
+
+.le-hotkey[data-command="delete"]:hover strong {
+    border-color: var(--le-fix);
+    color: var(--le-fix);
+}
+
+/* the inspector's js view, the lines this element writes in export JS */
+/* edit and revert, flush above the code, and the box an element's code is typed into, the same place and size as the code */
+.le-code-buttons {
+    margin-top: 8px;
+}
+
+.le-actions+.le-code-buttons { /* right under the action rows, one box */
+    margin-top: 0;
+    border-top: none;
+}
+
+.le-code-buttons+.le-js-view {
+    margin-top: 0;
+}
+
+/* the code colors, see --le-code */
+.le-js-view {
+    color: var(--le-code);
+}
+
+.le-hl-comment {
+    color: var(--le-code-comment);
+    font-style: italic;
+}
+
+.le-hl-string {
+    color: var(--le-code-string);
+}
+
+.le-hl-number { /* and true, false, null */
+    color: var(--le-code-number);
+}
+
+.le-hl-keyword {
+    color: var(--le-code-keyword);
+    font-weight: bold;
+}
+
+.le-hl-call {
+    color: var(--le-code-call);
+    font-weight: bold;
+}
+
+/* the inspector's keys and symbols, the game's console colors elsewhere */
+.le-panel .color-var {
+    color: var(--le-code);
+}
+
+.le-panel .color-symbol {
+    color: var(--le-code-symbol);
+}
+
+/* the code panel's error line, under its name */
+.le-panel-error {
+    margin-top: 6px;
+}
+
+/* the level info box's list of code pieces and elements with edited code, each a link that selects it */
+.le-code-link {
+    display: flex;
+    gap: 6px;
+    width: 100%;
+    padding: 1px 4px;
+    border: none;
+    background: none;
+    font: inherit;
+    font-size: 12px;
+    text-align: left;
+    cursor: pointer;
+}
+
+.le-code-link span:first-child {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.le-code-link:hover {
+    background-color: var(--le-hover);
+}
+
+.le-code-link-error {
+    color: var(--le-fix);
+}
+
+/* the settings while edited code runs instead */
+.le-js-view { /* the bottom of the inspector, out to its edges, a slightly darker region with no lines */
+    margin: 8px -6px -6px;
+    padding: 6px 8px;
+    max-height: 300px;
+    overflow: auto;
+    background-color: var(--le-sheet);
+    border: none;
+    border-radius: 0 0 6px 6px;
+    font-family: monospace;
+    font-size: 9.5px;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    user-select: text;
+}
+
+/* tab hides the panels, a hint says how to get them back */
+body.level-editor.le-panels-hidden .le-panel,
+body.level-editor.le-panels-hidden .le-status {
+    display: none;
+}
+
+.le-hint {
+    display: none;
+    position: absolute;
+    z-index: 2;
+    left: 10px; /* where tab hide was in the status bar */
+    bottom: 10px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    background-color: rgba(255, 255, 255, 0.6);
+    color: var(--le-muted);
+    font-size: 12px;
+    pointer-events: none;
+}
+
+body.level-editor.le-panels-hidden .le-hint {
+    display: block;
+}
+
+/* full test with the panels hidden says esc stops it, in the top left where the panels were */
+body.level-editor .le-hint.le-stop-hint {
+    display: none;
+    top: 10px;
+    bottom: auto;
+}
+
+body.level-editor.le-panels-hidden.le-full-test .le-hint.le-stop-hint {
+    display: block;
+}
+
+body.level-editor:not(.le-invincible) .le-hint.le-stop-hint { /* under the health bar, invincible hides it */
+    top: 46px;
+}
+
+/* the pause menu covers the left and right panels, so they hide while it's open, see build.pauseGrid() */
+body.level-editor.pause-open .le-panel,
+body.level-editor.pause-open .le-status,
+body.level-editor.pause-open .le-hint,
+body.level-editor.pause-open .le-hint.le-stop-hint {
+    display: none;
+}
+
+/* explorer, every element by type, see explorerHtml() */
+.le-explore-group>summary {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    list-style: none;
+    font-size: 13px;
+    margin: 0;
+    padding: 1px 0;
+}
+
+.le-explore-group>summary::-webkit-details-marker {
+    display: none;
+}
+
+.le-explore-group>summary::before {
+    content: "▸";
+    width: 12px;
+}
+
+.le-explore-group[open]>summary::before {
+    content: "▾";
+}
+
+.le-explore-type {
+    flex: 1;
+    min-width: 0;
+}
+
+.le-explore-row {
+    display: flex;
+    padding-left: 12px;
+}
+
+.le-explore-row.le-selected {
+    background-color: var(--le-on);
+    box-shadow: inset 2px 0 0 var(--le-on-bar);
+}
+.le-explore-row.le-selected .le-explore-name {
+    color: var(--le-on-ink);
+}
+
+.le-button.le-explore-name {
+    flex: 1;
+    padding: 1px 2px;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: left;
+    border: none;
+    background: none;
+    font-family: monospace;
+    font-size: 11px;
+}
+
+.le-explore-group .le-button:not(.le-explore-name) {
+    width: 34px;
+    padding: 0 3px;
+    font-size: 11px;
+    line-height: 1.3;
+}
+
+/* hide and lock touch, only the stroke between them, and each element's pair touches the one above, like a table */
+.le-explore-group>summary {
+    gap: 0;
+}
+
+.le-explore-group .le-button:not(.le-explore-name)+.le-button {
+    border-left: none;
+}
+
+.le-explore-row {
+    gap: 0;
+    align-items: stretch;
+}
+
+.le-explore-group>summary+.le-explore-row {
+    margin-top: 3px;
+}
+
+.le-explore-row+.le-explore-row .le-button:not(.le-explore-name) {
+    border-top: none;
+}
+
+.le-explore-group[open] {
+    margin-bottom: 3px;
+}
+
+.le-status .le-history-box {
+    flex: none;
+}
+
+body.level-editor:not(.le-export-guns) #guns,
+body.level-editor #field,
+body.level-editor #right-HUD,
+body.level-editor #right-HUD-constraint {
+    display: none !important;
+}
+
+/* invincible: no health or defense bars, nothing can hurt the player, the left panel goes up where they were */
+body.level-editor.le-invincible #health,
+body.level-editor.le-invincible #health-bg,
+body.level-editor.le-invincible #defense-bar {
+    display: none !important;
+}
+
+body.level-editor.le-invincible #level-editor-left {
+    top: 9px;
+    max-height: calc((100vh - 61px) / 1.1);
+}
+
+/* the left and right panels and the code panel cast the experiment menu's shadow (.experiment-start-box), lavender, the status bar doesn't */
+#level-editor-left,
+#level-editor-right,
+#level-editor-code {
+    box-shadow: 8px 8px 6px var(--le-shadow);
+}
+
+.le-panel ::selection {
+    background-color: var(--le-text-select);
+}
+
+/* under the health bar, blueprint paper, the open menus inside are the lighter card color */
+#level-editor-left {
+    zoom: 1.1; /* everything in it 10% bigger, easier to read, top, left, and sizes are before the zoom */
+    top: 40px;
+    left: 9px;
+    width: 260px; /* 8px wider for the padding, so the menus inside keep their width */
+    max-height: calc((100vh - 92px) / 1.1); /* above the status bar */
+    padding: 10px;
+    background-color: var(--le-paper);
+}
+
+#level-editor-right {
+    top: 10px;
+    right: 10px;
+    width: 270px;
+    font-family: monospace;
+}
+
+/* like the pause menu's left column, no lines between menus, an open one's inside is a box */
+.le-section+.le-section {
+    margin-top: 4px;
+}
+
+.le-panel summary {
+    cursor: pointer;
+    color: #000;
+    margin-bottom: 3px;
+}
+
+.le-details {
+    background-color: var(--card-color); /* lighter than the gray panel around it */
+    border: 1px solid var(--le-ink);
+    border-radius: 5px;
+    padding: 7px;
+    margin-bottom: 6px;
+}
+
+/* one wide button, like add code's + code */
+.le-grid.le-one {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+/* difficulty has no orb, it's a black circle in the level */
+.le-difficulty-icon {
+    display: inline-block;
+    width: 0.8em;
+    height: 0.8em;
+    border-radius: 50%;
+    background-color: #000;
+    margin-bottom: -0.1em;
+}
+
+.le-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 3px;
+}
+
+.le-row+.le-row {
+    margin-top: 4px;
+}
+
+.le-fill {
+    flex: 1;
+}
+
+.le-label {
+    min-width: 34px;
+    color: var(--le-label);
+}
+
+.le-button {
+    padding: 1px 6px;
+    border: 1px solid var(--le-ink);
+    border-radius: 0;
+    background-color: #fff;
+    color: #000;
+    font: inherit;
+    line-height: 1.35;
+}
+
+.le-button:hover {
+    background-color: var(--le-hover);
+}
+
+.le-button:disabled {
+    border-color: var(--le-rule-light);
+    color: var(--le-off);
+    background-color: #fff;
+}
+
+/* on is lavender gray, see --le-on */
+.le-button.le-on {
+    background-color: var(--le-on);
+    color: var(--le-on-ink);
+}
+.le-button.le-on:hover {
+    background-color: var(--le-on-hover);
+}
+
+/* quick test and full test's play is a green outline and stop a red one, the same size, unlike the menus' black arrows */
+.le-play,
+.le-stop {
+    width: 0.8em;
+    height: 0.8em;
+    margin-right: 0.15em;
+    vertical-align: -0.08em;
+    fill: none;
+    stroke-width: 1.6;
+    stroke-linejoin: round;
+}
+
+.le-play {
+    stroke: #1a9c3c;
+}
+
+.le-stop {
+    stroke: var(--le-fix);
+}
+
+.le-history-box [data-command="undo"],
+.le-history-box [data-command="redo"] {
+    display: flex;
+    align-items: center;
+    padding: 2px 5px;
+}
+
+/* the status bar is gray, not white, so its on buttons get a deeper lavender to look the same */
+.le-status .le-button.le-on {
+    background-color: var(--le-on-status);
+}
+.le-status .le-button.le-on:hover {
+    background-color: var(--le-on-status-hover);
+}
+
+.le-tool-icon {
+    display: block;
+}
+
+/* joined buttons, one is on */
+.le-segment {
+    display: inline-flex;
+}
+
+.le-segment .le-button {
+    border-radius: 0;
+}
+
+/* the line between two buttons is the left one's, a hidden one before it doesn't count, like the code panel's apply after the hidden import */
+.le-segment .le-button:not([hidden])~.le-button {
+    border-left: none;
+}
+
+/* the joined buttons share one outline, a greyed out one like redo keeps it so the line into history stays dark */
+.le-segment .le-button:disabled {
+    border-color: var(--le-ink);
+}
+
+/* buttons packed together like the level pool, each draws the line on its right and bottom into the 1px gaps */
+.le-grid,
+.le-shapes {
+    --le-line: var(--le-ink);
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    border: 1px solid var(--le-line);
+}
+
+.le-grid .le-button,
+.le-shapes .le-button,
+.le-grid>.le-pair {
+    border: none;
+    box-shadow: 1px 0 0 var(--le-line), 0 1px 0 var(--le-line);
+}
+
+.le-grid .le-button {
+    padding: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* the add menu's level elements, mobs, power ups, and code, untitled, stacked flush in one box with a line between */
+.le-details:has(> .le-add-part) {
+    padding: 0;
+    overflow: hidden;
+}
+
+.le-add-part {
+    --le-pad: 0px;
+}
+
+.le-add-part+.le-add-part {
+    border-top: 1px solid var(--le-ink);
+}
+
+.le-add-part> :first-child {
+    border-top-width: 0;
+}
+
+.le-add-part> :last-child {
+    border-bottom-width: 0;
+}
+
+/* the add menu's element, power up, and mob buttons, the open one's list is under them, and levels in load */
+.le-load-group>summary { /* the size of the buttons above it, not a menu title */
+    margin: 0;
+    padding: 2px 7px;
+    font-size: 1em;
+    background-color: #fff;
+}
+
+.le-load-group>summary:hover {
+    background-color: var(--le-hover);
+}
+
+.le-load-group[open]>summary { /* tinted like an on button, so it shows it's open and where each list starts */
+    border-bottom: 1px solid var(--le-ink);
+    background-color: var(--le-on);
+    color: var(--le-on-ink);
+}
+
+.le-load-group[open]>summary:hover {
+    background-color: var(--le-on-hover);
+}
+
+.le-add-list .le-load-header {
+    margin: 0;
+    padding: 3px 7px 1px;
+}
+
+.le-grid .le-button.le-add-tab {
+    padding-left: 4px;
+    text-align: left;
+}
+
+/* an arrow like a menu title's, right while closed and down while open */
+.le-add-tab::before {
+    content: "";
+    display: inline-block;
+    margin-right: 5px;
+    border-style: solid;
+    border-color: transparent;
+    border-left-color: currentColor;
+    border-width: 4.5px 0 4.5px 8px;
+}
+
+.le-add-tab.le-on::before {
+    border-color: transparent;
+    border-top-color: currentColor;
+    border-width: 8px 4.5px 0;
+    vertical-align: 1px;
+}
+
+/* while one list is open the other tabs fade so the open one stands out, hovering one brings it back */
+.le-grid:has(> .le-add-tab.le-on)>.le-add-tab:not(.le-on):not(:hover) {
+    color: var(--le-faint);
+}
+
+.le-add-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    border-left-width: 0;
+    border-right-width: 0;
+    border-top-width: 1px;
+}
+
+.le-add-list>.le-add-grid:last-child {
+    border-bottom-width: 0;
+}
+
+.le-add-list>.le-add-grid:first-child { /* the list's line is its top line */
+    border-top-width: 0;
+}
+
+.le-grid .le-button.le-add-item {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    min-height: 20px;
+    padding: 1px 4px;
+    font-size: 11px;
+    text-align: left;
+}
+
+.le-add-item span:last-child {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* export, the local levels, and import, apart from each other */
+.le-details .le-gap-above {
+    margin-top: 14px;
+}
+
+/* levels, edge to edge like the add menu's lists, the bottom of load, n-vote is on its title's row */
+.le-details:has(.le-load-group) {
+    overflow: hidden;
+}
+
+.le-load:has(>.le-load-group) {
+    margin-top: 0;
+}
+
+.le-load-group {
+    margin-bottom: calc(-1 * var(--le-pad));
+}
+
+.le-load-group>summary {
+    margin: 0 calc(-1 * var(--le-pad));
+}
+
+.le-load-group>.le-load-grid:last-child {
+    border-bottom-width: 0;
+}
+
+/* the help menu's guide */
+.le-help summary {
+    margin: 2px 0;
+}
+
+.le-help-text {
+    margin: 2px 0 10px;
+    font-size: 12px;
+    line-height: 1.4;
+    color: var(--le-ink);
+    user-select: text;
+}
+
+.le-help-text p {
+    margin: 4px 0;
+}
+
+.le-help-text ol,
+.le-help-text ul {
+    margin: 4px 0;
+    padding-left: 18px;
+}
+
+.le-help-text li+li {
+    margin-top: 3px;
+}
+
+.le-help-text code {
+    font-size: 11px;
+}
+
+/* an empty line between n-gon, community, training, and testing */
+.le-load-group .le-load-header {
+    margin-top: 16px;
+}
+
+.le-load-group .le-load-header:first-of-type {
+    margin-top: 4px;
+}
+
+.le-grid.le-two {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* the simulation menu's time row, stop time a third, the four speeds share the rest */
+.le-grid.le-time { /* six columns, stop time spans two, so each pair is a third with the gap inside it, lined up with the 3 column grids */
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.le-grid.le-time>[data-command="timeStop"] {
+    grid-column: span 2;
+}
+
+/* export/import's buttons, new, import, and export a third each, fork and add to level pool a half */
+.le-grid.le-sixths {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.le-grid.le-sixths .le-button.le-third {
+    grid-column: span 2;
+}
+
+.le-grid.le-sixths .le-button.le-half {
+    grid-column: span 3;
+}
+
+.le-grid.le-sixths .le-button.le-wide {
+    grid-column: span 6;
+}
+
+/* the inspector's action buttons, flips a quarter, vertices, constraint, and delete a half */
+.le-grid.le-quarters {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.le-grid.le-quarters .le-button.le-half {
+    grid-column: span 2;
+}
+
+/* a button across the whole grid, like add to level pool */
+.le-grid .le-button.le-wide {
+    grid-column: 1 / -1;
+}
+
+/* the inspector's bottom buttons, each line split evenly however many there are */
+.le-grid.le-even {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+}
+
+.le-actions {
+    margin-top: 6px;
+}
+
+.le-shapes+.le-grid {
+    margin-top: 4px;
+}
+
+/* the main row and the rest in add mobs and add power ups, one box */
+.le-grid+.le-grid {
+    border-top: none;
+}
+
+/* buttons and lists out to the outline of the menu or inspector they're in, after .le-grid so their borders win, its border is their side lines
+   -x reaches the sides, -top and -bottom also the top or bottom, rounded like its inside corners */
+.le-details {
+    --le-pad: 7px;
+    --le-inner-radius: 4px;
+}
+
+#level-editor-right {
+    --le-pad: 6px;
+    --le-inner-radius: 6px;
+}
+
+.le-flush-x {
+    margin-left: calc(-1 * var(--le-pad));
+    margin-right: calc(-1 * var(--le-pad));
+}
+
+.le-flush-x.le-grid,
+.le-flush-x.le-shapes,
+.le-flush-x .le-grid {
+    border-left-width: 0;
+    border-right-width: 0;
+}
+
+.le-list:not(.le-rich-list) {
+    padding: 3px 6px; /* like the customizable lists next to it */
+}
+
+.le-flush-top {
+    margin-top: calc(-1 * var(--le-pad));
+    border-top-width: 0;
+    border-radius: var(--le-inner-radius) var(--le-inner-radius) 0 0;
+    overflow: hidden;
+}
+
+.le-flush-bottom {
+    margin-bottom: calc(-1 * var(--le-pad));
+    border-bottom-width: 0;
+    border-radius: 0 0 var(--le-inner-radius) var(--le-inner-radius);
+    overflow: hidden;
+}
+
+.le-flush-bottom>.le-grid:last-child { /* rows inside, like the inspector's action rows, the outline is the last one's bottom line */
+    border-bottom-width: 0;
+}
+
+.le-orb {
+    display: inline-block;
+    margin-right: 0.3em;
+    font-size: 0.85em;
+}
+
+.le-orb .circle-grid {
+    margin-bottom: -0.3em;
+}
+
+.le-tall .le-button {
+    line-height: 1.2;
+    padding: 2px 1px 3px;
+}
+
+.le-tall .le-orb {
+    margin: 0 0.08em;
+}
+
+/* the power ups a button can be, written like an array */
+.le-options {
+    color: var(--le-faint);
+}
+
+/* the mob, boss, and 2nd boss buttons' example pictures, in a line like the power up buttons' orbs */
+.le-mob-examples {
+    display: inline-flex;
+    align-items: center;
+    gap: 1px;
+}
+
+.le-mob-examples .le-mob-icon {
+    margin: 0;
+}
+
+.le-row.le-gap {
+    margin-top: 20px;
+}
+
+.le-block-icon {
+    display: inline-block;
+    width: 0.7em;
+    height: 0.6em;
+    margin-bottom: -0.05em;
+    background-color: rgba(140, 140, 140, 0.85);
+}
+
+.le-number.le-short {
+    width: 20px;
+    padding: 1px 2px;
+}
+
+/* a code element, written out, click it to edit */
+.le-code-view {
+    max-height: 320px;
+    margin: 4px 0;
+    padding: 4px;
+    overflow: auto;
+    border: 1px solid var(--le-rule-light);
+    background-color: #fff;
+    font-size: 11px;
+    line-height: 1.35;
+    white-space: pre;
+    cursor: text;
+}
+
+.le-link-list {
+    max-width: 100%;
+    font: inherit;
+}
+
+.le-list {
+    width: 100%;
+    margin-top: 4px;
+    border: 1px solid var(--le-ink);
+    border-radius: 0;
+    background-color: #fff;
+    font: inherit;
+}
+
+/* power up by name and mob by name, the options show orbs and mob pictures where the browser lets a select hold more than text */
+.le-rich-list,
+.le-rich-list::picker(select) {
+    appearance: base-select;
+}
+
+.le-rich-list::picker(select) {
+    border: 1px solid var(--le-ink);
+    border-radius: 0;
+    background-color: #fff;
+}
+
+.le-rich-list option {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 1px 6px;
+}
+
+.le-rich-list option:hover,
+.le-rich-list option:focus-visible {
+    background-color: var(--le-hover);
+}
+
+.le-rich-list option::checkmark {
+    display: none;
+}
+
+.le-rich-list::picker(select) {
+    max-height: 60vh;
+}
+
+.le-mob-icon {
+    flex: none;
+    display: block;
+    margin-right: 4px;
+}
+
+/* preset shapes, each button is a little drawing of its shape */
+.le-shapes {
+    grid-template-columns: repeat(7, 1fr);
+}
+
+/* button, scale, toggle at the top of the info box, tighter so they fit next to a long id */
+.le-segment.le-tight .le-button {
+    padding-left: 3px;
+    padding-right: 3px;
+}
+
+/* the row above the list buttons: the last four picked from the lists, it starts as fill, draw path, exit fill, and text */
+.le-shapes.le-draws {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.le-shapes.le-draws+.le-grid { /* joins the list buttons under it */
+    margin-top: 0;
+    border-top: none;
+}
+
+.le-button.le-recent-add {
+    min-width: 0;
+    overflow: hidden;
+}
+
+.le-recent-add .le-mob-icon,
+.le-recent-add .le-orb {
+    margin: 0;
+}
+
+.le-recent-name {
+    font-size: 9px;
+    white-space: nowrap;
+}
+
+.le-shapes+.le-shapes {
+    border-top: none;
+}
+
+.le-button.le-shape {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px 0;
+    color: #444;
+}
+
+/* a command's key, on the right of a row or a menu title */
+.le-key-cap {
+    font-size: 12px;
+}
+
+/* the editor's key caps are a pale lavender gray, lighter than on, the pause menu's are plain gray */
+.le-key-cap .key-input-train {
+    border-color: #4a4766;
+    background-color: #dfdeea;
+    color: #3a3852;
+}
+
+.le-panel summary .le-key-cap {
+    float: right;
+}
+
+.le-number {
+    width: 40px;
+    padding: 1px 4px;
+    font-family: monospace;
+    font-size: 12px;
+}
+
+.le-load {
+    margin-top: 4px;
+}
+
+/* the bottom row of load: levels' title is the left third, the fan site for sharing levels the right two thirds, over the title's row so levels' lists still open full width under both */
+.le-load-bottom {
+    position: relative;
+}
+
+.le-load-bottom .le-load-group>summary {
+    box-sizing: border-box;
+    width: calc((100% + 2 * var(--le-pad) - 2px) / 3); /* a third like new and import above, after the grid's 2 gaps */
+    line-height: 1.35;
+}
+
+.le-site-link {
+    position: absolute;
+    top: 0;
+    right: calc(-1 * var(--le-pad));
+    box-sizing: border-box;
+    width: calc((100% + 2 * var(--le-pad) - 2px) * 2 / 3 + 2px); /* the other two thirds and both gaps, its left line in the first gap */
+    height: calc(1.35em + 4px); /* as tall as levels' title */
+    border-width: 0 0 0 1px; /* the line between it and levels */
+    padding: 2px var(--le-pad);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 6px;
+    color: #000;
+}
+
+.le-load-bottom:has(.le-load-group[open]) .le-site-link {
+    height: calc(1.35em + 5px);
+    border-bottom-width: 1px; /* the line under levels' open title goes under it too */
+}
+
+.le-site-link>span {
+    white-space: nowrap;
+}
+
+.le-site-link .site-link-name {
+    color: #08c;
+}
+
+.le-site-note {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--le-label);
+    font-size: 0.85em;
+}
+
+.le-load .le-label {
+    margin: 4px 0 2px;
+}
+
+.le-load-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+/* a note on the right of a menu's title, like load's storage used */
+.le-panel summary:has(>.le-summary-note) {
+    position: relative;
+}
+
+.le-section:not([open])>summary>.le-summary-note { /* only while its menu is open, it sits over the menu */
+    display: none;
+}
+
+.le-summary-note {
+    position: absolute; /* not a float, a float hangs below the title and squeezes the menu's box */
+    right: 10px;
+    bottom: calc(0.15em - 7px); /* lower than the title's line, just above the menu under it */
+    z-index: 1;
+}
+
+.le-storage {
+    font-size: 11px;
+    color: var(--le-faint);
+}
+
+.le-storage-full {
+    color: var(--le-fix);
+}
+
+.le-load-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* the local levels, one to a row with its delete button on the right, flush with the menu's top and sides and the buttons under them, rows share a line */
+.le-load-pairs {
+    --le-line: var(--le-ink);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    margin: calc(-1 * var(--le-pad)) calc(-1 * var(--le-pad)) 0;
+    border-bottom: 1px solid var(--le-line);
+}
+
+.le-load:has(>.le-load-pairs) {
+    margin-top: 0;
+}
+
+/* load is two boxes with the panel's gray between them: the local levels, then new, import, export, and the written levels */
+.le-details:has(>.le-load-box) {
+    background-color: transparent;
+    border: none;
+    padding: 0;
+}
+
+.le-load-box {
+    background-color: var(--card-color);
+    border: 1px solid var(--le-ink);
+    border-radius: 5px;
+    padding: var(--le-pad);
+    overflow: hidden; /* the flush rows inside keep its rounded corners */
+}
+
+.le-load-box+.le-load-box {
+    margin-top: 6px;
+}
+
+.le-load-box:not(:has(.le-load-pairs)):has(>[data-load-local]) { /* no local levels, only the buttons' box */
+    display: none;
+}
+
+.le-load-box:has(.le-load-pairs) {
+    padding-bottom: 0;
+}
+
+.le-load-box .le-load-pairs {
+    border-bottom: none; /* the box's outline is under the last level */
+}
+
+.le-load-box>.le-grid:first-child { /* new, import, and export flush with the box's top */
+    margin-top: calc(-1 * var(--le-pad));
+    border-top-width: 0;
+}
+
+.le-pair {
+    display: flex;
+    min-width: 0;
+    border: 0 solid var(--le-line);
+}
+
+.le-pair+.le-pair {
+    border-top-width: 1px; /* the line between rows, the menu's outline is the first row's top */
+}
+
+.le-pair .le-button {
+    border: none;
+    box-shadow: none;
+    padding: 2px 6px; /* as tall as the other grid buttons */
+}
+
+.le-pair .le-button:first-child {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: left;
+    padding-left: var(--le-pad); /* the name lines up with the panel's text */
+}
+
+.le-pair .le-button:last-child {
+    border-left: 1px solid var(--le-line);
+    padding: 2px 5px;
+}
+
+/* inspector, written like code */
+.le-name {
+    font-weight: bold;
+}
+
+.le-id {
+    color: var(--le-faint);
+}
+
+.le-code {
+    margin: 4px 0;
+}
+
+.le-prop {
+    padding-left: 2ch;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.le-prop .color-var[title] {
+    cursor: help;
+}
+
+/* a number's name drags left or right to change it, see scrubStart() */
+.le-prop .color-var.le-scrub,
+body.le-scrubbing,
+body.le-scrubbing * {
+    cursor: ew-resize;
+}
+
+body.le-scrubbing {
+    user-select: none;
+}
+
+.le-prop input.le-value {
+    max-width: calc(100% - 14ch);
+    padding: 0;
+    border: none;
+    border-bottom: 1px dashed var(--le-rule);
+    border-radius: 0;
+    background: transparent;
+    font: inherit;
+    color: var(--le-code-number);
+}
+
+.le-prop input.le-value:focus {
+    border-bottom: 1px solid var(--le-accent);
+}
+
+.le-prop input.le-text,
+.le-quote {
+    color: var(--le-code-string);
+}
+
+.le-prop input[type="checkbox"] {
+    margin: 0;
+}
+
+/* checkboxes in the dark lavender, not the browser's bright blue */
+.le-panel input[type="checkbox"] {
+    accent-color: var(--le-on-bar);
+}
+
+.le-prop select { /* like a value, its color with a dashed line under it, the arrow says it's a list */
+    padding: 0 1px;
+    border: none;
+    border-bottom: 1px dashed var(--le-rule);
+    border-radius: 0;
+    background-color: transparent;
+    font: inherit;
+    color: var(--le-code-number);
+    cursor: pointer;
+}
+
+.le-prop select:focus {
+    outline: none;
+    border-bottom: 1px solid var(--le-accent);
+}
+
+.le-comment {
+    color: var(--le-code-comment);
+}
+
+.le-prop.le-comment {
+    font-style: italic;
+}
+
+.le-swatch {
+    width: 16px;
+    height: 14px;
+    padding: 0;
+    border: 1px solid var(--le-faint);
+    border-radius: 3px;
+    vertical-align: middle;
+    cursor: pointer;
+}
+
+.le-swatch::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+.le-swatch::-webkit-color-swatch {
+    border: none;
+}
+
+.le-spots {
+    margin: 4px 0 2px;
+}
+
+/* collides: [player map body], names in the mask are code colored, the rest are crossed out, click toggles */
+.le-prop.le-mask,
+.le-prop.le-wrap {
+    white-space: normal;
+}
+
+.le-chip {
+    margin: 0 0.5ch 0 0;
+    padding: 0 2px;
+    border: 1px solid transparent;
+    background: transparent;
+    font: inherit;
+    color: var(--le-off);
+    text-decoration: line-through;
+    cursor: pointer;
+}
+
+.le-chip:hover {
+    border-color: var(--le-faint);
+}
+
+.le-chip.le-on {
+    color: var(--le-code-number);
+    text-decoration: none;
+}
+
+.le-chip.le-mixed {
+    color: hsl(30, 80%, 40%);
+    text-decoration: none;
+    font-style: italic;
+}
+
+/* veto: [hydraBoss], vetoed mobs and bosses are crossed out like collides' names, in the list under it too */
+.le-chip .le-mob-icon {
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 2px;
+    opacity: 0.5;
+}
+
+.le-veto-list {
+    margin-top: 2px;
+}
+
+.le-rich-list option.le-vetoed {
+    color: var(--le-off);
+    text-decoration: line-through;
+}
+
+.le-rich-list option.le-vetoed .le-mob-icon {
+    opacity: 0.4;
+}
+
+/* vertex editing */
+.le-count {
+    padding: 0 0.6ch;
+    border-top: 1px solid var(--le-ink);
+    border-bottom: 1px solid var(--le-ink);
+    line-height: 1.35;
+}
+
+.le-path {
+    box-sizing: border-box;
+    width: 100%;
+    margin-top: 2px;
+    padding: 2px 4px;
+    border: 1px dashed var(--le-rule);
+    border-radius: 4px;
+    background: transparent;
+    font: inherit;
+    font-size: 12px;
+    color: #000;
+    white-space: pre-wrap;
+    resize: vertical;
+}
+
+.le-path:focus {
+    border: 1px solid var(--le-accent);
+}
+
+.le-error {
+    color: var(--le-fix);
+    white-space: normal;
+}
+
+/* the level as javascript, opened from the export menu */
+body.level-editor #level-editor-code:not(.le-open) {
+    display: none;
+}
+
+#level-editor-code {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 3;
+    width: min(900px, calc(100vw - 32px));
+    font-family: monospace;
+}
+
+/* the code panel's box is see-through over a pre with its text in colors, like the info box's code box */
+.le-panel-box {
+    position: relative;
+    margin-top: 6px;
+}
+
+#level-editor-code textarea,
+.le-panel-colors {
+    box-sizing: border-box;
+    width: 100%;
+    height: min(70vh, 700px);
+    margin: 0;
+    padding: 6px;
+    border: 1px solid var(--le-rule);
+    border-radius: 4px;
+    font: inherit;
+    font-size: 12px;
+    line-height: 1.35;
+    white-space: pre;
+}
+
+#level-editor-code textarea {
+    position: relative;
+    display: block;
+    background: transparent;
+    color: transparent;
+    caret-color: #000;
+    resize: none;
+}
+
+#level-editor-code textarea::placeholder {
+    color: var(--le-muted);
+}
+
+#level-editor-code textarea::selection {
+    background-color: var(--le-text-select);
+}
+
+.le-panel-colors {
+    isolation: isolate;
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    border-color: transparent;
+    background-color: #fff;
+    color: var(--le-code);
+    pointer-events: none;
+}
+
+#level-editor-code [hidden] {
+    display: none;
+}
+
+/* an element's or the level's code: runs once, level.custom, and level.customTopLayer stacked like a sandwich, drag the lines between them, a folded part is a strip with its name */
+/* the lines the code panel opened for, behind the text */
+.le-code-focus {
+    position: absolute;
+    left: 0;
+    width: 10000px;
+    background-color: var(--le-text-select);
+    opacity: 0.35;
+    z-index: -1;
+}
+
+.le-report {
+    box-sizing: border-box;
+    max-height: min(70vh, 700px);
+    margin-top: 6px;
+    padding: 6px;
+    overflow-y: auto;
+    border: 1px solid var(--le-rule);
+    border-radius: 4px;
+    background: #fff;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.le-report-head {
+    font-weight: bold;
+}
+
+.le-report-section {
+    margin-top: 8px;
+    color: var(--le-faint);
+    font-style: italic;
+}
+
+/* the import warning, a pasted level's javascript before it runs, see confirmImport() */
+.le-import-warning {
+    color: var(--le-fix);
+}
+
+.le-import-flags code {
+    color: var(--le-fix);
+}
+
+.le-import-code {
+    margin: 2px 0 0;
+    padding: 4px 6px;
+    overflow-x: auto;
+    background-color: var(--le-sheet);
+    color: var(--le-code);
+    white-space: pre;
+}
+
+/* the analysis in the inspector, see inspectAnalysis() */
+.le-analysis {
+    margin-top: 4px;
+    font-size: 11px;
+}
+
+.le-analysis-section {
+    margin: 8px 0 2px;
+    color: var(--le-faint);
+}
+
+/* history in the inspector, see inspectHistory(), its lines are like the analysis' */
+.le-history-lines {
+    margin-top: 2px;
+}
+
+/* this session's steps scroll on their own, so saved versions stay close */
+.le-history-steps {
+    max-height: 40vh;
+    overflow-y: auto;
+    scrollbar-width: thin;
+}
+
+.le-history-line.le-undone {
+    color: var(--le-off);
+}
+
+.le-version-name {
+    flex: 1;
+    min-width: 0;
+    padding: 1px 4px;
+    font-family: monospace;
+    font-size: 11px;
+    border: 1px solid var(--le-rule-light);
+    border-radius: 3px;
+}
+
+.le-analysis-line,
+.le-history-line {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 2px 3px;
+    border: none;
+    border-radius: 0;
+    background: none;
+    text-align: left;
+    font-family: monospace;
+    font-size: 11px;
+    line-height: 1.35;
+}
+
+button.le-analysis-line,
+button.le-history-line {
+    cursor: pointer;
+}
+
+button.le-analysis-line:hover,
+button.le-history-line:hover {
+    background-color: var(--le-hover);
+}
+
+.le-analysis-line.le-current,
+.le-history-line.le-current {
+    background-color: var(--le-on);
+    color: var(--le-on-ink);
+}
+
+.le-analysis-status {
+    font-weight: bold;
+}
+
+.le-analysis-value {
+    color: var(--le-soft);
+}
+
+/* what clicking the line adds */
+.le-analysis-add {
+    float: right;
+    color: var(--le-code-string);
+}
+
+.le-analysis-text {
+    display: block;
+    padding-left: 5ch;
+    color: var(--le-muted);
+}
+
+/* a fix the editor can do to the line above's elements, see levelAnalysis.repair() */
+.le-analysis-repair {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 1px 3px 3px 5ch;
+    border: none;
+    border-radius: 0;
+    background: none;
+    text-align: left;
+    font-family: monospace;
+    font-size: 11px;
+    color: var(--le-code-string);
+    cursor: pointer;
+}
+
+.le-minimap {
+    display: block;
+    width: calc(100% + 2 * var(--le-pad));
+    height: 80px;
+    margin: calc(-1 * var(--le-pad)) calc(-1 * var(--le-pad)) 6px;
+    border-radius: var(--le-inner-radius) var(--le-inner-radius) 0 0;
+    border-bottom: 1px solid var(--le-rule-light);
+    cursor: crosshair;
+}
+
+/* several selected, the close up of them at the top of the inspector, a click fits them in the view */
+.le-minimap[data-selection-map] {
+    cursor: zoom-in;
+}
+
+.le-analysis-repair:hover {
+    background-color: var(--le-hover);
+}
+
+.le-analysis-line.le-fix .le-analysis-status {
+    color: var(--le-fix);
+}
+
+.le-analysis-line.le-warn .le-analysis-status {
+    color: var(--le-warn);
+}
+
+.le-analysis-line.le-note .le-analysis-status {
+    color: var(--le-note);
+}
+
+.le-analysis-line.le-ok .le-analysis-status {
+    color: var(--le-ok);
+}
+
+.le-analysis-line.le-ok {
+    color: var(--le-muted);
+}
+
+.le-report-line {
+    display: grid;
+    grid-template-columns: 5ch 20ch 12ch 1fr;
+    column-gap: 1ch;
+}
+
+.le-report-line span:first-child {
+    font-weight: bold;
+}
+
+.le-report-line.le-fix span:first-child {
+    color: var(--le-fix);
+}
+
+.le-report-line.le-warn span:first-child {
+    color: var(--le-warn);
+}
+
+.le-report-line.le-note span:first-child {
+    color: var(--le-note);
+}
+
+.le-report-line.le-ok span:first-child {
+    color: var(--le-ok);
+}
+
+.le-report-line.le-ok {
+    color: var(--le-muted);
+}

@@ -1,0 +1,2674 @@
+"use strict";
+// game Object ********************************************************
+//*********************************************************************
+const simulation = {
+    loop() { }, //main game loop, gets set to normal or testing loop
+    normalLoop() {
+        level.exit.isDrawPending = false;
+        simulation.gravity();
+        // level.mirrorDoors.update();
+        Engine.update(engine, simulation.delta);
+        simulation.wipe();
+        simulation.textLog();
+        if (m.onGround) {
+            m.groundControl()
+        } else {
+            m.airControl()
+        }
+        m.move();
+        m.look();
+        simulation.camera();
+        level.custom();
+        powerUps.do();
+        mobs.draw();
+        // simulation.draw.cons();
+        simulation.draw.body();
+        if (!m.isTimeDilated) mobs.loop();
+        m.draw();
+        m.hold();
+        level.customTopLayer();
+        simulation.draw.drawMapPath();
+        b.fire();
+        b.bulletRemove();
+        b.bulletDraw();
+        if (!m.isTimeDilated) b.bulletDo();
+        simulation.drawCircle();
+        simulation.runEphemera();
+        // level.mirrorDoorsDraw();
+        if (level.exit.isDrawPending) level.exit.drawAndCheck(true);
+        ctx.restore();
+        simulation.drawCursor();
+    },
+    testingLoop() {
+        level.exit.isDrawPending = false;
+        simulation.gravity();
+        // level.mirrorDoors.update();
+        Engine.update(engine, simulation.delta);
+        simulation.wipe();
+        simulation.textLog();
+        if (m.onGround) {
+            m.groundControl()
+        } else {
+            m.airControl()
+        }
+        m.move();
+        m.look();
+        simulation.camera();
+        level.custom();
+        m.draw();
+        m.hold();
+        level.customTopLayer();
+        simulation.draw.wireFrame();
+        // level.mirrorDoorsDraw();
+        if (input.fire && m.fireCDcycle < m.cycle) {
+            m.fireCDcycle = m.cycle + 15; //fire cooldown       
+        }
+        simulation.draw.cons();
+        simulation.draw.testing();
+        simulation.drawCircle();
+        simulation.runEphemera();
+        simulation.constructCycle()
+        if (level.exit.isDrawPending) level.exit.drawAndCheck(true);
+        ctx.restore();
+        simulation.testingOutput();
+        simulation.drawCursor();
+    },
+    isTimeSkipping: false,
+    extraCycles: 0, //timeSkip this many more each frame, before the frame's wipe so they don't show, the level editor's 2× time
+    timeSkip(cycles = 60) {
+        simulation.isTimeSkipping = true;
+        for (let i = 0; i < cycles; i++) {
+            simulation.cycle++;
+            m.cycle++;
+            simulation.gravity();
+            // level.mirrorDoors.update();
+            Engine.update(engine, simulation.delta);
+            if (m.onGround) {
+                m.groundControl()
+            } else {
+                m.airControl()
+            }
+            m.move();
+            level.custom();
+            mobs.loop();
+            m.walk_cycle += m.flipLegs * m.Vx;
+            m.hold();
+            level.customTopLayer();
+            b.fire();
+            b.bulletRemove();
+            b.bulletDo();
+            simulation.runEphemera();
+        }
+        simulation.draw.flushMapPathRebuild();
+        simulation.isTimeSkipping = false;
+    },
+    timePlayerSkip(cycles = 60) {
+        simulation.isTimeSkipping = true;
+        for (let i = 0; i < cycles; i++) {
+            simulation.cycle++;
+            // m.walk_cycle += (m.flipLegs * m.Vx) * 0.5; //makes the legs look like they are moving fast this is just gonna run for each method call since it needs some tweaking
+            simulation.gravity();
+            // level.mirrorDoors.update();
+            Engine.update(engine, simulation.delta);
+            // level.custom();
+            // level.customTopLayer();
+            if (!m.isTimeDilated) mobs.loop();
+            if (m.fieldMode !== 7) m.hold();
+            b.bulletRemove();
+            if (!m.isTimeDilated) b.bulletDo();
+            simulation.runEphemera();
+        }
+        simulation.isTimeSkipping = false;
+    },
+    ephemera: [], //array that is used to store ephemera objects
+    pendingActions: [], //plain progress for callbacks that can outlive a level; saved in saveGame.state().runtime
+    queueAction(action) {
+        simulation.pendingActions.push(action)
+        simulation.runPendingAction(action)
+    },
+    runPendingAction(action) {
+        const queue = simulation.pendingActions
+        const cycle = () => {
+            //Loading or starting a run replaces the queue, so old callbacks cannot deliver rewards twice.
+            if (queue !== simulation.pendingActions || !queue.includes(action)) return
+            if (m.alive && simulation.stepPendingAction(action)) {
+                requestAnimationFrame(cycle)
+            } else {
+                if (action.type === "reality tech") m.isSwitchingWorlds = false
+                const index = queue.indexOf(action)
+                if (index !== -1) queue.splice(index, 1)
+            }
+        }
+        requestAnimationFrame(cycle)
+    },
+    resumePendingActions() {
+        for (const action of simulation.pendingActions) simulation.runPendingAction(action)
+    },
+    stepPendingAction(action) { //return true while this action still has work to do
+        switch (action.type) {
+            case "reality tech": {
+                if (m.cycle % 10) return true
+                if (action.remaining <= 0) return false
+                action.remaining--
+                const options = []
+                for (let i = 0; i < tech.tech.length; i++) {
+                    const t = tech.tech[i]
+                    if (t.count < t.maxCount && t.allowed() && !t.isBadRandomOption && !t.isLore && !t.isJunk && !t.isAltRealityTech && !tech.isNonDemolitionKept(t, action.keep ?? null)) { //localization only replaces the tech it didn't keep
+                        for (let j = 0; j < t.frequency; j++) options.push(i)
+                    }
+                }
+                if (options.length) tech.giveTech(options[Math.floor(Math.random() * options.length)])
+                return true
+            }
+            case "applied science": {
+                if (action.remaining <= 0) return false
+                if (simulation.paused || simulation.isChoosing) return true
+                action.remaining--
+                if (!(action.remaining % action.delay)) {
+                    action.gunIndex++
+                    if (b.inventory[action.gunIndex] !== undefined) tech.giveRandomGunTech(b.inventory[action.gunIndex])
+                }
+                return action.remaining > 0
+            }
+            case "quintessence": {
+                if (powerUps.research.count <= 0 || powerUps.research.count === Infinity) return false
+                if (simulation.paused || simulation.isChoosing) return true
+                const t = tech.tech.find(entry => entry.name === "quintessence")
+                if (!t) return false
+                powerUps.research.changeRerolls(-1)
+                t.researchUsed++
+                powerUps.spawnDelay("coupling", t.couplingToResearch)
+                return powerUps.research.count > 0
+            }
+            case "needles": {
+                if (simulation.paused || m.isTimeDilated) return true
+                action.count++
+                if (action.count % 2) {
+                    const needle = b.needle()
+                    if (tech.isIceCrystals) needle.isIceNeedle = true
+                }
+                return action.count < action.end
+            }
+        }
+        return false
+    },
+    removeEphemera: function (who, isRemoveByName) {
+        if (isRemoveByName) { //who is a string
+            for (let i = 0, len = simulation.ephemera.length; i < len; i++) {
+                if (simulation.ephemera[i].name === who) {
+                    simulation.ephemera.splice(i, 1);
+                    break;
+                }
+            }
+        } else {
+            for (let i = 0, len = simulation.ephemera.length; i < len; i++) {
+                if (simulation.ephemera[i] === who) {
+                    simulation.ephemera.splice(i, 1);
+                    break;
+                }
+            }
+        }
+    },
+    runEphemera() {
+        // for (let i = 0; i < simulation.ephemera.length; i++) {
+        for (let i = simulation.ephemera.length - 1; i >= 0; i--) {
+            simulation.ephemera[i]?.do(); //death can clear ephemera during a callback
+        }
+    },
+    mouse: {
+        x: canvas.width / 2,
+        y: canvas.height / 2
+    },
+    mouseInGame: {
+        x: 0,
+        y: 0
+    },
+    g: 0.0024, // applies to player, bodies, and power ups  (not mobs)
+    gDefault: 0.0024, //clearMap sets g back to this, local levels can change gravity
+    onTitlePage: true,
+    isCheating: false,
+    isTraining: false,
+    paused: false,
+    isChoosing: false,
+    testing: false, //testing mode: shows wire frame and some variables
+    cycle: 600, //total cycles, 60 per second
+    fpsCap: null, //limits frames per second to 144/2=72,  on most monitors the fps is capped at 60fps by the hardware
+    fpsCapDefault: 72, //use to change fpsCap back to normal after a hit from a mob
+    isCommunityMaps: false,
+    isStartingGame: false,
+    cyclePaused: 0,
+    fallHeight: 6000, //below this y position the player will teleport to start, take damage, or teleport to the sky based on the value of  level.fallMode
+    lastTimeStamp: 0, //tracks time stamps for measuring delta
+    delta: 1000 / 60, //speed of game engine //looks like it has to be 16.6666 to match player input
+    buttonCD: 0,
+    isHorizontalFlipped: false, //makes some maps flipped horizontally
+    levelsCleared: 0,
+    difficultyOptions: {}, //individual difficulty effects; initialized from saved settings
+    difficultyMode: 2, //derived numeric scale for legacy enemy tuning and community maps
+    difficulty: 0,
+    constraint: 0,
+    healScale: 1,
+    accelScale: null,
+    CDScale: null,
+    molecularMode: Math.floor(5 * Math.random()), //0 spores, 1 missile, 2 ice IX, 3 drones, 4 following needles //randomize molecular assembler field type
+
+    drawCursor() {
+        const size = 10;
+        ctx.beginPath();
+        ctx.moveTo(simulation.mouse.x - size, simulation.mouse.y);
+        ctx.lineTo(simulation.mouse.x + size, simulation.mouse.y);
+        ctx.moveTo(simulation.mouse.x, simulation.mouse.y - size);
+        ctx.lineTo(simulation.mouse.x, simulation.mouse.y + size);
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = "#000"; //'rgba(0,0,0,0.4)'
+        ctx.stroke(); // Draw it
+    },
+    drawCursorBasic() {
+        const size = 10;
+        ctx.beginPath();
+        ctx.moveTo(simulation.mouse.x - size, simulation.mouse.y);
+        ctx.lineTo(simulation.mouse.x + size, simulation.mouse.y);
+        ctx.moveTo(simulation.mouse.x, simulation.mouse.y - size);
+        ctx.lineTo(simulation.mouse.x, simulation.mouse.y + size);
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = "#000"; //'rgba(0,0,0,0.4)'
+        ctx.stroke(); // Draw it
+    },
+    drawCursorCoolDown() {
+        const size = 10;
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = tech.isShotgunTiming && m.cycle < tech.shotgunTimingEndCycle ? "#f03" : "#000";
+        ctx.beginPath();
+        if (m.fireCDcycle > m.cycle) {
+            ctx.arc(simulation.mouse.x, simulation.mouse.y, size + 1, 0, 2 * Math.PI);
+        }
+        ctx.moveTo(simulation.mouse.x - size, simulation.mouse.y);
+        ctx.lineTo(simulation.mouse.x + size, simulation.mouse.y);
+        ctx.moveTo(simulation.mouse.x, simulation.mouse.y - size);
+        ctx.lineTo(simulation.mouse.x, simulation.mouse.y + size);
+        ctx.stroke(); // Draw it
+    },
+    drawList: [], //so you can draw a first frame of explosions.. I know this is bad
+    drawTime: 8, //how long circles are drawn.  use to push into drawlist.time
+    mobDmgColor: "rgba(255,0,0,0.7)", //color when a mob damages the player  // set by mass-energy tech
+    playerDmgColor: "rgba(0,0,0,0.7)", //color when the player damages a mob
+    drawCircle() {
+        //draws a circle for two cycles, used for showing damage mostly
+        let i = simulation.drawList.length;
+        while (i--) {
+            ctx.beginPath(); //draw circle
+            ctx.arc(simulation.drawList[i].x, simulation.drawList[i].y, simulation.drawList[i].radius, 0, 2 * Math.PI);
+            ctx.fillStyle = simulation.drawList[i].color;
+            ctx.fill();
+            if (simulation.drawList[i].time) {
+                simulation.drawList[i].time--;
+            } else {
+                if (!m.isTimeDilated) simulation.drawList.splice(i, 1); //remove when timer runs out
+            }
+        }
+    },
+    circleFlare(dup, loops = 100) {
+        let boltNum, colors, loop
+        if (!localSettings.isHideHUD) {
+            boltNum = dup * 300
+            const bolts = []
+            colors = [powerUps.research.color, powerUps.ammo.color, powerUps.heal.color, powerUps.tech.color, powerUps.field.color, powerUps.gun.color]
+            for (let i = 0; i < boltNum; ++i) {
+                const mag = 6 + 20 * Math.random()
+                const angle = 2 * Math.PI * Math.random()
+                bolts.push({
+                    x: m.pos.x,
+                    y: m.pos.y,
+                    Vx: mag * Math.cos(angle),
+                    Vy: mag * Math.sin(angle),
+                    color: colors[Math.floor(Math.random() * colors.length)]
+                })
+            }
+            let count = 0
+            loop = () => { //draw electricity
+                if (count++ < loops) requestAnimationFrame(loop)
+                for (let i = 0, len = bolts.length; i < len; ++i) {
+                    bolts[i].x += bolts[i].Vx
+                    bolts[i].y += bolts[i].Vy
+                    if (Math.random() < 0.2) {
+                        simulation.drawList.push({
+                            x: bolts[i].x,
+                            y: bolts[i].y,
+                            radius: 1.5 + 5 * Math.random(),
+                            // color: "rgba(0,155,155,0.7)",
+                            color: bolts[i].color,
+                            time: Math.floor(9 + 25 * Math.random() * Math.random())
+                        });
+                    }
+                }
+            }
+            requestAnimationFrame(loop)
+        }
+    },
+    boldActiveGunHUD() {
+        if (b.inventory.length > 0) {
+            for (let i = 0, len = b.inventory.length; i < len; ++i) {
+                document.getElementById(b.inventory[i]).style.opacity = b.inventory[i] === b.activeGun ? "1" : "0.3";
+            }
+        }
+    },
+    updateGunHUD() {
+        for (let i = 0, len = b.inventory.length; i < len; ++i) {
+            document.getElementById(b.inventory[i]).innerHTML = `${b.guns[b.inventory[i]].name} - ${b.guns[b.inventory[i]].ammo}`
+        }
+    },
+    makeGunHUD() {
+        //remove all nodes
+        const myNode = document.getElementById("guns");
+        while (myNode.firstChild) {
+            myNode.removeChild(myNode.firstChild);
+        }
+        //add nodes
+        for (let i = 0, len = b.inventory.length; i < len; ++i) {
+            const node = document.createElement("div");
+            node.setAttribute("id", b.inventory[i]);
+            const textNode = document.createTextNode(`${b.guns[b.inventory[i]].name} - ${b.guns[b.inventory[i]].ammo}`); //b.guns[b.inventory[i]].name + " - " + b.guns[b.inventory[i]].ammo);
+            node.appendChild(textNode);
+            document.getElementById("guns").appendChild(node);
+        }
+        simulation.boldActiveGunHUD();
+    },
+    updateTechHUD() {
+        let text = ""
+        for (let i = 0, len = tech.tech.length; i < len; i++) { //add tech
+            if (tech.tech[i].isLost) {
+                if (text) text += "<br>" //add a new line, but not on the first line
+                text += `<span style="text-decoration: line-through;">${tech.tech[i].name}</span>`
+            } else if (tech.tech[i].count > 0 && !tech.tech[i].isInstant) {
+                if (text) text += "<br>" //add a new line, but not on the first line
+                text += tech.tech[i].name
+                if (tech.tech[i].count > 1) text += ` (${tech.tech[i].count}x)`
+            }
+        }
+        document.getElementById("right-HUD").innerHTML = text
+    },
+    dmgNumbers(where, dmg, color = "rgba(255, 0, 17,", size = 45, isOutline = false) {
+        if (localSettings.showDmgNumbers && dmg > 0) {
+            simulation.ephemera.push({
+                count: 0,
+                drift: { x: (0.6 * Math.random()) * (Math.random() < 0.5 ? -1 : 1), y: 1 + 0.5 * Math.random() },
+                font: `${size}px Arial`,
+                do() {
+                    let pos
+                    this.count++
+                    if (this.count > size) {
+                        simulation.removeEphemera(this)
+                    } else {
+                        const opacity = Math.max(0, (2 * (60 - this.count)) / 60)
+                        ctx.fillStyle = `${color}${opacity})`;
+                        ctx.font = this.font;
+                        pos = Vector.add(where, Vector.mult(this.drift, -this.count))
+                        if (isOutline) {
+                            ctx.strokeStyle = `rgba(0,0,0,${opacity})`//"#000"
+                            ctx.lineWidth = 2;
+                            ctx.strokeText(dmg, pos.x, pos.y);
+                        }
+                        ctx.fillText(dmg, pos.x, pos.y);
+                    }
+                },
+            })
+        }
+    },
+    lastLogTime: 0,
+    isTextLogOpen: true,
+    consoleLength: 0,
+    inGameConsole(text, time = 240) {
+        if (!localSettings.isHideHUD && simulation.isTextLogOpen && !build.isExperimentSelection) {
+            if (simulation.lastLogTime > m.cycle && simulation.consoleLength < 30) { //if there is an older message
+                document.getElementById("text-log").innerHTML = document.getElementById("text-log").innerHTML + '<br>' + text;
+                simulation.lastLogTime = m.cycle + time;
+                simulation.consoleLength++
+            } else {
+                document.getElementById("text-log").innerHTML = text;
+                document.getElementById("text-log").style.display = "inline";
+                simulation.lastLogTime = m.cycle + time;
+                simulation.consoleLength = 0
+            }
+        }
+    },
+    textLog() {
+        if (simulation.lastLogTime && simulation.lastLogTime < m.cycle) {
+            simulation.lastLogTime = 0;
+            // document.getElementById("text-log").innerHTML = " ";
+            document.getElementById("text-log").style.display = "none";
+        }
+    },
+    nextGun() {
+        if (b.inventory.length > 1 && !(tech.isGunCycle || tech.isGunChoice)) {
+            b.inventoryGun++;
+            if (b.inventoryGun > b.inventory.length - 1) b.inventoryGun = 0;
+            simulation.switchGun();
+        }
+    },
+    previousGun() {
+        if (b.inventory.length > 1 && !(tech.isGunCycle || tech.isGunChoice)) {
+            b.inventoryGun--;
+            if (b.inventoryGun < 0) b.inventoryGun = b.inventory.length - 1;
+            simulation.switchGun();
+        }
+    },
+    switchToGunInInventory(num) {
+        if (b.inventory[num] !== undefined && b.inventoryGun !== num) {
+            b.inventoryGun = num
+            simulation.switchGun();
+        }
+    },
+    switchGun() {
+        if (!tech.isTransverse && b.activeGun === 3) b.guns[3].waves = []; //empty array of longitudinal wave bullets
+        if (tech.crouchAmmoCount) tech.crouchAmmoCount = 1 //this prevents hacking the tech by switching guns
+        if (b.inventory.length > 0) b.activeGun = b.inventory[b.inventoryGun];
+        simulation.updateGunHUD();
+        simulation.boldActiveGunHUD();
+        //set crosshairs
+        if (b.activeGun === 1) {
+            simulation.drawCursor = simulation.drawCursorCoolDown
+        } else {
+            simulation.drawCursor = simulation.drawCursorBasic
+        }
+        // b.setFireMethod()
+    },
+    zoom: null,
+    zoomScale: 1000,
+    isAutoZoom: true,
+    setZoom(zoomScale = simulation.zoomScale) { //use in window resize in index.js
+        simulation.zoomScale = zoomScale
+        simulation.zoom = canvas.height / zoomScale; //sets starting zoom scale
+    },
+    zoomTransition(newZoomScale, cycles = 120) { //cycles is how long it takes, 60 is a second
+        if (!simulation.isAutoZoom) return
+        simulation.ephemera.push({
+            name: "zoom",
+            count: simulation.testing ? 1 : Math.max(1, Math.round(cycles)),
+            currentLevel: level.onLevel,
+            do() {
+                if (!simulation.isAutoZoom || this.currentLevel !== level.onLevel) {
+                    simulation.removeEphemera(this)
+                    return
+                }
+                if (this.count === 1) {
+                    simulation.setZoom(newZoomScale)
+                    simulation.removeEphemera(this)
+                } else {
+                    simulation.setZoom(simulation.zoomScale + (newZoomScale - simulation.zoomScale) / this.count)
+                    this.count--
+                }
+            },
+        })
+    },
+    isInvertedVertical: false,
+    flipCameraVertical(frames = 1, passFunction = () => { }) {
+        if (!simulation.isInvertedVertical) {
+            if (frames > 0) {
+                let count = 0
+                const loop = () => {
+                    if (m.alive) {
+                        if (simulation.paused) {
+                            requestAnimationFrame(loop);
+                        } else {
+                            count++
+                            ctx.setTransform(1, 0, 0, 1, 0, 0); ///reset to avoid build up of transformations
+                            if (count === frames) {
+                                // Flip the canvas vertically
+                                ctx.translate(0, canvas.height); // Move the origin down to the bottom
+                                ctx.scale(1, -1); // Flip vertically
+                                //flip mouse Y again to make sure it caught
+                                // mouseMove.reset()
+                            } else {
+                                requestAnimationFrame(loop);
+                                ctx.translate(0, canvas.height * count / frames);
+                                ctx.scale(1, 1 - 2 * count / frames);
+                            }
+                            if (count > Math.floor(frames / 2) && !simulation.isInvertedVertical) {
+                                //flip mouse Y at the 1/2 way point
+                                simulation.isInvertedVertical = true
+                                mouseMove.reset()
+                                simulation.mouse.y = canvas.height - simulation.mouse.y
+                                //passFunction probably flips the map elements 
+                                passFunction()
+                            }
+                        }
+                    }
+                }
+                requestAnimationFrame(loop);
+            } else {
+                // Flip the canvas vertically
+                ctx.translate(0, canvas.height); // Move the origin down to the bottom
+                ctx.scale(1, -1); // Flip vertically
+                //flip mouse Y
+                simulation.isInvertedVertical = true
+                mouseMove.reset()
+                simulation.mouse.y = canvas.height - simulation.mouse.y
+
+            }
+        }
+    },
+    unFlipCameraVertical(frames = 0, passFunction = () => { }) {
+        if (frames) {
+            let count = 0
+            const loop = () => {
+                if (m.alive) {
+                    if (simulation.paused) {
+                        requestAnimationFrame(loop);
+                    } else {
+                        count++
+                        ctx.setTransform(1, 0, 0, 1, 0, 0); ///reset to avoid build up of transformations
+                        if (count === frames) {
+                            // requestAnimationFrame(() => { ctx.reset(); });
+                            // ctx.translate(0, 0);
+                            // ctx.scale(1, 1);
+
+                            //flip mouse Y again to make sure it caught
+                            // mouseMove.reset()
+
+                        } else {
+                            requestAnimationFrame(loop);
+                            ctx.translate(0, canvas.height - canvas.height * count / frames);
+                            ctx.scale(1, -1 + 2 * count / frames);
+                        }
+                        if (count > Math.floor(frames / 2) && simulation.isInvertedVertical) {
+                            simulation.isInvertedVertical = false
+                            //flip mouse Y at the 1/2 way point
+                            mouseMove.reset()
+                            simulation.mouse.y = canvas.height - simulation.mouse.y
+
+                            passFunction()//passFunction probably draws new map elements 
+                        }
+                    }
+                }
+            }
+            requestAnimationFrame(loop);
+        } else {
+            ctx.reset();
+            ctx.font = "25px Arial";
+            const wasInverted = simulation.isInvertedVertical
+            simulation.isInvertedVertical = false
+            mouseMove.reset()
+            if (wasInverted) simulation.mouse.y = canvas.height - simulation.mouse.y //only flip the mouse back if it was flipped, clearMap() calls this every level, the mouse would jump to its mirror image until it moved
+        }
+    },
+    translatePlayerAndCamera(where, isTranslateBots = true) {
+        //infinite falling.  teleport to sky after falling
+        const before = { x: player.position.x, y: player.position.y, }
+        Matter.Body.setPosition(player, { x: where.x, y: where.y });
+        const change = { x: before.x - player.position.x, y: before.y - player.position.y }
+        // translate camera to preserve illusion to endless fall
+        m.transX += change.x
+        m.transY += change.y
+        simulation.mouseInGame.x = (simulation.mouse.x - canvas.width2) / simulation.zoom * simulation.edgeZoomOutSmooth + canvas.width2 - m.transX;
+        simulation.mouseInGame.y = (simulation.mouse.y - canvas.height2) / simulation.zoom * simulation.edgeZoomOutSmooth + canvas.height2 - m.transY;
+
+        m.angle = Math.atan2(simulation.mouseInGame.y - m.pos.y, simulation.mouseInGame.x - m.pos.x);
+
+        //is there a reason to update m.pos here?
+        // m.pos.x = player.position.x;
+        // m.pos.y = playerBody.position.y - m.yOff;
+        if (isTranslateBots) {
+            for (let i = 0; i < bullet.length; i++) {
+                if (bullet[i].botType) {
+                    if (Vector.magnitudeSquared(Vector.sub(bullet[i].position, player.position)) > 1000000) { //far away bots teleport to player
+                        Matter.Body.setPosition(bullet[i], Vector.add(player.position, { x: 250 * (Math.random() - 0.5), y: 250 * (Math.random() - 0.5) }));
+                        Matter.Body.setVelocity(bullet[i], { x: 0, y: 0 });
+                    } else { //close bots maintain relative distance to player on teleport
+                        Matter.Body.setPosition(bullet[i], Vector.sub(bullet[i].position, change));
+                    }
+                }
+            }
+
+            if (tech.wire && tech.wire.segments.length) {
+                requestAnimationFrame(() => {
+                    const r = 32 * player.scale
+                    const a = m.angle + Math.PI
+                    for (let i = 0; i < tech.wire.segments.length; i++) {
+                        tech.wire.segments[i].y = tech.wire.segments[i].oldY = m.pos.y + (r * Math.sin(a))
+                        tech.wire.segments[i].x = tech.wire.segments[i].oldX = m.pos.x + (r * Math.cos(a))
+                    }
+                })
+            }
+        }
+    },
+    setupCamera() { //makes the camera not scroll after changing locations
+        // only works if velocity is zero
+        m.pos.x = player.position.x;
+        m.pos.y = playerBody.position.y - m.yOff;
+        const scale = 0.8;
+        m.transSmoothX = canvas.width2 - m.pos.x - (simulation.mouse.x - canvas.width2) * scale;
+        m.transSmoothY = canvas.height2 - m.pos.y - (simulation.mouse.y - canvas.height2) * scale;
+        m.transX += (m.transSmoothX - m.transX);
+        m.transY += (m.transSmoothY - m.transY);
+    },
+    edgeZoomOutSmooth: 1,
+    camera() {
+        //zoom out when mouse gets near the edge of the window
+        const dx = simulation.mouse.x / window.innerWidth - 0.5 //x distance from mouse to window center scaled by window width
+        const dy = simulation.mouse.y / window.innerHeight - 0.5 //y distance from mouse to window center scaled by window height
+        const d = Math.max(dx * dx, dy * dy)
+        simulation.edgeZoomOutSmooth = (1 + 4 * d * d) * 0.04 + simulation.edgeZoomOutSmooth * 0.96
+
+        ctx.save();
+        ctx.translate(canvas.width2, canvas.height2); //center
+        ctx.scale(simulation.zoom / simulation.edgeZoomOutSmooth, simulation.zoom / simulation.edgeZoomOutSmooth); //zoom in once centered
+        ctx.translate(-canvas.width2 + m.transX, -canvas.height2 + m.transY); //translate
+        // ctx.translate(-canvas.width2 + m.transX - player.velocity.x, -canvas.height2 + m.transY + player.velocity.y); //translate
+        //calculate in game mouse position by undoing the zoom and translations
+        simulation.mouseInGame.x = (simulation.mouse.x - canvas.width2) / simulation.zoom * simulation.edgeZoomOutSmooth + canvas.width2 - m.transX;
+        simulation.mouseInGame.y = (simulation.mouse.y - canvas.height2) / simulation.zoom * simulation.edgeZoomOutSmooth + canvas.height2 - m.transY;
+    },
+    //for moving camera away from player
+    setCameraPosition(x, y, zoom = 1) {
+        ctx.restore();
+        ctx.save();
+        ctx.translate(canvas.width2, canvas.height2); //center
+        ctx.scale(zoom, zoom); //zoom in once centered
+        ctx.translate(- x, - y); //center
+
+        // ctx.scale(simulation.zoom / simulation.edgeZoomOutSmooth, simulation.zoom / simulation.edgeZoomOutSmooth); //zoom in once centered
+        // ctx.translate(-canvas.width2, -canvas.height2); //translate
+        //calculate in game mouse position by undoing the zoom and translations
+        simulation.mouseInGame.x = (simulation.mouse.x - canvas.width2) / simulation.zoom * simulation.edgeZoomOutSmooth + canvas.width2 - m.transX;
+        simulation.mouseInGame.y = (simulation.mouse.y - canvas.height2) / simulation.zoom * simulation.edgeZoomOutSmooth + canvas.height2 - m.transY;
+    },
+    cameraNoLook() {
+        ctx.save();
+        ctx.translate(canvas.width2, canvas.height2); //center
+        // ctx.scale(simulation.zoom / simulation.edgeZoomOutSmooth, simulation.zoom / simulation.edgeZoomOutSmooth); //zoom in once centered
+        ctx.translate(-canvas.width2 + m.transX, -canvas.height2 + m.transY); //translate
+        //calculate in game mouse position by undoing the zoom and translations
+        simulation.mouseInGame.x = (simulation.mouse.x - canvas.width2) / simulation.zoom * simulation.edgeZoomOutSmooth + canvas.width2 - m.transX;
+        simulation.mouseInGame.y = (simulation.mouse.y - canvas.height2) / simulation.zoom * simulation.edgeZoomOutSmooth + canvas.height2 - m.transY;
+    },
+    restoreCamera() {
+        ctx.restore();
+    },
+    energyGenGraphic(totalCycles = 10 + Math.floor(Math.random() * 20)) {
+        if (m.immuneCycle >= m.cycle || m.isTimeDilated) return
+        //energy generation animation
+        if (!localSettings.isHideHUD) {
+            simulation.ephemera.push({
+                where: { x: m.pos.x + 45 * (Math.random() - 0.5), y: m.pos.y + Math.random() * 100 },
+                count: totalCycles,
+                r: 1.5 + 3 * Math.random(),
+                do() {
+                    this.count--
+                    if (this.count < 0) simulation.removeEphemera(this)
+                    this.where.y -= 3
+
+                    ctx.beginPath();
+                    ctx.arc(this.where.x, this.where.y, this.r, 0, 2 * Math.PI);
+                    ctx.fillStyle = m.fieldMeterColor
+                    ctx.fill();
+                },
+            })
+        }
+    },
+    trails(swapPeriod = 150) {
+        // const swapPeriod = 150
+        const len = 30
+        for (let i = 0; i < len; i++) {
+            setTimeout(function () {
+                simulation.wipe = function () { //set wipe to have trails
+                    ctx.fillStyle = `rgba(221,221,221,${i * i * 0.0005 + 0.0025})`;
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                }
+            }, (i) * swapPeriod);
+        }
+
+        setTimeout(function () {
+            simulation.wipe = function () { //set wipe to normal
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+        }, len * swapPeriod);
+    },
+    wipe() { }, //set in simulation.startGame
+    warmedShaders: new Set(), //effects already drawn by simulation.warmShaders, the GPU keeps their shaders until the page reloads
+    warmShaders() { //the first time some effects are drawn, the GPU can freeze the game for ~0.3s while it builds new shaders
+        //called after a choice, before unpausing, so the freeze happens while the choice menu is still up
+        //an effect opts in with a warmUp() that draws it at the player the way the game does, in each state that looks different to the GPU
+        let isDrawn = false
+        for (const effect of [m.fieldUpgrades[m.fieldMode], ...tech.tech]) {
+            if (effect.warmUp && (effect === m.fieldUpgrades[m.fieldMode] || effect.count > 0) && !simulation.warmedShaders.has(effect.name)) {
+                simulation.warmedShaders.add(effect.name)
+                ctx.save()
+                ctx.setTransform(1, 0, 0, 1, 0, 0)
+                simulation.camera() //the next frame wipes these draws before they're seen
+                effect.warmUp()
+                ctx.restore()
+                ctx.restore()
+                isDrawn = true
+            }
+        }
+        if (isDrawn) { //copy the canvas and read a pixel, which waits for the GPU to finish the draws
+            const copy = document.createElement("canvas")
+            copy.width = 512 //smaller canvases might not use the GPU
+            copy.height = 512
+            const copyCtx = copy.getContext("2d")
+            copyCtx.drawImage(canvas, 0, 0, 1, 1)
+            copyCtx.getImageData(0, 0, 1, 1)
+        }
+    },
+    gravity() {
+        function addGravity(bodies, magnitude) {
+            for (let i = 0; i < bodies.length; i++) {
+                bodies[i].force.y += bodies[i].mass * magnitude;
+            }
+        }
+        if (!m.isTimeDilated) {
+            addGravity(powerUp, simulation.g);
+            addGravity(body, simulation.g);
+        }
+        player.force.y += player.mass * simulation.g;
+    },
+    firstRun: true,
+    splashReturn() {
+        levelEditor.close()
+        mouseMove.unlock()
+        document.getElementById("previous-seed").innerHTML = `previous seed: <span style="font-size:80%;">${Math.initialSeed}</span><br>`
+        document.getElementById("seed").value = Math.initialSeed = Math.seed //randomize initial seed
+
+        //String(document.getElementById("seed").value)
+        // Math.seed = Math.abs(Math.hash(Math.initialSeed)) //update randomizer seed in case the player changed it
+
+        canvas.style.filter = "brightness(1)"
+        simulation.clearTimeouts();
+        titlePage.queueStart() //the title page player drops in after a couple seconds, see js/title.js
+        simulation.onTitlePage = true;
+        detectDisplayFps()
+        document.getElementById("splash").onclick = function () {
+            simulation.startGame();
+        };
+        document.getElementById("choose-grid").style.visibility = "hidden"
+        document.getElementById("choose-grid").style.opacity = "0"
+        document.getElementById("info").style.display = "inline";
+        document.getElementById("info").style.opacity = "0";
+        document.getElementById("experiment-button").style.display = "inline"
+        document.getElementById("experiment-button").style.opacity = "0";
+        document.getElementById("community-button").style.display = "inline"
+        document.getElementById("community-button").style.opacity = "0";
+        document.getElementById("start-button").style.display = "inline"
+        document.getElementById("start-button").style.opacity = "0";
+        saveGame.updateContinueButton()
+        document.getElementById("continue-button").style.opacity = "0";
+        document.getElementById("level-editor-splash-button").style.display = "inline"
+        document.getElementById("level-editor-splash-button").style.opacity = "0";
+        document.getElementById("experiment-grid").style.display = "none"
+        document.getElementById("pause-grid-left").style.display = "none"
+        document.getElementById("pause-grid-right").style.display = "none"
+        document.body.classList.remove("pause-open")
+        document.getElementById("splash").style.display = "inline";
+        document.getElementById("splash").style.opacity = "0";
+        document.getElementById("dmg").style.display = "none";
+        document.getElementById("health-bg").style.display = "none";
+        document.getElementById("defense-bar").style.display = "none"
+        document.body.style.cursor = "auto";
+        setTimeout(() => {
+            document.getElementById("experiment-button").style.opacity = "1";
+            document.getElementById("community-button").style.opacity = "1";
+            document.getElementById("start-button").style.opacity = "1";
+            document.getElementById("continue-button").style.opacity = "1";
+            document.getElementById("level-editor-splash-button").style.opacity = "1";
+            document.getElementById("info").style.opacity = "1";
+            document.getElementById("splash").style.opacity = "1";
+        }, 200);
+    },
+    fpsInterval: 0, //set in startGame
+    then: null,
+    async startGame(isBuildRun = false, isTrainingRun = false, tutorialStart = "walk") {
+        let i, len
+        if (simulation.isStartingGame) return
+        simulation.isStartingGame = true
+        //request before any await so it still counts as part of the click that started the game, fullscreenchange locks the mouse
+        if (localSettings.isAutoFullscreen && !document.fullscreenElement) {
+            document.documentElement.requestFullscreen?.().catch(err => console.error('Error attempting to enable fullscreen:', err));
+        }
+        if (simulation.isCommunityMaps || isTrainingRun) {
+            try {
+                await level.loadMoreLevels()
+            } catch (error) {
+                simulation.isStartingGame = false
+                console.error(error)
+                return
+            }
+        }
+        simulation.isStartingGame = false
+        titlePage.stop() //removes the title page player and platforms before the run's player spawns, see js/title.js
+        simulation.draw.body = simulation.draw.bodyDefault //undo a community map's custom block drawing from the last run
+        simulation.isTextLogOpen = true
+        simulation.clearMap()
+        level.pendingTransfers = null //a fresh run never inherits arrivals from the previous run
+        if (!isBuildRun) { //if a build run logic flow returns to "experiment-button").addEventListener
+            document.body.style.cursor = "none";
+            document.body.style.overflow = "hidden"
+        }
+        level.trainingMobTier = null
+        simulation.isTraining = isTrainingRun
+        simulation.difficultyOptions = powerUps.difficulty.normalize(simulation.isTraining ? {} : localSettings.difficultyOptions)
+        powerUps.difficulty.updateScale()
+        simulation.onTitlePage = false;
+        // document.getElementById("choose-grid").style.display = "none"
+        document.getElementById("choose-grid").style.visibility = "hidden"
+        document.getElementById("choose-grid").style.opacity = "0"
+        document.getElementById("experiment-grid").style.display = "none"
+        document.getElementById("info").style.display = "none";
+        levelPoolMenu.close()
+        document.getElementById("experiment-button").style.display = "none";
+        document.getElementById("community-button").style.display = "none";
+        document.getElementById("start-button").style.display = "none";
+        document.getElementById("continue-button").style.display = "none";
+        document.getElementById("level-editor-splash-button").style.display = "none";
+        // document.getElementById("experiment-button").style.opacity = "0";
+        document.getElementById("splash").onclick = null; //removes the onclick effect so the function only runs once
+        document.getElementById("splash").style.display = "none"; //hides the element that spawned the function
+        document.getElementById("dmg").style.display = "inline";
+        document.getElementById("health").style.display = "inline"
+        document.getElementById("health-bg").style.display = "inline";
+        if (!localSettings.isHideHUD) {
+            document.getElementById("right-HUD").style.display = "inline"
+            document.getElementById("defense-bar").style.display = "inline"
+        } else {
+            document.getElementById("right-HUD").style.display = "none"
+            document.getElementById("defense-bar").style.display = "none"
+        }
+        document.getElementById("guns").style.display = "inline"
+        document.getElementById("field").style.display = "inline"
+
+        // document.body.style.overflow = "hidden"
+        document.getElementById("pause-grid-left").style.display = "none"
+        document.getElementById("pause-grid-right").style.display = "none"
+        document.getElementById("pause-grid-right").style.opacity = "1"
+        document.getElementById("pause-grid-left").style.opacity = "1"
+        document.body.classList.remove("pause-open")
+        ctx.globalCompositeOperation = "source-over"
+        ctx.shadowBlur = 0;
+
+        mouseMove.reset()
+        requestAnimationFrame(() => {
+            ctx.setTransform(1, 0, 0, 1, 0, 0); //reset warp effect
+            ctx.setLineDash([]) //reset stroke dash effect
+        })
+        // ctx.shadowColor = '#000';
+        if (!m.isShipMode) {
+            m.resetSkin() //set the play draw to normal, undoing some junk tech
+            m.spawn(); //spawns the player
+            m.look = m.lookDefault
+        } else {
+            Composite.add(engine.world, [player])
+        }
+        seededShuffle(level.constraint)
+        level.populateLevels()
+        input.endKeySensing();
+        simulation.ephemera = []
+        simulation.pendingActions = []
+        powerUps.pendingSpawns = []
+        powerUps.powerUpStorage = []
+        tech.resetAllTech(); //sets tech to default values
+        b.resetAllGuns();
+        for (i = 0, len = b.guns.length; i < len; i++) { //find which gun 
+            if (b.guns[i].name === "laser") b.guns[i].chooseFireMethod()
+            if (b.guns[i].name === "nail gun") b.guns[i].chooseFireMethod()
+            if (b.guns[i].name === "super balls") b.guns[i].chooseFireMethod()
+            if (b.guns[i].name === "harpoon") b.guns[i].chooseFireMethod()
+            if (b.guns[i].name === "foam") b.guns[i].chooseFireMethod()
+        }
+        b.zeroBotCount()
+
+        m.isSwitchingWorlds = false
+        simulation.isChoosing = false;
+        b.setFireMethod()
+        b.setFireCD();
+        for (let i = 0; i < b.guns.length; i++) b.guns[i].isRecentlyShown = false //reset recently shown back to zero
+        for (let i = 0; i < m.fieldUpgrades.length; i++) m.fieldUpgrades[i].isRecentlyShown = false //reset recently shown back to zero
+        for (let i = 0; i < tech.tech.length; i++) tech.tech[i].isRecentlyShown = false //reset recently shown back to zero
+
+        powerUps.tech.choiceLog = [];
+        powerUps.gun.choiceLog = [];
+        powerUps.field.choiceLog = [];
+        powerUps.totalPowerUps = 0;
+        powerUps.research.count = 0;
+        powerUps.qubit.count = 0;
+        powerUps.qubit.damageCount = 0;
+        powerUps.boost.endCycle = 0
+        powerUps.isFieldSpawned = false
+        m.setFillColors();
+        input.isPauseKeyReady = true
+        simulation.wipe = function () { //set wipe to normal
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+        m.lastHit = 0
+        m.hole.isOn = false
+        simulation.paused = false;
+        engine.timing.timeScale = 1;
+        simulation.fpsCap = simulation.fpsCapDefault;
+        simulation.isAutoZoom = true;
+        simulation.makeGunHUD();
+        simulation.lastLogTime = 0;
+        mobs.mobDeaths = 0
+        level.isFlipped = false
+        level.isFlipping = false;
+        level.onLevel = isTrainingRun && !level.isCommunityTraining ? Math.max(0, level.trainingLevels.indexOf(tutorialStart)) : 0;
+        level.levelsCleared = 0;
+        level.updateDifficulty()
+        // level.setConstraints()
+
+        simulation.clearNow = true;
+        document.getElementById("text-log").style.display = "none"
+        document.getElementById("fade-out").style.opacity = 0;
+        document.title = "n-gon";
+        simulation.inGameConsole(`Math.seed <span class='color-symbol'>=</span> ${Math.initialSeed}`);
+        simulation.inGameConsole(`<span class='color-var'>const</span> engine <span class='color-symbol'>=</span> Engine.create(); <em>//simulation begin</em>`);
+        simulation.inGameConsole(`engine.timing.timeScale <span class='color-symbol'>=</span> 1`);
+        m.alive = true;
+        m.definePlayerMass();
+        m.onGround = false
+        // m.groundCount = 0
+        m.lastOnGroundCycle = 0
+        // m.addHealth(0.25)
+        m.health = 0.25;
+
+        level.isLowHeal = false
+        m.drop();
+        m.holdingTarget = null
+
+        //set to default field
+        tech.healMaxEnergyBonus = 0
+        m.immuneCycle = 0;
+        m.coupling = 0
+        m.fieldUpgrades[1].energyHealthRatio = 1
+        m.fieldUpgrades[11].isPreview = false //portal views start off each run
+        m.setField(0) //this calls m.couplingChange(), which sets max health and max energy
+        m.energy = 1
+        //exit testing
+        if (simulation.testing) {
+            simulation.testing = false;
+            simulation.loop = simulation.normalLoop
+            if (simulation.isConstructionMode) document.getElementById("construct").style.display = 'none'
+        }
+        simulation.isCheating = false
+        simulation.firstRun = false;
+        build.hasExperimentalMode = false
+        build.isExperimentSelection = false;
+        build.isExperimentRun = false;
+        canvas.style.filter = "brightness(1)"
+
+        //setup checks
+        if (!localSettings.isHideHUD) {
+            simulation.ephemera.push({
+                name: "dmgDefBars", count: 0, do() {
+                    if (!(m.cycle % 15)) { //4 times a second
+                        const defense = m.defense() //update defense bar
+                        if (m.lastCalculatedDefense !== defense) {
+                            document.getElementById("defense-bar").style.width = Math.floor(m.healthBarWidth(m.maxHealth) * (1 - defense)) + "px";
+                            m.lastCalculatedDefense = defense
+                        }
+                        const damage = tech.damageAdjustments() //update damage bar
+                        if (m.lastCalculatedDamage !== damage) {
+                            m.lastCalculatedDamage = damage
+                        }
+                    }
+                },
+            })
+        }
+        simulation.ephemera.push({
+            name: "checks", count: 0, do() {
+                if (localSettings.showDmgNumbers && !(m.cycle % 30)) {
+                    for (let i = 0; i < mob.length; i++) {
+                        if (mob[i].dmgLog) {
+                            simulation.dmgNumbers({ x: mob[i].position.x, y: mob[i].position.y - mob[i].radius * 1.4 }, Math.ceil(mob[i].dmgLog).toFixed(0), "rgba(255, 30, 67,", 40)
+                            mob[i].dmgLog = 0
+                        }
+                    }
+                }
+
+                if (!(m.cycle % 60)) { //once a second
+                    //energy overfill 
+                    if (m.energy > m.maxEnergy) {
+                        m.energy = m.maxEnergy + (m.energy - m.maxEnergy) * tech.overfillDrain //every second energy above max energy loses 25%
+                        if (m.energy > 1000000) m.energy = 1000000
+                    }
+                    if (m.pos.y > simulation.fallHeight) { // if 4000px deep
+                        if (level.fallMode === "start") {
+                            //infinite falling.  teleport to sky after falling
+
+                            simulation.ephemera.push({
+                                count: 160, //cycles before it self removes
+                                do() {
+                                    this.count--
+                                    if (this.count < 0 || m.onGround) simulation.removeEphemera(this)
+                                    if (player.velocity.y > 70) Matter.Body.setVelocity(player, { x: player.velocity.x * 0.99, y: player.velocity.y * 0.99 });
+                                    if (player.velocity.y > 90) Matter.Body.setVelocity(player, { x: player.velocity.x * 0.99, y: player.velocity.y * 0.99 });
+                                },
+                            })
+
+                            const before = { x: player.position.x, y: player.position.y, }
+                            Matter.Body.setPosition(player, { x: level.enter.x, y: level.enter.y - 3000 });
+                            // Matter.Body.setPosition(player, level.fallPosition);
+
+                            const change = { x: before.x - player.position.x, y: before.y - player.position.y }
+                            // translate camera smoothly to preserve illusion to endless fall
+                            m.transX += change.x
+                            m.transY += change.y
+                            simulation.mouseInGame.x = (simulation.mouse.x - canvas.width2) / simulation.zoom * simulation.edgeZoomOutSmooth + canvas.width2 - m.transX;
+                            simulation.mouseInGame.y = (simulation.mouse.y - canvas.height2) / simulation.zoom * simulation.edgeZoomOutSmooth + canvas.height2 - m.transY;
+                            m.angle = Math.atan2(simulation.mouseInGame.y - m.pos.y, simulation.mouseInGame.x - m.pos.x);
+                            // move bots
+                            for (let i = 0; i < bullet.length; i++) {
+                                if (bullet[i].botType) Matter.Body.setPosition(bullet[i], Vector.sub(bullet[i].position, change));
+                            }
+                        } else if (level.fallMode === "position") { //fall and stay in the same horizontal position
+                            simulation.ephemera.push({
+                                count: 180, //cycles before it self removes
+                                do() {
+                                    this.count--
+                                    if (this.count < 0 || m.onGround) simulation.removeEphemera(this)
+                                    if (player.velocity.y > 70) Matter.Body.setVelocity(player, { x: player.velocity.x * 0.99, y: player.velocity.y * 0.99 });
+                                    if (player.velocity.y > 90) Matter.Body.setVelocity(player, { x: player.velocity.x * 0.99, y: player.velocity.y * 0.99 });
+                                },
+                            })
+                            const before = { x: player.position.x, y: player.position.y, }
+                            const posXClamped = Math.min(Math.max(level.fallModeBounds.left, player.position.x), level.fallModeBounds.right)
+                            Matter.Body.setPosition(player, { x: posXClamped, y: level.enter.y - 6000 });
+
+                            // translate camera smoothly to preserve illusion to endless fall
+                            const change = { x: before.x - posXClamped, y: before.y - player.position.y }
+                            m.transX += change.x
+                            m.transY += change.y
+                            simulation.mouseInGame.x = (simulation.mouse.x - canvas.width2) / simulation.zoom * simulation.edgeZoomOutSmooth + canvas.width2 - m.transX;
+                            simulation.mouseInGame.y = (simulation.mouse.y - canvas.height2) / simulation.zoom * simulation.edgeZoomOutSmooth + canvas.height2 - m.transY;
+                            m.angle = Math.atan2(simulation.mouseInGame.y - m.pos.y, simulation.mouseInGame.x - m.pos.x);
+
+                            // move bots
+                            for (let i = 0; i < bullet.length; i++) {
+                                if (bullet[i].botType) Matter.Body.setPosition(bullet[i], Vector.sub(bullet[i].position, change));
+                            }
+                        } else { //go to start
+                            Matter.Body.setVelocity(player, { x: 0, y: 0 });
+                            Matter.Body.setPosition(player, { x: level.enter.x + 50, y: level.enter.y - 20 });
+                            // move bots
+                            for (let i = 0; i < bullet.length; i++) {
+                                if (bullet[i].botType) {
+                                    Matter.Body.setPosition(bullet[i], Vector.add(player.position, { x: 250 * (Math.random() - 0.5), y: 250 * (Math.random() - 0.5) }));
+                                    Matter.Body.setVelocity(bullet[i], { x: 0, y: 0 });
+                                }
+                            }
+                        }
+                    }
+                    if (isNaN(player.position.x)) m.death();
+                    if (m.lastKillCycle + 300 > m.cycle) { //effects active for 5 seconds after killing a mob
+                        if (tech.isEnergyRecovery) {
+                            m.addEnergy(m.maxEnergy * 0.05 * level.isReducedRegen)
+                            for (let i = 0; i < 2; i++)simulation.energyGenGraphic()
+                        }
+                        if (tech.isHealthRecovery) {
+                            if (tech.isEnergyHealth) {
+                                m.addEnergy(m.maxEnergy * 0.005 * level.isReducedRegen)
+                                simulation.energyGenGraphic()
+                            } else {
+                                const heal = 0.005 * m.maxHealth
+                                m.addHealth(heal)
+                                simulation.drawList.push({ //add dmg to draw queue
+                                    x: m.pos.x,
+                                    y: m.pos.y,
+                                    radius: Math.sqrt(heal) * 150,
+                                    color: "rgba(0,255,200,0.5)",
+                                    time: 4
+                                });
+                            }
+                        }
+                    }
+
+                    //check if player is stuck inside the map
+                    if (m.alive && !simulation.ephemera.some(e => e.name === "stuck") && m.isInsideMap()) {
+                        //check for the next 2 seconds to see if being stuck continues, physics can jiggle a stuck player out for a few cycles
+                        simulation.ephemera.push({
+                            name: "stuck",
+                            count: 0,
+                            free: 0, //cycles not inside the map
+                            do() {
+                                this.count++
+                                if (!m.isInsideMap()) this.free++
+                                if (this.free > 30) {
+                                    simulation.removeEphemera(this)
+                                } else if (this.count > 120) {
+                                    simulation.removeEphemera(this)
+                                    if (m.alive) m.unstuck()
+                                }
+                            },
+                        })
+                    }
+
+                    if (!(m.cycle % 420)) { //once every 7 seconds
+                        if (tech.isZeno) {
+                            m.takeDamage(0.05 * (tech.isEnergyHealth ? m.energy : m.health), false)
+                            // if (tech.isEnergyHealth) {
+                            //     m.energy *= 0.95
+                            // } else {
+                            //     m.health *= 0.95 //remove 5%
+                            //     m.displayHealth();
+                            // }
+                            simulation.drawList.push({ //add dmg to draw queue
+                                x: m.pos.x,
+                                y: m.pos.y,
+                                radius: 10,
+                                color: "rgb(255, 0, 195)",
+                                time: 4
+                            });
+                        }
+                        if (tech.cyclicImmunity && m.immuneCycle < m.cycle + tech.cyclicImmunity) m.immuneCycle = m.cycle + tech.cyclicImmunity; //player is immune to damage for 60 cycles
+
+
+                        let i = body.length;
+                        while (i--) {
+                            if (body[i].position.y > simulation.fallHeight) {
+                                if (body[i].isInvulnerable || body[i].isImmutable) {
+                                    Matter.Body.setVelocity(body[i], { x: 0, y: 0 });
+                                    if (level.fallMode === "position") {
+                                        const posXClamped = Math.min(Math.max(level.fallModeBounds.left, body[i].position.x), level.fallModeBounds.right)
+                                        Matter.Body.setPosition(body[i], { x: posXClamped, y: level.enter.y - 4000 });
+                                    } else {
+                                        Matter.Body.setPosition(body[i], { x: level.enter.x + 50, y: level.enter.y - 20 });
+                                    }
+                                } else {
+                                    Matter.Composite.remove(engine.world, body[i]);
+                                    body.splice(i, 1);
+                                }
+                            }
+                        }
+                        i = powerUp.length
+                        while (i--) {
+                            if (powerUp[i].position.y > simulation.fallHeight) {
+                                Matter.Body.setVelocity(powerUp[i], { x: 0, y: 0 });
+                                if (level.fallMode === "position") {
+                                    const posXClamped = Math.min(Math.max(level.fallModeBounds.left, powerUp[i].position.x), level.fallModeBounds.right)
+                                    Matter.Body.setPosition(powerUp[i], { x: posXClamped, y: level.enter.y - 3000 });
+                                } else {
+                                    Matter.Body.setPosition(powerUp[i], {
+                                        x: level.exit.x + 30 * (Math.random() - 0.5),
+                                        y: level.exit.y + 30 * (Math.random() - 0.5)
+                                    });
+                                }
+                            }
+                        }
+                        i = mob.length;
+                        while (i--) {
+                            if (mob[i].position.y > simulation.fallHeight) {
+                                if (mob[i].isBoss && level.fallMode === "position") {
+                                    Matter.Body.setVelocity(mob[i], { x: 0, y: 0 });
+                                    const posXClamped = Math.min(Math.max(level.fallModeBounds.left, mob[i].position.x), level.fallModeBounds.right)
+                                    Matter.Body.setPosition(mob[i], { x: posXClamped, y: level.enter.y - 3000 });
+                                } else {
+                                    mob[i].death();
+                                }
+                            }
+                        }
+
+                    }
+                }
+            },
+        })
+
+        saveGame.captureBaseline() //autosaves only store what changed from this fresh run
+        //setup FPS cap
+        simulation.fpsInterval = 1000 / simulation.fpsCap;
+        simulation.then = Date.now();
+        requestAnimationFrame(cycle); //starts game loop
+        mouseMove.lock()
+    },
+    clearTimeouts() {
+        let id = window.setTimeout(function () { }, 0);
+        while (id--) {
+            window.clearTimeout(id); // will do nothing if no timeout with id is present
+        }
+    },
+    clearNow: false,
+    resetLook() { //the colors and drawing a level can change, back to the game's, each level sets its own after this, see clearMap() and levelData.capture()
+        document.body.style.backgroundColor = "#eee" //"#d8dadf";
+        color = { //light
+            // background: "#ddd", // used instead:  document.body.style.backgroundColor
+            block: "rgba(140,140,140,0.85)",
+            blockS: "#222",
+            map: "#444",
+            bullet: "#000"
+        }
+        simulation.draw.drawMapPath = simulation.draw.drawMapPathDefault
+        simulation.draw.body = simulation.draw.bodyDefault //a community map can draw blocks its own way
+    },
+    clearMap() {
+        let len
+        level.disableExit = false; //clear level-specific locks, including when starting a new run
+        // level.mirrorDoors.reset();
+        level.exit.reflection = null;
+        level.exit.ripple = null;
+        level.exit.pickFeedback();
+        level.exit.isInverted = false;
+        level.exit.bottomOffset = 20;
+        level.isVerticalFLipLevel = false
+        level.isProcedural = false;
+        level.fallMode = "";
+        simulation.unFlipCameraVertical()
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        simulation.lastLogTime = 0; //clear previous messages
+        spawn.allowShields = true;
+        powerUps.totalPowerUps = powerUp.length
+        let holdTarget = saveGame.isResuming ? saveGame.pendingHeldBlock : m.holdingTarget //checkpoints carry plain geometry, normal transitions carry the body
+        saveGame.pendingHeldBlock = null
+        tech.deathSpawnsFromBoss = 0;
+        simulation.fallHeight = 3000;
+        simulation.g = simulation.gDefault //a level can change gravity, see levelData.applySettings()
+        simulation.resetLook()
+        m.fireCDcycle = 0
+        m.drop();
+        m.hole.isOn = false;
+        simulation.drawList = [];
+        mobs.maxMobBody = 40
+
+        level.collectTransfers()
+        b.clearProjectiles({ refund: true })
+        if (tech.isQuantumEraser && m.alive && !saveGame.isResuming) {
+            let count = 0
+            for (let i = 0, len = mob.length; i < len; i++) {
+                if (mob[i].isDropPowerUp && mob[i].alive) count++
+            }
+            count *= 0.44 //to fake the chance, this makes it not random, and more predictable
+            //Queue before the checkpoint; spawnDelay still waits until the map has been cleared.
+            const types = ["heal", "ammo", "heal", "ammo", "research", "coupling", "boost", "tech", "gun", "field"]
+            for (let i = 0; i < count; i++) powerUps.spawnDelay(types[Math.floor(Math.random() * types.length)], 1)
+        }
+
+        function removeAll(array) {
+            // for (let i = 0; i < array.length; ++i) Matter.Composite.remove(engine.world, array[i]);
+            for (let i = 0; i < array.length; ++i) Matter.Composite.remove(engine.world, array[i]);
+        }
+        removeAll(map);
+        map = [];
+        removeAll(body);
+        body = [];
+        lastTouchedBlock = null;
+        removeAll(mob);
+        mob = [];
+        removeAll(powerUp);
+        powerUp = [];
+        removeAll(cons);
+        cons = [];
+        removeAll(consBB);
+        consBB = [];
+        removeAll(composite);
+        composite = [];
+        // if player was holding something this makes a new copy to hold
+        if (holdTarget && m.alive) {
+            len = body.length;
+            body[len] = Matter.Bodies.fromVertices(0, 0, holdTarget.vertices, {
+                friction: holdTarget.friction,
+                frictionAir: holdTarget.frictionAir,
+                frictionStatic: holdTarget.frictionStatic,
+                isKey: holdTarget.isKey,
+                isImmutable: holdTarget.isImmutable,
+                draw: holdTarget.draw
+            });
+            Matter.Body.setPosition(body[len], m.pos);
+            m.isHolding = true
+            m.holdingTarget = body[len];
+            m.holdingTarget.collisionFilter.category = 0;
+            m.holdingTarget.collisionFilter.mask = 0;
+            m.definePlayerMass(m.holdingMass(m.holdingTarget))
+            Composite.add(engine.world, m.holdingTarget); //add to world
+            m.holdingTarget.classType = "body"
+        }
+        //set fps back to default
+        simulation.fpsCap = simulation.fpsCapDefault
+        simulation.fpsInterval = 1000 / simulation.fpsCap;
+    },
+    // getCoords: {
+    //   //used when building maps, outputs a draw rect command to console, only works in testing mode
+    //   pos1: {
+    //     x: 0,
+    //     y: 0
+    //   },
+    //   pos2: {
+    //     x: 0,
+    //     y: 0
+    //   },
+    //   out() {
+    //     if (keys[49]) {
+    //       simulation.getCoords.pos1.x = Math.round(simulation.mouseInGame.x / 25) * 25;
+    //       simulation.getCoords.pos1.y = Math.round(simulation.mouseInGame.y / 25) * 25;
+    //     }
+    //     if (keys[50]) {
+    //       //press 1 in the top left; press 2 in the bottom right;copy command from console
+    //       simulation.getCoords.pos2.x = Math.round(simulation.mouseInGame.x / 25) * 25;
+    //       simulation.getCoords.pos2.y = Math.round(simulation.mouseInGame.y / 25) * 25;
+    //       window.getSelection().removeAllRanges();
+    //       var range = document.createRange();
+    //       range.selectNode(document.getElementById("test"));
+    //       window.getSelection().addRange(range);
+    //       document.execCommand("copy");
+    //       window.getSelection().removeAllRanges();
+    //     }
+    //   }
+    // },
+    testingOutput() {
+        ctx.fillStyle = "#000";
+        ctx.fillText(`(${simulation.mouseInGame.x.toFixed(1)}, ${simulation.mouseInGame.y.toFixed(1)})`, simulation.mouse.x, simulation.mouse.y - 20);
+    },
+    sight: { //credit to Cornbread2100 for adding this algorithm to n-gon
+        // square: 0,
+        intersectMap: [], //each wall's corners and where other walls cross it, simulation.sight.buildIntersectMap() keeps it up to date with the map
+        circleLineCollisionsLegacy(a, b, c, radius) {
+            const angleOffset = Math.atan2(b.y - a.y, b.x - a.x);
+            const sideB = Math.sqrt((a.x - c.x) ** 2 + (a.y - c.y) ** 2);
+            const sideC = Math.sqrt((b.x - a.x) ** 2 + (b.y - a.y) ** 2);
+            const sideA = Math.sqrt((c.x - b.x) ** 2 + (c.y - b.y) ** 2);
+            const angleA = Math.acos((sideB ** 2 + sideC ** 2 - sideA ** 2) / (2 * sideB * sideC)) *
+                (a.x - c.x) / -Math.abs(a.x - c.x);
+            const sideAD = Math.cos(angleA) * sideB;
+            const d = {
+                x: Math.cos(angleOffset) * sideAD + a.x,
+                y: Math.sin(angleOffset) * sideAD + a.y
+            };
+            const distance = Math.sqrt((d.x - c.x) ** 2 + (d.y - c.y) ** 2);
+            if (distance == radius) return [d];
+            if (distance >= radius) return [];
+
+            const collisionAngle = Math.atan2(d.y - c.y, d.x - c.x);
+            const innerAngle = Math.acos(distance / radius);
+            const intersection1 = {
+                x: Math.cos(collisionAngle + innerAngle) * radius + c.x,
+                y: Math.sin(collisionAngle + innerAngle) * radius + c.y
+            };
+            const intersection2 = {
+                x: Math.cos(collisionAngle - innerAngle) * radius + c.x,
+                y: Math.sin(collisionAngle - innerAngle) * radius + c.y
+            };
+            const distance1A = Math.sqrt((intersection1.x - a.x) ** 2 + (intersection1.y - a.y) ** 2);
+            const distance1B = Math.sqrt((intersection1.x - b.x) ** 2 + (intersection1.y - b.y) ** 2);
+            const distance2A = Math.sqrt((intersection2.x - a.x) ** 2 + (intersection2.y - a.y) ** 2);
+            const distance2B = Math.sqrt((intersection2.x - b.x) ** 2 + (intersection2.y - b.y) ** 2);
+            const result = [];
+            if (Math.abs(sideC - (distance1A + distance1B)) < 0.01) {
+                result.push(intersection1);
+            } else if (distance1A < distance1B) {
+                if (sideB <= radius) result.push(a);
+            } else if (sideA <= radius) {
+                result.push(b);
+            }
+            if (Math.abs(sideC - (distance2A + distance2B)) < 0.01) {
+                result.push(intersection2);
+            } else if (distance2A <= distance2B) {
+                if (sideB <= radius) result.push(a);
+            } else if (sideA <= radius) {
+                result.push(b);
+            }
+            return result;
+        },
+
+        circleLineCollisions(a, b, c, radius) {
+            const edgeDx = b.x - a.x;
+            const edgeDy = b.y - a.y;
+            const edgeLengthSquared = edgeDx * edgeDx + edgeDy * edgeDy;
+            const centerDx = c.x - a.x;
+            const centerDy = c.y - a.y;
+            const side = edgeDx * centerDy - edgeDy * centerDx;
+            if (edgeLengthSquared === 0 || a.x === c.x || side === 0) {
+                return simulation.sight.circleLineCollisionsLegacy(a, b, c, radius);
+            }
+
+            const closestFraction = (centerDx * edgeDx + centerDy * edgeDy) / edgeLengthSquared;
+            const closestX = a.x + closestFraction * edgeDx;
+            const closestY = a.y + closestFraction * edgeDy;
+            const closestDx = closestX - c.x;
+            const closestDy = closestY - c.y;
+            const closestDistanceSquared = closestDx * closestDx + closestDy * closestDy;
+            const radiusSquared = radius * radius;
+            if (closestDistanceSquared === radiusSquared) return [{ x: closestX, y: closestY }];
+            if (closestDistanceSquared >= radiusSquared) return [];
+
+            const edgeLength = Math.sqrt(edgeLengthSquared);
+            const rootOffset = Math.sqrt(radiusSquared - closestDistanceSquared) / edgeLength;
+            const lowerFraction = closestFraction - rootOffset;
+            const upperFraction = closestFraction + rootOffset;
+            const firstFraction = side > 0 ? upperFraction : lowerFraction;
+            const secondFraction = side > 0 ? lowerFraction : upperFraction;
+            const fractionTolerance = 0.005 / edgeLength;
+            const aInside = centerDx * centerDx + centerDy * centerDy <= radiusSquared;
+            const bCenterDx = b.x - c.x;
+            const bCenterDy = b.y - c.y;
+            const bInside = bCenterDx * bCenterDx + bCenterDy * bCenterDy <= radiusSquared;
+            const result = [];
+
+            function appendCollision(fraction) {
+                if (fraction > -fractionTolerance && fraction < 1 + fractionTolerance) {
+                    result.push({
+                        x: a.x + fraction * edgeDx,
+                        y: a.y + fraction * edgeDy
+                    });
+                } else if (fraction < 0.5) {
+                    if (aInside) result.push(a);
+                } else if (bInside) {
+                    result.push(b);
+                }
+            }
+
+            appendCollision(firstFraction);
+            appendCollision(secondFraction);
+            return result;
+        },
+
+        circleLoS(pos, radius) {
+            simulation.sight.updateMapGrid()
+            const solid = simulation.sight.mapGrid.solid //tech: ray, you can see through the line left behind
+            const isPosInWall = simulation.sight.isPointInWall(pos) //seeing nothing is the same for every sight line, so only check once
+            function allCircleLineCollisions(c, radius, domain) {
+                const lines = [];
+                for (const obj of domain) {
+                    if (!simulation.sight.isBoundsOnCircle(obj.bounds, c, radius)) continue;
+                    for (let i = 0; i < obj.vertices.length - 1; i++) lines.push(simulation.sight.circleLineCollisions(obj.vertices[i], obj.vertices[i + 1], c, radius));
+                    lines.push(simulation.sight.circleLineCollisions(obj.vertices[obj.vertices.length - 1], obj.vertices[0], c, radius));
+                }
+                const collisionLines = [];
+                for (const line of lines) {
+                    if (line.length == 2) {
+                        // const distance1 = Math.sqrt((line[0].x - c.x) ** 2 + (line[0].y - c.y) ** 2)
+                        // const angle1 = Math.atan2(line[0].y - c.y, line[0].x - c.x);
+                        // const queryPoint1 = {
+                        //     x: Math.cos(angle1) * (distance1 - 1) + c.x,
+                        //     y: Math.sin(angle1) * (distance1 - 1) + c.y
+                        // }
+                        // const distance2 = Math.sqrt((line[1].x - c.x) ** 2 + (line[1].y - c.y) ** 2)
+                        // const angle2 = Math.atan2(line[1].y - c.y, line[1].x - c.x);
+                        // const queryPoint2 = {
+                        //     x: Math.cos(angle2) * (distance2 - 1) + c.x,
+                        //     y: Math.sin(angle2) * (distance2 - 1) + c.y
+                        // }
+                        collisionLines.push(line)
+                    }
+                }
+
+                return collisionLines;
+            }
+
+            const vertices = [];
+            const radiusSquared = radius * radius
+            for (const obj of simulation.sight.intersectMap) {
+                for (let i = 0; i < obj.vertices.length; i++) {
+                    const vertex = obj.vertices[i];
+                    //skip corners outside the circle, where walls cross the circle is found below with circleCollisions
+                    if ((vertex.x - pos.x) ** 2 + (vertex.y - pos.y) ** 2 > radiusSquared) continue
+                    const angleToVertex = Math.atan2(vertex.y - pos.y, vertex.x - pos.x);
+                    // const distanceToVertex = Math.sqrt((vertex.x - pos.x) ** 2 + (vertex.y - pos.y) ** 2);
+                    // const queryPoint = { x: Math.cos(angleToVertex) * (distanceToVertex - 1) + pos.x, y: Math.sin(angleToVertex) * (distanceToVertex - 1) + pos.y }
+                    const queryPoint = { x: Math.cos(angleToVertex + Math.PI) + vertex.x, y: Math.sin(angleToVertex + Math.PI) + vertex.y }
+
+                    if (!isPosInWall && !simulation.sight.isSightBlocked(pos, queryPoint)) {
+                        const distance = Math.sqrt((vertex.x - pos.x) ** 2 + (vertex.y - pos.y) ** 2);
+                        let endPoint = { x: vertex.x, y: vertex.y }
+
+                        let best = simulation.sight.getIntersection(pos, endPoint);
+                        if (best.dist >= distance) best = { x: endPoint.x, y: endPoint.y, dist: distance }
+                        vertices.push(best)
+
+                        let angle = Math.atan2(vertex.y - pos.y, vertex.x - pos.x);
+                        endPoint = { x: Math.cos(angle + 0.001) * radius + pos.x, y: Math.sin(angle + 0.001) * radius + pos.y }
+                        best = simulation.sight.getIntersection(pos, endPoint);
+
+                        if (best.dist >= radius) best = { x: endPoint.x, y: endPoint.y, dist: radius }
+                        vertices.push(best)
+
+                        angle = Math.atan2(vertex.y - pos.y, vertex.x - pos.x);
+                        endPoint = { x: Math.cos(angle - 0.001) * radius + pos.x, y: Math.sin(angle - 0.001) * radius + pos.y }
+
+                        best = simulation.sight.getIntersection(pos, endPoint);
+                        if (best.dist >= radius) best = { x: endPoint.x, y: endPoint.y, dist: radius }
+                        vertices.push(best)
+                    }
+                }
+            }
+
+            const outerCollisions = allCircleLineCollisions(pos, radius, solid);
+            const circleCollisions = [];
+            for (const line of outerCollisions) {
+                for (const vertex of line) {
+                    const distance = Math.sqrt((vertex.x - pos.x) ** 2 + (vertex.y - pos.y) ** 2)
+                    const angle = Math.atan2(vertex.y - pos.y, vertex.x - pos.x);
+                    const queryPoint = { x: Math.cos(angle + Math.PI) + vertex.x, y: Math.sin(angle + Math.PI) + vertex.y }
+                    if (Math.abs(distance - radius) < 1 && !isPosInWall && !simulation.sight.isSightBlocked(pos, queryPoint)) circleCollisions.push(vertex)
+                }
+            }
+            for (let i = 0; i < circleCollisions.length; i++) {
+                const vertex = circleCollisions[i];
+                let nextIndex = i + 1;
+                if (nextIndex == circleCollisions.length) nextIndex = 0;
+                const nextVertex = circleCollisions[nextIndex];
+                const angle1 = Math.atan2(vertex.y - pos.y, vertex.x - pos.x);
+                const angle2 = Math.atan2(nextVertex.y - pos.y, nextVertex.x - pos.x);
+                let newAngle;
+                if (Math.abs(angle1) > Math.PI / 2 && Math.abs(angle2) > Math.PI / 2 && angle1 / Math.abs(angle1) != angle2 / Math.abs(angle2)) {
+                    // if the arc between the to points crosses over the left side (+/- pi radians)
+                    const newAngle1 = (Math.PI - Math.abs(angle1)) * (angle1 / Math.abs(angle1));
+                    const newAngle2 = (Math.PI - Math.abs(angle2)) * (angle2 / Math.abs(angle2));
+                    newAngle = (newAngle1 + newAngle2) / 2;
+                    let multiplier;
+                    if (newAngle == 0) {
+                        multiplier = 1;
+                    } else {
+                        multiplier = newAngle / Math.abs(newAngle);
+                    }
+                    newAngle = Math.PI * multiplier - newAngle * multiplier;
+                } else {
+                    newAngle = (angle1 + angle2) / 2;
+                }
+
+                // shoot ray between them
+                const endPoint = { x: Math.cos(newAngle) * radius + pos.x, y: Math.sin(newAngle) * radius + pos.y }
+                const best = simulation.sight.getIntersection(pos, endPoint);
+                vertices.push(vertex);
+                if (best.dist <= radius) vertices.push({ x: best.x, y: best.y })
+            }
+            if (vertices.length === 0 && !Matter.Query.point(solid, pos).length) { //no walls in the circle, so see the whole circle
+                for (let angle = -Math.PI; angle < Math.PI; angle += Math.PI / 2) vertices.push({ x: Math.cos(angle) * radius + pos.x, y: Math.sin(angle) * radius + pos.y })
+            }
+            vertices.sort((a, b) => Math.atan2(a.y - pos.y, a.x - pos.x) - Math.atan2(b.y - pos.y, b.x - pos.x));
+            return vertices;
+        },
+
+        isBoundsOnCircle(bounds, c, radius) { //only walls near the edge of the circle can cross it, the extra 1 matches the distance check in circleLoS
+            const nearX = Math.max(bounds.min.x - c.x, 0, c.x - bounds.max.x);
+            const nearY = Math.max(bounds.min.y - c.y, 0, c.y - bounds.max.y);
+            if (nearX * nearX + nearY * nearY > (radius + 1) * (radius + 1)) return false;
+            if (radius <= 1) return true;
+            const farX = Math.max(Math.abs(bounds.min.x - c.x), Math.abs(bounds.max.x - c.x));
+            const farY = Math.max(Math.abs(bounds.min.y - c.y), Math.abs(bounds.max.y - c.y));
+            return farX * farX + farY * farY >= (radius - 1) * (radius - 1);
+        },
+
+        mapGrid: { //every wall edge sorted into square cells, so a sight line only tests the walls it passes near
+            minCellSize: 256,
+            maxCells: 65536,
+            maxCellsWide: 4096,
+            pad: 0.000001, //much bigger than rounding error, so a cell is never missed by a tiny amount
+            bodies: [], //the map when the grid was built, updateMapGrid compares this to the map
+            state: new Float64Array(0), //bounds, angle, and isRay of each of those bodies
+            solid: [], //map without tech: ray's lines
+            cols: 0,
+            rows: 0,
+            cellSize: 1,
+            originX: 0,
+            originY: 0,
+            edgeCells: [], //edges in each cell
+            bodyCells: [], //bodies with bounds that touch each cell
+            edges: new Float64Array(0), //x1, y1, x2, y2 of each edge
+            edgeKinds: new Uint8Array(0), //1 is for blocking sight, 2 is for the nearest hit, they only differ for compound bodies
+            edgeStamps: new Float64Array(0), //the last sight line to test each edge, long edges are in several cells
+            edgeBodies: new Int32Array(0), //the map index of each edge's body
+            edgeNumbers: new Int32Array(0), //each outline edge's place in its body, the edge from vertices[n] to vertices[n + 1]
+            stamp: 0,
+            lineCells: [], //the cells on the current sight line, from its start to its end
+        },
+        updateMapGrid() { //runs each frame, finds any change to the map by itself and rebuilds the grid and the corners in intersectMap, so moving doors and walls added during a level don't need a manual rebuild
+            const grid = simulation.sight.mapGrid;
+            const state = grid.state;
+            let isCurrent = grid.bodies.length === map.length;
+            for (let i = 0, j = 0; isCurrent && i < map.length; i++, j += 6) {
+                const who = map[i];
+                const min = who.bounds.min;
+                const max = who.bounds.max;
+                isCurrent = grid.bodies[i] === who && state[j] === min.x && state[j + 1] === min.y && state[j + 2] === max.x && state[j + 3] === max.y &&
+                    state[j + 4] === who.angle && state[j + 5] === (who.isRay ? 1 : 0);
+            }
+            if (!isCurrent) simulation.sight.buildMapGrid();
+        },
+        buildMapGrid() {
+            const grid = simulation.sight.mapGrid;
+            grid.bodies = map.slice();
+            if (grid.state.length !== map.length * 6) grid.state = new Float64Array(map.length * 6);
+            grid.solid = [];
+            let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity, edgeCount = 0;
+            for (let i = 0, j = 0; i < map.length; i++, j += 6) {
+                const who = map[i];
+                const min = who.bounds.min;
+                const max = who.bounds.max;
+                grid.state[j] = min.x;
+                grid.state[j + 1] = min.y;
+                grid.state[j + 2] = max.x;
+                grid.state[j + 3] = max.y;
+                grid.state[j + 4] = who.angle;
+                grid.state[j + 5] = who.isRay ? 1 : 0;
+                if (who.isRay) continue;
+                grid.solid.push(who);
+                if (min.x < minX) minX = min.x;
+                if (min.y < minY) minY = min.y;
+                if (max.x > maxX) maxX = max.x;
+                if (max.y > maxY) maxY = max.y;
+                edgeCount += who.vertices.length;
+                for (let k = 1; k < who.parts.length; k++) edgeCount += who.parts[k].vertices.length;
+            }
+
+            if (!grid.solid.length || !(maxX - minX < Infinity) || !(maxY - minY < Infinity)) {
+                grid.cols = grid.rows = 0;
+                simulation.sight.intersectMap = [];
+                return;
+            }
+            const wide = maxX - minX;
+            const tall = maxY - minY;
+            const cellSize = Math.max(grid.minCellSize, Math.ceil(Math.sqrt(wide * tall / grid.maxCells)), Math.ceil(Math.max(wide, tall) / grid.maxCellsWide));
+            const originX = minX - 1;
+            const originY = minY - 1;
+            const cols = Math.floor((maxX + 1 - originX) / cellSize) + 1;
+            const rows = Math.floor((maxY + 1 - originY) / cellSize) + 1;
+            if (grid.cols !== cols || grid.rows !== rows || grid.cellSize !== cellSize || grid.edgeCells.length !== cols * rows) { //a moving door usually doesn't change the layout
+                grid.edgeCells = [];
+                grid.bodyCells = [];
+                for (let i = 0; i < cols * rows; i++) {
+                    grid.edgeCells.push([]);
+                    grid.bodyCells.push([]);
+                }
+            } else {
+                for (let i = 0; i < cols * rows; i++) {
+                    grid.edgeCells[i].length = 0;
+                    grid.bodyCells[i].length = 0;
+                }
+            }
+            grid.cols = cols;
+            grid.rows = rows;
+            grid.cellSize = cellSize;
+            grid.originX = originX;
+            grid.originY = originY;
+
+            if (grid.edgeKinds.length < edgeCount) {
+                grid.edges = new Float64Array(edgeCount * 4);
+                grid.edgeKinds = new Uint8Array(edgeCount);
+                grid.edgeStamps = new Float64Array(edgeCount);
+                grid.edgeBodies = new Int32Array(edgeCount);
+                grid.edgeNumbers = new Int32Array(edgeCount);
+            }
+            let edgeIndex = 0;
+            function addEdges(vertices, kind, bodyIndex) {
+                let a = vertices[vertices.length - 1];
+                for (let i = 0; i < vertices.length; i++) {
+                    const b = vertices[i];
+                    grid.edges[edgeIndex * 4] = a.x;
+                    grid.edges[edgeIndex * 4 + 1] = a.y;
+                    grid.edges[edgeIndex * 4 + 2] = b.x;
+                    grid.edges[edgeIndex * 4 + 3] = b.y;
+                    grid.edgeKinds[edgeIndex] = kind;
+                    grid.edgeBodies[edgeIndex] = bodyIndex;
+                    grid.edgeNumbers[edgeIndex] = i === 0 ? vertices.length - 1 : i - 1; //the edge from vertex i - 1 to vertex i
+                    const count = simulation.sight.findLineCells(a.x, a.y, b.x, b.y);
+                    for (let j = 0; j < count; j++) grid.edgeCells[grid.lineCells[j]].push(edgeIndex);
+                    edgeIndex++;
+                    a = b;
+                }
+            }
+            for (let bodyIndex = 0; bodyIndex < map.length; bodyIndex++) {
+                const who = map[bodyIndex];
+                if (who.isRay) continue;
+                if (who.parts.length === 1) {
+                    addEdges(who.vertices, 3, bodyIndex);
+                } else { //Matter.Query.segmentAny tests the parts of a compound body, the nearest hit uses its outline
+                    addEdges(who.vertices, 2, bodyIndex);
+                    for (let k = 1; k < who.parts.length; k++) addEdges(who.parts[k].vertices, 1, bodyIndex);
+                }
+                const startCol = Math.floor((who.bounds.min.x - grid.pad - originX) / cellSize);
+                const endCol = Math.floor((who.bounds.max.x + grid.pad - originX) / cellSize);
+                const startRow = Math.floor((who.bounds.min.y - grid.pad - originY) / cellSize);
+                const endRow = Math.floor((who.bounds.max.y + grid.pad - originY) / cellSize);
+                for (let col = Math.max(startCol, 0); col <= endCol && col < cols; col++) {
+                    for (let row = Math.max(startRow, 0); row <= endRow && row < rows; row++) grid.bodyCells[col * rows + row].push(who);
+                }
+            }
+            simulation.sight.buildIntersectMap();
+        },
+        buildIntersectMap() { //each wall's corners plus where other walls cross its edges, the grid rebuilds it whenever the map changes
+            const grid = simulation.sight.mapGrid;
+            const edges = grid.edges;
+            const edgeKinds = grid.edgeKinds;
+            const edgeStamps = grid.edgeStamps;
+            const edgeBodies = grid.edgeBodies;
+            const edgeNumbers = grid.edgeNumbers;
+            const intersectMap = [];
+            const found = [];
+            const byOrder = (a, b) => a.body - b.body || a.edge - b.edge; //the same order as a scan of every wall
+            for (let bodyIndex = 0; bodyIndex < grid.bodies.length; bodyIndex++) {
+                const obj = grid.bodies[bodyIndex];
+                if (obj.isRay) continue //tech: ray, you can see through the line left behind
+                const vertices = obj.vertices;
+                const newVertices = [];
+                for (let j = 0; j < vertices.length; j++) {
+                    const v1 = vertices[j];
+                    const v1End = vertices[(j + 1) % vertices.length];
+                    newVertices.push(v1);
+                    const rayMinX = v1.x < v1End.x ? v1.x : v1End.x;
+                    const rayMaxX = v1.x > v1End.x ? v1.x : v1End.x;
+                    const rayMinY = v1.y < v1End.y ? v1.y : v1End.y;
+                    const rayMaxY = v1.y > v1End.y ? v1.y : v1End.y;
+                    const rayDx = v1End.x - v1.x;
+                    const rayDy = v1End.y - v1.y;
+                    const stamp = ++grid.stamp;
+                    found.length = 0;
+                    const cellCount = simulation.sight.findLineCells(v1.x, v1.y, v1End.x, v1End.y);
+                    for (let c = 0; c < cellCount; c++) {
+                        const cellEdges = grid.edgeCells[grid.lineCells[c]];
+                        for (let k = 0; k < cellEdges.length; k++) {
+                            const edge = cellEdges[k];
+                            if (edgeStamps[edge] === stamp) continue;
+                            edgeStamps[edge] = stamp;
+                            if (!(edgeKinds[edge] & 2) || edgeBodies[edge] === bodyIndex) continue; //other walls' outlines
+                            const startX = edges[edge * 4];
+                            const startY = edges[edge * 4 + 1];
+                            const endX = edges[edge * 4 + 2];
+                            const endY = edges[edge * 4 + 3];
+                            if (rayMaxX < (startX < endX ? startX : endX) || (startX > endX ? startX : endX) < rayMinX ||
+                                rayMaxY < (startY < endY ? startY : endY) || (startY > endY ? startY : endY) < rayMinY) continue;
+                            const edgeDx = endX - startX;
+                            const edgeDy = endY - startY;
+                            const denominator = edgeDy * rayDx - edgeDx * rayDy;
+                            if (denominator === 0) continue;
+                            const offsetY = v1.y - startY;
+                            const offsetX = v1.x - startX;
+                            const rayFraction = (edgeDx * offsetY - edgeDy * offsetX) / denominator;
+                            const edgeFraction = (rayDx * offsetY - rayDy * offsetX) / denominator;
+                            if (rayFraction > 0 && rayFraction < 1 && edgeFraction > 0 && edgeFraction < 1) {
+                                found.push({ body: edgeBodies[edge], edge: edgeNumbers[edge], x: v1.x + rayFraction * rayDx, y: v1.y + rayFraction * rayDy });
+                            }
+                        }
+                    }
+                    if (found.length > 1) found.sort(byOrder);
+                    for (let k = 0; k < found.length; k++) newVertices.push({ x: found[k].x, y: found[k].y });
+                }
+                intersectMap.push({ vertices: newVertices });
+            }
+            simulation.sight.intersectMap = intersectMap;
+        },
+        findLineCells(x1, y1, x2, y2) { //lists every cell the line touches into grid.lineCells in order from start to end, returns how many
+            const grid = simulation.sight.mapGrid;
+            const lineCells = grid.lineCells;
+            const cols = grid.cols;
+            const rows = grid.rows;
+            if (cols === 0) return 0;
+            const size = grid.cellSize;
+            const pad = grid.pad;
+            const dx = x2 - x1;
+            const dy = y2 - y1;
+            const stepCol = dx < 0 ? -1 : 1;
+            const stepRow = dy < 0 ? -1 : 1;
+            let col = Math.floor((x1 - stepCol * pad - grid.originX) / size);
+            let lastCol = Math.floor((x2 + stepCol * pad - grid.originX) / size);
+            col = col < 0 ? 0 : col >= cols ? cols - 1 : col;
+            lastCol = lastCol < 0 ? 0 : lastCol >= cols ? cols - 1 : lastCol;
+            let count = 0;
+            for (let i = (lastCol - col) * stepCol; i >= 0; i--, col += stepCol) {
+                let enter = 0;
+                let exit = 1;
+                if (dx !== 0) { //the part of the line in this column
+                    const left = grid.originX + col * size - pad;
+                    const right = left + size + 2 * pad;
+                    enter = ((stepCol > 0 ? left : right) - x1) / dx;
+                    exit = ((stepCol > 0 ? right : left) - x1) / dx;
+                    if (enter < 0) enter = 0;
+                    if (exit > 1) exit = 1;
+                    if (enter > exit) continue;
+                }
+                let row = Math.floor((y1 + enter * dy - stepRow * pad - grid.originY) / size);
+                let lastRow = Math.floor((y1 + exit * dy + stepRow * pad - grid.originY) / size);
+                row = row < 0 ? 0 : row >= rows ? rows - 1 : row;
+                lastRow = lastRow < 0 ? 0 : lastRow >= rows ? rows - 1 : lastRow;
+                for (let j = (lastRow - row) * stepRow; j >= 0; j--, row += stepRow) lineCells[count++] = col * rows + row;
+            }
+            return count;
+        },
+        isPointInWall(point) { //same as a zero length Matter.Query.segmentAny, only checks the walls in the point's cell
+            const grid = simulation.sight.mapGrid;
+            if (grid.cols === 0) return false;
+            const col = Math.floor((point.x - grid.originX) / grid.cellSize);
+            const row = Math.floor((point.y - grid.originY) / grid.cellSize);
+            if (!(col >= 0 && col < grid.cols && row >= 0 && row < grid.rows)) return false;
+            return Matter.Query.segmentAny(grid.bodyCells[col * grid.rows + row], point, point);
+        },
+        isSightBlocked(start, end) { //same as Matter.Query.segmentAny on the map, circleLoS checks the start with isPointInWall
+            const grid = simulation.sight.mapGrid;
+            const x1 = start.x;
+            const y1 = start.y;
+            const x2 = end.x;
+            const y2 = end.y;
+            const rayMinX = x1 < x2 ? x1 : x2;
+            const rayMaxX = x1 > x2 ? x1 : x2;
+            const rayMinY = y1 < y2 ? y1 : y2;
+            const rayMaxY = y1 > y2 ? y1 : y2;
+            const rayDx = x2 - x1;
+            const rayDy = y2 - y1;
+            const edges = grid.edges;
+            const edgeKinds = grid.edgeKinds;
+            const edgeStamps = grid.edgeStamps;
+            const stamp = ++grid.stamp;
+            const cellCount = simulation.sight.findLineCells(x1, y1, x2, y2);
+            for (let i = 0; i < cellCount; i++) {
+                const cell = grid.edgeCells[grid.lineCells[i]];
+                for (let j = 0; j < cell.length; j++) {
+                    const id = cell[j];
+                    if (edgeStamps[id] === stamp || !(edgeKinds[id] & 1)) continue;
+                    edgeStamps[id] = stamp;
+                    const ax = edges[id * 4];
+                    const ay = edges[id * 4 + 1];
+                    const bx = edges[id * 4 + 2];
+                    const by = edges[id * 4 + 3];
+                    if ((ax < bx ? bx : ax) < rayMinX || rayMaxX < (ax < bx ? ax : bx) || (ay < by ? by : ay) < rayMinY || rayMaxY < (ay < by ? ay : by)) continue;
+                    const edgeDx = bx - ax;
+                    const edgeDy = by - ay;
+                    const denominator = edgeDy * rayDx - edgeDx * rayDy;
+                    if (denominator === 0) continue;
+                    const offsetY = y1 - ay;
+                    const offsetX = x1 - ax;
+                    const rayFraction = (edgeDx * offsetY - edgeDy * offsetX) / denominator;
+                    const edgeFraction = (rayDx * offsetY - rayDy * offsetX) / denominator;
+                    if (rayFraction > 0 && rayFraction < 1 && edgeFraction > 0 && edgeFraction < 1) return true;
+                }
+            }
+            return simulation.sight.isPointInWall(end);
+        },
+        getIntersection(v1, v1End) { //the nearest wall from v1 to v1End, or v1End if there's nothing in the way
+            const grid = simulation.sight.mapGrid;
+            const x1 = v1.x;
+            const y1 = v1.y;
+            const x2 = v1End.x;
+            const y2 = v1End.y;
+            const rayMinX = x1 < x2 ? x1 : x2;
+            const rayMaxX = x1 > x2 ? x1 : x2;
+            const rayMinY = y1 < y2 ? y1 : y2;
+            const rayMaxY = y1 > y2 ? y1 : y2;
+            const rayDx = x2 - x1;
+            const rayDy = y2 - y1;
+            const stepCol = rayDx < 0 ? -1 : 1;
+            const stepRow = rayDy < 0 ? -1 : 1;
+            const rows = grid.rows;
+            const edges = grid.edges;
+            const edgeKinds = grid.edgeKinds;
+            const edgeStamps = grid.edgeStamps;
+            const stamp = ++grid.stamp;
+            let bestX = x2;
+            let bestY = y2;
+            let bestDist = rayDx * rayDx + rayDy * rayDy;
+            let stopRank = Infinity;
+            const cellCount = simulation.sight.findLineCells(x1, y1, x2, y2);
+            for (let i = 0; i < cellCount; i++) {
+                const cellIndex = grid.lineCells[i];
+                const cell = grid.edgeCells[cellIndex];
+                for (let j = 0; j < cell.length; j++) {
+                    const id = cell[j];
+                    if (edgeStamps[id] === stamp || !(edgeKinds[id] & 2)) continue;
+                    edgeStamps[id] = stamp;
+                    const ax = edges[id * 4];
+                    const ay = edges[id * 4 + 1];
+                    const bx = edges[id * 4 + 2];
+                    const by = edges[id * 4 + 3];
+                    if ((ax < bx ? bx : ax) < rayMinX || rayMaxX < (ax < bx ? ax : bx) || (ay < by ? by : ay) < rayMinY || rayMaxY < (ay < by ? ay : by)) continue;
+                    const edgeDx = bx - ax;
+                    const edgeDy = by - ay;
+                    const denominator = edgeDy * rayDx - edgeDx * rayDy;
+                    if (denominator === 0) continue;
+                    const offsetY = y1 - ay;
+                    const offsetX = x1 - ax;
+                    const rayFraction = (edgeDx * offsetY - edgeDy * offsetX) / denominator;
+                    const edgeFraction = (rayDx * offsetY - rayDy * offsetX) / denominator;
+                    if (rayFraction > 0 && rayFraction < 1 && edgeFraction > 0 && edgeFraction < 1) {
+                        const hitX = x1 + rayFraction * rayDx;
+                        const hitY = y1 + rayFraction * rayDy;
+                        const dist = (hitX - x1) ** 2 + (hitY - y1) ** 2;
+                        if (dist < bestDist) {
+                            bestX = hitX;
+                            bestY = hitY;
+                            bestDist = dist;
+                            //a long wall in a near cell can be hit far away, so keep going until the line reaches the hit's cell, anything closer is in a cell before that
+                            let col = Math.floor((hitX + stepCol * grid.pad - grid.originX) / grid.cellSize);
+                            let row = Math.floor((hitY + stepRow * grid.pad - grid.originY) / grid.cellSize);
+                            col = col < 0 ? 0 : col >= grid.cols ? grid.cols - 1 : col;
+                            row = row < 0 ? 0 : row >= rows ? rows - 1 : row;
+                            stopRank = stepCol * col * rows + stepRow * row;
+                        }
+                    }
+                }
+                if (stopRank !== Infinity) {
+                    const col = (cellIndex - cellIndex % rows) / rows;
+                    if (stepCol * col * rows + stepRow * (cellIndex % rows) >= stopRank) break;
+                }
+            }
+            return { x: bestX, y: bestY, dist: Math.sqrt(bestDist) };
+        },
+    },
+    draw: {
+
+        isMapPathRebuildPending: false,
+        requestMapPathRebuild() {
+            simulation.draw.isMapPathRebuildPending = true;
+        },
+        flushMapPathRebuild() {
+            if (!simulation.draw.isMapPathRebuildPending) return false;
+            simulation.draw.isMapPathRebuildPending = false;
+            simulation.draw.setPaths(); //line of sight picks up the moved walls by itself, see simulation.sight.updateMapGrid()
+            return true;
+        },
+
+        mapPath: null, //holds the path for the map to speed up drawing
+        setPaths() {
+            //runs at each new level to store the path for the map since the map doesn't change
+            simulation.draw.mapPath = new Path2D();
+            for (let i = 0, len = map.length; i < len; ++i) {
+                if (map[i].isRay) continue //tech: ray, draws its own walls
+                let vertices = map[i].vertices;
+                simulation.draw.mapPath.moveTo(vertices[0].x, vertices[0].y);
+                for (let j = 1; j < vertices.length; j += 1) {
+                    simulation.draw.mapPath.lineTo(vertices[j].x, vertices[j].y);
+                }
+                simulation.draw.mapPath.lineTo(vertices[0].x, vertices[0].y);
+            }
+        },
+        isLineOfSight() { //subway, the line of sight setting, and community maps with line of sight all replace drawMapPath
+            return simulation.draw.drawMapPath !== simulation.draw.drawMapPathDefault
+        },
+        mapColor(mapColor = color.map) { //for things drawn to look like the map, like covers over hidden areas, line of sight doesn't fill the map so they match the background instead
+            return simulation.draw.isLineOfSight() ? document.body.style.backgroundColor : mapColor
+        },
+        updateLineOfSightSetting() { //line of sight setting draws every level like subway, levels with their own map drawing are left alone
+            if (localSettings.isLineOfSight && simulation.draw.drawMapPath === simulation.draw.drawMapPathDefault) {
+                simulation.draw.drawMapPath = simulation.draw.drawMapSightSetting
+                simulation.draw.lineOfSightPrecalculation() //required precalculation for line of sight
+            } else if (!localSettings.isLineOfSight && simulation.draw.drawMapPath === simulation.draw.drawMapSightSetting) {
+                simulation.draw.drawMapPath = simulation.draw.drawMapPathDefault
+            }
+        },
+        lineOfSightPrecalculation() { //rebuilds the sight grid and the corners in intersectMap now, circleLoS also rebuilds them by itself whenever the map changes
+            simulation.sight.buildMapGrid()
+        },
+        drawMapPath() { },
+        drawMapPathDefault() {
+            ctx.fillStyle = color.map;
+            ctx.fill(simulation.draw.mapPath);
+        },
+        drawMapSightSetting() {
+            simulation.draw.drawMapSight(true)
+        },
+        drawMapSightLevel() { //a level that's always line of sight, like the level editor's line of sight setting, the pause menu's setting can't turn it off
+            simulation.draw.drawMapSight(true)
+        },
+        drawMapSight(isShadeSight = false) {
+            if (!simulation.isTimeSkipping) {
+                const pos = m.pos
+                const radius = 4000
+                const vertices = simulation.sight.circleLoS(pos, radius);
+                if (vertices.length) {
+                    ctx.beginPath();
+                    ctx.moveTo(vertices[0].x, vertices[0].y);
+                    for (let i = 1; i < vertices.length; i++) {
+                        const currentDistance = Math.sqrt((vertices[i - 1].x - pos.x) ** 2 + (vertices[i - 1].y - pos.y) ** 2);
+                        const newDistance = Math.sqrt((vertices[i].x - pos.x) ** 2 + (vertices[i].y - pos.y) ** 2);
+                        if (Math.abs(currentDistance - radius) < 1 && Math.abs(newDistance - radius) < 1) {
+                            const currentAngle = Math.atan2(vertices[i - 1].y - pos.y, vertices[i - 1].x - pos.x);
+                            const newAngle = Math.atan2(vertices[i].y - pos.y, vertices[i].x - pos.x);
+                            ctx.arc(pos.x, pos.y, radius, currentAngle, newAngle);
+                        } else {
+                            ctx.lineTo(vertices[i].x, vertices[i].y)
+                        }
+                    }
+                    const newDistance = Math.sqrt((vertices[0].x - pos.x) ** 2 + (vertices[0].y - pos.y) ** 2);
+                    const currentDistance = Math.sqrt((vertices[vertices.length - 1].x - pos.x) ** 2 + (vertices[vertices.length - 1].y - pos.y) ** 2);
+                    if (Math.abs(currentDistance - radius) < 1 && Math.abs(newDistance - radius) < 1) {
+                        const currentAngle = Math.atan2(vertices[vertices.length - 1].y - pos.y, vertices[vertices.length - 1].x - pos.x);
+                        const newAngle = Math.atan2(vertices[0].y - pos.y, vertices[0].x - pos.x);
+                        ctx.arc(pos.x, pos.y, radius, currentAngle, newAngle);
+                    } else {
+                        ctx.lineTo(vertices[0].x, vertices[0].y)
+                    }
+
+                    // outline map edges, best with lighter colored document.body.style.backgroundColor
+                    ctx.strokeStyle = "#000";
+                    ctx.lineWidth = 5;
+                    ctx.stroke(simulation.draw.mapPath);
+
+                    ctx.globalCompositeOperation = "destination-in";
+                    ctx.fillStyle = "#000";
+                    ctx.fill();
+                    if (isShadeSight) { //darken what you can see behind everything drawn so far, subway does this with a rect in level.custom
+                        ctx.globalCompositeOperation = "destination-over";
+                        ctx.fillStyle = "rgba(0,0,0,0.1)";
+                        ctx.fill();
+                    }
+                    ctx.globalCompositeOperation = "source-over";
+
+                    // make map visible
+                    // ctx.fill(simulation.draw.mapPath);
+                    // ctx.fillStyle = "#000";
+
+                    ctx.clip(); //this doesn't seem to be required, but it helps with performance, probably stops the canvas context from drawing the whole map
+                }
+            }
+        },
+        bodyDefault() {
+            ctx.beginPath();
+            for (let i = 0, len = body.length; i < len; ++i) {
+                let vertices = body[i].vertices;
+                ctx.moveTo(vertices[0].x, vertices[0].y);
+                for (let j = 1; j < vertices.length; j++) {
+                    ctx.lineTo(vertices[j].x, vertices[j].y);
+                }
+                ctx.lineTo(vertices[0].x, vertices[0].y);
+            }
+            ctx.fillStyle = color.block;
+            ctx.fill();
+            if (!localSettings.isHideHUD) { //performance mode: no stroke on blocks, checked every frame so the pause menu toggle applies right away
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = color.blockS;
+                ctx.stroke();
+            }
+        },
+        body() { },
+        cons() {
+            ctx.beginPath();
+            for (let i = 0, len = cons.length; i < len; ++i) {
+                const { pointA, bodyA } = cons[i];
+                if (bodyA) ctx.moveTo(bodyA.position.x + pointA.x, bodyA.position.y + pointA.y);
+                else ctx.moveTo(pointA.x, pointA.y);
+                // ctx.lineTo(cons[i].bodyB.position.x, cons[i].bodyB.position.y);
+                ctx.lineTo(cons[i].bodyB.position.x + cons[i].pointB.x, cons[i].bodyB.position.y + cons[i].pointB.y);
+            }
+            for (let i = 0, len = consBB.length; i < len; ++i) {
+                ctx.moveTo(consBB[i].bodyA.position.x, consBB[i].bodyA.position.y);
+                ctx.lineTo(consBB[i].bodyB.position.x, consBB[i].bodyB.position.y);
+            }
+            ctx.lineWidth = 2;
+            // ctx.strokeStyle = "#999";
+            ctx.strokeStyle = "rgba(0,0,0,0.15)";
+            ctx.stroke();
+        },
+        wireFrame() {
+            const bodies = Composite.allBodies(engine.world);
+            ctx.beginPath();
+            for (let i = 0; i < bodies.length; ++i) {
+                //ctx.fillText(bodies[i].id,bodies[i].position.x,bodies[i].position.y);  //shows the id of every body
+                let vertices = bodies[i].vertices;
+                ctx.moveTo(vertices[0].x, vertices[0].y);
+                for (let j = 1; j < vertices.length; j++) {
+                    ctx.lineTo(vertices[j].x, vertices[j].y);
+                }
+                ctx.lineTo(vertices[0].x, vertices[0].y);
+            }
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = "#000";
+            ctx.stroke();
+        },
+        testing() {
+            //jump
+            ctx.beginPath();
+            let bodyDraw = jumpSensor.vertices;
+            ctx.moveTo(bodyDraw[0].x, bodyDraw[0].y);
+            for (let j = 1; j < bodyDraw.length; ++j) {
+                ctx.lineTo(bodyDraw[j].x, bodyDraw[j].y);
+            }
+            ctx.lineTo(bodyDraw[0].x, bodyDraw[0].y);
+            ctx.fillStyle = "rgba(255, 0, 0, 0.5)";
+            ctx.fill();
+            // ctx.strokeStyle = "#000";
+            // ctx.stroke();
+            //main body
+            ctx.beginPath();
+            bodyDraw = playerBody.vertices;
+            ctx.moveTo(bodyDraw[0].x, bodyDraw[0].y);
+            for (let j = 1; j < bodyDraw.length; ++j) {
+                ctx.lineTo(bodyDraw[j].x, bodyDraw[j].y);
+            }
+            ctx.lineTo(bodyDraw[0].x, bodyDraw[0].y);
+            ctx.fillStyle = "rgba(0, 255, 255, 0.25)";
+            ctx.fill();
+            // ctx.stroke();
+            //head
+            ctx.beginPath();
+            bodyDraw = playerHead.vertices;
+            ctx.moveTo(bodyDraw[0].x, bodyDraw[0].y);
+            for (let j = 1; j < bodyDraw.length; ++j) {
+                ctx.lineTo(bodyDraw[j].x, bodyDraw[j].y);
+            }
+            ctx.lineTo(bodyDraw[0].x, bodyDraw[0].y);
+            ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
+            ctx.fill();
+            // ctx.stroke();
+            //head sensor
+            ctx.beginPath();
+            bodyDraw = headSensor.vertices;
+            ctx.moveTo(bodyDraw[0].x, bodyDraw[0].y);
+            for (let j = 1; j < bodyDraw.length; ++j) {
+                ctx.lineTo(bodyDraw[j].x, bodyDraw[j].y);
+            }
+            ctx.lineTo(bodyDraw[0].x, bodyDraw[0].y);
+            ctx.fillStyle = "rgba(0, 0, 255, 0.25)";
+            ctx.fill();
+            // ctx.stroke();
+        },
+        font: {
+            word: new Path2D(),
+            xPos: 0,
+            yPos: 0,
+            path(text, x, y, size = 40) { //the text as its own Path2D, size is how tall, word stays what it was so announceText still draws its own
+                const word = this.word
+                this.word = new Path2D()
+                this.drawString(text, 0, 0)
+                const path = new Path2D()
+                path.addPath(this.word, new DOMMatrix().translate(x, y).scale(size / 40))
+                this.word = word
+                return path
+            },
+            drawString(text, x, y) {
+                this.xPos = x
+                this.yPos = y
+                const letters = text.toLowerCase().split('')
+                letters.forEach((letter, index) => {
+                    if (letter !== ' ' && letter.length === 1 && typeof this[letter] === "function") { //letters, numbers, and the punctuation below z
+                        this[letter]()
+                        if (index < letters.length - 1) {
+                            this.xPos += 29
+                        }
+                    } else if (letter === ' ') {
+                        this.xPos += 29
+                    }
+                })
+            },
+            a() {
+                this.word.moveTo(this.xPos - 1, this.yPos + 40)
+                this.word.lineTo(this.xPos + 10, this.yPos + 0)
+                this.word.lineTo(this.xPos + 21, this.yPos + 40)
+                this.word.moveTo(this.xPos + 5, this.yPos + 20)
+                this.word.lineTo(this.xPos + 15, this.yPos + 20)
+            },
+            b() {
+                this.word.moveTo(this.xPos + 1, this.yPos);
+                this.word.lineTo(this.xPos + 1, this.yPos + 40);
+                this.word.moveTo(this.xPos + 1, this.yPos);
+                this.word.bezierCurveTo(this.xPos + 22, this.yPos, this.xPos + 22, this.yPos + 20, this.xPos + 1, this.yPos + 20);
+                this.word.moveTo(this.xPos + 1, this.yPos + 20);
+                this.word.bezierCurveTo(this.xPos + 25, this.yPos + 20, this.xPos + 25, this.yPos + 40, this.xPos + 1, this.yPos + 40);
+            },
+            c() {
+                // Calculate the starting point on the ellipse to move to
+                const startAngle = 0.2 * Math.PI;
+                const startX = (this.xPos + 11) + (11 * Math.cos(startAngle));
+                const startY = (this.yPos + 20) + (20 * Math.sin(startAngle));
+                this.word.moveTo(startX, startY);
+
+                // Draws a smooth partial ellipse for the 'C'
+                this.word.ellipse(this.xPos + 11, this.yPos + 20, 11, 20, 0, startAngle, 1.8 * Math.PI);
+            },
+            d() {
+                this.word.moveTo(this.xPos + 0, this.yPos);
+                this.word.lineTo(this.xPos + 0, this.yPos + 40);
+                // this.word.moveTo(this.xPos + 3, this.yPos + 40);
+                this.word.arcTo(this.xPos + 19, this.yPos + 40, this.xPos + 19, this.yPos + 20, 20);
+                this.word.arcTo(this.xPos + 19, this.yPos, this.xPos + 1, this.yPos, 20);
+            },
+            e() {
+                this.word.moveTo(this.xPos + 19, this.yPos + 0)
+                this.word.lineTo(this.xPos + 0, this.yPos + 0)
+                this.word.lineTo(this.xPos + 0, this.yPos + 20)
+                this.word.lineTo(this.xPos + 17, this.yPos + 20)
+                this.word.moveTo(this.xPos + 0, this.yPos + 20)
+                this.word.lineTo(this.xPos + 0, this.yPos + 40)
+                this.word.lineTo(this.xPos + 19, this.yPos + 40)
+            },
+            f() {
+                this.word.moveTo(this.xPos + 0, this.yPos + 0)
+                this.word.lineTo(this.xPos + 0, this.yPos + 40)
+                this.word.moveTo(this.xPos + 0, this.yPos + 0)
+                this.word.lineTo(this.xPos + 19, this.yPos + 0)
+                this.word.moveTo(this.xPos + 0, this.yPos + 20)
+                this.word.lineTo(this.xPos + 16, this.yPos + 20)
+            },
+            g() {
+                // Rounded G with curved edges
+                this.word.moveTo(this.xPos + 17, this.yPos + 6);
+                this.word.bezierCurveTo(this.xPos + 17, this.yPos + 2, this.xPos + 14, this.yPos + 0, this.xPos + 8, this.yPos + 0);
+                this.word.bezierCurveTo(this.xPos + 3, this.yPos + 0, this.xPos + 0, this.yPos + 4, this.xPos + 0, this.yPos + 20);
+                this.word.bezierCurveTo(this.xPos + 0, this.yPos + 36, this.xPos + 3, this.yPos + 40, this.xPos + 8, this.yPos + 40);
+                this.word.bezierCurveTo(this.xPos + 14, this.yPos + 40, this.xPos + 17, this.yPos + 36, this.xPos + 17, this.yPos + 30);
+                this.word.lineTo(this.xPos + 17, this.yPos + 20);
+                this.word.lineTo(this.xPos + 10, this.yPos + 20);
+            },
+            h() {
+                this.word.moveTo(this.xPos + 0, this.yPos + 0)
+                this.word.lineTo(this.xPos + 0, this.yPos + 40)
+                this.word.moveTo(this.xPos + 0, this.yPos + 20)
+                this.word.lineTo(this.xPos + 17, this.yPos + 20)
+                this.word.lineTo(this.xPos + 17, this.yPos + 40)
+                this.word.moveTo(this.xPos + 17, this.yPos + 20)
+                this.word.lineTo(this.xPos + 17, this.yPos + 0)
+            },
+            i() {
+                this.word.moveTo(this.xPos + 0, this.yPos + 0)
+                this.word.lineTo(this.xPos + 19, this.yPos + 0)
+                this.word.moveTo(this.xPos + 9, this.yPos + 0)
+                this.word.lineTo(this.xPos + 9, this.yPos + 40)
+                this.word.moveTo(this.xPos + 0, this.yPos + 40)
+                this.word.lineTo(this.xPos + 19, this.yPos + 40)
+            },
+            j() {
+                // Rounded J with curved bottom
+                this.word.moveTo(this.xPos + 18, this.yPos + 0);
+                this.word.lineTo(this.xPos + 18, this.yPos + 30);
+                this.word.bezierCurveTo(this.xPos + 18, this.yPos + 37, this.xPos + 14, this.yPos + 40, this.xPos + 8, this.yPos + 40);
+                this.word.bezierCurveTo(this.xPos + 2, this.yPos + 40, this.xPos + 0, this.yPos + 37, this.xPos + 0, this.yPos + 30);
+            },
+            k() {
+                this.word.moveTo(this.xPos + 0, this.yPos + 0)
+                this.word.lineTo(this.xPos + 0, this.yPos + 40)
+                this.word.moveTo(this.xPos + 0, this.yPos + 20)
+                this.word.lineTo(this.xPos + 19, this.yPos + 0)
+                this.word.moveTo(this.xPos + 4, this.yPos + 17)
+                this.word.lineTo(this.xPos + 19, this.yPos + 40)
+            },
+            l() {
+                this.word.moveTo(this.xPos + 1, this.yPos + 0)
+                this.word.lineTo(this.xPos + 1, this.yPos + 40)
+                this.word.lineTo(this.xPos + 20, this.yPos + 40)
+            },
+            m() {
+                this.word.moveTo(this.xPos + 0, this.yPos + 40)
+                this.word.lineTo(this.xPos + 0, this.yPos + 0)
+                this.word.lineTo(this.xPos + 9, this.yPos + 20)
+                this.word.lineTo(this.xPos + 17, this.yPos + 0)
+                this.word.lineTo(this.xPos + 17, this.yPos + 40)
+            },
+            n() {
+                this.word.moveTo(this.xPos + 0, this.yPos + 40)
+                this.word.lineTo(this.xPos + 0, this.yPos + 0)
+                this.word.lineTo(this.xPos + 17, this.yPos + 40)
+                this.word.lineTo(this.xPos + 17, this.yPos + 0)
+            },
+            o() {
+                this.word.moveTo(this.xPos + 20, this.yPos + 20);
+                this.word.ellipse(this.xPos + 9, this.yPos + 20, 11, 20, 0, 0, 2 * Math.PI);
+            },
+            p() {
+                // Rounded P with curved top section
+                this.word.moveTo(this.xPos + 0, this.yPos + 40);
+                this.word.lineTo(this.xPos + 0, this.yPos + 0);
+                this.word.lineTo(this.xPos + 10, this.yPos + 0);
+                this.word.bezierCurveTo(this.xPos + 15, this.yPos + 0, this.xPos + 18, this.yPos + 3, this.xPos + 18, this.yPos + 10);
+                this.word.bezierCurveTo(this.xPos + 18, this.yPos + 17, this.xPos + 15, this.yPos + 20, this.xPos + 10, this.yPos + 20);
+                this.word.lineTo(this.xPos + 0, this.yPos + 20);
+            },
+            q() {
+                this.word.moveTo(this.xPos + 20, this.yPos + 20);
+                this.word.ellipse(this.xPos + 9, this.yPos + 20, 11, 20, 0, 0, 2 * Math.PI);
+                this.word.moveTo(this.xPos + 12, this.yPos + 28);
+                this.word.lineTo(this.xPos + 20, this.yPos + 40);
+            },
+            r() {
+                // Rounded R with curved top section
+                this.word.moveTo(this.xPos + 0, this.yPos + 40);
+                this.word.lineTo(this.xPos + 0, this.yPos + 0);
+                this.word.lineTo(this.xPos + 10, this.yPos + 0);
+                this.word.bezierCurveTo(this.xPos + 15, this.yPos + 0, this.xPos + 18, this.yPos + 3, this.xPos + 18, this.yPos + 10);
+                this.word.bezierCurveTo(this.xPos + 18, this.yPos + 17, this.xPos + 15, this.yPos + 20, this.xPos + 10, this.yPos + 20);
+                this.word.lineTo(this.xPos + 0, this.yPos + 20);
+                this.word.moveTo(this.xPos + 8, this.yPos + 20);
+                this.word.lineTo(this.xPos + 18, this.yPos + 40);
+            },
+            s() {
+                // Rounded S shape using curves
+                this.word.moveTo(this.xPos + 18, this.yPos + 6);
+                this.word.bezierCurveTo(this.xPos + 18, this.yPos + 2, this.xPos + 15, this.yPos + 0, this.xPos + 9, this.yPos + 0);
+                this.word.bezierCurveTo(this.xPos + 3, this.yPos + 0, this.xPos + 0, this.yPos + 3, this.xPos + 0, this.yPos + 8);
+                this.word.bezierCurveTo(this.xPos + 0, this.yPos + 13, this.xPos + 3, this.yPos + 16, this.xPos + 9, this.yPos + 18);
+                this.word.bezierCurveTo(this.xPos + 15, this.yPos + 20, this.xPos + 18, this.yPos + 24, this.xPos + 18, this.yPos + 32);
+                this.word.bezierCurveTo(this.xPos + 18, this.yPos + 37, this.xPos + 15, this.yPos + 40, this.xPos + 9, this.yPos + 40);
+                this.word.bezierCurveTo(this.xPos + 3, this.yPos + 40, this.xPos + 0, this.yPos + 37, this.xPos + 0, this.yPos + 34);
+            },
+            t() {
+                this.word.moveTo(this.xPos - 1, this.yPos + 0)
+                this.word.lineTo(this.xPos + 21, this.yPos + 0)
+                this.word.moveTo(this.xPos + 10, this.yPos + 0)
+                this.word.lineTo(this.xPos + 10, this.yPos + 40)
+            },
+            u() {
+                // Rounded U with curved bottom
+                this.word.moveTo(this.xPos + 0, this.yPos + 0);
+                this.word.lineTo(this.xPos + 0, this.yPos + 30);
+                this.word.bezierCurveTo(this.xPos + 0, this.yPos + 37, this.xPos + 3, this.yPos + 40, this.xPos + 8, this.yPos + 40);
+                this.word.bezierCurveTo(this.xPos + 14, this.yPos + 40, this.xPos + 17, this.yPos + 37, this.xPos + 17, this.yPos + 30);
+                this.word.lineTo(this.xPos + 17, this.yPos + 0);
+            },
+            v() {
+                this.word.moveTo(this.xPos + 0, this.yPos + 0)
+                this.word.lineTo(this.xPos + 8, this.yPos + 40)
+                this.word.lineTo(this.xPos + 17, this.yPos + 0)
+            },
+            w() {
+                this.word.moveTo(this.xPos + 0, this.yPos + 0)
+                this.word.lineTo(this.xPos + 0, this.yPos + 40)
+                this.word.lineTo(this.xPos + 8, this.yPos + 20)
+                this.word.lineTo(this.xPos + 17, this.yPos + 40)
+                this.word.lineTo(this.xPos + 17, this.yPos + 0)
+            },
+            x() {
+                this.word.moveTo(this.xPos + 0, this.yPos + 0)
+                this.word.lineTo(this.xPos + 19, this.yPos + 40)
+                this.word.moveTo(this.xPos + 19, this.yPos + 0)
+                this.word.lineTo(this.xPos + 0, this.yPos + 40)
+            },
+            y() {
+                this.word.moveTo(this.xPos + -1, this.yPos + 0);
+                this.word.lineTo(this.xPos + 10, this.yPos + 20);
+                this.word.lineTo(this.xPos + 21, this.yPos + 0);
+                this.word.moveTo(this.xPos + 10, this.yPos + 20);
+                this.word.lineTo(this.xPos + 10, this.yPos + 40);
+            },
+            z() {
+                this.word.moveTo(this.xPos + 0, this.yPos + 0)
+                this.word.lineTo(this.xPos + 17, this.yPos + 0)
+                this.word.lineTo(this.xPos + 0, this.yPos + 40)
+                this.word.lineTo(this.xPos + 17, this.yPos + 40)
+            },
+            dot(x, y) { //a tiny circle, the stroke makes it a dot, for . ! ? and :
+                this.word.moveTo(this.xPos + x + 1.5, this.yPos + y)
+                this.word.arc(this.xPos + x, this.yPos + y, 1.5, 0, 2 * Math.PI)
+            },
+            "0"() { //narrower than o, with a slash
+                this.word.moveTo(this.xPos + 18, this.yPos + 20);
+                this.word.ellipse(this.xPos + 9, this.yPos + 20, 9, 20, 0, 0, 2 * Math.PI);
+                this.word.moveTo(this.xPos + 16, this.yPos + 8);
+                this.word.lineTo(this.xPos + 2, this.yPos + 32);
+            },
+            "1"() {
+                this.word.moveTo(this.xPos + 3, this.yPos + 8)
+                this.word.lineTo(this.xPos + 10, this.yPos + 0)
+                this.word.lineTo(this.xPos + 10, this.yPos + 40)
+                this.word.moveTo(this.xPos + 2, this.yPos + 40)
+                this.word.lineTo(this.xPos + 18, this.yPos + 40)
+            },
+            "2"() {
+                this.word.moveTo(this.xPos + 0, this.yPos + 8);
+                this.word.bezierCurveTo(this.xPos + 0, this.yPos + 3, this.xPos + 3, this.yPos + 0, this.xPos + 9, this.yPos + 0);
+                this.word.bezierCurveTo(this.xPos + 15, this.yPos + 0, this.xPos + 18, this.yPos + 3, this.xPos + 18, this.yPos + 10);
+                this.word.bezierCurveTo(this.xPos + 18, this.yPos + 18, this.xPos + 10, this.yPos + 24, this.xPos + 0, this.yPos + 40);
+                this.word.lineTo(this.xPos + 18, this.yPos + 40);
+            },
+            "3"() {
+                this.word.moveTo(this.xPos + 0, this.yPos + 6);
+                this.word.bezierCurveTo(this.xPos + 1, this.yPos + 2, this.xPos + 4, this.yPos + 0, this.xPos + 9, this.yPos + 0);
+                this.word.bezierCurveTo(this.xPos + 15, this.yPos + 0, this.xPos + 18, this.yPos + 3, this.xPos + 18, this.yPos + 10);
+                this.word.bezierCurveTo(this.xPos + 18, this.yPos + 16, this.xPos + 14, this.yPos + 19, this.xPos + 7, this.yPos + 19);
+                this.word.bezierCurveTo(this.xPos + 15, this.yPos + 19, this.xPos + 19, this.yPos + 23, this.xPos + 19, this.yPos + 30);
+                this.word.bezierCurveTo(this.xPos + 19, this.yPos + 37, this.xPos + 15, this.yPos + 40, this.xPos + 9, this.yPos + 40);
+                this.word.bezierCurveTo(this.xPos + 4, this.yPos + 40, this.xPos + 1, this.yPos + 38, this.xPos + 0, this.yPos + 34);
+            },
+            "4"() {
+                this.word.moveTo(this.xPos + 14, this.yPos + 40)
+                this.word.lineTo(this.xPos + 14, this.yPos + 0)
+                this.word.lineTo(this.xPos + 0, this.yPos + 27)
+                this.word.lineTo(this.xPos + 19, this.yPos + 27)
+            },
+            "5"() {
+                this.word.moveTo(this.xPos + 17, this.yPos + 0);
+                this.word.lineTo(this.xPos + 2, this.yPos + 0);
+                this.word.lineTo(this.xPos + 1, this.yPos + 18);
+                this.word.bezierCurveTo(this.xPos + 4, this.yPos + 16, this.xPos + 6, this.yPos + 15, this.xPos + 9, this.yPos + 15);
+                this.word.bezierCurveTo(this.xPos + 15, this.yPos + 15, this.xPos + 19, this.yPos + 20, this.xPos + 19, this.yPos + 27);
+                this.word.bezierCurveTo(this.xPos + 19, this.yPos + 35, this.xPos + 15, this.yPos + 40, this.xPos + 9, this.yPos + 40);
+                this.word.bezierCurveTo(this.xPos + 4, this.yPos + 40, this.xPos + 1, this.yPos + 38, this.xPos + 0, this.yPos + 34);
+            },
+            "6"() {
+                this.word.moveTo(this.xPos + 16, this.yPos + 3);
+                this.word.bezierCurveTo(this.xPos + 14, this.yPos + 1, this.xPos + 12, this.yPos + 0, this.xPos + 9, this.yPos + 0);
+                this.word.bezierCurveTo(this.xPos + 3, this.yPos + 0, this.xPos + 0, this.yPos + 8, this.xPos + 0, this.yPos + 30);
+                this.word.moveTo(this.xPos + 18, this.yPos + 30);
+                this.word.ellipse(this.xPos + 9, this.yPos + 30, 9, 10, 0, 0, 2 * Math.PI);
+            },
+            "7"() {
+                this.word.moveTo(this.xPos + 0, this.yPos + 0)
+                this.word.lineTo(this.xPos + 18, this.yPos + 0)
+                this.word.lineTo(this.xPos + 6, this.yPos + 40)
+            },
+            "8"() {
+                this.word.moveTo(this.xPos + 17, this.yPos + 10);
+                this.word.ellipse(this.xPos + 9, this.yPos + 10, 8, 10, 0, 0, 2 * Math.PI);
+                this.word.moveTo(this.xPos + 18, this.yPos + 30);
+                this.word.ellipse(this.xPos + 9, this.yPos + 30, 9, 10, 0, 0, 2 * Math.PI);
+            },
+            "9"() { //6 turned around
+                this.word.moveTo(this.xPos + 18, this.yPos + 10);
+                this.word.ellipse(this.xPos + 9, this.yPos + 10, 9, 10, 0, 0, 2 * Math.PI);
+                this.word.moveTo(this.xPos + 18, this.yPos + 10);
+                this.word.bezierCurveTo(this.xPos + 18, this.yPos + 32, this.xPos + 15, this.yPos + 40, this.xPos + 9, this.yPos + 40);
+                this.word.bezierCurveTo(this.xPos + 6, this.yPos + 40, this.xPos + 4, this.yPos + 39, this.xPos + 2, this.yPos + 37);
+            },
+            "."() {
+                this.dot(9, 38)
+            },
+            ","() {
+                this.word.moveTo(this.xPos + 10, this.yPos + 35)
+                this.word.lineTo(this.xPos + 7, this.yPos + 44)
+            },
+            "!"() {
+                this.word.moveTo(this.xPos + 9, this.yPos + 0)
+                this.word.lineTo(this.xPos + 9, this.yPos + 28)
+                this.dot(9, 38)
+            },
+            "?"() {
+                this.word.moveTo(this.xPos + 1, this.yPos + 8);
+                this.word.bezierCurveTo(this.xPos + 1, this.yPos + 3, this.xPos + 4, this.yPos + 0, this.xPos + 9, this.yPos + 0);
+                this.word.bezierCurveTo(this.xPos + 15, this.yPos + 0, this.xPos + 18, this.yPos + 3, this.xPos + 18, this.yPos + 9);
+                this.word.bezierCurveTo(this.xPos + 18, this.yPos + 15, this.xPos + 9, this.yPos + 17, this.xPos + 9, this.yPos + 24);
+                this.word.lineTo(this.xPos + 9, this.yPos + 28);
+                this.dot(9, 38)
+            },
+            ":"() {
+                this.dot(9, 12)
+                this.dot(9, 34)
+            },
+            "'"() {
+                this.word.moveTo(this.xPos + 9, this.yPos + 0)
+                this.word.lineTo(this.xPos + 9, this.yPos + 10)
+            },
+            "-"() {
+                this.word.moveTo(this.xPos + 3, this.yPos + 20)
+                this.word.lineTo(this.xPos + 15, this.yPos + 20)
+            },
+            "+"() {
+                this.word.moveTo(this.xPos + 2, this.yPos + 20)
+                this.word.lineTo(this.xPos + 16, this.yPos + 20)
+                this.word.moveTo(this.xPos + 9, this.yPos + 13)
+                this.word.lineTo(this.xPos + 9, this.yPos + 27)
+            },
+            "="() {
+                this.word.moveTo(this.xPos + 2, this.yPos + 14)
+                this.word.lineTo(this.xPos + 16, this.yPos + 14)
+                this.word.moveTo(this.xPos + 2, this.yPos + 26)
+                this.word.lineTo(this.xPos + 16, this.yPos + 26)
+            },
+            "/"() {
+                this.word.moveTo(this.xPos + 17, this.yPos + 0)
+                this.word.lineTo(this.xPos + 1, this.yPos + 40)
+            },
+            "("() {
+                this.word.moveTo(this.xPos + 14, this.yPos + 0);
+                this.word.bezierCurveTo(this.xPos + 4, this.yPos + 8, this.xPos + 4, this.yPos + 32, this.xPos + 14, this.yPos + 40);
+            },
+            ")"() {
+                this.word.moveTo(this.xPos + 4, this.yPos + 0);
+                this.word.bezierCurveTo(this.xPos + 14, this.yPos + 8, this.xPos + 14, this.yPos + 32, this.xPos + 4, this.yPos + 40);
+            },
+            "%"() {
+                this.word.moveTo(this.xPos + 18, this.yPos + 0)
+                this.word.lineTo(this.xPos + 0, this.yPos + 40)
+                this.word.moveTo(this.xPos + 8, this.yPos + 6)
+                this.word.arc(this.xPos + 4, this.yPos + 6, 4, 0, 2 * Math.PI)
+                this.word.moveTo(this.xPos + 18, this.yPos + 34)
+                this.word.arc(this.xPos + 14, this.yPos + 34, 4, 0, 2 * Math.PI)
+            },
+        }
+    },
+    checkLineIntersection(v1, v1End, v2, v2End) {
+        // if the lines intersect, the result contains the x and y of the intersection (treating the lines as infinite) and booleans for whether line segment 1 or line segment 2 contain the point
+        let denominator, a, b, numerator1, numerator2;
+        let result = {
+            x: null,
+            y: null,
+            onLine1: false,
+            onLine2: false
+        };
+        denominator = (v2End.y - v2.y) * (v1End.x - v1.x) - (v2End.x - v2.x) * (v1End.y - v1.y);
+        if (denominator == 0) {
+            return result;
+        }
+        a = v1.y - v2.y;
+        b = v1.x - v2.x;
+        numerator1 = (v2End.x - v2.x) * a - (v2End.y - v2.y) * b;
+        numerator2 = (v1End.x - v1.x) * a - (v1End.y - v1.y) * b;
+        a = numerator1 / denominator;
+        b = numerator2 / denominator;
+
+        // if we cast these lines infinitely in both directions, they intersect here:
+        result.x = v1.x + a * (v1End.x - v1.x);
+        result.y = v1.y + a * (v1End.y - v1.y);
+        // if line1 is a segment and line2 is infinite, they intersect if:
+        if (a > 0 && a < 1) result.onLine1 = true;
+        // if line2 is a segment and line1 is infinite, they intersect if:
+        if (b > 0 && b < 1) result.onLine2 = true;
+        // if line1 and line2 are segments, they intersect if both of the above are true
+        return result;
+    },
+    constructMouseDownPosition: {
+        x: 0,
+        y: 0
+    },
+    constructMapString: [],
+    constructCycle() {
+        if (simulation.isConstructionMode && simulation.constructMouseDownPosition) {
+            function round(num, round = 25) {
+                return Math.ceil(num / round) * round;
+            }
+            const x = round(simulation.constructMouseDownPosition.x)
+            const y = round(simulation.constructMouseDownPosition.y)
+            const dx = Math.max(25, round(simulation.mouseInGame.x) - x)
+            const dy = Math.max(25, round(simulation.mouseInGame.y) - y)
+
+            ctx.strokeStyle = "#000"
+            ctx.lineWidth = 2;
+            ctx.strokeRect(x, y, dx, dy);
+        }
+    },
+    enableConstructMode() {
+        tech.giveTech('motion sickness') //for precise mouse control
+        level.isProcedural = false //this is set to be true in levels like labs that need x+ and y+ in front of positions
+        level.isVerticalFLipLevel = false
+        simulation.isConstructionMode = true;
+        simulation.isHorizontalFlipped = false;
+        simulation.isAutoZoom = false;
+        simulation.zoomScale = 2600;
+        simulation.setZoom();
+
+        document.body.addEventListener("mouseup", (e) => {
+            let len
+            if (simulation.testing && simulation.constructMouseDownPosition) {
+                function round(num, round = 25) {
+                    return Math.ceil(num / round) * round;
+                }
+                //clean up positions
+                const x = round(simulation.constructMouseDownPosition.x)
+                const y = round(simulation.constructMouseDownPosition.y)
+                const dx = Math.max(25, round(simulation.mouseInGame.x) - x)
+                const dy = Math.max(25, round(simulation.mouseInGame.y) - y)
+                if (e.button === 1) {
+                    simulation.outputMapString(`[${x}, ${y}],\n`);
+                } else if (e.button === 4) {
+                    simulation.outputMapString(`${Math.floor(simulation.constructMouseDownPosition.x)}, ${Math.floor(simulation.constructMouseDownPosition.y)} `);
+                } else if (simulation.mouseInGame.x > simulation.constructMouseDownPosition.x && simulation.mouseInGame.y > simulation.constructMouseDownPosition.y) { //make sure that the width and height are positive
+                    if (e.button === 0) { //add map
+                        // if (level.isProcedural) {
+                        //     simulation.outputMapString(`spawn.mapRect(x+${x}, ${y}, ${dx}, ${dy});\n`);
+                        // } else {
+                        //     simulation.outputMapString(`spawn.mapRect(${x}, ${y}, ${dx}, ${dy});\n`);
+                        // }
+                        if (level.isProcedural) {
+                            simulation.outputMapString(`spawn.mapRect(x+${x}, ${y}, ${dx}, ${dy});\n`);
+                        } else if (level.isVerticalFLipLevel) {
+                            simulation.outputMapString(`spawn.mapRect(${x}, ${y}, ${dx}, ${dy});\n`);
+                            simulation.outputMapString(`//spawn.mapRect(${x}, ${-y - dy}, ${dx}, ${dy});\n`);
+                        } else {
+                            simulation.outputMapString(`spawn.mapRect(${x}, ${y}, ${dx}, ${dy});\n`);
+                        }
+                        //see map in world
+                        spawn.mapRect(x, y, dx, dy);
+                        len = map.length - 1
+                        map[len].collisionFilter.category = cat.map;
+                        map[len].collisionFilter.mask = cat.player | cat.map | cat.body | cat.bullet | cat.powerUp | cat.mob | cat.mobBullet;
+                        Matter.Body.setStatic(map[len], true); //make static
+                        Composite.add(engine.world, map[len]); //add to world
+                        simulation.draw.setPaths() //update map graphics
+                    } else if (e.button === 2) { //add body
+                        if (level.isProcedural) {
+                            simulation.outputMapString(`spawn.bodyRect(x+${x}, ${y}, ${dx}, ${dy});\n`);
+                        } else {
+                            simulation.outputMapString(`spawn.bodyRect(${x}, ${y}, ${dx}, ${dy});\n`);
+                        }
+                        //see map in world
+                        spawn.bodyRect(x, y, dx, dy);
+                    }
+                }
+            }
+            simulation.constructMouseDownPosition.x = undefined
+            simulation.constructMouseDownPosition.y = undefined
+        });
+        simulation.constructMouseDownPosition.x = undefined
+        simulation.constructMouseDownPosition.y = undefined
+        document.body.addEventListener("mousedown", (e) => {
+            if (simulation.testing) {
+                simulation.constructMouseDownPosition.x = simulation.mouseInGame.x
+                simulation.constructMouseDownPosition.y = simulation.mouseInGame.y
+            }
+        });
+
+        document.body.addEventListener("wheel", (e) => {
+            if (simulation.paused || simulation.isChoosing || build.isExperimentSelection || simulation.onTitlePage) return //only zoom during active gameplay, not while scrolling menus
+            if (e.deltaY > 0) {
+                simulation.setZoom(simulation.zoomScale / 0.9)
+            } else {
+                simulation.setZoom(simulation.zoomScale * 0.9)
+            }
+        });
+
+
+
+
+        //undo last element added after you press z
+        document.body.addEventListener("keydown", (event) => { // e.keyCode   z=90  m=77 b=66  shift = 16  c = 67
+            if (simulation.testing && event.code === "KeyZ" && simulation.constructMapString.length) {
+                if (simulation.constructMapString[simulation.constructMapString.length - 1][6] === 'm') { //remove map from current level
+                    const index = map.length - 1
+                    Matter.Composite.remove(engine.world, map[index]);
+                    map.splice(index, 1);
+                    simulation.draw.setPaths() //update map graphics  
+                } else if (simulation.constructMapString[simulation.constructMapString.length - 1][6] === 'b') { //remove body from current level
+                    const index = body.length - 1
+                    Matter.Composite.remove(engine.world, body[index]);
+                    body.splice(index, 1);
+                }
+                simulation.constructMapString.pop();
+                simulation.outputMapString();
+            }
+        });
+    },
+    outputMapString(string) {
+        if (string) simulation.constructMapString.push(string) //store command as a string in the next element of an array
+        let out = "" //combine set of map strings to one string
+        let outHTML = ""
+        for (let i = 0, len = simulation.constructMapString.length; i < len; i++) {
+            out += simulation.constructMapString[i];
+            outHTML += "<div>" + simulation.constructMapString[i] + "</div>"
+        }
+        console.log(out) // eslint-disable-line no-console
+        navigator.clipboard.writeText(out).then(function () {
+            /* clipboard successfully set */
+        }, function () {
+            /* clipboard write failed */
+            console.log('copy failed') // eslint-disable-line no-console
+        });
+        document.getElementById("construct").innerHTML = outHTML
+    },
+};
